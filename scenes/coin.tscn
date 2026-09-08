@@ -1,0 +1,56 @@
+[gd_scene load_steps=18 format=3]
+[ext_resource type="Script" path="res://scripts/coin.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/sprites/coin.png" id="2"]
+[ext_resource type="AudioStream" path="res://assets/sounds/coin.wav" id="3"]
+[sub_resource type="AtlasTexture" id="f0"]
+atlas = ExtResource("2")
+region = Rect2(0,0,16,16)
+[sub_resource type="AtlasTexture" id="f1"]
+atlas = ExtResource("2")
+region = Rect2(16,0,16,16)
+[sub_resource type="AtlasTexture" id="f2"]
+atlas = ExtResource("2")
+region = Rect2(32,0,16,16)
+[sub_resource type="AtlasTexture" id="f3"]
+atlas = ExtResource("2")
+region = Rect2(48,0,16,16)
+[sub_resource type="AtlasTexture" id="f4"]
+atlas = ExtResource("2")
+region = Rect2(64,0,16,16)
+[sub_resource type="AtlasTexture" id="f5"]
+atlas = ExtResource("2")
+region = Rect2(80,0,16,16)
+[sub_resource type="AtlasTexture" id="f6"]
+atlas = ExtResource("2")
+region = Rect2(96,0,16,16)
+[sub_resource type="AtlasTexture" id="f7"]
+atlas = ExtResource("2")
+region = Rect2(112,0,16,16)
+[sub_resource type="AtlasTexture" id="f8"]
+atlas = ExtResource("2")
+region = Rect2(128,0,16,16)
+[sub_resource type="AtlasTexture" id="f9"]
+atlas = ExtResource("2")
+region = Rect2(144,0,16,16)
+[sub_resource type="AtlasTexture" id="f10"]
+atlas = ExtResource("2")
+region = Rect2(160,0,16,16)
+[sub_resource type="AtlasTexture" id="f11"]
+atlas = ExtResource("2")
+region = Rect2(176,0,16,16)
+[sub_resource type="SpriteFrames" id="frames"]
+animations = [{"name": &"idle", "speed": 10.0, "loop": true, "frames": [{"duration":1.0,"texture":SubResource("f0")},{"duration":1.0,"texture":SubResource("f1")},{"duration":1.0,"texture":SubResource("f2")},{"duration":1.0,"texture":SubResource("f3")},{"duration":1.0,"texture":SubResource("f4")},{"duration":1.0,"texture":SubResource("f5")},{"duration":1.0,"texture":SubResource("f6")},{"duration":1.0,"texture":SubResource("f7")},{"duration":1.0,"texture":SubResource("f8")},{"duration":1.0,"texture":SubResource("f9")},{"duration":1.0,"texture":SubResource("f10")},{"duration":1.0,"texture":SubResource("f11")}]}]
+[sub_resource type="CircleShape2D" id="shape"]
+radius = 7.0
+[node name="Coin" type="Area2D"]
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("1")
+[node name="Sprite" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("frames")
+autoplay = "idle"
+[node name="Shape" type="CollisionShape2D" parent="."]
+shape = SubResource("shape")
+[node name="Sound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3")
+volume_db = -15.0

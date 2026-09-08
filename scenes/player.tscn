@@ -1,0 +1,119 @@
+[gd_scene load_steps=26 format=3]
+[ext_resource type="Script" path="res://scripts/player.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/sprites/knight.png" id="2"]
+[ext_resource type="AudioStream" path="res://assets/sounds/jump.wav" id="3"]
+[ext_resource type="AudioStream" path="res://assets/sounds/hurt.wav" id="4"]
+[ext_resource type="AudioStream" path="res://assets/sounds/tap.wav" id="5"]
+
+[sub_resource type="AtlasTexture" id="idle0"]
+atlas = ExtResource("2")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="idle1"]
+atlas = ExtResource("2")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="idle2"]
+atlas = ExtResource("2")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="idle3"]
+atlas = ExtResource("2")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="run0"]
+atlas = ExtResource("2")
+region = Rect2(0, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="run1"]
+atlas = ExtResource("2")
+region = Rect2(32, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="run2"]
+atlas = ExtResource("2")
+region = Rect2(64, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="run3"]
+atlas = ExtResource("2")
+region = Rect2(96, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="run4"]
+atlas = ExtResource("2")
+region = Rect2(128, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="run5"]
+atlas = ExtResource("2")
+region = Rect2(160, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="run6"]
+atlas = ExtResource("2")
+region = Rect2(192, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="run7"]
+atlas = ExtResource("2")
+region = Rect2(224, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="jump0"]
+atlas = ExtResource("2")
+region = Rect2(64, 160, 32, 32)
+
+[sub_resource type="AtlasTexture" id="dead0"]
+atlas = ExtResource("2")
+region = Rect2(0, 224, 32, 32)
+
+[sub_resource type="AtlasTexture" id="dead1"]
+atlas = ExtResource("2")
+region = Rect2(32, 224, 32, 32)
+
+[sub_resource type="AtlasTexture" id="dead2"]
+atlas = ExtResource("2")
+region = Rect2(64, 224, 32, 32)
+
+[sub_resource type="AtlasTexture" id="dead3"]
+atlas = ExtResource("2")
+region = Rect2(96, 224, 32, 32)
+
+[sub_resource type="SpriteFrames" id="frames"]
+animations = [{"name": &"idle", "speed": 9, "loop": true, "frames": [{"duration":1.0,"texture":SubResource("idle0")},{"duration":1.0,"texture":SubResource("idle1")},{"duration":1.0,"texture":SubResource("idle2")},{"duration":1.0,"texture":SubResource("idle3")}]},{"name": &"run", "speed": 9, "loop": true, "frames": [{"duration":1.0,"texture":SubResource("run0")},{"duration":1.0,"texture":SubResource("run1")},{"duration":1.0,"texture":SubResource("run2")},{"duration":1.0,"texture":SubResource("run3")},{"duration":1.0,"texture":SubResource("run4")},{"duration":1.0,"texture":SubResource("run5")},{"duration":1.0,"texture":SubResource("run6")},{"duration":1.0,"texture":SubResource("run7")}]},{"name": &"jump", "speed": 9, "loop": true, "frames": [{"duration":1.0,"texture":SubResource("jump0")}]},{"name": &"dead", "speed": 6, "loop": false, "frames": [{"duration":1.0,"texture":SubResource("dead0")},{"duration":1.0,"texture":SubResource("dead1")},{"duration":1.0,"texture":SubResource("dead2")},{"duration":1.0,"texture":SubResource("dead3")}]},]
+[sub_resource type="CapsuleShape2D" id="body"]
+radius = 5.0
+height = 18.0
+[sub_resource type="RectangleShape2D" id="blade"]
+size = Vector2(26, 24)
+[node name="Player" type="CharacterBody2D" groups=["player"]]
+collision_layer = 2
+collision_mask = 1
+floor_snap_length = 4.0
+script = ExtResource("1")
+[node name="Sprite" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -16)
+sprite_frames = SubResource("frames")
+animation = &"idle"
+autoplay = "idle"
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -9)
+shape = SubResource("body")
+[node name="AttackArea" type="Area2D" parent="."]
+position = Vector2(17, -12)
+collision_layer = 0
+collision_mask = 4
+[node name="Shape" type="CollisionShape2D" parent="AttackArea"]
+shape = SubResource("blade")
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(32, -38)
+limit_left = 0
+limit_top = -16
+limit_right = 2240
+limit_bottom = 304
+position_smoothing_enabled = true
+position_smoothing_speed = 7.0
+[node name="JumpSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3")
+volume_db = -15.0
+[node name="HurtSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("4")
+volume_db = -12.0
+[node name="SwingSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("5")
+pitch_scale = 0.65
+volume_db = -8.0
