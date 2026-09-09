@@ -27,18 +27,34 @@ mouse_filter = 2
 [node name="Health" type="Label" parent="."]
 offset_left = 8.0
 offset_top = 7.0
-offset_right = 98.0
+offset_right = 73.0
 offset_bottom = 19.0
 theme = SubResource("theme")
 text = "VIE"
 mouse_filter = 2
 [node name="Gold" type="Label" parent="."]
-offset_left = 117.0
+offset_left = 77.0
 offset_top = 7.0
-offset_right = 256.0
+offset_right = 171.0
 offset_bottom = 19.0
 theme = SubResource("theme")
-text = "OR 00 / 12"
+text = "SCEAU 00/12"
+mouse_filter = 2
+[node name="Bonus" type="Label" parent="."]
+offset_left = 179.0
+offset_top = 1.0
+offset_right = 268.0
+offset_bottom = 12.0
+theme = SubResource("theme")
+text = "BONUS 0"
+mouse_filter = 2
+[node name="BonusPending" type="Label" parent="."]
+offset_left = 179.0
+offset_top = 12.0
+offset_right = 268.0
+offset_bottom = 22.0
+theme = SubResource("theme")
+text = "reserve 0"
 mouse_filter = 2
 [node name="PauseHint" type="Label" parent="."]
 offset_left = 271.0

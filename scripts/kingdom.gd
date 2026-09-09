@@ -31,7 +31,7 @@ func house(x: int, y: int, ruined: bool = false) -> void:
 		draw_line(Vector2(x+30,y-46),Vector2(x+20,y-19),Color("393c39"),2)
 	else: block(x+50,y-29,2,7,"c7a16a")
 func _draw() -> void:
-	block(-100,-200,2500,600,"18242c")
+	block(-100,-400,2500,800,"18242c")
 	block(-100,-16,2500,85,"26383f")
 	block(-100,69,2500,210,"304448")
 	# A pale broken moon and long clouds anchor the abandoned village.
@@ -68,14 +68,14 @@ func _draw() -> void:
 	block(463,106,38,8,"685b48")
 	draw_string(FONT,Vector2(467,113),"12 OR >",HORIZONTAL_ALIGNMENT_LEFT,-1,8,Color("e2c989"))
 	# Bridge pillars distinguish the high route from the lower road.
-	for x in [698,804,905,990,1050,1150,1210]:
+	for x in [706,780,986,1050,1130,1210]:
 		block(x,88,9,136,"485454")
 		for yy in range(92,224,12):block(x+1,yy,7,1,"69716a")
 	# Torn royal standard: second environmental clue.
-	block(955,3,2,43,"817b68")
-	draw_colored_polygon(PackedVector2Array([Vector2(957,5),Vector2(977,5),Vector2(977,18),Vector2(971,15),Vector2(968,22),Vector2(964,18),Vector2(957,20)]),Color("705365"))
-	block(962,8,8,2,"bc9d6b")
-	block(965,7,2,8,"bc9d6b")
+	block(1048,3,2,43,"817b68")
+	draw_colored_polygon(PackedVector2Array([Vector2(1050,5),Vector2(1070,5),Vector2(1070,18),Vector2(1064,15),Vector2(1061,22),Vector2(1057,18),Vector2(1050,20)]),Color("705365"))
+	block(1055,8,8,2,"bc9d6b")
+	block(1058,7,2,8,"bc9d6b")
 	# Corruption is sparse at first, dense close to the sealed wall.
 	for i in range(22):
 		var x: int = 1390+i*37

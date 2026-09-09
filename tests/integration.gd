@@ -31,6 +31,11 @@ func tap(action: String, count: int = 2) -> void:
 func run() -> void:
 	await spawn()
 	check(level.get_node("Coins").get_child_count()==18,"exactly 18 authored coins")
+	check(level.get_node("Enemies").get_child_count()==8,"exactly four extra slimes, eight total")
+	var purple_count := 0
+	for slime in level.get_node("Enemies").get_children():
+		if slime.variant == SliceSlime.Kind.PURPLE: purple_count += 1
+	check(purple_count==3,"five Green and three Purple")
 	var counts = [0,0,0]
 	for coin in level.get_node("Coins").get_children(): counts[coin.route]+=1
 	check(counts==[8,5,5],"route distribution 8 / 5 / 5")
@@ -62,14 +67,21 @@ func run() -> void:
 	player.facing=1
 	await tap("attack")
 	await frames(13)
-	check(enemy.health==1,"sword overlaps enemy: one damage per swing")
+	check(enemy.health==2,"sword overlaps enemy: one damage per swing")
 	await frames(12)
 	enemy.position=Vector2(339,144)
 	enemy.velocity=Vector2.ZERO
 	await frames(3)
 	await tap("attack")
 	await frames(16)
-	check(not is_instance_valid(enemy) or enemy.dead,"second sword strike kills slime")
+	check(is_instance_valid(enemy) and enemy.health==1 and not enemy.dead,"Green survives two sword strikes")
+	await frames(12)
+	enemy.position=Vector2(339,144)
+	enemy.velocity=Vector2.ZERO
+	await frames(3)
+	await tap("attack")
+	await frames(16)
+	check(not is_instance_valid(enemy) or enemy.dead,"third sword strike kills Green")
 	# Player damage, invulnerability, death idempotency.
 	player.invulnerability=0
 	player.take_damage(1,Vector2.ZERO)

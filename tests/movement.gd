@@ -29,7 +29,13 @@ func run() -> void:
 	Input.action_press("jump")
 	await frames(2)
 	Input.action_release("jump")
-	check(player.velocity.y > previous, "air input does not double jump")
+	check(player.velocity.y < -190.0 and not player.can_double_jump, "second press performs one double jump (vy=%.1f, available=%s)" % [player.velocity.y, player.can_double_jump])
+	await frames(3)
+	previous = player.velocity.y
+	Input.action_press("jump")
+	await frames(2)
+	Input.action_release("jump")
+	check(player.velocity.y > previous, "third press cannot jump again")
 	await frames(50)
 	check(player.is_on_floor(), "landing on terrain")
 	if DisplayServer.get_name() != "headless":

@@ -6,13 +6,18 @@ def save(name,s):
 s='''[ext_resource type="Script" path="res://scripts/slime.gd" id="1"]
 [ext_resource type="Texture2D" path="res://assets/sprites/slime_green.png" id="2"]
 [ext_resource type="AudioStream" path="res://assets/sounds/hurt.wav" id="3"]
+[ext_resource type="Texture2D" path="res://assets/sprites/slime_purple.png" id="4"]
 '''
-for i in range(4):s+=f'[sub_resource type="AtlasTexture" id="f{i}"]\natlas = ExtResource("2")\nregion = Rect2({i*24},24,24,24)\n'
-s+='[sub_resource type="SpriteFrames" id="frames"]\nanimations = [{"name": &"idle", "speed": 6.0, "loop": true, "frames": ['+','.join('{"duration":1.0,"texture":SubResource("f'+str(i)+'")}' for i in range(4))+']}]\n'
+for color,texture in [('green','2'),('purple','4')]:
+ for i in range(4):s+=f'[sub_resource type="AtlasTexture" id="{color}{i}"]\natlas = ExtResource("{texture}")\nregion = Rect2({i*24},24,24,24)\n'
+s+='[sub_resource type="SpriteFrames" id="frames"]\nanimations = ['
+for color in ['green','purple']:
+ s+='{"name": &"'+color+'", "speed": 6.0, "loop": true, "frames": ['+','.join('{"duration":1.0,"texture":SubResource("'+color+str(i)+'")}' for i in range(4))+']},'
+s+=']\n'
 s+='''[sub_resource type="RectangleShape2D" id="body"]
 size = Vector2(14, 12)
 [sub_resource type="RectangleShape2D" id="contact"]
-size = Vector2(15, 12)
+size = Vector2(12, 10)
 [node name="Slime" type="CharacterBody2D" groups=["enemies"]]
 collision_layer = 4
 collision_mask = 1
@@ -20,7 +25,8 @@ script = ExtResource("1")
 [node name="Sprite" type="AnimatedSprite2D" parent="."]
 position = Vector2(0, -12)
 sprite_frames = SubResource("frames")
-autoplay = "idle"
+animation = &"green"
+autoplay = "green"
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0,-6)
 shape = SubResource("body")
@@ -95,7 +101,7 @@ script = ExtResource("1")
 [node name="Barrier" type="StaticBody2D" parent="."]
 collision_layer = 1
 [node name="Shape" type="CollisionShape2D" parent="Barrier"]
-position = Vector2(0, -48)
+position = Vector2(0, -50)
 shape = SubResource("wall")
 [node name="OfferingArea" type="Area2D" parent="."]
 position = Vector2(-25, -24)
@@ -144,7 +150,7 @@ theme = SubResource("theme")
 text = "{text}"
 mouse_filter = 2
 '''
-s+=label('Health','.',8,7,90,12,'VIE')+label('Gold','.',117,7,139,12,'OR 00 / 12')+label('PauseHint','.',271,7,45,12,'ECHAP')
+s+=label('Health','.',8,7,65,12,'VIE')+label('Gold','.',77,7,94,12,'SCEAU 00/12')+label('Bonus','.',179,1,89,11,'BONUS 0')+label('BonusPending','.',179,12,89,10,'reserve 0')+label('PauseHint','.',271,7,45,12,'ECHAP')
 s+=label('Hint','.',7,165,306,14,'')+'theme_override_font_sizes/font_size = 8\nhorizontal_alignment = 1\n'
 s+='''[node name="Overlay" type="ColorRect" parent="."]
 visible = false

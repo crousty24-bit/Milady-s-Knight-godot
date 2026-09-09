@@ -18,14 +18,14 @@ s+= ''']
 radius = 5.0
 height = 18.0
 [sub_resource type="RectangleShape2D" id="blade"]
-size = Vector2(26, 24)
+size = Vector2(22, 4)
 [node name="Player" type="CharacterBody2D" groups=["player"]]
 collision_layer = 2
 collision_mask = 1
 floor_snap_length = 4.0
 script = ExtResource("1")
 [node name="Sprite" type="AnimatedSprite2D" parent="."]
-position = Vector2(0, -16)
+position = Vector2(0, -12)
 sprite_frames = SubResource("frames")
 animation = &"idle"
 autoplay = "idle"
@@ -36,12 +36,13 @@ shape = SubResource("body")
 position = Vector2(17, -12)
 collision_layer = 0
 collision_mask = 4
+monitoring = false
 [node name="Shape" type="CollisionShape2D" parent="AttackArea"]
 shape = SubResource("blade")
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(32, -38)
 limit_left = 0
-limit_top = -16
+limit_top = -224
 limit_right = 2240
 limit_bottom = 304
 position_smoothing_enabled = true

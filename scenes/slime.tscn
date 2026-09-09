@@ -1,25 +1,38 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=16 format=3]
 [ext_resource type="Script" path="res://scripts/slime.gd" id="1"]
 [ext_resource type="Texture2D" path="res://assets/sprites/slime_green.png" id="2"]
 [ext_resource type="AudioStream" path="res://assets/sounds/hurt.wav" id="3"]
-[sub_resource type="AtlasTexture" id="f0"]
+[ext_resource type="Texture2D" path="res://assets/sprites/slime_purple.png" id="4"]
+[sub_resource type="AtlasTexture" id="green0"]
 atlas = ExtResource("2")
 region = Rect2(0,24,24,24)
-[sub_resource type="AtlasTexture" id="f1"]
+[sub_resource type="AtlasTexture" id="green1"]
 atlas = ExtResource("2")
 region = Rect2(24,24,24,24)
-[sub_resource type="AtlasTexture" id="f2"]
+[sub_resource type="AtlasTexture" id="green2"]
 atlas = ExtResource("2")
 region = Rect2(48,24,24,24)
-[sub_resource type="AtlasTexture" id="f3"]
+[sub_resource type="AtlasTexture" id="green3"]
 atlas = ExtResource("2")
 region = Rect2(72,24,24,24)
+[sub_resource type="AtlasTexture" id="purple0"]
+atlas = ExtResource("4")
+region = Rect2(0,24,24,24)
+[sub_resource type="AtlasTexture" id="purple1"]
+atlas = ExtResource("4")
+region = Rect2(24,24,24,24)
+[sub_resource type="AtlasTexture" id="purple2"]
+atlas = ExtResource("4")
+region = Rect2(48,24,24,24)
+[sub_resource type="AtlasTexture" id="purple3"]
+atlas = ExtResource("4")
+region = Rect2(72,24,24,24)
 [sub_resource type="SpriteFrames" id="frames"]
-animations = [{"name": &"idle", "speed": 6.0, "loop": true, "frames": [{"duration":1.0,"texture":SubResource("f0")},{"duration":1.0,"texture":SubResource("f1")},{"duration":1.0,"texture":SubResource("f2")},{"duration":1.0,"texture":SubResource("f3")}]}]
+animations = [{"name": &"green", "speed": 6.0, "loop": true, "frames": [{"duration":1.0,"texture":SubResource("green0")},{"duration":1.0,"texture":SubResource("green1")},{"duration":1.0,"texture":SubResource("green2")},{"duration":1.0,"texture":SubResource("green3")}]},{"name": &"purple", "speed": 6.0, "loop": true, "frames": [{"duration":1.0,"texture":SubResource("purple0")},{"duration":1.0,"texture":SubResource("purple1")},{"duration":1.0,"texture":SubResource("purple2")},{"duration":1.0,"texture":SubResource("purple3")}]},]
 [sub_resource type="RectangleShape2D" id="body"]
 size = Vector2(14, 12)
 [sub_resource type="RectangleShape2D" id="contact"]
-size = Vector2(15, 12)
+size = Vector2(12, 10)
 [node name="Slime" type="CharacterBody2D" groups=["enemies"]]
 collision_layer = 4
 collision_mask = 1
@@ -27,7 +40,8 @@ script = ExtResource("1")
 [node name="Sprite" type="AnimatedSprite2D" parent="."]
 position = Vector2(0, -12)
 sprite_frames = SubResource("frames")
-autoplay = "idle"
+animation = &"green"
+autoplay = "green"
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0,-6)
 shape = SubResource("body")

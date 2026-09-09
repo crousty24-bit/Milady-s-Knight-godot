@@ -1,7 +1,7 @@
 @tool
 extends AnimatableBody2D
-@export var travel: Vector2 = Vector2(48, 0)
-@export var period: float = 3.2
+@export var travel: Vector2 = Vector2(144, 0)
+@export var period: float = 4.0
 var origin: Vector2
 var elapsed: float = 0.0
 func _ready() -> void:
