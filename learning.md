@@ -227,3 +227,32 @@ Même si une run est principalement corrective, documenter ce qu'elle permet d'a
 
 Si une run n'apporte réellement aucun nouvel apprentissage technique, l'indiquer brièvement plutôt que d'inventer du contenu.
 -->
+
+## RUN-001 — Fiabiliser le moteur, l’import et les tests
+
+### Ce qui a été réalisé
+
+Les commandes du projet utilisent maintenant **Godot 4.7.2 stable**. L’import des trois sons problématiques ne produit plus d’erreur, et les tests disposent de leur propre dossier de sauvegarde. Cette run ne change aucune règle de gameplay.
+
+### Comment cela fonctionne
+
+**Une version commune.** `tools/godot-version.txt` contient la version attendue. Les lanceurs lisent ce fichier et interrogent le moteur avant de démarrer. Le vieux binaire 4.5.1 peut rester sur le disque, mais il est refusé pour éviter de tester avec une version différente de celle utilisée en production. La déclaration `4.7` dans `project.godot` est conservée.
+
+**Un son et son conteneur.** Un WAV contient des échantillons audio et des informations qui permettent de les lire. Les sons coin, jump et tap avaient un bloc de taille impaire sans son octet de remplissage final. Godot 4.7.2 signalait alors un accès au-delà du fichier. Ajouter cet octet et ajuster la taille du conteneur résout l’erreur sans changer le son. Les originaux restent dans `assets/source/sounds/` ; `.gdignore` empêche Godot de les importer une seconde fois. Les scènes gardent leurs références aux variantes compatibles dans `assets/sounds/`.
+
+**Source et cache d’import.** Le dossier `.godot/` contient notamment les fichiers transformés par Godot à partir des sources. Un import depuis zéro sur une copie sans ce cache permet de vérifier que le projet reste reproductible. Il ne faut pas confondre un cache déjà rempli et une source correctement importable.
+
+**Une sauvegarde réservée aux tests.** `user://` désigne le dossier de données utilisateur choisi par Godot, pas un sous-dossier automatique du projet. Le runner lui fournit un profil temporaire, puis `tests/user_data_path.gd` vérifie le chemin réellement obtenu. Sous Windows, ce profil reste sur NTFS pour tester les écritures de sauvegarde sur le même type de disque. La vraie partie n’est ni chargée ni écrasée par ces essais.
+
+**Un test terminé doit le prouver.** Pendant la reproduction, Godot affichait des erreurs tout en retournant le code 0. Le runner vérifie donc le code, les messages d’erreur et une ligne finale `RESULT …; 0 failures`. Une suite interrompue ou silencieuse ne peut plus passer pour un succès. Les 150 contrôles existants sont conservés ; un contrôle supplémentaire vérifie l’isolation.
+
+### Exemple concret dans Milady’s Knight
+
+`tests/bonus.gd` écrit puis recharge une sauvegarde de test. Avec le nouveau runner, ce fichier se trouve dans le profil temporaire, tandis que le `progress.json` de la vraie partie reste inchangé. Si un test échoue, le runner conserve ce profil pour l’inspecter ; s’il réussit, il le supprime et garde les logs.
+
+### À regarder dans le projet
+
+- `tools/run.sh`, `Lancer-Windows.cmd` et `tools/godot-version.txt` : choix et vérification du moteur.
+- `tools/test.sh` et `tests/user_data_path.gd` : profil isolé et preuves de fin de test.
+- `assets/source/sounds/`, `assets/sounds/` et `tests/wav_import.py` : originaux conservés et contrôle indépendant du PCM.
+- `work/test-results/` : résultats locaux ; les preuves résumées et les contrôles humains encore attendus sont dans `runs-journal.md`.

@@ -1,11 +1,13 @@
 extends SceneTree
 var failures: int = 0
+var checks: int = 0
 var level: Node2D
 var player: SlicePlayer
 func _initialize() -> void: call_deferred("run")
 func frames(count: int) -> void:
 	for i in range(count): await physics_frame
 func check(ok: bool, message: String) -> void:
+	checks += 1
 	print("PASS " if ok else "FAIL ",message)
 	if not ok: failures+=1
 func reset_position() -> void:
@@ -74,4 +76,5 @@ func run() -> void:
 	level.queue_free()
 	await process_frame
 	OS.delay_msec(150)
+	print("RESULT ", checks, " physics checks; ", failures, " failures")
 	quit(failures)
