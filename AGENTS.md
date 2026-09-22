@@ -45,6 +45,12 @@ Documentation describes intent. Inspect the actual files, references and Git sta
 - Push and PR creation require explicit authorization for the run or session. Prepare the concrete, verified result before requesting approval; do not ask again for an action already authorized.
 - Force-push, history rewriting, resetting human changes and other destructive Git operations require explicit permission.
 
+## Git branch workflow
+- Development work must be performed on dedicated feature/* branches created from develop. A feature branch may cover one run or a small group of tightly related runs when they form a coherent unit of work. Do not create one branch per run mechanically.
+- Completed work is proposed through a pull request into develop. main represents validated milestone versions and must not receive direct development commits.
+- Do not merge, push, or create a pull request without the required human validation defined by the workflow.
+
+
 ## Documentation and completion
 
 Update brief/specifications only for meaningful state, behavior, architecture or durable decision changes. Execution evidence belongs in `runs-journal.md`; after each run, `learning.md` explains the work actually implemented and verified in beginner-friendly terms. Do not invent learning content for unimplemented systems.

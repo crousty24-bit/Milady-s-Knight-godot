@@ -165,6 +165,14 @@ Un défaut découvert en VERIFY renvoie à ACTIVE pour correction ; un test tech
 
 Les commits locaux peuvent matérialiser des checkpoints vérifiés pendant ACTIVE ou en VERIFY, ainsi que la clôture documentaire. Aucun commit n’est exigé par simple changement d’état. Si un push ou une PR est demandé, préparer le résultat et son résumé vérifié en VERIFY, obtenir l’autorisation prévue par AGENTS.md si elle manque, puis effectuer l’action. Si cette livraison fait partie de la run, elle précède DONE ; sinon la clôture locale ne dépend pas d’un push ou d’une PR. Ne pas en proposer systématiquement pour une tâche simple.
 
+| État | Détail opérationnel Git Flow |
+| --- | --- |
+| READY | create/switch feature branch from develop. |
+| ACTIVE | local commits. |
+| VERIFY | human review. |
+| DONE | push + PR ; merge into develop. |
+Une run peut être techniquement terminée et validée localement avant que l'humain ne décide de merger la branche.
+
 ### Vérification proportionnée
 
 Les critères de chaque fiche restent obligatoires. Choisir les contrôles supplémentaires selon le risque et les interactions touchées :
