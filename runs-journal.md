@@ -145,3 +145,9 @@ Preuves locales regroupées dans `work/test-results/RUN-001/` (ignoré par Git) 
 ### Documentation et learning
 
 README et état vérifié du brief actualisés ; roadmap passée en VERIFY. Entrée RUN-001 ajoutée dans `learning.md` : version du moteur, source/dérivé audio, cache d’import, isolation de `user://` et différence entre code de sortie et test terminé. Aucun script de gameplay, scène, réglage de `project.godot` ou TileSet modifié.
+
+### Suivi du 22 septembre 2026 — validation humaine de F5
+
+Après le commit local `f358643`, l’humain confirme : « oui fonctionne avec F5 ». Le lancement depuis l’éditeur est donc validé. Ce retour ne précise pas la fermeture manuelle du jeu et de l’éditeur ; seul le test automatique de notification de fermeture est déjà établi.
+
+RUN-001 reste en **VERIFY**, en attente de cette confirmation et de la revue finale. README, brief et workflow reflètent ce retour ; aucune nouvelle implémentation ni entrée d’apprentissage nécessaire. Vérification de cette mise à jour limitée au diff documentaire ; les tests moteur ne sont pas relancés. Aucun push, PR, merge ou lancement de RUN-002 effectué.

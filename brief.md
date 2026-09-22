@@ -71,7 +71,7 @@ Audit du **21 septembre 2026**, complété par les vérifications techniques de 
 
 ### Version-cible actuelle
 
-**0.1.0 validée comme cible : socle de production vérifié.** La roadmap va jusqu’à **0.9.0 beta**, démo finale. RUN-001 est réalisée techniquement et attend sa validation humaine ; les autres runs n’ont pas commencé. Le dépôt reste une scène de test issue du vertical slice, pas encore le niveau 1 conforme aux nouvelles spécifications.
+**0.1.0 validée comme cible : socle de production vérifié.** La roadmap va jusqu’à **0.9.0 beta**, démo finale. RUN-001 est réalisée techniquement, avec lancement F5 confirmé par l’humain ; la fermeture manuelle et la revue finale restent à confirmer en VERIFY. Les autres runs n’ont pas commencé. Le dépôt reste une scène de test issue du vertical slice, pas encore le niveau 1 conforme aux nouvelles spécifications.
 
 ### État vérifié
 
@@ -84,7 +84,7 @@ Audit du **21 septembre 2026**, complété par les vérifications techniques de 
 - **Progression partielle :** coins limités au sceau ; surplus et kills donnent des bonus. Banque validée à la sortie et scène de reprise sauvegardées dans `user://progress.json` v1. Aucune persistance d’équipement, de HP bonus ou d’uniques, aucun coffre ni système de shards conforme.
 - **Présentation :** HUD français VIE/SCEAU/BONUS, hints, overlays pause/mort/victoire ; pas de menu principal, dialogue, slot d’équipement ou UI de récompense. 6 PNG, 4 WAV, 1 OGG et 1 police intégrés, plus un TileSet ; décor et épée en partie dessinés par code. Trois WAV ont un remplissage RIFF corrigé sans changer le PCM ; leurs originaux sont conservés dans `assets/source/sounds/`, hors import. Provenance/licences des médias encore à établir.
 - **Systèmes absents :** équipement/tir/upgrades/capacités, attaque d’atterrissage, grimpe, consommables, paliers/bonus HP, offrandes permanentes, secrets/mécanismes/portes secondaires, PNJ/narration et contenu des niveaux 2–10.
-- **Vérification actuelle :** sous Windows **4.7.2**, imports propres puis **150 contrôles de jeu + 1 contrôle d’isolation réussis** sur chacune des deux copies (WSL/UNC et disque local). Les erreurs `p_position > length` sont résolues par le remplissage RIFF des trois WAV. Sauvegardes de test isolées ; sauvegardes réelles inchangées. Notification de fermeture graphique testée ; F5 et fermeture de l’éditeur restent à confirmer par l’humain. Ces tests couvrent les anciennes règles du slice.
+- **Vérification actuelle :** sous Windows **4.7.2**, imports propres puis **150 contrôles de jeu + 1 contrôle d’isolation réussis** sur chacune des deux copies (WSL/UNC et disque local). Les erreurs `p_position > length` sont résolues par le remplissage RIFF des trois WAV. Sauvegardes de test isolées ; sauvegardes réelles inchangées. Notification de fermeture graphique testée ; lancement F5 confirmé par l’humain le 22 septembre 2026. La fermeture manuelle du jeu et de l’éditeur reste à confirmer. Ces tests couvrent les anciennes règles du slice.
 
 Les changements préexistants de `project.godot` et du TileSet ont été conservés. L’audit ne valide ni les nouvelles features décrites dans `docs/`, ni la conformité finale du prototype à ces spécifications.
 
