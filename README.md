@@ -1,157 +1,123 @@
-# Milady's Knight: Blightfall
+# Milady's Knight
 
-![Godot](https://img.shields.io/badge/Godot-4.5.1-478CBF?logo=godot-engine&logoColor=white)
+![Godot déclaré](https://img.shields.io/badge/Godot-4.7-478CBF?logo=godot-engine&logoColor=white)
+![Version cible](https://img.shields.io/badge/Version%20cible-0.1.0-blue)
 ![Language](https://img.shields.io/badge/Language-GDScript-478CBF)
 ![Status](https://img.shields.io/badge/Status-Playable%20Prototype-f0ad4e)
-![Tests](https://img.shields.io/badge/Tests-150%20passing-brightgreen)
+[![Tests de l’audit](https://img.shields.io/badge/Tests%20%28audit%29-150%20passing-brightgreen)](#vérification-et-limites-connues)
 
-**Milady's Knight: Blightfall** is a compact 2D action-platformer prototype and a first game-development experiment built with Godot and Astra GPT-6. Play as a knight crossing a ruined kingdom, master aerial movement, fight corrupted slimes, collect enough gold to break the gate's seal, and follow the trail left by the missing princess.
+**Milady's Knight** entre en production pour devenir une démo d’action-platformer 2D en pixel-art Dark Fantasy : dix niveaux conçus à la main, combat mêlée/distance, exploration, progression d’équipement et boss final.
 
-The Godot project identifier is `miladys_knight`. The repository currently contains a playable vertical slice rather than a production-ready or standalone release.
+Le joueur incarne **The Ashen Knight**, traverse le royaume corrompu et rejoint Darkveil Dungeon pour vaincre **Lupikal The Doombringer** et libérer **Princess Karla**. L’objectif de durée est de 1 à 2 heures, à confirmer par playtests.
 
-## Project origin
+**Le dépôt contient actuellement une scène de test jouable. Les versions, la roadmap et le périmètre de RUN-001 sont validés ; son lancement attend un accord explicite. Aucune run de production n’a commencé.** La cible finale est une démo **0.9.0 beta**, pas une release 1.0.0. Le badge `0.1.0` désigne le prochain jalon ; les 150 contrôles correspondent à l’audit du 21 septembre 2026.
 
-This project is a continuation and substantial reworking of an earlier Godot test project created from the YouTube tutorial [The ultimate introduction to Godot 4](https://youtu.be/LOhfqjmasi0?si=tdgg3XWfNvRXQkSV). The current version expands that foundation with redesigned movement, combat, level routes, progression, persistence, automated tests, and original prototype-level world dressing.
+## Ce qui existe aujourd’hui
 
-## Current features
+État inspecté le 21 septembre 2026 :
 
-- Pixel-art 2D action-platforming at a 320 × 180 internal resolution.
-- Responsive movement with acceleration, variable jump height, coyote time, and input buffering.
-- Double jump, wall slide, repeatable wall jump, and moving-platform traversal.
-- Ground and aerial sword combat with per-swing hit protection and wall occlusion.
-- Two slime variants: five Green slimes with 3 HP and three Purple slimes with 4 HP.
-- Player health, contact damage, hazards, knockback, temporary invulnerability, death, and full level restart.
-- A branching level with upper mobility challenges and a combat-oriented lower route; both routes support backtracking.
-- 18 authored coins: 8 shared, 5 on the upper route, and 5 on the lower route.
-- A gold-gate objective requiring 12 seal coins, plus a separate bonus economy.
-- Persistent banked bonuses stored in `user://progress.json` after a completed run.
-- Keyboard controls, pause handling, contextual HUD feedback, music, and sound effects.
-- Automated engine-level coverage for movement, physics, mobility, combat, platforms, boundaries, controls, integration, bonuses, routes, and backtracking.
+- Un niveau de test à deux branches avec retours : 18 coins, huit Slimes Green/Purple, ronces, fosse, bac mobile et porte de sortie à 12 coins.
+- Marche, saut variable, double saut, wall slide/wall jump et épée au sol/en l’air.
+- Santé, dégâts, recul, invulnérabilité, mort, reprise manuelle et pause simple.
+- Une banque de bonus sauvegardée après sortie ; elle combine kills et surplus de coins et **n’est pas encore l’économie de shards cible**.
+- HUD et messages français, sprites du prototype, décor dessiné en partie par code, quatre sons et une musique.
+- Onze suites de tests moteur et des pilotes de parcours.
 
-## Gameplay
+Le viewport actuel est **320×180**. La référence de production **640×360**, les coffres, le tir, l’équipement, les consommables, les secrets, la narration, le bestiaire avancé et les niveaux 2–10 restent à produire. La fixture de transition dans `tests/fixtures/` ne constitue pas un niveau supplémentaire.
 
-Explore the abandoned village, choose either branch through the ruins, and reach the corrupted gate. Collect at least **12 of the 18 coins**, offer them at the gate, then cross the exit to complete the level.
+## Direction et roadmap
 
-Coins collected beyond the 12 required for the seal become pending bonuses. Defeating a slime also awards one pending bonus. Pending bonuses are added to the persistent reserve only after the level is completed; dying, restarting, or closing the game before completion discards only the current attempt's pending rewards.
+La boucle cible est : exploration → Gold Coins → combat → Shards → coffres → équipement → sortie → niveau suivant. Les niveaux restent fixes et la mort relance le niveau courant, avec les règles de persistance détaillées dans les spécifications.
 
-The upper route emphasizes double jumping, wall jumping, and a moving ferry. The lower route features more combat. One route is enough to open the seal, while exploring both yields additional rewards.
+| Version-cible validée | Résultat attendu | Runs (indicatives après 0.1.0) |
+| --- | --- | ---: |
+| 0.1.0 | Socle technique et combat élémentaire vérifiés | 11 |
+| 0.2.0 | The Eidolon Vale, tutoriel, menus et reprise | 9–11 |
+| 0.3.0 | Économie de coffres, armes standard et Blight Town | 6–8 |
+| 0.4.0 | Ennemis avancés, secrets, niveaux 3–4 | 7–9 |
+| 0.5.0 | Verticalité, capacités, légendaires, niveaux 5–6 | 8–10 |
+| 0.6.0 | Dernières élites et niveaux 7–9 | 6–8 |
+| 0.7.0 | Lupikal, niveau 10 et conclusion | 5–7 |
+| 0.8.0 | Cohérence visuelle et sonore | 3–5 |
+| 0.9.0 beta | Équilibrage, recette et builds de la démo finale | 4–6 |
 
-### Controls
+La roadmap prévoit une **enveloppe indicative de 59 à 75 runs**, dont **11 détaillées pour 0.1.0** dans [runs-workflow.md](runs-workflow.md). Les versions suivantes restent décrites par objectifs et critères de jalon ; leur découpage sera réévalué après la version précédente. La première run conserve le moteur, l’import et la reproductibilité des tests comme périmètre.
 
-The current keyboard layout targets an AZERTY keyboard.
+Le scope ne prévoit pas de génération procédurale, multijoueur, checkpoint intra-niveau, remapping, support souris/manette ni contenu jouable après la libération de Karla.
 
-| Action | Key |
+## Ouvrir le prototype
+
+Le projet utilise GDScript, sans addon tiers identifié.
+
+- `project.godot` déclare **Godot 4.7** ; le binaire Windows disponible a été vérifié en **4.7.2**.
+- Le runtime Linux local et les lanceurs historiques visent encore **4.5.1**. Ce décalage doit être traité en RUN-001 ; le runtime sous `work/` est local et ignoré par Git.
+- Importer `project.godot` dans Godot puis lancer **F5** pour la reprise via `scenes/game.tscn`. **F6** depuis `scenes/vertical_slice.tscn` lance directement la scène de test.
+
+Linux / WSL, en indiquant l’exécutable installé :
+
+```bash
+GODOT_BIN=/chemin/vers/godot ./tools/run.sh
+```
+
+Sous Windows, `Lancer-Windows.cmd` accepte la variable `GODOT_EXE` avec le chemin du moteur. Son chemin par défaut 4.5.1 est historique ; définir explicitement le binaire disponible. Aucun export autonome n’est encore configuré dans le dépôt.
+
+### Commandes actuellement jouables
+
+| Action | Touche actuelle |
 | --- | --- |
-| Move left / right | `Q` / `D` |
-| Jump / double jump | `Space` |
-| Wall jump | `Space` while touching a grippable wall |
-| Attack | `F` |
-| Interact / pay the gate | `E` |
-| Restart the current attempt | `R` |
-| Pause / resume | `Escape` |
+| Aller à gauche / droite | Q / D |
+| Sauter / double saut / saut mural | Space |
+| Attaquer, une frappe par pression | F |
+| Interagir avec la porte | E |
+| Recommencer la tentative | R |
+| Pause / reprendre | Escape |
 
-`Z` and `S` are reserved as up/down inputs for future systems. Controller support and in-level checkpoints are not implemented.
+Z/S sont déclarés mais sans grimpe. Les contrôles **cibles**, distincts de ceux actuellement implémentés, sont dans [docs/10_CONTROLS_KEYBINDS.md](docs/10_CONTROLS_KEYBINDS.md).
 
-## Requirements
+## Vérification et limites connues
 
-- [Godot Engine 4.5.1](https://godotengine.org/download/archive/4.5.1-stable/) or a compatible Godot 4.5 release.
-- Windows, Linux, or WSL for the provided helper scripts.
-- No third-party Godot add-ons are required.
-
-## Installation and launch
-
-1. Clone the repository once an `origin` remote is available:
-
-   ```bash
-   git clone <repository-url> milady-s-knight-godot
-   cd milady-s-knight-godot
-   ```
-
-2. Import `project.godot` from the Godot Project Manager.
-3. Press `F5` to start through `scenes/game.tscn`, or `F6` from `scenes/vertical_slice.tscn` while developing the level.
-
-On Linux or WSL, the helper launcher accepts all standard Godot arguments:
+Commande historique de la suite complète :
 
 ```bash
-./tools/run.sh
+GODOT_BIN=/chemin/vers/godot ./tools/test.sh
 ```
 
-On Windows, double-click `Lancer-Windows.cmd`. If Godot is installed elsewhere, define `GODOT_EXE` with the full path to the executable before running the launcher. The first launch may take longer while Godot imports the assets.
+Cette commande importe le projet et écrit ses logs dans `work/test-results/`. Pour comparer des moteurs sans toucher aux imports de travail, utiliser une copie du projet comme pendant l’audit. Les pilotes `--script` désactivent la sauvegarde normale ; la suite de persistance utilise des fichiers temporaires dédiés.
 
-No standalone game export is currently included.
+Résultats de l’audit du 21 septembre 2026 :
 
-## Development commands
+- **150 contrôles réussis sous 4.5.1 Linux**, import sans erreur.
+- **150 contrôles réussis sous 4.7.2 Windows** ; cependant, l’import préalable sur copie via WSL/UNC produit trois erreurs moteur `p_position > length` malgré un code de sortie nul. Cause non déterminée ; ne pas considérer l’import Windows comme validé.
+- Aucun playtest humain, contrôle graphique ou écoute n’a été réalisé pendant cette passe. Les tests valident les règles actuelles du slice, pas les features de la démo à venir.
 
-Run the project:
+Autres limites : dépendances à des coordonnées et tailles fixes du slice, HUD français, sauvegarde limitée à la banque de bonus et au niveau, absence de presets d’export. La provenance et les licences des médias hérités ne sont pas documentées dans le dépôt ; elles devront être établies ou les médias remplacés avant distribution. Les changements manuels présents restent la référence de travail.
 
-```bash
-./tools/run.sh
-```
-
-Run the complete headless test suite:
-
-```bash
-./tools/test.sh
-```
-
-Use a specific Godot executable when necessary:
-
-```bash
-GODOT_BIN=/path/to/godot ./tools/test.sh
-```
-
-Replay the two complete routes with a visible game window:
-
-```bash
-./tools/run.sh --script res://tests/routes.gd
-```
-
-Test output is written to the ignored `work/test-results/` directory. The suite fails on a failed assertion, script error, engine error, or detected leaked object.
-
-## Project structure
+## Structure du dépôt
 
 ```text
-.
-├── assets/                  # Fonts, music, sound effects, sprites, and TileSet data
-├── docs/                    # Implementation, validation, improvement, and progression notes
-├── scenes/                  # Game bootstrap, level, actors, hazards, gate, platform, and HUD
-├── scripts/                 # Gameplay, presentation, level, and persistence logic
-├── tests/                   # Godot engine-level and route test scripts
-│   └── fixtures/            # Test-only scenes
-├── tools/                   # Launch, test, and authoring utilities
-├── Lancer-Windows.cmd       # Windows launcher
-└── project.godot            # Godot project configuration
+assets/          Sprites, sons, musique, police, TileSet et imports
+scenes/          Démarrage, slice, joueur, Slime, coin, piège, bac, porte, HUD
+scripts/         Gameplay, présentation et autoload Progression
+tests/           Tests moteur, pilotes de parcours et fixture de transition
+tools/           Lanceurs, tests et générateurs d’auteur
+docs/           Spécifications du produit cible
 ```
 
-The authoring utilities in `tools/` can overwrite generated scene files. They are not required to run or test the game and should not be executed after manual scene edits without first preserving those changes.
+Les générateurs d’auteur écrivent des fichiers de scènes, ressources ou configuration. Ils ne sont nécessaires ni au lancement ni aux tests ; ne pas les exécuter automatiquement après des modifications manuelles.
 
-## Planned development
+## Sources de vérité
 
-- Additional handcrafted levels and environment variety.
-- More enemy types, combat interactions, and encounter patterns.
-- A stable level catalog and richer progression beyond the current bonus reserve.
-- Menus, save profiles, configurable controls, and controller support.
-- Checkpoints and broader accessibility options.
-- Improved art direction, animation, audio mixing, and narrative presentation.
-- Export presets and packaged desktop builds.
-- External playtesting and balancing for route readability, wall-jump comfort, difficulty, and completion time.
+- [AGENTS.md](AGENTS.md) : règles de travail du dépôt.
+- [brief.md](brief.md) : contexte, scope et état vérifié.
+- [runs-workflow.md](runs-workflow.md) : audit et roadmap par versions/runs.
+- [runs-journal.md](runs-journal.md) : résultats des runs réellement exécutées.
+- [learning.md](learning.md) : explications après implémentation, fondées sur les changements vérifiés.
+- [docs/README.md](docs/README.md) : index des spécifications. Elles décrivent la cible, sans prouver son implémentation.
 
-## Known limitations
+Les anciennes docs de `docs/old` ont été lues puis retirées lors de la passe d’audit, à la demande du propriétaire du projet.
 
-- The prototype contains one playable level; the next-level scene under `tests/fixtures/` exists only for automated validation.
-- The current French in-game text has not yet been localized.
-- There is no controller support, checkpoint system, settings menu, or packaged build.
-- Original asset license information was not included with the source test project and must be documented before public distribution.
+## Origine du projet
 
-## Documentation
+Ce projet d’apprentissage prolonge un premier test Godot issu du tutoriel [The ultimate introduction to Godot 4](https://youtu.be/LOhfqjmasi0?si=tdgg3XWfNvRXQkSV), ensuite remanié avec Astra GPT-6 en vertical slice. La production réutilise cette base tout en suivant désormais les spécifications de **Milady’s Knight**.
 
-- [`docs/IMPLEMENTATION.md`](docs/IMPLEMENTATION.md) — current architecture and gameplay rules.
-- [`docs/VALIDATION.md`](docs/VALIDATION.md) — test evidence and known validation limits.
-- [`docs/IMPROVEMENTS.md`](docs/IMPROVEMENTS.md) — movement, collision, and encounter improvements.
-- [`docs/BONUS_AND_LEVELS.md`](docs/BONUS_AND_LEVELS.md) — bonus persistence and future-level contract.
-
-## Acknowledgements
-
-- Original learning reference: [Godot 4 tutorial on YouTube](https://youtu.be/LOhfqjmasi0?si=tdgg3XWfNvRXQkSV).
-- Built as a first Godot game-development experiment with Astra GPT-6.
-- Godot is available under the [MIT license](https://godotengine.org/license/).
+[Godot Engine](https://godotengine.org/) est le moteur du projet. L’origine pédagogique ne remplace pas les notices de licence et d’attribution des assets.

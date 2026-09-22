@@ -1,0 +1,116 @@
+# Milady's Knight — Enemies, AI & NPC
+
+## système de combat (IA) :
+- système de combat (IA) :
+	- ennemi de base (exemple Slime) : inflige des dégâts lors de collision avec joueur
+	- ennemi avancé : attaques de mêlée ou à distance suivant le type de mob
+	- ennemi élite : mob rare avec mécanique de combat unique dédiée
+	- boss final unique
+	- pièges : piques au sol, plantes toxiques, trappes, etc.
+	- **REACTION AUX DEGATS**
+		- lorsqu'un mob subit un dégât, l'effet suivant s'applique :
+		- knockback : au moment où il subit un dégât, le mob est légèrement repoussé en arrière (dans le sens opposé de l'attaque)
+			- sauf exception : Possessed Skulls
+		- les mobs ne sont pas sujets à l'invincibilité temporaire, hit-stun, interruption d'attaque
+
+## bestiaire des PNJ :
+- il y a 2 PNJ dans le jeu : 
+	- il n'y a pas d'interaction spécifique avec les PNJ hormis servir à la narration et/ou au guide du joueur
+	- **Princess Karla :** il s'agit de la princesse à retrouver et à délivrer dans le niveau final
+		- présente dans le niveau 10
+		- dialogue narratif de fin avec le joueur lorsque celui-ci a battu le Boss et la délivre
+	- **The Ancien Spirit :** esprit d'un sage du Royaume ayant ramené le chevalier à la vie à qui il donne la quête de secourir la Princess Karla et sauver le Royaume de la corruption.
+		- présent dans le niveau 1, au tout début du niveau
+		- dialogue narratif avec le joueur pour présenter l'histoire et le but du jeu
+
+## bestiaire mobs (IA) :
+- bestiaire mobs (IA) :
+	- ennemis de base :  Green Slime ; Purple Slime ; Red Slime
+	- ennemis avancé : Skeleton Warrior ; Skeleton Archer ; Blight Sorcerer ; Possessed Skulls
+	- ennemis d'élite : Bloated Slime ; Chud Blob ; Chaos Champion ; Necromancer
+	- boss : le boss final du jeu
+
+## profil des mobs (IA) :
+- profil des mobs (IA) : attaques, dégâts et HP
+	- le profil des mobs varient suivant le niveau dans lequel on se situe. Exemple, un Red Slime présent dans le niveau 1 et 2 n'a pas le même profil que celui présent dans le niveau 7 ou 8 = montée en difficulté. Voir ci-dessous.
+	- les mobs peuvent infliger des dégâts plein (1, 2, 3 DMG) et des demi-dégâts (0,5 ; 1,5 ; 2,5 DMG) au joueur selon leur profil
+	- excepté le boss final, les dégâts min/max des mobs vont de 0,5 à 3 DMG.
+	- **CONCEPTS DE BASE :**
+		- **comportement de base : patrouille**
+			- par défauts, tous les mobs opèrent un déplacement de patrouille
+			- ce déplacement est fixe, allant d'une position à l'autre sur le terrain
+			- ce déplacement consiste en allers-retours (A <--> B) en boucle
+			- ce pattern de comportement est rompu lorsqu'un mob prend l'aggro du joueur
+		- **mouvement des mobs : déplacement**
+			- un mob peut avoir une vitesse de déplacement de base : lente, modérée ou rapide
+			- la vitesse de déplacement du mob dépend de son type et du niveau dans lequel il se situe
+			- il faut distinguer 2 vitesse de déplacement du mob :
+				- vitesse de base : c'est sa vitesse de déplacement lors des patrouilles
+				- vitesse d'aggro : c'est sa vitesse de déplacement lors de l'aggro du joueur
+				- la vitesse d'aggro est toujours un peu plus élevée que la vitesse de base
+				- exemple : un Skeleton Warrior en patrouille à une vitesse de base lente ; il aggro le joueur et se dirige vers lui avec une vitesse d'aggro modérée
+				- les *Slimes* n'ont qu'une vitesse de base
+		- **système aggro :** un mob aggro le joueur lorsque celui-ci entre un périmètre fixe (zone) défini par rapport à sa position initiale
+			- ce périmètre peut être plus ou moins large selon le type de mob
+			- ce périmètre est horizontal et vertical
+			- le point de départ du périmètre est le mob et est attaché à lui : il se déplace selon le déplacement du mob (exemple : le mob patrouille d'un point A vers B en aller-retour, son périmètre se déplace avec lui)
+			- le mob perd l'aggro quand le joueur quitte son périmètre d'aggro et retourne à son déplacement de patrouille initial
+			- un mob qui a l'aggro est toujours attiré vers le joueur, son déplacement est directement en direction du joueur et déclenche une attaque lorsqu'il est à portée de celui-ci
+			- les *Slimes* n'ont pas de système d'aggro
+	
+	- **SLIMES (niveau 1 à 4) :**
+		- *Green Slime* : 1 HP | 0,5 DMG | attaque au contact avec joueur (collision)
+			- pattern comportement : déplacement fixe type patrouille, allers-retours (A <--> B) ; vitesse lente à modérée  ; pas de système d'aggro
+		- *Purple Slime* : 2 HP | 1 DMG | attaque au contact avec joueur (collision)
+			- pattern comportement : déplacement fixe type patrouille, allers-retours (A <--> B) ; vitesse lente à modérée ; pas de système d'aggro
+		- *Red Slime* : 2 HP | 1,5 DMG | attaque au contact avec joueur (collision)
+			- pattern comportement : déplacement fixe type patrouille, allers-retours (A <--> B) ; vitesse lente à modérée ; pas de système d'aggro
+	- **SLIMES (niveau 5 à 9) :**
+		- *Green Slime* : 2 HP | 1 DMG | attaque au contact avec joueur (collision)
+			- pattern comportement : déplacement fixe type patrouille, allers-retours (A <--> B) ; vitesse modérée à rapide ; pas de système d'aggro
+		- *Purple Slime* : 3 HP | 2 DMG | attaque au contact avec joueur (collision)
+			- pattern comportement : déplacement fixe type patrouille, allers-retours (A <--> B) ; vitesse modérée à rapide ; pas de système d'aggro
+		- *Red Slime* : 3 HP | 3 DMG | attaque au contact avec joueur (collision)
+			- pattern comportement : déplacement fixe type patrouille, allers-retours (A <--> B) ; vitesse modérée à rapide ; pas de système d'aggro
+	- **SKELETONS (niveau 3 et 4) :**
+		- *Skeleton Warrior* : 2 HP | 0,5 DMG | attaque de mêlée (sword, axe)
+			- pattern comportement : déplacement fixe type patrouille, allers-retours (A <--> B) ; vitesse lente à modérée ; changement de comportement quand en ligne de vue du joueur (périmètre) = aggro : le mob se déplace vers le joueur pour l'attaquer mais perd l'aggro si joueur quitte le périmètre
+		- *Skeleton Archer* : 2 HP | 0,5 DMG | attaque à distance (arc)
+			- pattern comportement : déplacement fixe type patrouille, allers-retours (A <--> B) ; vitesse lente à modérée ; changement de comportement quand en ligne de vue du joueur (périmètre) = aggro : le mob attaque le joueur à distance (sans se déplacer) mais perd l'aggro si joueur quitte le périmètre
+		- *Blight Sorcerer* : 2 HP | 0,5 DMG et 2 DMG | attaque de mêlée (bâton) + attaque au sol à distance = surface au sol qui explose à esquiver (environ 1sec de temps avant dégâts infligés)
+			- pattern comportement : déplacement fixe type patrouille, allers-retours (A <--> B) ; vitesse lente à modérée ; changement de comportement quand en ligne de vue du joueur (périmètre) = aggro : le mob se déplace vers le joueur pour l'attaquer mais perd l'aggro si joueur quitte le périmètre
+		- *Possessed Skulls* : 1 HP | 0,5 DMG | swarm (plusieurs entités) attaque au contact avec joueur (collision)
+			- pattern comportement : spawn lorsque le joueur entre dans un périmètre défini ; vitesse modérée ; la swarm (plusieurs skulls) aggro directement le joueur : se déplace plus ou moins directement vers le joueur infligeant dégât au contact mais perd l'aggro si joueur quitte le périmètre
+			- si joueur quitte le périmètre de spawn défini, les skulls disparaissent (despawn) et spawn si le joueur entre à nouveau dans ce même périmètre
+	- **SKELETONS (niveau 5 et 9) :**
+		- *Skeleton Warrior* : 3 HP | 1 DMG | attaque de mêlée (sword, axe)
+			- pattern comportement : déplacement fixe type patrouille, allers-retours (A <--> B) ; vitesse modérée ; changement de comportement quand en ligne de vue du joueur (périmètre) = aggro : le mob se déplace vers le joueur pour l'attaquer mais perd l'aggro si joueur quitte le périmètre
+		- *Skeleton Archer* : 2 HP | 1 DMG | attaque à distance (arc)
+			- pattern comportement : déplacement fixe type patrouille, allers-retours (A <--> B) ; vitesse lente à modérée ; changement de comportement quand en ligne de vue du joueur (périmètre) = aggro : le mob attaque le joueur à distance (sans se déplacer) mais perd l'aggro si joueur quitte le périmètre
+		- *Blight Sorcerer* : 2 HP | 1 DMG et 2,5 DMG | attaque de mêlée (bâton) + attaque au sol à distance = surface au sol qui explose à esquiver (environ 1sec de temps avant dégâts infligés)
+			- pattern comportement : déplacement fixe type patrouille, allers-retours (A <--> B) ; vitesse modérée ; changement de comportement quand en ligne de vue du joueur (périmètre) = aggro : le mob se déplace vers le joueur pour l'attaquer mais perd l'aggro si joueur quitte le périmètre
+		- *Possessed Skulls* : 1 HP | 0,5 DMG | swarm (plusieurs entités) attaque au contact avec joueur (collision)
+			- pattern comportement : spawn lorsque le joueur entre dans un périmètre défini ; vitesse rapide ; la swarm (plusieurs skulls) aggro directement le joueur : se déplace plus ou moins directement vers le joueur infligeant dégât au contact mais perd l'aggro si joueur quitte le périmètre
+			- si joueur quitte le périmètre de spawn défini, les skulls disparaissent (despawn) et spawn si le joueur entre à nouveau dans ce même périmètre
+	- **MOBS ELITES (niveau 2 et 4) :**
+		- *Bloated Slime* : 5 HP | 1,5 DMG | attaque au contact avec joueur (collision)
+			- pattern comportement : déplacement fixe type patrouille, allers-retours (A <--> B) ; vitesse modérée ; changement de comportement quand en ligne de vue du joueur (périmètre) = aggro : le mob se déplace vers le joueur pour l'attaquer mais perd l'aggro si joueur quitte le périmètre
+		- *Chud Blob* : 10 HP | 2 DMG | attaque de mêlée (sword, axe)
+			- pattern comportement : déplacement fixe type patrouille, allers-retours (A <--> B) ; vitesse lente ; changement de comportement quand en ligne de vue du joueur (périmètre) = aggro : le mob se déplace vers le joueur pour l'attaquer mais perd l'aggro si joueur quitte le périmètre
+	- **MOBS ELITES (niveau 5 à 9) :**
+		- *Bloated Slime* : 8 HP | 2 DMG | attaque au contact avec joueur (collision)
+			- pattern comportement : déplacement fixe type patrouille, allers-retours (A <--> B) ; vitesse modérée ; changement de comportement quand en ligne de vue du joueur (périmètre) = aggro : le mob se déplace vers le joueur pour l'attaquer mais perd l'aggro si joueur quitte le périmètre
+		- *Chud Blob* : 14 HP | 3 DMG | attaque de mêlée (sword, axe)
+			- pattern comportement : déplacement fixe type patrouille, allers-retours (A <--> B) ; vitesse lente ; changement de comportement quand en ligne de vue du joueur (périmètre) = aggro : le mob se déplace vers le joueur pour l'attaquer mais perd l'aggro si joueur quitte le périmètre
+		- *Chaos Champion* : 20 HP | 3 DMG | attaque de mêlée (sword, axe)
+			- pattern comportement : déplacement fixe type patrouille, allers-retours (A <--> B) ; vitesse rapide ; changement de comportement quand en ligne de vue du joueur (périmètre) = aggro : le mob se déplace vers le joueur pour l'attaquer mais perd l'aggro si joueur quitte le périmètre
+			- capacité spéciale : charge. Uniquement lors du premier aggro, le mob charge le joueur = double sa vitesse de déplacement et se dirige directement vers le joueur ;  SI entre en contact avec le joueur à l'issu de la charge, trigger une attaque de mêlée instantanée, dangereuse, clairement télégraphiée, mais systématiquement évitable par maîtrise ; cette capacité reset à chaque fois que le joueur perd l'aggro, donc si reprise de l'aggro = charge
+		- *Necromancer* : 16 HP | 2 DMG et 3 DMG | attaque de mêlée (bâton) + attaque au sol à distance = x3 surfaces au sol simultanément qui explosent à esquiver (moins d'une 1sec de temps avant dégâts infligés)
+			- pattern comportement : déplacement fixe type patrouille, allers-retours (A <--> B) ; vitesse modérée ; changement de comportement quand en ligne de vue du joueur (périmètre) = aggro : le mob se déplace vers le joueur pour l'attaquer mais perd l'aggro si joueur quitte le périmètre
+			- capacité spéciale : tant que le Necromancer est en vie, il invoque des *Possessed Skulls* dans son périmètre d'aggro tant le joueur est présent à l'intérieur de celui-ci ;  SI le joueur qui le périmètre et perd l'aggro du mob, les *Possessed Skulls* disparaissent. Il y a un timer auquel le Necromancer peut les invoquer : au bout des premières 3 secondes d'aggro avec le joueur puis toutes les 5 secondes ; reset le timer quand le joueur perd l'aggro
+		- **BOSS FINAL (niveau 10) :**
+			- *BOSS* : 50 HP | 3 DMG et 5 DMG | attaque de mêlée + attaque au sol à distance = x4 surfaces au sol simultanément qui explosent à esquiver (moins d'une 1sec de temps avant dégâts infligés) + attaque à distance (comme un Skeleton Archer) mais tires boules de feu, à vitesse lente, en direction du joueur
+				- pattern comportement : pas de système d'aggro/reset = le combat commence directement et le boss reste focus sur le joueur jusqu'au bout ; vitesse modéré
+				- capacité spéciale : charge. Pas le même comportement que pour le Chaos Champion mais même effet. Première charge au début du combat puis système aléatoire calculé toutes les 20 secondes : 30% de chances que le Boss fasse une charge sur le joueur peu importe sa position.
+				- capacité spéciale : invocation de *Possessed Skulls* (idem que Necromancer sauf pour le timer = au bout des 10 premières secondes de combat puis toutes les 15 secondes)
+				- capacité spéciale : lorsque les HP du Boss atteignent <= 20HP, il devient enragé = double vitesse de déplacement et augmente la vitesse de toute ses d'attaques ; l'invocation de *Possessed Skulls* n'est pas impactée

@@ -2,3 +2,4 @@
 work/
 build/
 *.tmp
+.local/

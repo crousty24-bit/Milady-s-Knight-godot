@@ -1,0 +1,189 @@
+# Milady's Knight — Progression, Economy, Chests & Items
+
+## système de gold coin
+- système de gold coin :
+	- les coins sont collectés (ramassés) par le joueur en parcourant le terrain (emplacements fixes des coins)
+	- le joueur démarre chaque niveau avec un compteur de 0 sur X nombre de coin requis, exemple : 0/12
+	- les coins servent à déverrouiller la porte de fin de niveau et débloquer le niveau suivant
+	- les coins utilisés pour déverrouiller la porte sont dépensés, donc perdus ; ils ne se sont  pas gardé/transféré au niveau suivant 
+	- les coins accumulés lors d'une tentative du joueur sont perdus à chaque fois s'il meurt, donc reset à 0
+	- chaque niveaux demandent un nombre requis de coin pour déverrouiller la porte :
+		- niveau 1 = 12 ;  niveau 2 = 18 ; niveau 3 = 25 ; niveau 4 = 32 ; niveau 5 = 40 ; niveau 6 = 50 ; niveau 7 = 64 ; niveau 8 = 82 ; niveau 9 = 100
+	- ces mêmes gold coins peuvent aussi être dépensés pour ouvrir certains chemins secondaires optionnels
+	- chaque niveau possède un nombre fixe total de gold coins à collecter sur le terrain :
+		- ce nombre total est toujours supérieur au nombre requis pour déverrouiller la porte finale : prévenir le risque de soft-lock ; il faut prévoir une marge de dépense de coin garantie pour permettre au joueur d'ouvrir toutes les portes optionnelles d'un niveau
+		- il y a donc 4 valeurs formelles : **coins présents / coins nécessaires à la sortie / coins dépensables ailleurs / marge maximale disponible**
+		- exemple : un niveau nécessite 40 coins pour sortir, il en contient exactement 50 coins = cela permet au joueur de collecter cet excédant et de les dépenser sur les portes de chemins optionnels
+
+## système de shards
+- système de shards :
+	- le joueur peut aussi récolter des "shards" : ces coins sont uniquement obtenus en tuant des mobs
+		- du niveau 1 à 4, un mob tué rapporte 1 shards 
+		- du niveau 5 à 7, un mob tué rapporte 3 shards
+		- du niveau 8 à 9, un mob tué rapporte 5 shards
+		- du niveau 1 à 4, un mob d'élite tué rapporte 5 shards
+		- du niveau 5 à 9, un mob d'élite tué rapporte 8 shards
+	- les shards ne sont pas calculés dans le montant requis de coin pour déverrouiller la porte, c'est un compteur indépendant
+	- à quoi servent les shards :
+		- les shards sont une ressource économique de combat utilisée pour acheter des récompenses et pouvant persister entre les niveaux
+		- déverrouiller/ouvrir des coffres de récompense
+		- les chest ont un montant requis de shards pour être ouvert
+	- les shards accumulés lors d'une tentative du joueur sont perdus à chaque fois s'il meurt, donc reset à 0, SAUF dans les cas suivants :
+		- à la fin du niveau 5, lors du déverrouillage de la porte mais juste AVANT de passer au niveau 6, on demande un choix au joueur : *"Voulez-vous faire une offrande supplémentaire à l'autel ?"* 
+			- SI OUI : le joueur obtient effet passif qui fait qu'il retient 20% des shards perdus à chaque fois lors d'une mort, en échange d'un sacrifice permanent de 1 HP (1 coeur)
+			- conservations des shards : valeur arrondie au supérieur ; exemple : avec 37 shards et 20 % : 7,4 shards => 8 shards conservés
+				- le pourcentage de shards conservé établi ici est à titre indicatif, il devra être revu et équilibré en fonction de l'implémentation du nombre de mobs/chest à ouvrir par niveaux
+			- SI NON : rien
+		- idem à la fin du niveau 7, lors du déverrouillage de la porte mais juste AVANT de passer au niveau 8, on demande un choix au joueur : *"Voulez-vous faire une offrande supplémentaire à l'autel ?"* 
+			- SI OUI : le joueur obtient effet passif qui fait qu'il retient maintenant 50% des shards perdus à chaque fois lors d'une mort, en échange d'un sacrifice supplémentaire permanent de 2 HP ; si le joueur a pris les 2 offrandes (celle du niveau 5 et 7) : non cumulatif, le joueur conserve 50% au total
+			- SI NON : rien
+	- autrement, à l'inverse des coins, les shards obtenus sont sauvegardés lors du passage d'un niveau à l'autre
+
+## système de récompense et d'amélioration du joueur (chest)
+- système de récompense et d'amélioration du joueur : 
+	- chest (coffres) : les coffres sont des item dispersés sur le terrain d'un niveau
+	- certains coffres peuvent être cachés
+	- les coffres sont présents du niveau 2 à 9 + coffre unique exemple tuto niveau 1
+	- il existe 3 types de coffres : common chest, rare chest & golden chest
+		- **common chest :** chance d'obtenir un item de niveau 0 ou 1 ou 2 ou 3 ET potentiellement une amélioration d'item
+		- **rare chest :** chance d'obtenir un item de niveau 2 ou 3 ou Légendaire ET potentiellement une amélioration d'item
+		- **golden chest :** chance d'obtenir un item Légendaire ou rien
+		- par item, on entend ici : une arme de mêlée ou de tir. Rien d'autre.
+		- par amélioration d'item, on entend : augmenter le niveau de l'arme actuellement équipé par le joueur de +1 (+1 amélioration sword niveau 1 = sword niveau 2)
+	- **cas particulier des golden chest** : coffres extrêmement rares mais gratuit à ouvrir, donne la possibilité de drop un item légendaire ou rien du tout
+		- le taux de drop initial est légèrement plus faible que dans un rare chest
+		- il y a en tout 3 golden chest dans tout le jeu : 1 dans le niveau 6, 1 dans le niveau 7, 1 dans le niveau 9
+		- les golden chest sont tous cachés derrière des passages dérobés
+		- un golden chest ne s'ouvre qu'une seul fois et ne réapparaît pas si le niveau est relancé / reset mort du joueur
+	- calcul du coût d'ouverture des chests : le montant requis en shards pour ouvrir un coffre dépend d'abord de son type :
+		- common chest = faible coût en shards pour ouverture
+		- rare chest = coût élevé en shards pour ouverture
+		- golden chest = gratuit
+		- les rare chest sont nativement plus cher (car plus rare) que les common chest
+		- le coût dépend aussi du niveau dans lequel le joueur situe : les chest du niveau 2 ou 3 sont bien moins chers que ceux du niveau 8 ou 9 = logique, car il y aura beaucoup plus de mobs > plus de shards généré > coûts plus élevé des chest = équilibrage de difficulté mais aussi plus rewarding
+			- donc le coûts scale de niveaux en niveaux, exemple :  le premier common chest ouvert au niveau 2 coûte 5 shards ; le premier common chest au niveau 8 coûte 50 shards
+		- il y a proportionnellement plus de rare chest dans les derniers niveaux (7 à 9) que dans les premiers
+		- ensuite, le montant requis en shards pour ouvrir un coffre est exponentiel, par type de chest = à chaque qu'un joueur ouvre un nouveau common ou rare chest, le coût d'ouverture est plus élevé que pour le chest précédent
+			- ce coût exponentiel est calculé séparément pour les common chest et les rare chest (les 2 sont indépendants)
+			- exemple : le joueur ouvre un premier common chest = il faut 10 shards pour l'ouvrir, il dépense ; puis il ouvre un second common chest = il faut 15 shards pour l'ouvrir
+			- exemple : le joueur a déjà ouvert 10 common chest dans le niveau et trouve un 11e common chest qui coûte alors 80 shards ; il trouve aussi un premier rare chest, celui-ci coûte 40 shards pour l'ouvrir
+			- à chaque tentative du niveau (reset à la mort du joueur), les coûts sont reset pour les 2 types de coffres
+			- le coût exponentiel d'un coffre à l'autre est uniquement calculé pour le niveau en cours de jeu et ne se poursuit pas au niveau suivant ! Chaque niveau reset le coût initial des chests
+	- le montant requis en shards pour ouvrir un coffre est affiché directement au dessus de l'item, uniquement lorsque le joueur s'approche à portée d'interaction
+		- exemple : " (E) Open, 20 shards "
+	- pour ouvrir un coffre, le joueur doit interagir avec, en étant à portée : lors de l'interaction (touche interagir : E), le montant requis en shards est automatiquement dépensé. Une fenêtre s'ouvre et lance une animation pour le drop aléatoire :
+		- la fenêtre présente 2 slots, un à gauche (pour le drop d'item), un à droite (pour l'amélioration d'item)
+			- fenêtre différente pour golden chest : un seul slot affiché (pour le drop d'item légendaire)
+		- les 2 slots affiche leur récompense (une icon d'item) : exemple icone d'une sword de niveau 2 dans le slot de gauche ; icone amélioration +1 niveau d'item dans le slot de droite
+		- ensuite, le joueur sélectionne l'item ou l'amélioration : il fait son choix entre les 2 slots avec les touches fléchées gauche/droite et valide son choix avec la touche (E). Il peut refuser et appuyer sur échap (ESC) pour annuler la récompense
+		- **REGLES GENERALES DU DROP (common & rare chest) :**
+			- un drop d'item est toujours garanti, quelque soit le chest ou le prix du chest
+				- Golden Chest : exception, possibilité de ne rien obtenir
+			- un drop d'amélioration d'item n'est pas toujours garanti quelque soit le chest ou le prix du chest
+			- un drop d'amélioration est donc bien plus rare qu'un drop d'item mais toujours bénéfique (voir ci-dessous)
+			- un chest peut donc proposer :
+				- un item mais pas d'amélioration 
+				- un item et une amélioration
+				- SI le chest propose un item et une amélioration, le joueur doit choisir entre les 2 ou refuser ; il ne peut pas prendre les 2 récompenses
+				- SI le chest propose un item et pas d'amélioration, le joueur peut choisir entre accepter l'item ou refuser
+			- le drop d'item peut donner un item moins bon ou de niveau égal à celui actuellement équipé par le joueur / ou un autre type d'arme qui n'intéresse pas le joueur. Dans ce cas, le joueur peut refuser la récompense :
+				- SI le joueur refuse, aucune récompense est attribuée et le chest disparaît
+				- Dans le cas de refus, le montant dépensé à l'ouverture de ce coffre n'est pas remboursé (les shards dépensés sont perdus)
+			- le drop d'amélioration d'item sera toujours meilleur que le niveau de l'arme actuellement équipé par le joueur. Par conséquent, un drop d'amélioration sera toujours une amélioration du niveau de l'arme équipée (et pas autre chose)
+		- Exemples :
+			- cas exemple : le joueur ouvre le coffre est reçoit une sword de niveau 2 ; il a actuellement une sword de niveau 1 ; il accepte la récompense, la sword niveau 2 remplace la sword actuelle
+			- cas exemple : le joueur ouvre le coffre est reçoit une sword de niveau 2 ; il a actuellement une sword de niveau 3 ; il refuse la récompense, car l'item proposé ne l'intéresse pas
+			- cas exemple : le joueur ouvre le coffre est reçoit une axe de niveau 2 ; il a actuellement une sword de niveau 3 ; il refuse la récompense, car l'item proposé ne l'intéresse pas
+			- cas exemple : le joueur ouvre le coffre est reçoit une Halberd de niveau 3 ; il a actuellement une sword de niveau 2 ; il refuse la récompense, car l'item proposé ne l'intéresse pas
+			- cas exemple : le joueur ouvre le coffre est reçoit une axe de niveau 2 et une amélioration d'arme +1 niveau ; il a actuellement une sword de niveau 1 ; la axe de niveau 2 ne l'intéresse pas, il accepte la récompense d'amélioration d'arme, la sword équipé passe au niveau 2 remplace la sword actuelle
+		- **TAUX DE DROP :**
+			- dans les common chest : 
+				- item : le taux de drop est proportionnel au niveau d'item, du niveau le plus bas ou plus haut, il y a plus de chance de drop un item de niveau 0  : niveau 0 > 1 > 2 > 3
+				- amélioration d'item : le taux de drop d'amélioration est très faible et bien sûr, significativement plus faible que dans un rare chest
+			- dans les rare chest : 
+				- item : le taux de drop est proportionnel au niveau d'item, du niveau le plus bas ou plus haut, il y a plus de chance de drop un item de niveau 2  : niveau 2 > 3 > Légendaire
+				- amélioration d'item : le taux de drop d'amélioration est faible mais significativement plus élevé que dans un common chest
+				- taux de drop des armes Légendaires : si le drop tombe sur un item légendaire, il est ensuite calculé un nouveau taux de drop parmi les 4 armes Légendaires possibles. En fonction de leur rareté, le taux de drop n'est pas le même :
+					- Chance de drop d'item du plus faible(= l'arme la plus rare) au plus élevé  : *Dragon Slayer* < *Demonic Crossbow* < *Obsidian Relic* < *Thunderstruck*
+			- dans les golden chest : 
+				- item : taux de drop un peu plus faible de tomber sur une arme Légendaire que dans un rare chest ; il y a plus de chance de ne rien drop : rien > Légendaire
+				- taux de drop des armes Légendaires : si le drop tombe sur un item légendaire, il est ensuite calculé un nouveau taux de drop parmi les 4 armes Légendaires possibles. En fonction de leur rareté, le taux de drop n'est pas le même = idem que pour les rare chest
+		- **TAUX DE DROP PAR ITEMS (hors légendaires) :**
+			- en plus du taux de drop par niveau d'item, chaque type d'item à une rareté de base (en fonction de sa puissance assumée) qui influence son taux de drop initial
+			- dans les common chest :
+				- taux de drop d'item du plus faible au plus élevé : *Dark Scythe* < *Fire Gauntlet* < *Knives* < *Longbow* < *Brutal Axe* < *Warhammer* < *Halberds* < *Longsword* < *Sword*
+			- dans les rare chest :
+				- taux de drop d'item du plus faible au plus élevé : *Dark Scythe* < *Fire Gauntlet* < *Knives* < *Brutal Axe* < *Sword* < *Halberds* < *Longbow* < *Warhammer* < *Longsword* 
+
+## système d'item du joueur
+- système d'item du joueur :
+	- il existe de 2 type d'item : équipements et consommables
+	- le joueur ne dispose pas d'un système d'inventaire à proprement parler
+	- à la place le joueur dispose de 2 slots d'équipement qui ne peuvent contenir chacun qu'une seul arme (item) équipée à la fois : 1 slot d'arme de mêlée et 1 slot d'arme de tir
+	- ces 2 slots sont affichés dans le UI joueur : arme de mêlée à gauche, arme de ti à droite
+	- les consommables sont des items utilisés instantanément lors du ramassage (collecte) sur le terrain ou gagné lors d'un kill de mob (comme les shards)
+	- il n'y a aucun consommable dans le niveau 1 ; sauf une seule potion de soin mineur (tuto)
+	- **ITEM ARMES (équipements)** :
+		- les armes sont par défaut des item de niveau 0, leur niveau peuvent varier ou augmenter grâce à une amélioration et/ou une récompense de chest
+		- le joueur commence le jeu avec la sword niveau 0 comme arme de mêlée et aucune arme de tir
+		- les item ont une valeur de niveau pouvant ensuite aller de 0 à 3 ; le niveau max d'une arme est capée au niveau 3 ; il est impossible d'améliorer une arme au dessus du niveau 3
+			- un niveau plus élevé d'item a pour effet : toutes les stats sont améliorées (DMG, ATK SPEED, RANGE, FALLOFF)
+			- les DMG augmentent par tranche de 0,5 dégâts
+			- l'ATK SPEED diminue au 0,1 près suivant l'arme
+			- la RANGE augmente au 0,1 près suivant l'arme
+			- la FALLOFF augmente de 1
+		- il existe aussi des armes de niveau Légendaire ; il est impossible d'améliorer une arme Légendaire
+		- les niveaux d'un item ont une représentation par couleur/rareté dans le UI (icone d'item) : niveau 0 = gris (commun) ; niveau 1 = vert (peu commun) ; niveau 2 = bleu (rare) ; niveau 3 = rouge (epic) ; Légendaire = orangé/doré
+		- les armes disposent de 4 stats :
+			- dégâts infligés (DMG) : nombre de HP retirés au mob par attaques/coups
+			- vitesse d'attaque (ATK SPEED): vitesse à la laquelle les attaques sont donnés ; ici la valeur représente les secondes (voir profil ci-dessous) donc 1 ATK SPEED = 1 seconde => 1 attaque (hit) donné toute les 1 seconde (tant que touche attaque maintenue) ; plus cette valeur est basse, plus l'arme à une vitesse d'attaque élevée
+			- portée de mêlée (RANGE) : portée des attaques/coups
+			- portée de tir (FALLOFF) : distance maximal (en bloc) que les projectiles peuvent parcourir avant de disparaître SI ils ne sont pas entrés en contact (collision) avec un élément (terrain, objects, mobs)
+		- les armes ont différent type, ce qui détermine leur stats de départ (niveau 0) :
+			- *Sword* (mêlée) : 0,5 DMG | 1 ATK SPEED | 1 RANGE
+			- *Longsword* (mêlée) : 1 DMG | 1,5 ATK SPEED | 1,2 RANGE
+			- *Brutal Axe* (mêlée)  : 1,5 DMG | 1,2 ATK SPEED | 0,8 RANGE
+			- *Dark Scythe* (mêlée)  : 2 DMG | 2,5 ATK SPEED | 1,5 RANGE
+			- *Warhammer* (mêlée)  : 1,5 DMG | 1,5 ATK SPEED | 0,8 RANGE
+			- *Halberds* (mêlée)  : 1 DMG | 1,5 ATK SPEED | 2 RANGE
+			- *Longbow* (tir) : 1 DMG | 1,5 ATK SPEED | 20 FALLOFF
+			- *Fire Gauntlet* (tir spécial)  : 0,2 DMG | 0,8 ATK SPEED | 5 RANGE
+				- à l'inverse des autres armes de tir, le Fire Gauntlet est semblable à un lance-flamme, par conséquent il ne tire pas de projectiles individuels mais un souffle de flamme continu vers l'avant suivant la direction du joueur (gauche, droite) => même comportement/stats qu'une arme de mêlée avec comme garde-fou :
+					- maintenir touche attaquer avec cette arme (F) = déclenche le souffle de flamme continu vers l'avant pendant 3 sec max PUIS cooldown de 10 sec avant de pouvoir tirer à nouveau ; si joueur relâche la touche AVANT les 3 sec max, le cooldown est quand même appliqué !
+			- *Throwing Knives* (tir) : 0,5 DMG | 1 ATK SPEED | 10 FALLOFF
+		- les items Légendaires sont très rares et possèdent des stats OP dépassant n'importe quel item de niveau 3 ; il n'y a que 4 items Légendaire dans tout le jeu :
+			- *Dragon Slayer* (mêlée) : épée massive à 2 mains enfermant l'esprit d'un ancien dragon ; 5 DMG | 2 ATK SPEED | 2 RANGE
+				- capacité spéciale (active) : maintenir le bouton attaque spécial (R) permet de retenir une attaque (charger), une fois relâchée l'attaque donné inflige x2 DMG ; il y'a un cooldown de 10sec
+			- *Obsidian Relic* (mêlée) : épée à une main violette magique ; 3 DMG | 0,7 ATK SPEED | 1 RANGE
+				- capacité spéciale (passive) : heal le joueur de 0,5 HP tous les 10 mobs tués 
+			- *Thunderstruck* (mêlée) : marteau tonnerre à 2 mains  ; 4 DMG | 1,5 ATK SPEED | 1,2 RANGE
+				- capacité spéciale (active) : lors d'une attaque d'atterissage (G), projette une foudre vers l'avant, au niveau du sol, (en plus dégâts de zone normaux) sur une distante importante (définie) qui one shot n'importe quel mob se trouvant sur le chemin ; cooldown de 5sec
+			- *Demonic Crossbow* (tir) : arbalète démoniaque ; 3 DMG | 0,8 ATK SPEED | 50 FALLOFF
+				- capacité spéciale (passive) : projectiles de tir qui ont une grande portée et qui transpercent (traversent) les mobs
+	- **ITEM SOINS (consommables) :**
+		- item présent du niveau 2 à 10
+		- *Minor Healing Potion*  : soigne instantanément de 0.5 HP
+		- *Major Healing Potion*  : soigne instantanément de 1 HP
+		- les potions sont des items pouvant être ramassés par le joueur en passant dessus (comme les coins) ; leur emplacement sont fixes sur le terrain du niveau ; leur nombre est limité ; les potions réapparaissent toujours à chaque nouvelle tentative du niveau (à la mort du joueur)
+		- Si le joueur passe sur une potion alors qu'il est à pleine vie = elle reste sur place, elle n'est pas ramassé, aucun effet de soin n'est appliqué
+		- les major potion sont beaucoup plus rare que les minor potion
+		- elles ont aussi une faible chance aléatoire (à définir) d'être drop sur les mobs tués (obtenus comme des shards, pas de ramassage)
+		- taux de drop sur les mobs tués :
+			- les ennemis de bases et avancés (sauf Possessed Skulls) ont une chance de drop une minor potion
+			- les ennemis d'élites ont une chance de drop une major potion
+			- étant plus rares, le taux de drop d'une major potion est beaucoup plus faible qu'une minor potion
+			- le taux de drop varie en fonction du niveau par rapport au nombre de mobs présent dans le niveau :
+				- le taux de drop sera plus élevé sur les mobs des niveaux 2 à 4 car il y en a beaucoup moins que dans les niveaux 5 à 9
+	- **ITEM DIVERS (consommables) :**
+		- *Magic Shield* : item rare pouvant être ramassés par le joueur en passant dessus (comme les coins) ; leur emplacement sont fixes sur le terrain du niveau ; peut être cachés ; selon la difficulté du niveau, il y a entre 0 et 3 Magic Shield maximum à trouver sur le terrain ; réapparaissent à chaque nouvelle tentative du niveau
+		- item présent du niveau 3 à 9
+			- effet : donne instantanément une invincibilité au joueur durant 10 secondes contre toutes attaques d'ennemi (collision, mêlée, tir) ; ne protège pas contre les pièges du terrain ni d'une chute dans le vide
+		- *Rage Drink* : item rare leur emplacement sont fixes sur le terrain du niveau ; peut être cachés ; selon la difficulté du niveau, il y a entre 0 et 2 Rage Drink maximum à trouver sur le terrain ; réapparaissent à chaque nouvelle tentative du niveau
+		- item présent du niveau 5 à 9
+			- effet : boisson fortement alcoolisé qui donne instantanément une bonus x2 de dégâts et vitesse d'attaque pendant 6 secondes, peu importe l'arme utilisée par le joueur durant cette période
+		- *Enchant Juice* : item très rare pouvant être ramassé par le joueur en passant dessus (comme les coins) ; emplacement fixe sur le terrain du niveau et caché derrière un passage dérobé ; il n'y a qu'un seul Enchant Juice à trouver dans tout le jeu ; item unique ne pouvant être ramassé et utilisé qu'une seule fois !
+		- item présent dans le niveau 5
+			- effet : donne une amélioration permanente de niveau (+2) à l'un des item équipé par le joueur (mêlée ou tir) ; le joueur doit choisir, une fenêtre apparaît pour laisser le joueur faire la sélection et confirmer (ou annuler)
+			- cas unique : l'Enchant Juice permet d'outre-passer la règle générale qui cap les item au niveau 3 max : il permet d'améliorer un item niveau 3 à +2niveaux = devient un item niveau 5 ; il permet d'améliorer un item niveau 2 à +2niveaux = devient un item niveau 4 => le système d'amélioration intervient et augmente les stats de l'item de manière proportionnel
+			- il ne permet pas d'améliorer un item Légendaire
+			- si le joueur annule l'amélioration, rien ne se passe et l'item disparaît à jamais
