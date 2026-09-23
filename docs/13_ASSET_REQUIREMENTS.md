@@ -119,3 +119,23 @@ Lorsque l'élément est complexe, compléter sa ligne principale par une fiche d
 |Ground decal|—|—|—|⬜||
 |UI Icon|—|—|—|⬜||
 |Portrait|—|—|—|⬜||
+
+---
+
+## RUN-002 — Livrables visuels par jalon (planification, 23 septembre 2026)
+
+La matrice ci-dessus exprime le catalogue cible, **pas l'état d'intégration**. Les priorités P0/P1/P2 sont celles du besoin ; la colonne « premier jalon » indique quand l'asset devient nécessaire dans la roadmap. Une ligne P0 qui n'entre en jeu qu'au niveau 10 n'est donc pas un livrable de 0.1.0. Les nombres de frames, tailles finales, palettes et candidats restent à confirmer par les essais 16×16/32×32 de RUN-003 et les scènes réelles. Le statut des médias présents est détaillé dans [11_GAME_ASSETS_LIBRARY.md](11_GAME_ASSETS_LIBRARY.md).
+
+| Premier jalon | Ensembles visuels à rendre disponibles et tester | Animations/états minimaux à prévoir | VFX/feedback à prévoir |
+| --- | --- | --- | --- |
+| 0.1.0 | Chevalier, Sword, Slimes Green/Purple, coin, piques fixes, terrain de test, HUD santé fractionnaire | Déplacement, saut, attaque, réception de dégâts et mort du joueur ; déplacement/contact, dégâts et mort des Slimes ; boucle coin | Coup porté/touché, dégâts et mort, collecte coin, lisibilité du danger ; un effet peut être fait sans texture dédiée si le résultat est vérifié dans Godot. |
+| 0.2.0 | The Ancient Spirit, décor The Eidolon Vale, Longbow/projectile, shard, potion mineure, common chest gratuit, porte, menus/dialogue | Spirit en repos/dialogue ; tir et projectile ; coffre fermé/ouvert, récompense ; états clavier des menus et dialogues | Départ/impact de flèche, collecte shard/potion, ouverture de coffre, sortie du niveau et indication d'interaction. |
+| 0.3.0 | Red/Bloated Slime, piques mobiles, trappes, rare chest, équipements standards, potion majeure, décor Blight Town | Nouveaux Slimes : déplacement, dégâts, mort ; piques : sortie/rétraction ; trappe : fermé/ouvert ; coffre : ouverture/récompense | Alerte et contact de l'élite, danger cyclique, chute de trappe, soin, choix et amélioration d'équipement. |
+| 0.4.0 | Warrior, Archer, Sorcerer, Swarm, Chud Blob ; tourelle, plante, Magic Shield, mécanismes, secret, bonus HP ; décors N3–4 | Patrouille/poursuite/attaque/dégâts/mort selon archétype ; tir, incantation et invocation visibles ; tourelle et mécanismes actifs/inactifs ; mur révélé | Télégraphies différenciées, projectiles/impacts, bouclier activé, secret révélé et bonus HP collecté. |
+| 0.5.0 | Variantes d'équipement, Fire Gauntlet, flammes, Rage, quatre légendaires, golden chest, Enchant Juice ; décors N5–6 | Grimpe et attaque d'atterrissage ; souffle actif/fin ; flammes cycliques ; attaque ou capacité spécifique de chaque légendaire ; coffre et offrande | Impact au sol, feu, buff/cooldown, capacités légendaires, récompense unique et sacrifice. |
+| 0.6.0 | Chaos Champion, Necromancer, invocations, décors N7–9 | Charge annoncée/exécutée/récupération ; incantation/invocation, dégâts et mort ; seconde offrande | Zones de charge et d'invocation lisibles, apparitions/disparitions des invocations. |
+| 0.7.0 | Lupikal, Princess Karla, arène et décor final N10, HUD boss, conclusion | Boss : entrée, mêlée, quatre zones, boules de feu, charge, invocation, enrage, dégâts, mort ; Karla : repos/dialogue/libération | Télégraphie propre à chaque attaque, projectiles/explosions, enrage, victoire et libération. |
+| 0.8.0 | Variantes visuelles avancées retenues, HUD/menu/logo/artwork finaux, harmonisation des dix biomes | Ancrages, rythmes et silhouettes cohérents ; animations manquantes relevées en jeu | Lisibilité des VFX en combat et cohérence des effets entre variantes. |
+| 0.9.0 | Crédits et médias livrables dans les exports | Aucun nouvel ensemble requis par le jalon ; corrections issues de la recette | Vérification des imports, des licences et du rendu des builds distribués. |
+
+Ce tableau n'autorise pas l'achat ou l'intégration d'un pack. Pour chaque ensemble retenu, conserver la source, documenter auteur/licence/attribution, produire un dérivé normalisé identifiable puis tester l'animation, l'ancrage et la collision dans Godot. Le niveau 1 et le premier Slime servent d'échantillon avant adoption d'un pack entier.

@@ -256,3 +256,27 @@ Les commandes du projet utilisent maintenant **Godot 4.7.2 stable**. L’import 
 - `tools/test.sh` et `tests/user_data_path.gd` : profil isolé et preuves de fin de test.
 - `assets/source/sounds/`, `assets/sounds/` et `tests/wav_import.py` : originaux conservés et contrôle indépendant du PCM.
 - `work/test-results/` : résultats locaux ; les preuves résumées et les contrôles humains encore attendus sont dans `runs-journal.md`.
+
+## RUN-002 — Inventorier les médias et préparer les besoins d'assets
+
+### Ce qui a été réalisé
+
+Les 12 fichiers image, audio et police du prototype sont inventoriés dans `docs/11_GAME_ASSETS_LIBRARY.md` et `docs/12_SFX_LIBRARY.md`. Les besoins visuels, animations, VFX et sons de la démo sont répartis par version dans ces documents et `docs/13_ASSET_REQUIREMENTS.md`. Aucun asset ni réglage d'import Godot n'a été modifié.
+
+### Comment cela fonctionne
+
+Une **ressource référencée** est un fichier que la scène ou un script charge effectivement : `knight.png` est utilisé dans `scenes/player.tscn`. Un fichier simplement présent n'est pas nécessairement utilisé : aucune référence au chemin de `platforms.png` n'a été trouvée dans les scènes, scripts et réglages inspectés. Cette distinction évite de compter un fichier inutilisé comme une fonctionnalité du jeu.
+
+Une **source** est le fichier obtenu auprès de son auteur ; un **dérivé** est la version préparée pour le jeu, par exemple une image découpée ou un son réencodé. Conserver la source permet de comprendre et de refaire cette adaptation. Comparer les empreintes SHA-256 peut confirmer qu'une copie est identique, mais une adaptation change son empreinte : l'absence de correspondance ne prouve pas que le fichier provient d'un autre pack.
+
+La licence appartient à la source identifiée, pas à un nom de fichier ressemblant. Les conditions des deux packs Zerie candidats ont été vérifiées sur leurs pages officielles, sans correspondance établie avec les médias actuels. À la demande de l'humain, ce rattachement est différé jusqu'à la sélection et à la recette des assets distribués.
+
+### Exemple concret dans Milady's Knight
+
+`world_tileset.png` apparaît dans la scène du vertical slice et dans `assets/kingdom_tileset.tres`. Cette dernière ressource n'est pas référencée par la scène de jeu inspectée : modifier seulement son TileSet externe ne prouverait donc pas que le terrain joué a changé.
+
+### À regarder dans le projet
+
+- `docs/11_GAME_ASSETS_LIBRARY.md` et `docs/12_SFX_LIBRARY.md` : fichiers présents, usages vérifiés et état des sources.
+- `docs/13_ASSET_REQUIREMENTS.md` : familles d'assets à produire ou choisir selon les versions.
+- `scenes/player.tscn` et `scenes/vertical_slice.tscn` : exemples de références effectivement chargées par Godot.

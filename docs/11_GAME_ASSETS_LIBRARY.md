@@ -106,3 +106,31 @@ pour les assets effectivement normalisés et utilisés par Godot.
 | Free Top-Down Pixel Dungeon Level Game Assets | **Tileset**            | **Level design, item, décors, pièges, coffres** | https://free-game-assets.itch.io/free-2d-top-down-pixel-dungeon-asset-pack                         | 🔴     | ✅   |
 | Fantasy Skeleton Army                         | **Asset Pack**         | **Mobs, skeleton, top-down**                    | https://blpixelartist.itch.io/fantasyskeletonarmy                                                  | 🟠     | ✅   |
 | 2D Platformer Tiles - Dungeon's End           | **Platformer Tileset** | **Platformer, level design**                    | https://gtajima.itch.io/2d-platformer-tiles-castle                                                 | 🟠     | ✅   |
+
+---
+
+### Licences des sources candidates vérifiées le 23 septembre 2026
+
+Les pages officielles des [Tiny RPG Character Asset Pack 01](https://zerie.itch.io/tiny-rpg-character-asset-pack) et [02](https://zerie.itch.io/tiny-rpg-character-asset-pack-02), par Zerie, autorisent l'utilisation dans un jeu vidéo personnel ou commercial et la modification pour ce jeu ; elles interdisent la redistribution, la revente et la remise en ligne des assets, modifiés ou non. Le crédit est apprécié mais facultatif. Elles interdisent aussi l'entraînement d'IA et les projets NFT. L'humain indique que les licences de ses autres sources suivent les mêmes principes, avec des formulations variables, mais ne dispose pas d'une correspondance entre justificatifs et fichiers du prototype. **Aucun des 12 médias du prototype n'a encore été relié à un pack source précis** : ces conditions ne leur sont donc pas attribuées par défaut. Ce rattachement est reporté sur sa demande.
+
+Le dépôt GitHub est public et contient des fichiers d'assets directement téléchargeables. Pour tout média effectivement issu d'un pack interdisant la redistribution, vérifier le mode de partage des fichiers source dans le dépôt et les conditions de l'auteur avant de le publier ou de le conserver publiquement. Les pages Zerie autorisent l'usage dans un jeu vidéo, sans préciser ici tous les modes de partage des fichiers bruts d'un projet ouvert.
+
+## RUN-002 — Médias visuels présents dans le dépôt (23 septembre 2026)
+
+Cette section distingue les fichiers **réellement présents** des packs candidats listés plus haut. Un lien ou le marqueur `DL ✅` dans la liste de candidats ne démontre ni que le fichier du jeu provient de ce pack, ni que sa licence autorise la distribution. Les besoins à produire par jalon et les animations/VFX sont dans [13_ASSET_REQUIREMENTS.md](13_ASSET_REQUIREMENTS.md).
+
+| Fichier présent | Référence vérifiée dans le projet | Usage actuel | Provenance et licence du fichier présent |
+| --- | --- | --- | --- |
+| `assets/sprites/knight.png` | `scenes/player.tscn` | Spritesheet du joueur ; animations idle, run, jump et dead déclarées dans la scène. | À établir par une source et une licence rattachées au fichier exact. |
+| `assets/sprites/slime_green.png` | `scenes/slime.tscn` | Boucle de quatre frames Green. | À établir. |
+| `assets/sprites/slime_purple.png` | `scenes/slime.tscn` | Boucle de quatre frames Purple. | À établir. |
+| `assets/sprites/coin.png` | `scenes/coin.tscn` | Boucle de douze frames. | À établir. |
+| `assets/sprites/world_tileset.png` | `scenes/vertical_slice.tscn` et `assets/kingdom_tileset.tres` | Terrain actuel ; la ressource externe `.tres` n'est pas référencée par la scène de jeu inspectée. | À établir. |
+| `assets/sprites/platforms.png` | Aucune référence `res://` trouvée dans les scènes, scripts et `project.godot` inspectés. | Fichier présent, non confirmé comme utilisé. | À établir avant une éventuelle intégration ou distribution. |
+| `assets/fonts/PixelOperator8.ttf` | `scenes/hud.tscn`, `scripts/coin.gd`, `scripts/kingdom.gd` | Police de l'interface et des étiquettes. | La [page de l'auteur Pixel Operator](https://www.dafont.com/pixel-operator.font) liste ce nom de fichier et annonce CC0 1.0 pour la version 2018.10.04-1 ; l'archive/version exacte du fichier du dépôt reste à confirmer. |
+
+Les dimensions des PNG actuels sont vérifiées sur disque : `knight` 256×256, les deux `slime` 96×72 chacun, `coin` 192×16, `world_tileset` 256×256 et `platforms` 64×64. Cela ne fixe pas encore l’échelle de production : RUN-003 doit comparer les sprites en scène. Pour comparer une source candidate au fichier du dépôt, utiliser `sha256sum` sur les deux fichiers, puis examiner la licence du pack correspondant.
+
+Une comparaison SHA-256 des 12 médias avec les fichiers de la bibliothèque externe déclarée dans `.local/asset-paths.md` n'a trouvé aucune copie identique. Une source transformée, recadrée ou réencodée peut toutefois avoir une autre empreinte ; la correspondance avec les liens d'origine reste à établir.
+
+**Traçabilité reportée, à compléter pour les assets distribués :** pour chaque fichier retenu, consigner le fichier ou pack d'origine exact, auteur, URL officielle ou archive d'achat, version, licence, conditions d'attribution et modifications effectuées. En l'absence de preuve rattachable au fichier lors de cette recette, choisir un remplacement documenté et conserver son original dans `assets/source/` avant de créer le dérivé de jeu. Ne pas déplacer ni renommer en masse les médias actuels pendant l'inventaire.

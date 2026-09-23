@@ -157,3 +157,36 @@ RUN-001 reste en **VERIFY**, en attente de cette confirmation et de la revue fin
 L’humain confirme : « Je confirme bien la fermeture manuelle du jeu et de l’éditeur. F5 fonctionne et fermeture aussi. » Les deux contrôles manuels requis par RUN-001 sont donc satisfaits. La revue finale constate un arbre propre avant cette mise à jour, un diff `develop...HEAD` sans erreur de whitespace et le périmètre attendu : lanceurs, tests, trois WAV normalisés et originaux préservés, documentation ; `AGENTS.md` porte un commit humain supplémentaire `e05aacc`, conservé tel quel. Les preuves des deux imports et des 11 suites figurent plus haut ; aucun nouveau test moteur n’est nécessaire pour cette mise à jour documentaire.
 
 **Décision d’intégration :** PR de `feature/run-001-engine-import` vers `develop`, conformément au Git Flow ; push, création de PR et merge nécessitent encore l’autorisation humaine. RUN-001 reste en VERIFY jusqu’à l’intégration. RUN-002 est autorisée par la demande du 23 septembre et commence par un inventaire documentaire indépendant sur une branche dédiée.
+
+## RUN-002 — Inventorier les sources et définir les livrables visuels/sonores
+
+**Version-cible :** 0.1.0
+**Date :** 2026-09-23
+**Statut constaté :** ACTIVE — inventaire et matrice réalisés, traçabilité des sources en cours.
+**Git :** `feature/run-002-asset-inventory` créée depuis `develop` à `04f1f05`, premier checkpoint `4c13259`, puis intégration locale de `feature/run-001-engine-import`. PR RUN-001 [#1](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/1) ouverte vers `develop`, non mergée à cette date.
+
+### État vérifié et travail effectué
+
+Le dépôt comporte 12 médias de jeu : six PNG, quatre WAV, un OGG et une police TTF. Onze ont une référence `res://` trouvée dans les scènes/scripts ou la ressource TileSet inspectés ; `assets/sprites/platforms.png` est présent sans référence trouvée. Les scènes définissent des animations par sprites pour le joueur (idle/run/jump/dead), les Slimes Green/Purple et la pièce ; cela ne prouve pas que les animations cible de la démo soient déjà réalisées. Les trois WAV originaux conservés par RUN-001 s'ajoutent comme sources archivées, pas comme médias de jeu distincts.
+
+Les docs/11 et 12 listent chaque média présent, son usage vérifié et l'état de preuve de provenance/licence. Docs/13 relie les ensembles, animations et VFX nécessaires aux jalons 0.1.0–0.9.0. Aucune licence n'est attribuée sur la base d'un nom de pack ou du marqueur `Free`. Recherche ciblée dans la bibliothèque locale indiquée par `.local/asset-paths.md` : aucun nom de fichier exact correspondant aux médias de jeu parmi les résultats ; deux fichiers `license.txt` trouvés dans des packs d'inspiration, sans lien démontré avec les médias intégrés. Les empreintes SHA-256 des 12 médias ont été calculées pour faciliter une comparaison de source ; les dimensions PNG et formats audio ont été vérifiés. La recherche ne démontre pas l'absence de copies renommées.
+
+**Validation restante :** rattacher les justificatifs que l'humain dit posséder aux fichiers exacts, ou identifier les remplacements nécessaires ; contrôler chaque licence, ses obligations d'attribution et le pipeline source → dérivé ; relire les tableaux. Aucun achat, déplacement massif, édition de bibliothèque externe, changement gameplay ou test moteur effectué pendant cette phase documentaire.
+
+### Suivi du 23 septembre 2026 — intégration de RUN-001
+
+La [PR #1](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/1) est passée à `MERGED` sur GitHub le 23 septembre 2026 à 13:52:30 UTC, commit de merge `9f4ecab832154f55a15fe60062d80d0af80512c6` dans `develop` (vérifié par `gh pr view` et `git ls-remote`). L'humain a validé F5 et la fermeture, les vérifications techniques et la revue finale sont satisfaisantes : RUN-001 passe à **DONE**. RUN-002 continue sur sa branche dédiée ; aucune nouvelle run lancée.
+
+### Suivi du 23 septembre 2026 — besoins audio et vérification documentaire
+
+Les familles audio de docs/08 sont attribuées aux jalons 0.1.0–0.9.0 dans docs/12, en complément de la matrice visuelle de docs/13. Les 12 fichiers de jeu recensés existent, les liens relatifs de docs/11–13 pointent vers des fichiers présents, et `git diff --check` ne signale pas d'erreur. Cette vérification porte sur la documentation ; aucune suite Godot n'a été relancée, aucun asset externe intégré. La traçabilité licence/source attend toujours l'emplacement des justificatifs annoncés par l'humain.
+
+### Suivi du 23 septembre 2026 — conditions déclarées et sources candidates
+
+L'humain confirme que les licences de ses assets sont accessibles par leurs liens sources et transmet des conditions autorisant l'usage et la modification dans les jeux personnels/commerciaux, interdisant la redistribution/revente/remise en ligne des assets modifiés ou non, avec crédit facultatif. Ces conditions ont été vérifiées sur les pages officielles des deux packs Zerie candidats (docs/11) ; elles ne prouvent pas leur emploi dans le prototype ni les conditions propres aux autres sources. La page de l'auteur Pixel Operator liste `PixelOperator8.ttf` sous CC0 1.0 pour sa version 2018.10.04-1, mais la version exacte du fichier du dépôt n'est pas encore établie. Une comparaison par taille et SHA-256 des 12 médias du jeu avec la bibliothèque externe déclarée n'a trouvé aucune copie identique ; cela n'exclut pas les dérivés. Les liens sources correspondant aux fichiers du prototype ont été demandés à l'humain. Le dépôt étant public, le partage direct de fichiers issus d'un pack « sans redistribution » devra être examiné une fois la correspondance établie. RUN-002 reste **ACTIVE** ; aucun gameplay ni asset modifié.
+
+### Suivi du 23 septembre 2026 — décision humaine et vérification finale locale
+
+L'humain précise que les licences des packs qu'il utilise ont les mêmes principes malgré des formulations différentes, mais qu'il n'a pas de dossier de justificatifs ni de correspondance par fichier. Il demande d'ignorer ce rattachement pour l'instant. Cette décision remplace la recherche de provenance fichier par fichier dans les critères immédiats de RUN-002 ; elle ne transforme pas les déclarations de licence en preuves pour les médias actuels. La correspondance et les conditions de partage des assets retenus sont reportées à leur intégration et à la recette des crédits/licences avant distribution, déjà prévue dans le jalon 0.8.0–0.9.0.
+
+L'inventaire des 12 médias, leurs références, les lacunes signalées et les besoins audio/visuels/animations/VFX par jalon sont consignés dans docs/11–13. Le cycle source conservée → dérivé de jeu est décrit sans déplacement d'asset. Relecture des tableaux, liens internes, références de fichiers et `git diff --check` effectuée sur la branche ; aucun test moteur requis pour ces seules modifications documentaires. **RUN-002 passe en VERIFY local** pour revue et intégration de la branche selon le workflow Git. RUN-003 n'est pas lancée.
