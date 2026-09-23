@@ -3,7 +3,7 @@
 ## Statut de cette planification
 
 Audit documentaire et inspection du dépôt effectués le **21 septembre 2026**, à partir de l’état de travail courant, et non du seul commit `0870462`.
-**RUN-001 VERIFY : contrôles automatisés, F5, fermeture manuelle et revue finale satisfaits ; intégration par PR en attente. RUN-002 démarre par l’inventaire des assets.** Travail sur `feature/run-001-engine-import`, créée depuis `develop` au commit `04f1f05`. RUN-003 à RUN-011 restent `BACKLOG` ; les versions suivantes seront affinées après chaque jalon. Le push, la PR et le merge attendent leur autorisation distincte.
+**RUN-001 DONE : contrôles, revue humaine et [PR #1](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/1) fusionnée dans `develop` au commit `9f4ecab`. RUN-002 ACTIVE : inventaire des assets sur `feature/run-002-asset-inventory`.** RUN-003 à RUN-011 restent `BACKLOG` ; les versions suivantes seront affinées après chaque jalon.
 
 La cible finale validée est **0.9.0 beta**, une démo de dix niveaux conçus à la main. `0.1.0` est un premier jalon technique de production, pas une étiquette affirmant que le dépôt actuel satisfait déjà les nouvelles règles. Les numéros sont des cibles validées ; des patchs `0.x.1`, etc., pourront contenir des corrections vérifiées sans renommer arbitrairement les runs.
 
@@ -232,7 +232,7 @@ Rendre la base existante reproductible, fixer son échelle et aligner le combat 
 
 ### RUN-001 — Stabiliser moteur, import et commandes de vérification
 
-**Priorité : P0 · Statut : VERIFY · Dépendances : roadmap, périmètre et lancement validés.**
+**Priorité : P0 · Statut : DONE · Dépendances : roadmap, périmètre et lancement validés.**
 
 - **Résultat / scope :** Reproduire les trois erreurs d’import 4.7.2 sur copie propre, en rechercher la cause puis choisir et documenter le moteur de production ; aligner les lanceurs et isoler les sauvegardes des tests. Aucun changement gameplay.
 - **Acceptation, test et bugtest :** Import depuis zéro et 11 suites sur le moteur retenu, logs sans erreurs ; démarrage F5 et fermeture ; préserver les changements humains de project.godot et du TileSet. Ne pas rétrograder automatiquement.
@@ -241,15 +241,16 @@ Rendre la base existante reproductible, fixer son échelle et aligner le combat 
 - **Périmètre inspecté au démarrage :** `tools/run.sh`, `tools/test.sh`, `Lancer-Windows.cmd`, contrat de sauvegarde dans `scripts/progression.gd`, suites `tests/` et métadonnées d’import. Comparer des copies propres sur chemin UNC et disque Windows local, puis tester les commandes corrigées et le lancement depuis l’éditeur. Conserver les scripts gameplay, scènes, sources d’assets et réglages humains ; ne changer une ressource que si sa responsabilité dans l’erreur est démontrée.
 - **Résultat vérifié :** Godot 4.7.2 retenu ; trois WAV corrigés pour le remplissage RIFF, originaux et PCM conservés ; lanceurs harmonisés et tests isolés. Deux imports propres puis 150 contrôles de jeu + 1 contrôle d’isolation réussis par copie. Preuves et limites dans [runs-journal.md](runs-journal.md#run-001--stabiliser-moteur-import-et-commandes-de-vérification).
 - **Validation humaine reçue le 22 septembre 2026 :** lancement F5 confirmé (« oui fonctionne avec F5 »).
-- **Validation humaine reçue le 23 septembre 2026 :** fermeture manuelle du jeu et de l’éditeur confirmée, sans problème signalé. La revue finale du diff et des preuves est satisfaisante. Une PR vers `develop` est retenue selon le Git Flow du dépôt ; push, création de PR et merge restent soumis à autorisation. RUN-001 demeure VERIFY jusqu’à son intégration.
+- **Validation humaine reçue le 23 septembre 2026 :** fermeture manuelle du jeu et de l’éditeur confirmée, sans problème signalé. La revue finale du diff et des preuves est satisfaisante. La [PR #1](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/1) a été fusionnée dans `develop` le 23 septembre 2026 (`9f4ecab`) ; tous les critères de RUN-001 sont satisfaits.
 
 ### RUN-002 — Inventorier les sources et définir les livrables visuels/sonores
 
-**Priorité : P0 · Statut : ACTIVE · Dépendances : RUN-001 (contrôles et validation humaine satisfaits ; intégration par PR en attente).**
+**Priorité : P0 · Statut : ACTIVE · Dépendances : RUN-001 (DONE).**
 
 - **Résultat / scope :** Compléter docs/11–13 et les besoins d’animations/VFX de docs/13 ; retracer les 12 médias présents, leurs licences et les manques. Définir source conservée / dérivé de jeu, sans déplacement massif.
 - **Acceptation, test et bugtest :** Chaque média utilisé a une provenance vérifiable ou un remplacement identifié ; les besoins par jalon sont attribués, les achats éventuels restent une décision humaine.
 - **Learning pressenti :** Import, spritesheet, licence, ressource référencée versus fichier seulement présent.
+- **Travail engagé :** branche `feature/run-002-asset-inventory` créée depuis `develop`, avec intégration locale de RUN-001 ; 12 médias de jeu recensés dans docs/11–12, matrice visuelle/animations/VFX par jalon ajoutée dans docs/13. Les preuves de provenance/licence exactes sont encore à rattacher ; l’humain indique en disposer et leur emplacement est demandé. Aucun achat ni asset externe intégré.
 
 ### RUN-003 — Comparer l’échelle sur un échantillon représentatif
 
@@ -539,4 +540,4 @@ Livrer une démo 0.9.0 beta complète, équilibrée et testée, avec une distrib
 
 ## Point d’arrêt
 
-RUN-001 attend son intégration par PR en VERIFY. RUN-002 commence par l’inventaire et la documentation des assets, sur branche distincte. Aucun push, PR ou merge sans autorisation. Après 0.1.0, détailler 0.2.0 à partir du résultat réel.
+RUN-001 est DONE après fusion de la PR #1. RUN-002 est ACTIVE pour l’inventaire et la traçabilité des médias ; ses livrables restent à vérifier. Aucun nouveau merge distant sans autorisation. Après 0.1.0, détailler 0.2.0 à partir du résultat réel.

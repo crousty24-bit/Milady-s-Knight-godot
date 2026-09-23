@@ -31,7 +31,7 @@
 
 ## RUN-002 — Médias audio présents dans le dépôt (23 septembre 2026)
 
-La liste de candidats ci-dessus n'est pas une preuve de source ni de licence pour les fichiers effectivement intégrés. Les fichiers ci-dessous complètent les sept médias visuels inventoriés dans [11_GAME_ASSETS_LIBRARY.md](11_GAME_ASSETS_LIBRARY.md#run-002--médias-visuels-présents-dans-le-dépôt-23-septembre-2026), soit **12 médias présents** au total (6 PNG, 4 WAV, 1 OGG, 1 TTF). La liste fonctionnelle cible des événements sonores reste dans [08_AUDIO_REQUIREMENTS.md](08_AUDIO_REQUIREMENTS.md).
+La liste de candidats ci-dessus n'est pas une preuve de source ni de licence pour les fichiers effectivement intégrés. Les fichiers ci-dessous complètent les sept médias visuels inventoriés dans [11_GAME_ASSETS_LIBRARY.md](11_GAME_ASSETS_LIBRARY.md), soit **12 médias de jeu** au total (6 PNG, 4 WAV, 1 OGG, 1 TTF), sans compter les trois copies source conservées. La liste fonctionnelle cible des événements sonores reste dans [08_AUDIO_REQUIREMENTS.md](08_AUDIO_REQUIREMENTS.md).
 
 | Fichier présent | Référence vérifiée | Usage actuel | Provenance et licence du fichier présent |
 | --- | --- | --- | --- |
@@ -41,6 +41,6 @@ La liste de candidats ci-dessus n'est pas une preuve de source ni de licence pou
 | `assets/sounds/tap.wav` | `scenes/player.tscn` | Son d'attaque actuel. | À établir. |
 | `assets/music/time_for_adventure.ogg` | `scenes/vertical_slice.tscn` | Musique du slice, non attribuée à un morceau cible des niveaux de la démo. | À établir. |
 
-La [PR RUN-001](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/1) conserve les WAV originaux `coin`, `jump` et `tap` dans `assets/source/sounds/` et corrige leurs conteneurs RIFF aux chemins utilisés par Godot. Cette conservation garantit l'identité des données audio, **pas** la provenance juridique des sons. La présente branche part de `develop` avant l'intégration de cette PR ; les originaux y apparaîtront après fusion.
+La [PR RUN-001](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/1) conserve les WAV originaux `coin`, `jump` et `tap` dans `assets/source/sounds/` et corrige leurs conteneurs RIFF aux chemins utilisés par Godot. Cette conservation garantit l'identité des données audio, **pas** la provenance juridique des sons. La branche RUN-002, créée depuis `develop`, a intégré localement RUN-001 après le premier checkpoint documentaire ; la PR RUN-001 a ensuite été fusionnée dans `develop` le 23 septembre 2026.
 
 **Décision avant distribution :** obtenir pour chacun des cinq fichiers le fichier/pack d'origine exact, auteur, URL officielle ou archive d'achat, version, licence, attribution et chaîne de transformation. Si ces éléments manquent, remplacer le média par une source documentée et tester son intégration. Les étiquettes `Free` et `DL ✅` des listes de candidats ne suffisent pas à valider un droit d'usage.

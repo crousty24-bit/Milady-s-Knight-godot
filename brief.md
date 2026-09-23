@@ -71,7 +71,7 @@ Audit du **21 septembre 2026**, complété par les vérifications techniques de 
 
 ### Version-cible actuelle
 
-**0.1.0 validée comme cible : socle de production vérifié.** La roadmap va jusqu’à **0.9.0 beta**, démo finale. RUN-001 a passé les contrôles techniques, le test humain F5/fermeture et la revue finale ; son intégration par PR reste à faire. RUN-002 débute par l’inventaire des assets. Le dépôt reste une scène de test issue du vertical slice, pas encore le niveau 1 conforme aux nouvelles spécifications.
+**0.1.0 validée comme cible : socle de production vérifié.** La roadmap va jusqu’à **0.9.0 beta**, démo finale. RUN-001 a passé les contrôles techniques, le test humain F5/fermeture et la revue finale ; sa PR #1 est fusionnée dans `develop` (`9f4ecab`). RUN-002 inventorie les assets sur une branche distincte. Le dépôt reste une scène de test issue du vertical slice, pas encore le niveau 1 conforme aux nouvelles spécifications.
 
 ### État vérifié
 

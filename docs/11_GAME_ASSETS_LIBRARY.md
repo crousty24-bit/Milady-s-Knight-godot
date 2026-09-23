@@ -111,7 +111,7 @@ pour les assets effectivement normalisés et utilisés par Godot.
 
 ## RUN-002 — Médias visuels présents dans le dépôt (23 septembre 2026)
 
-Cette section distingue les fichiers **réellement présents** des packs candidats listés plus haut. Un lien ou le marqueur `DL ✅` dans la liste de candidats ne démontre ni que le fichier du jeu provient de ce pack, ni que sa licence autorise la distribution. Les besoins à produire par jalon et les animations/VFX sont dans [13_ASSET_REQUIREMENTS.md](13_ASSET_REQUIREMENTS.md#run-002--livrables-visuels-par-jalon-planification-23-septembre-2026).
+Cette section distingue les fichiers **réellement présents** des packs candidats listés plus haut. Un lien ou le marqueur `DL ✅` dans la liste de candidats ne démontre ni que le fichier du jeu provient de ce pack, ni que sa licence autorise la distribution. Les besoins à produire par jalon et les animations/VFX sont dans [13_ASSET_REQUIREMENTS.md](13_ASSET_REQUIREMENTS.md).
 
 | Fichier présent | Référence vérifiée dans le projet | Usage actuel | Provenance et licence du fichier présent |
 | --- | --- | --- | --- |
@@ -122,5 +122,7 @@ Cette section distingue les fichiers **réellement présents** des packs candida
 | `assets/sprites/world_tileset.png` | `scenes/vertical_slice.tscn` et `assets/kingdom_tileset.tres` | Terrain actuel ; la ressource externe `.tres` n'est pas référencée par la scène de jeu inspectée. | À établir. |
 | `assets/sprites/platforms.png` | Aucune référence `res://` trouvée dans les scènes, scripts et `project.godot` inspectés. | Fichier présent, non confirmé comme utilisé. | À établir avant une éventuelle intégration ou distribution. |
 | `assets/fonts/PixelOperator8.ttf` | `scenes/hud.tscn`, `scripts/coin.gd`, `scripts/kingdom.gd` | Police de l'interface et des étiquettes. | À établir. |
+
+Les dimensions des PNG actuels sont vérifiées sur disque : `knight` 256×256, les deux `slime` 96×72 chacun, `coin` 192×16, `world_tileset` 256×256 et `platforms` 64×64. Cela ne fixe pas encore l’échelle de production : RUN-003 doit comparer les sprites en scène. Pour comparer une source candidate au fichier du dépôt, utiliser `sha256sum` sur les deux fichiers, puis examiner la licence du pack correspondant.
 
 **Traçabilité à compléter avant distribution :** pour chaque fichier retenu, consigner le fichier ou pack d'origine exact, auteur, URL officielle ou archive d'achat, version, licence, conditions d'attribution et modifications effectuées. En l'absence de preuve rattachable au fichier, choisir un remplacement documenté et conserver son original dans `assets/source/` avant de créer le dérivé de jeu. Ne pas déplacer ni renommer en masse les médias actuels pendant l'inventaire.
