@@ -124,7 +124,7 @@ Lorsque l'élément est complexe, compléter sa ligne principale par une fiche d
 
 ## RUN-002 — Livrables visuels par jalon (planification, 23 septembre 2026)
 
-La matrice ci-dessus exprime le catalogue cible, **pas l'état d'intégration**. Les priorités P0/P1/P2 sont celles du besoin ; la colonne « premier jalon » indique quand l'asset devient nécessaire dans la roadmap. Une ligne P0 qui n'entre en jeu qu'au niveau 10 n'est donc pas un livrable de 0.1.0. Les nombres de frames, tailles finales, palettes et candidats restent à confirmer par les essais 16×16/32×32 de RUN-003 et les scènes réelles. Le statut des médias présents est détaillé dans [11_GAME_ASSETS_LIBRARY.md](11_GAME_ASSETS_LIBRARY.md).
+La matrice ci-dessus exprime le catalogue cible, **pas l'état d'intégration**. Les priorités P0/P1/P2 sont celles du besoin ; la colonne « premier jalon » indique quand l'asset devient nécessaire dans la roadmap. Une ligne P0 qui n'entre en jeu qu'au niveau 10 n'est donc pas un livrable de 0.1.0. Les nombres de frames, tailles finales, palettes et candidats restent à confirmer par les essais 16×16/32×32 de RUN-003 et les scènes réelles. Le statut des médias présents est détaillé dans le catalogue local `11_GAME_ASSETS_LIBRARY.md` lorsqu'il est disponible ; ce fichier n'est plus suivi par Git.
 
 | Premier jalon | Ensembles visuels à rendre disponibles et tester | Animations/états minimaux à prévoir | VFX/feedback à prévoir |
 | --- | --- | --- | --- |
