@@ -194,3 +194,17 @@ L'inventaire des 12 médias, leurs références, les lacunes signalées et les b
 ### Suivi du 23 septembre 2026 — fusion de RUN-002 et catalogues locaux
 
 L'humain confirme la revue de RUN-002 et autorise le push et la PR. La [PR #2](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/2) est vérifiée fusionnée dans `develop` au commit `1d176db30becce582e99ed01880625ab3b1d8c81` ; RUN-002 passe à **DONE**. L'humain demande ensuite d'ignorer par Git les catalogues 11 et 12. Les fichiers sont retirés de l'index sans suppression locale sur une branche documentaire distincte ; les références de l'index des docs signalent leur caractère facultatif pour les nouveaux clones. RUN-003 reste BACKLOG et n'est pas lancée.
+
+## RUN-003 — Comparer l'échelle sur un échantillon représentatif
+
+**Date :** 2026-09-23 · **Statut : ACTIVE** · **Branche :** `feature/run-003-scale-comparison`, créée depuis `origin/develop` à `fb13745` après avance rapide de la branche locale `develop`.
+
+Inspection : le slice existant repose sur des cellules 16×16 et un rendu 320×180 ; aucune scène N1 conçue à la main, aucun sprite humanoïde et aucun coffre intégrés. Le joueur a une frame 32×32 mais seulement 13×19 pixels opaques sur la frame de repos mesurée ; le Slime a une frame 24×24 et 14×12 pixels opaques. Les collisions inspectées sont documentées dans `docs/RUN-003_SCALE_COMPARISON.md`.
+
+Une scène d'essai isolée avec sélection 16/32, silhouettes provisoires et contours de collision a été produite. Godot Windows **4.7.2** a importé le projet sans erreur (code 0), puis lancé `tools/capture_scale_comparison.gd` en mode graphique et écrit deux images 640×360 (`docs/media/`, résultats `save_png=0`). Les deux images ont été ouvertes et comparées visuellement. Le premier essai en mode `--headless` n'a pas rendu de texture (moteur factice) ; le mode graphique a corrigé ce problème. La grille réelle, le viewport du jeu, les niveaux et les collisions de gameplay sont inchangés.
+
+L'essai 32 agrandit les sprites actuels sans ajouter de détail source ; l'humanoïde et le coffre restent des maquettes. Une décision humaine explicite sur la grille et un échantillon d'assets représentatif sont attendus avant de valider la direction et de passer en VERIFY. L'hypothèse 16×16 de l'art bible reste en vigueur. Aucun test de gameplay 32 n'est revendiqué.
+
+### Décision humaine du 23 septembre 2026 et passage en VERIFY
+
+L'humain retient explicitement la grille **16×16**, conforme à l'art bible, et demande de réévaluer la taille opaque des personnages et leurs collisions lors de l'intégration de leurs véritables assets. La maquette 32 ne comporte pas de nouveaux détails source et les éléments N1/humanoïde/coffre finaux restent absents ; ces limites sont conservées dans le compte rendu. La décision est reportée dans docs/06, docs/13, le workflow et le learning. `docs/media/.gdignore` évite l'import inutile des captures par Godot ; un nouvel import sous Godot Windows 4.7.2 s'est terminé avec code 0 et sans erreur, sans régénérer leurs fichiers `.import`. `git diff --check` est passé. À l'autorisation humaine, la branche a été poussée et la [PR #4](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/4) est ouverte vers `develop`. RUN-003 reste en VERIFY jusqu'à la revue humaine et à l'intégration ; aucun merge n'est présumé.

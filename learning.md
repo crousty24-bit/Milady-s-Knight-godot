@@ -280,3 +280,24 @@ La licence appartient à la source identifiée, pas à un nom de fichier ressemb
 - `docs/11_GAME_ASSETS_LIBRARY.md` et `docs/12_SFX_LIBRARY.md` : fichiers présents, usages vérifiés et état des sources.
 - `docs/13_ASSET_REQUIREMENTS.md` : familles d'assets à produire ou choisir selon les versions.
 - `scenes/player.tscn` et `scenes/vertical_slice.tscn` : exemples de références effectivement chargées par Godot.
+
+## RUN-003 — Choisir la grille visuelle
+
+### Ce qui a été réalisé
+
+Une scène d'essai Godot compare une grille 16×16 et une grille 32×32 dans deux captures de 640×360. Le choix validé est **16×16 pour le terrain**. Le jeu garde encore son viewport 320×180 ; son changement relève de RUN-004.
+
+### Comment cela fonctionne
+
+Une **cellule de terrain** sert à placer les blocs du niveau. La **frame** d'un sprite est le rectangle réservé à une image d'animation ; elle peut contenir de la transparence. Le chevalier actuel occupe une frame de 32×32, mais seulement 13×19 pixels sont opaques sur la frame de repos mesurée. La frame ne donne donc pas directement la taille perçue du personnage.
+
+Une **collision** est une forme définie séparément du dessin. Le joueur utilise une capsule de 10 px de large et 18 px de haut, le Slime un rectangle de 14×12. Agrandir un sprite ne règle pas automatiquement ses collisions ni sa lisibilité. L'essai 32 double les images existantes et leurs contours indicatifs ; il ne représente pas un nouvel art détaillé.
+
+### Exemple concret dans Milady's Knight
+
+Le terrain du slice utilise des cellules 16×16. Le chevalier a une frame 32×32 et peut donc occuper plusieurs cellules sans changer cette grille. Quand son véritable sprite sera intégré, on examinera sa silhouette opaque à l'écran, puis sa capsule de collision sur les animations utiles avant de fixer ses dimensions.
+
+### À regarder dans le projet
+
+- `scenes/scale_comparison.tscn` et `scripts/scale_comparison.gd` : les deux variantes de la maquette.
+- `docs/RUN-003_SCALE_COMPARISON.md` : captures, mesures et limites de la décision.

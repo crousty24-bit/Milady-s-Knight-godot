@@ -3,7 +3,7 @@
 ## Statut de cette planification
 
 Audit documentaire et inspection du dépôt effectués le **21 septembre 2026**, à partir de l’état de travail courant, et non du seul commit `0870462`.
-**RUN-001 DONE : contrôles, revue humaine et [PR #1](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/1) fusionnée dans `develop` au commit `9f4ecab`. RUN-002 DONE : inventaire vérifié et [PR #2](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/2) fusionnée dans `develop` au commit `1d176db`.** RUN-003 à RUN-011 restent `BACKLOG` ; les versions suivantes seront affinées après chaque jalon.
+**RUN-001 DONE : contrôles, revue humaine et [PR #1](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/1) fusionnée dans `develop` au commit `9f4ecab`. RUN-002 DONE : inventaire vérifié et [PR #2](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/2) fusionnée dans `develop` au commit `1d176db`.** RUN-003 est en VERIFY via la [PR #4](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/4), en attente de revue humaine et d'intégration ; RUN-004 à RUN-011 restent `BACKLOG`. Les versions suivantes seront affinées après chaque jalon.
 
 La cible finale validée est **0.9.0 beta**, une démo de dix niveaux conçus à la main. `0.1.0` est un premier jalon technique de production, pas une étiquette affirmant que le dépôt actuel satisfait déjà les nouvelles règles. Les numéros sont des cibles validées ; des patchs `0.x.1`, etc., pourront contenir des corrections vérifiées sans renommer arbitrairement les runs.
 
@@ -254,11 +254,12 @@ Rendre la base existante reproductible, fixer son échelle et aligner le combat 
 
 ### RUN-003 — Comparer l’échelle sur un échantillon représentatif
 
-**Priorité : P0 · Statut : BACKLOG · Dépendances : RUN-002.**
+**Priorité : P0 · Statut : VERIFY · Dépendances : RUN-002 (DONE).**
 
 - **Résultat / scope :** Comparer 16×16 et 32×32 dans Godot avec extrait N1, joueur, Slime, humanoïde, décor, piège et coffre ; conserver 16×16 comme hypothèse jusqu’à décision explicite.
 - **Acceptation, test et bugtest :** Captures comparables à 640×360 ; silhouettes, taille des collisions et lisibilité contrôlées ; décision enregistrée avant production des biomes.
 - **Learning pressenti :** Tile size, taille de frame, pixels opaques, densité de pixels et collisions indépendantes.
+- **Décision humaine du 23 septembre 2026 :** grille 16×16 retenue ; taille opaque des personnages et collisions à réévaluer lors de l'intégration des véritables assets. Comparaison et limites dans `docs/RUN-003_SCALE_COMPARISON.md`. PR #4 ouverte vers `develop` ; RUN-003 reste en VERIFY jusqu'à la revue humaine et l'intégration.
 
 ### RUN-004 — Adapter la résolution et le cadrage du prototype
 
@@ -540,4 +541,4 @@ Livrer une démo 0.9.0 beta complète, équilibrée et testée, avec une distrib
 
 ## Point d’arrêt
 
-RUN-001 et RUN-002 sont DONE après fusion des PR #1 et #2. La correspondance fichier-source reste reportée par décision humaine à la recette des assets distribués. Les catalogues 11–12 deviennent locaux et ignorés par Git sur la branche de maintenance documentaire dédiée. RUN-003 reste BACKLOG et n'est pas lancée. Après 0.1.0, détailler 0.2.0 à partir du résultat réel.
+RUN-001 et RUN-002 sont DONE après fusion des PR #1 et #2. La correspondance fichier-source reste reportée par décision humaine à la recette des assets distribués. Les catalogues 11–12 deviennent locaux et ignorés par Git. RUN-003 est en VERIFY sur `feature/run-003-scale-comparison` ; la [PR #4](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/4) attend revue humaine et intégration. La grille 16×16 est retenue après comparaison visuelle, avec les limites de la maquette consignées. Après 0.1.0, détailler 0.2.0 à partir du résultat réel.
