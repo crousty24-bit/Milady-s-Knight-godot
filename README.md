@@ -10,7 +10,7 @@
 
 Le joueur incarne **The Ashen Knight**, traverse le royaume corrompu et rejoint Darkveil Dungeon pour vaincre **Lupikal The Doombringer** et libérer **Princess Karla**. L’objectif de durée est de 1 à 2 heures, à confirmer par playtests.
 
-**Le dépôt contient actuellement une scène de test jouable. RUN-001 stabilise le moteur, l’import et les tests ; le lancement F5 est confirmé par l’humain, la validation finale reste à terminer.** La cible finale est une démo **0.9.0 beta**, pas une release 1.0.0. Le badge `0.1.0` désigne le prochain jalon ; les tests couvrent les règles actuelles du prototype.
+**Le dépôt contient actuellement une scène de test jouable. RUN-001 stabilise le moteur, l’import et les tests ; le lancement F5 et la fermeture sont confirmés par l’humain.** La cible finale est une démo **0.9.0 beta**, pas une release 1.0.0. Le badge `0.1.0` désigne le prochain jalon ; les tests couvrent les règles actuelles du prototype.
 
 ## Ce qui existe aujourd’hui
 
@@ -90,7 +90,7 @@ Résultats RUN-001 du 22 septembre 2026 :
 
 - Import depuis zéro sans erreur sous **4.7.2 Windows**, sur copies WSL/UNC et disque Windows local ; **150 contrôles de jeu + 1 contrôle d’isolation réussis par copie**. Sauvegardes réelles inchangées.
 - Les trois erreurs d’import de l’audit provenaient d’un octet de remplissage RIFF manquant dans `coin.wav`, `jump.wav` et `tap.wav`. Les originaux sont conservés dans `assets/source/sounds/`, ignorés par l’import Godot ; les variantes compatibles restent dans `assets/sounds/`, aux chemins déjà utilisés. Les échantillons PCM sont identiques. Vérification indépendante : `python3 tests/wav_import.py`.
-- Lancement **F5 confirmé par l’humain** le 22 septembre 2026. Test graphique de notification de fermeture réussi ; la fermeture manuelle du jeu et de l’éditeur reste à confirmer. Les preuves et limites sont dans [runs-journal.md](runs-journal.md). Le binaire Linux 4.7.2 n’a pas été testé sur cette machine.
+- Lancement **F5 confirmé par l’humain** le 22 septembre 2026 ; fermeture manuelle du jeu et de l’éditeur confirmée le 23 septembre. Le test graphique de notification de fermeture a aussi réussi. Les preuves et limites sont dans [runs-journal.md](runs-journal.md). Le binaire Linux 4.7.2 n’a pas été testé sur cette machine.
 
 Autres limites : dépendances à des coordonnées et tailles fixes du slice, HUD français, sauvegarde limitée à la banque de bonus et au niveau, absence de presets d’export. La provenance et les licences des médias hérités ne sont pas documentées dans le dépôt ; elles devront être établies ou les médias remplacés avant distribution. Les changements manuels présents restent la référence de travail.
 
