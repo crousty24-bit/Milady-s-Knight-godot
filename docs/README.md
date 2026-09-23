@@ -17,10 +17,12 @@ Documentation découpée par responsabilité afin de servir de base de lecture e
 9. [[08_AUDIO_REQUIREMENTS]] — inventaire des SFX, ambiances et musiques nécessaires à l'implémentation.
 10. [[09_LORE_NARRATION]] — lore, personnages, narration et dialogues.
 11. [[10_CONTROLS_KEYBINDS]] — source dédiée des contrôles et key binds.
-12. [[11_GAME_ASSETS_LIBRARY]] — procédure de sélection/intégration et catalogue des assets graphiques candidats.
-13. [[12_SFX_LIBRARY]] — catalogue des SFX, ambiances et musiques trouvés à renseigner ultérieurement.
+12. `11_GAME_ASSETS_LIBRARY.md` — procédure de sélection/intégration et catalogue graphique local, non suivi par Git.
+13. `12_SFX_LIBRARY.md` — catalogue audio local, non suivi par Git.
 14. [[13_ASSET_REQUIREMENTS]] — inventaire des assets visuels et graphiques, VFX, animations nécessaires à l'implémentation.
 
 ## Ordre de lecture recommandé pour un agent
 
-[[00_PROJECT_VISION_SCOPE]] → systèmes concernés par la tâche → [[10_CONTROLS_KEYBINDS]] si interaction joueur → [[06_ART_BIBLE]] pour toute tâche visuelle →  [[13_ASSET_REQUIREMENTS]] et [[11_GAME_ASSETS_LIBRARY]] pour le l'intégration graphique et bibliothèques d'assets si intégration de ressources tierces → [[07_AUDIO_DESIGN_PIPELINE]] et [[08_AUDIO_REQUIREMENTS]] pour l'audio → bibliothèques d'assets si intégration de ressources tierces.
+[[00_PROJECT_VISION_SCOPE]] → systèmes concernés par la tâche → [[10_CONTROLS_KEYBINDS]] si interaction joueur → [[06_ART_BIBLE]] pour toute tâche visuelle → [[13_ASSET_REQUIREMENTS]] ; consulter `11_GAME_ASSETS_LIBRARY.md` si le catalogue local est présent et si la tâche intègre des ressources tierces → [[07_AUDIO_DESIGN_PIPELINE]] et [[08_AUDIO_REQUIREMENTS]] pour l'audio ; consulter `12_SFX_LIBRARY.md` si le catalogue audio local est présent.
+
+Les catalogues 11 et 12 restent sur la machine où ils existent déjà. Un nouveau clone ne les contient pas ; les spécifications suivies par Git sont dans les autres documents de ce dossier.
