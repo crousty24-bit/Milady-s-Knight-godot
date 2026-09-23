@@ -26,3 +26,5 @@ Documentation découpée par responsabilité afin de servir de base de lecture e
 [[00_PROJECT_VISION_SCOPE]] → systèmes concernés par la tâche → [[10_CONTROLS_KEYBINDS]] si interaction joueur → [[06_ART_BIBLE]] pour toute tâche visuelle → [[13_ASSET_REQUIREMENTS]] ; consulter `11_GAME_ASSETS_LIBRARY.md` si le catalogue local est présent et si la tâche intègre des ressources tierces → [[07_AUDIO_DESIGN_PIPELINE]] et [[08_AUDIO_REQUIREMENTS]] pour l'audio ; consulter `12_SFX_LIBRARY.md` si le catalogue audio local est présent.
 
 Les catalogues 11 et 12 restent sur la machine où ils existent déjà. Un nouveau clone ne les contient pas ; les spécifications suivies par Git sont dans les autres documents de ce dossier.
+
+L'essai visuel de RUN-003 et ses captures comparatives sont dans [RUN-003_SCALE_COMPARISON.md](RUN-003_SCALE_COMPARISON.md).
