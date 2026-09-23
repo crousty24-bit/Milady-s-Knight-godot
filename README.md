@@ -1,16 +1,16 @@
 # Milady's Knight
 
-![Godot déclaré](https://img.shields.io/badge/Godot-4.7-478CBF?logo=godot-engine&logoColor=white)
+![Godot](https://img.shields.io/badge/Godot-4.7.2-478CBF?logo=godot-engine&logoColor=white)
 ![Version cible](https://img.shields.io/badge/Version%20cible-0.1.0-blue)
 ![Language](https://img.shields.io/badge/Language-GDScript-478CBF)
 ![Status](https://img.shields.io/badge/Status-Playable%20Prototype-f0ad4e)
-[![Tests de l’audit](https://img.shields.io/badge/Tests%20%28audit%29-150%20passing-brightgreen)](#vérification-et-limites-connues)
+[![Tests RUN-001](https://img.shields.io/badge/Tests-150%20%2B%201%20passing-brightgreen)](#vérification-et-limites-connues)
 
 **Milady's Knight** entre en production pour devenir une démo d’action-platformer 2D en pixel-art Dark Fantasy : dix niveaux conçus à la main, combat mêlée/distance, exploration, progression d’équipement et boss final.
 
 Le joueur incarne **The Ashen Knight**, traverse le royaume corrompu et rejoint Darkveil Dungeon pour vaincre **Lupikal The Doombringer** et libérer **Princess Karla**. L’objectif de durée est de 1 à 2 heures, à confirmer par playtests.
 
-**Le dépôt contient actuellement une scène de test jouable. Les versions, la roadmap et le périmètre de RUN-001 sont validés ; son lancement attend un accord explicite. Aucune run de production n’a commencé.** La cible finale est une démo **0.9.0 beta**, pas une release 1.0.0. Le badge `0.1.0` désigne le prochain jalon ; les 150 contrôles correspondent à l’audit du 21 septembre 2026.
+**Le dépôt contient actuellement une scène de test jouable. RUN-001 stabilise le moteur, l’import et les tests ; le lancement F5 et la fermeture sont confirmés par l’humain.** La cible finale est une démo **0.9.0 beta**, pas une release 1.0.0. Le badge `0.1.0` désigne le prochain jalon ; les tests couvrent les règles actuelles du prototype.
 
 ## Ce qui existe aujourd’hui
 
@@ -49,8 +49,8 @@ Le scope ne prévoit pas de génération procédurale, multijoueur, checkpoint i
 
 Le projet utilise GDScript, sans addon tiers identifié.
 
-- `project.godot` déclare **Godot 4.7** ; le binaire Windows disponible a été vérifié en **4.7.2**.
-- Le runtime Linux local et les lanceurs historiques visent encore **4.5.1**. Ce décalage doit être traité en RUN-001 ; le runtime sous `work/` est local et ignoré par Git.
+- **Godot 4.7.2 stable** est la version retenue dans `tools/godot-version.txt`, vérifiée par les lanceurs avant ouverture. `project.godot` conserve sa déclaration compatible **4.7**.
+- Le vieux runtime Linux **4.5.1** sous `work/` est conservé mais n’est plus sélectionné automatiquement. Utiliser un binaire **4.7.2** natif ou le binaire Windows depuis WSL.
 - Importer `project.godot` dans Godot puis lancer **F5** pour la reprise via `scenes/game.tscn`. **F6** depuis `scenes/vertical_slice.tscn` lance directement la scène de test.
 
 Linux / WSL, en indiquant l’exécutable installé :
@@ -59,7 +59,7 @@ Linux / WSL, en indiquant l’exécutable installé :
 GODOT_BIN=/chemin/vers/godot ./tools/run.sh
 ```
 
-Sous Windows, `Lancer-Windows.cmd` accepte la variable `GODOT_EXE` avec le chemin du moteur. Son chemin par défaut 4.5.1 est historique ; définir explicitement le binaire disponible. Aucun export autonome n’est encore configuré dans le dépôt.
+Sous Windows, `Lancer-Windows.cmd` accepte la variable `GODOT_EXE` ; son chemin par défaut vise Godot 4.7.2 dans `%USERPROFILE%\OneDrive\Documents\Godot Engine`. Sous WSL, `tools/run.sh` accepte aussi `GODOT_EXE` et convertit les chemins Windows. Pour ouvrir l’éditeur, ajouter `--editor`. Aucun export autonome n’est encore configuré dans le dépôt.
 
 ### Commandes actuellement jouables
 
@@ -76,19 +76,21 @@ Z/S sont déclarés mais sans grimpe. Les contrôles **cibles**, distincts de ce
 
 ## Vérification et limites connues
 
-Commande historique de la suite complète :
+Suite complète (Bash, `rg`, `timeout` et `mktemp` requis) :
 
 ```bash
 GODOT_BIN=/chemin/vers/godot ./tools/test.sh
 ```
 
-Cette commande importe le projet et écrit ses logs dans `work/test-results/`. Pour comparer des moteurs sans toucher aux imports de travail, utiliser une copie du projet comme pendant l’audit. Les pilotes `--script` désactivent la sauvegarde normale ; la suite de persistance utilise des fichiers temporaires dédiés.
+Cette commande importe le projet, vérifie le chemin effectif de `user://`, puis exécute les onze suites. Chaque invocation écrit ses logs dans `work/test-results/run-*`. Les erreurs moteur, un échec, un timeout ou une fin de suite absente font échouer la commande, même si Godot retourne 0.
 
-Résultats de l’audit du 21 septembre 2026 :
+Les données utilisateur et la configuration sont isolées dès l’import : profil XDG sous Linux ; profil NTFS temporaire transmis à `APPDATA`/`LOCALAPPDATA` sous Windows via WSL. Ce dernier mode requiert `wslpath` et PowerShell Windows. Le profil est supprimé après succès et conservé après échec ; les logs restent disponibles. Le lancement normal via `run.sh` conserve la sauvegarde habituelle. Pour un import depuis zéro sans toucher au cache de travail, lancer la suite dans une copie du dépôt dépourvue de `.godot/` et `work/`.
 
-- **150 contrôles réussis sous 4.5.1 Linux**, import sans erreur.
-- **150 contrôles réussis sous 4.7.2 Windows** ; cependant, l’import préalable sur copie via WSL/UNC produit trois erreurs moteur `p_position > length` malgré un code de sortie nul. Cause non déterminée ; ne pas considérer l’import Windows comme validé.
-- Aucun playtest humain, contrôle graphique ou écoute n’a été réalisé pendant cette passe. Les tests valident les règles actuelles du slice, pas les features de la démo à venir.
+Résultats RUN-001 du 22 septembre 2026 :
+
+- Import depuis zéro sans erreur sous **4.7.2 Windows**, sur copies WSL/UNC et disque Windows local ; **150 contrôles de jeu + 1 contrôle d’isolation réussis par copie**. Sauvegardes réelles inchangées.
+- Les trois erreurs d’import de l’audit provenaient d’un octet de remplissage RIFF manquant dans `coin.wav`, `jump.wav` et `tap.wav`. Les originaux sont conservés dans `assets/source/sounds/`, ignorés par l’import Godot ; les variantes compatibles restent dans `assets/sounds/`, aux chemins déjà utilisés. Les échantillons PCM sont identiques. Vérification indépendante : `python3 tests/wav_import.py`.
+- Lancement **F5 confirmé par l’humain** le 22 septembre 2026 ; fermeture manuelle du jeu et de l’éditeur confirmée le 23 septembre. Le test graphique de notification de fermeture a aussi réussi. Les preuves et limites sont dans [runs-journal.md](runs-journal.md). Le binaire Linux 4.7.2 n’a pas été testé sur cette machine.
 
 Autres limites : dépendances à des coordonnées et tailles fixes du slice, HUD français, sauvegarde limitée à la banque de bonus et au niveau, absence de presets d’export. La provenance et les licences des médias hérités ne sont pas documentées dans le dépôt ; elles devront être établies ou les médias remplacés avant distribution. Les changements manuels présents restent la référence de travail.
 

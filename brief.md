@@ -67,24 +67,24 @@ Les détails complets restent dans `docs/`.
 
 ## État du projet
 
-Audit du **21 septembre 2026**, fondé sur les fichiers présents et les tests exécutés sur copies temporaires. Le détail, les limites de vérification et les décisions à prendre sont dans [runs-workflow.md](runs-workflow.md).
+Audit du **21 septembre 2026**, complété par les vérifications techniques de **RUN-001 le 22 septembre 2026** sur copies temporaires. Les preuves d’exécution sont dans [runs-journal.md](runs-journal.md) ; l’audit initial et la planification restent dans [runs-workflow.md](runs-workflow.md).
 
 ### Version-cible actuelle
 
-**0.1.0 validée comme cible : socle de production vérifié.** La roadmap va jusqu’à **0.9.0 beta**, démo finale. Les versions, la planification et le périmètre de RUN-001 sont validés ; son lancement attend l’accord explicite demandé par l’utilisateur. Aucune run de production n’a commencé. Le dépôt reste une scène de test issue du vertical slice, pas encore le niveau 1 conforme aux nouvelles spécifications.
+**0.1.0 validée comme cible : socle de production vérifié.** La roadmap va jusqu’à **0.9.0 beta**, démo finale. RUN-001 a passé les contrôles techniques, le test humain F5/fermeture et la revue finale ; son intégration par PR reste à faire. RUN-002 débute par l’inventaire des assets. Le dépôt reste une scène de test issue du vertical slice, pas encore le niveau 1 conforme aux nouvelles spécifications.
 
 ### État vérifié
 
-- **Moteur :** `project.godot` déclare Godot **4.7**, renderer GL Compatibility. Binaire Windows disponible vérifié : **4.7.2** ; runtime Linux local vérifié : **4.5.1**. Les lanceurs visent encore 4.5.1. Version de production à harmoniser, sans annuler les changements humains.
+- **Moteur :** Godot **4.7.2 stable** retenu, version centralisée et vérifiée par les lanceurs. `project.godot` conserve **4.7**, renderer GL Compatibility. Windows 4.7.2 testé depuis WSL/UNC et disque local ; le runtime Linux 4.5.1 historique est conservé mais refusé par les lanceurs. Linux 4.7.2 non testé ici.
 - **Rendu :** viewport **320×180**, fenêtre 1280×720, stretch viewport/integer, nearest et pixel snapping. La cible **640×360** n’est pas encore appliquée. Terrain sur grille 16×16.
 - **Structure :** 9 scènes, 12 scripts de jeu, démarrage `scenes/game.tscn` puis `scenes/vertical_slice.tscn`. Un autoload `Progression`. Aucun addon ni preset d’export trouvé. Le TileSet de la scène est embarqué ; le fichier externe `assets/kingdom_tileset.tres` n’est pas référencé par les scènes/scripts de jeu inspectés.
 - **Niveau présent :** un terrain fixe à deux branches avec retours, **18 coins**, **8 Slimes** (5 Green, 3 Purple), deux ronces, une fosse, un bac mobile et une porte demandant 12 coins. `tests/fixtures/next_level.tscn` est une fixture héritée du slice, pas un deuxième niveau produit.
 - **Joueur :** marche accélérée, saut variable, double saut, coyote/buffer, wall slide/wall jump, épée au sol/en l’air avec déduplication et occlusion ; 3 HP entiers, recul/invulnérabilité, mort et reprise **manuelle** avec R. F attaque à la pression, pas en maintien. Q/D et Z/S sont encore les touches déclarées ; Z/S n’ont pas de déplacement vertical implémenté.
 - **Ennemis/pièges :** Green/Purple en patrouille sans aggro, 3/4 HP et 1 dégât de contact ; ces valeurs diffèrent de la cible. Ronces traversables de 1 dégât et vide létal. Les autres ennemis, le Boss et les pièges avancés sont absents.
 - **Progression partielle :** coins limités au sceau ; surplus et kills donnent des bonus. Banque validée à la sortie et scène de reprise sauvegardées dans `user://progress.json` v1. Aucune persistance d’équipement, de HP bonus ou d’uniques, aucun coffre ni système de shards conforme.
-- **Présentation :** HUD français VIE/SCEAU/BONUS, hints, overlays pause/mort/victoire ; pas de menu principal, dialogue, slot d’équipement ou UI de récompense. 6 PNG, 4 WAV, 1 OGG et 1 police présents, plus un TileSet ; décor et épée en partie dessinés par code. Provenance/licences des médias non documentées dans le dépôt inspecté.
+- **Présentation :** HUD français VIE/SCEAU/BONUS, hints, overlays pause/mort/victoire ; pas de menu principal, dialogue, slot d’équipement ou UI de récompense. 6 PNG, 4 WAV, 1 OGG et 1 police intégrés, plus un TileSet ; décor et épée en partie dessinés par code. Trois WAV ont un remplissage RIFF corrigé sans changer le PCM ; leurs originaux sont conservés dans `assets/source/sounds/`, hors import. Provenance/licences des médias encore à établir.
 - **Systèmes absents :** équipement/tir/upgrades/capacités, attaque d’atterrissage, grimpe, consommables, paliers/bonus HP, offrandes permanentes, secrets/mécanismes/portes secondaires, PNJ/narration et contenu des niveaux 2–10.
-- **Vérification actuelle :** **150 contrôles réussis par moteur**, sous 4.5.1 Linux et 4.7.2 Windows, couvrant les anciennes règles du slice. Import Linux sans erreur ; import Windows sur copie via WSL/UNC : **trois erreurs `p_position > length`**, malgré code de sortie 0, cause inconnue. Aucun playtest humain, contrôle graphique ou écoute effectué pendant cet audit.
+- **Vérification actuelle :** sous Windows **4.7.2**, imports propres puis **150 contrôles de jeu + 1 contrôle d’isolation réussis** sur chacune des deux copies (WSL/UNC et disque local). Les erreurs `p_position > length` sont résolues par le remplissage RIFF des trois WAV. Sauvegardes de test isolées ; sauvegardes réelles inchangées. Notification de fermeture graphique testée ; lancement F5 confirmé par l’humain le 22 septembre 2026, fermeture du jeu et de l’éditeur le 23 septembre. Ces tests couvrent les anciennes règles du slice.
 
 Les changements préexistants de `project.godot` et du TileSet ont été conservés. L’audit ne valide ni les nouvelles features décrites dans `docs/`, ni la conformité finale du prototype à ces spécifications.
 
