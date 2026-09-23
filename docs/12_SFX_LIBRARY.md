@@ -45,6 +45,8 @@ La [PR RUN-001](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/1) c
 
 **Décision avant distribution :** obtenir pour chacun des cinq fichiers le fichier/pack d'origine exact, auteur, URL officielle ou archive d'achat, version, licence, attribution et chaîne de transformation. Si ces éléments manquent, remplacer le média par une source documentée et tester son intégration. Les étiquettes `Free` et `DL ✅` des listes de candidats ne suffisent pas à valider un droit d'usage.
 
+L'humain indique que chacun des assets employés possède une licence accessible depuis son lien source. Les conditions qu'il a transmises autorisent l'usage personnel/commercial dans un jeu et les modifications, mais interdisent la redistribution des fichiers d'assets modifiés ou non ; le crédit est facultatif. Les liens sources des cinq médias audio ci-dessus ne sont pas encore identifiés : vérifier leurs conditions respectives avant de leur attribuer cette licence ou de les conserver dans le dépôt public.
+
 ### Livrables audio par jalon
 
 Ces familles suivent les systèmes et niveaux planifiés dans `runs-workflow.md`. Les identifiants précis, priorités P0/P1/P2, formats et variantes restent définis dans [08_AUDIO_REQUIREMENTS.md](08_AUDIO_REQUIREMENTS.md). Le premier jalon indiqué correspond à l'apparition de la fonctionnalité, pas à une licence validée ni à un son déjà intégré. Les quatre WAV hérités et la musique du slice ne couvrent pas automatiquement ces familles cibles.
