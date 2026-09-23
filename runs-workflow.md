@@ -3,7 +3,7 @@
 ## Statut de cette planification
 
 Audit documentaire et inspection du dépôt effectués le **21 septembre 2026**, à partir de l’état de travail courant, et non du seul commit `0870462`.
-**RUN-001 DONE : contrôles, revue humaine et [PR #1](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/1) fusionnée dans `develop` au commit `9f4ecab`. RUN-002 ACTIVE : inventaire des assets sur `feature/run-002-asset-inventory`.** RUN-003 à RUN-011 restent `BACKLOG` ; les versions suivantes seront affinées après chaque jalon.
+**RUN-001 DONE : contrôles, revue humaine et [PR #1](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/1) fusionnée dans `develop` au commit `9f4ecab`. RUN-002 VERIFY : inventaire des assets prêt pour revue sur `feature/run-002-asset-inventory`.** RUN-003 à RUN-011 restent `BACKLOG` ; les versions suivantes seront affinées après chaque jalon.
 
 La cible finale validée est **0.9.0 beta**, une démo de dix niveaux conçus à la main. `0.1.0` est un premier jalon technique de production, pas une étiquette affirmant que le dépôt actuel satisfait déjà les nouvelles règles. Les numéros sont des cibles validées ; des patchs `0.x.1`, etc., pourront contenir des corrections vérifiées sans renommer arbitrairement les runs.
 
@@ -245,12 +245,12 @@ Rendre la base existante reproductible, fixer son échelle et aligner le combat 
 
 ### RUN-002 — Inventorier les sources et définir les livrables visuels/sonores
 
-**Priorité : P0 · Statut : ACTIVE · Dépendances : RUN-001 (DONE).**
+**Priorité : P0 · Statut : VERIFY · Dépendances : RUN-001 (DONE).**
 
-- **Résultat / scope :** Compléter docs/11–13 et les besoins d’animations/VFX de docs/13 ; retracer les 12 médias présents, leurs licences et les manques. Définir source conservée / dérivé de jeu, sans déplacement massif.
-- **Acceptation, test et bugtest :** Chaque média utilisé a une provenance vérifiable ou un remplacement identifié ; les besoins par jalon sont attribués, les achats éventuels restent une décision humaine.
+- **Résultat / scope :** Compléter docs/11–13 et les besoins d’animations/VFX de docs/13 ; inventorier les 12 médias présents, leurs usages, les sources/licences vérifiables et les lacunes. Définir source conservée / dérivé de jeu, sans déplacement massif.
+- **Acceptation, test et bugtest :** Médias et références actuels inventoriés ; sources/licences distinguées entre vérifiées et non rattachées ; besoins par jalon attribués ; cohérence des liens, tableaux et diff contrôlée. Les achats éventuels restent une décision humaine. **Décision humaine du 23 septembre 2026 :** faute de correspondance fichier-source, ne pas exiger maintenant une provenance vérifiable ou un remplacement pour chacun des 12 médias. Reporter ce contrôle à l'intégration des assets retenus et à la recette des licences/crédits avant distribution (0.8.0–0.9.0). Cette dérogation ne valide pas juridiquement les médias actuels.
 - **Learning pressenti :** Import, spritesheet, licence, ressource référencée versus fichier seulement présent.
-- **Travail engagé :** branche `feature/run-002-asset-inventory` créée depuis `develop`, avec intégration locale de RUN-001 ; 12 médias de jeu recensés dans docs/11–12, besoins audio par jalon ajoutés dans docs/12 et matrice visuelle/animations/VFX par jalon ajoutée dans docs/13. Les preuves de provenance/licence exactes sont encore à rattacher ; l’humain indique en disposer et leur emplacement est demandé. Aucun achat ni asset externe intégré.
+- **Résultat vérifié localement :** branche `feature/run-002-asset-inventory` ; 12 médias de jeu recensés dans docs/11–12, besoins audio par jalon dans docs/12, matrice visuelle/animations/VFX par jalon dans docs/13 et principe source conservée → dérivé documenté. Les licences des deux packs Zerie candidats ont été vérifiées sur leurs pages officielles ; aucune correspondance avec les 12 médias du prototype n'est établie. Aucun achat ni asset externe intégré. En attente de revue/intégration Git selon le cycle de vie.
 
 ### RUN-003 — Comparer l’échelle sur un échantillon représentatif
 
@@ -540,4 +540,4 @@ Livrer une démo 0.9.0 beta complète, équilibrée et testée, avec une distrib
 
 ## Point d’arrêt
 
-RUN-001 est DONE après fusion de la PR #1. RUN-002 est ACTIVE pour l’inventaire et la traçabilité des médias ; ses livrables restent à vérifier. Aucun nouveau merge distant sans autorisation. Après 0.1.0, détailler 0.2.0 à partir du résultat réel.
+RUN-001 est DONE après fusion de la PR #1. RUN-002 est en VERIFY : inventaire et plan d'assets vérifiés localement, correspondance fichier-source reportée par décision humaine à la recette des assets distribués. Sa branche doit être revue/intégrée avant DONE. RUN-003 reste BACKLOG et n'est pas lancée. Après 0.1.0, détailler 0.2.0 à partir du résultat réel.
