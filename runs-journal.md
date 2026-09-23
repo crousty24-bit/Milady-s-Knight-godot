@@ -176,3 +176,7 @@ Les docs/11 et 12 listent chaque média présent, son usage vérifié et l'état
 ### Suivi du 23 septembre 2026 — intégration de RUN-001
 
 La [PR #1](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/1) est passée à `MERGED` sur GitHub le 23 septembre 2026 à 13:52:30 UTC, commit de merge `9f4ecab832154f55a15fe60062d80d0af80512c6` dans `develop` (vérifié par `gh pr view` et `git ls-remote`). L'humain a validé F5 et la fermeture, les vérifications techniques et la revue finale sont satisfaisantes : RUN-001 passe à **DONE**. RUN-002 continue sur sa branche dédiée ; aucune nouvelle run lancée.
+
+### Suivi du 23 septembre 2026 — besoins audio et vérification documentaire
+
+Les familles audio de docs/08 sont attribuées aux jalons 0.1.0–0.9.0 dans docs/12, en complément de la matrice visuelle de docs/13. Les 12 fichiers de jeu recensés existent, les liens relatifs de docs/11–13 pointent vers des fichiers présents, et `git diff --check` ne signale pas d'erreur. Cette vérification porte sur la documentation ; aucune suite Godot n'a été relancée, aucun asset externe intégré. La traçabilité licence/source attend toujours l'emplacement des justificatifs annoncés par l'humain.

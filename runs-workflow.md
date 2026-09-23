@@ -250,7 +250,7 @@ Rendre la base existante reproductible, fixer son échelle et aligner le combat 
 - **Résultat / scope :** Compléter docs/11–13 et les besoins d’animations/VFX de docs/13 ; retracer les 12 médias présents, leurs licences et les manques. Définir source conservée / dérivé de jeu, sans déplacement massif.
 - **Acceptation, test et bugtest :** Chaque média utilisé a une provenance vérifiable ou un remplacement identifié ; les besoins par jalon sont attribués, les achats éventuels restent une décision humaine.
 - **Learning pressenti :** Import, spritesheet, licence, ressource référencée versus fichier seulement présent.
-- **Travail engagé :** branche `feature/run-002-asset-inventory` créée depuis `develop`, avec intégration locale de RUN-001 ; 12 médias de jeu recensés dans docs/11–12, matrice visuelle/animations/VFX par jalon ajoutée dans docs/13. Les preuves de provenance/licence exactes sont encore à rattacher ; l’humain indique en disposer et leur emplacement est demandé. Aucun achat ni asset externe intégré.
+- **Travail engagé :** branche `feature/run-002-asset-inventory` créée depuis `develop`, avec intégration locale de RUN-001 ; 12 médias de jeu recensés dans docs/11–12, besoins audio par jalon ajoutés dans docs/12 et matrice visuelle/animations/VFX par jalon ajoutée dans docs/13. Les preuves de provenance/licence exactes sont encore à rattacher ; l’humain indique en disposer et leur emplacement est demandé. Aucun achat ni asset externe intégré.
 
 ### RUN-003 — Comparer l’échelle sur un échantillon représentatif
 
