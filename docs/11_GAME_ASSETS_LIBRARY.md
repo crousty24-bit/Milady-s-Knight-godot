@@ -106,3 +106,21 @@ pour les assets effectivement normalisés et utilisés par Godot.
 | Free Top-Down Pixel Dungeon Level Game Assets | **Tileset**            | **Level design, item, décors, pièges, coffres** | https://free-game-assets.itch.io/free-2d-top-down-pixel-dungeon-asset-pack                         | 🔴     | ✅   |
 | Fantasy Skeleton Army                         | **Asset Pack**         | **Mobs, skeleton, top-down**                    | https://blpixelartist.itch.io/fantasyskeletonarmy                                                  | 🟠     | ✅   |
 | 2D Platformer Tiles - Dungeon's End           | **Platformer Tileset** | **Platformer, level design**                    | https://gtajima.itch.io/2d-platformer-tiles-castle                                                 | 🟠     | ✅   |
+
+---
+
+## RUN-002 — Médias visuels présents dans le dépôt (23 septembre 2026)
+
+Cette section distingue les fichiers **réellement présents** des packs candidats listés plus haut. Un lien ou le marqueur `DL ✅` dans la liste de candidats ne démontre ni que le fichier du jeu provient de ce pack, ni que sa licence autorise la distribution. Les besoins à produire par jalon et les animations/VFX sont dans [13_ASSET_REQUIREMENTS.md](13_ASSET_REQUIREMENTS.md#run-002--livrables-visuels-par-jalon-planification-23-septembre-2026).
+
+| Fichier présent | Référence vérifiée dans le projet | Usage actuel | Provenance et licence du fichier présent |
+| --- | --- | --- | --- |
+| `assets/sprites/knight.png` | `scenes/player.tscn` | Spritesheet du joueur ; animations idle, run, jump et dead déclarées dans la scène. | À établir par une source et une licence rattachées au fichier exact. |
+| `assets/sprites/slime_green.png` | `scenes/slime.tscn` | Boucle de quatre frames Green. | À établir. |
+| `assets/sprites/slime_purple.png` | `scenes/slime.tscn` | Boucle de quatre frames Purple. | À établir. |
+| `assets/sprites/coin.png` | `scenes/coin.tscn` | Boucle de douze frames. | À établir. |
+| `assets/sprites/world_tileset.png` | `scenes/vertical_slice.tscn` et `assets/kingdom_tileset.tres` | Terrain actuel ; la ressource externe `.tres` n'est pas référencée par la scène de jeu inspectée. | À établir. |
+| `assets/sprites/platforms.png` | Aucune référence `res://` trouvée dans les scènes, scripts et `project.godot` inspectés. | Fichier présent, non confirmé comme utilisé. | À établir avant une éventuelle intégration ou distribution. |
+| `assets/fonts/PixelOperator8.ttf` | `scenes/hud.tscn`, `scripts/coin.gd`, `scripts/kingdom.gd` | Police de l'interface et des étiquettes. | À établir. |
+
+**Traçabilité à compléter avant distribution :** pour chaque fichier retenu, consigner le fichier ou pack d'origine exact, auteur, URL officielle ou archive d'achat, version, licence, conditions d'attribution et modifications effectuées. En l'absence de preuve rattachable au fichier, choisir un remplacement documenté et conserver son original dans `assets/source/` avant de créer le dérivé de jeu. Ne pas déplacer ni renommer en masse les médias actuels pendant l'inventaire.
