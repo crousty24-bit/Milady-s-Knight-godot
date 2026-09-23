@@ -21,8 +21,8 @@ Le terrain plat et les arbres sont une maquette inspirée des éléments du slic
 
 Les dimensions opaques viennent de `Image.get_used_rect()` sur les frames de repos sélectionnées ; elles ne décrivent pas toutes les animations. Les contours jaunes sont des rectangles indicatifs : la collision joueur réelle est une capsule et aucun test physique de la variante 32 n'a été effectué.
 
-## Lecture et décision en attente
+## Lecture et décision
 
 À 16, les sprites actuels paraissent très petits à 640×360 : la frame de 32 px du joueur ne contient que 19 px opaques en hauteur. À 32, les silhouettes et le danger occupent davantage l'écran, mais les pixels du chevalier et du Slime sont simplement doublés et deviennent plus grossiers. La taille des frames ne doit donc pas être confondue avec la hauteur opaque, et la grille du terrain peut rester à 16 même si les futurs personnages ont une silhouette plus grande ou plus détaillée.
 
-**Hypothèse conservée :** grille de terrain 16×16, conforme à l'art bible, avec réévaluation de la taille opaque des personnages et des collisions lors de l'intégration de leurs véritables assets. Aucun changement de grille de production n'est appliqué. Une décision humaine explicite sur 16 ou sur un nouvel essai 32 avec de vrais assets représentatifs reste nécessaire avant la production des biomes. La comparaison complète avec N1, humanoïde et coffre finaux attend aussi que ces éléments existent.
+**Décision humaine du 23 septembre 2026 :** grille de terrain **16×16 retenue**, conforme à l'art bible, avec réévaluation de la taille opaque des personnages et des collisions lors de l'intégration de leurs véritables assets. Aucun changement de grille ou de résolution du prototype n'est nécessaire ici. La comparaison avec N1 et les assets humanoïde/coffre finaux sera possible lorsqu'ils existeront ; elle servira à ajuster leurs proportions et collisions, sans remettre automatiquement en cause la grille retenue.
