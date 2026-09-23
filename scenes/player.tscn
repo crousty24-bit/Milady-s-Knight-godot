@@ -101,13 +101,6 @@ monitoring = false
 [node name="Shape" type="CollisionShape2D" parent="AttackArea"]
 shape = SubResource("blade")
 [node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(32, -38)
-limit_left = 0
-limit_top = -224
-limit_right = 2240
-limit_bottom = 304
-position_smoothing_enabled = true
-position_smoothing_speed = 7.0
 [node name="JumpSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("3")
 volume_db = -15.0

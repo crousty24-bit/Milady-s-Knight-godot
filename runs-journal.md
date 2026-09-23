@@ -208,3 +208,27 @@ L'essai 32 agrandit les sprites actuels sans ajouter de détail source ; l'human
 ### Décision humaine du 23 septembre 2026 et passage en VERIFY
 
 L'humain retient explicitement la grille **16×16**, conforme à l'art bible, et demande de réévaluer la taille opaque des personnages et leurs collisions lors de l'intégration de leurs véritables assets. La maquette 32 ne comporte pas de nouveaux détails source et les éléments N1/humanoïde/coffre finaux restent absents ; ces limites sont conservées dans le compte rendu. La décision est reportée dans docs/06, docs/13, le workflow et le learning. `docs/media/.gdignore` évite l'import inutile des captures par Godot ; un nouvel import sous Godot Windows 4.7.2 s'est terminé avec code 0 et sans erreur, sans régénérer leurs fichiers `.import`. `git diff --check` est passé. À l'autorisation humaine, la branche a été poussée et la [PR #4](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/4) est ouverte vers `develop`. RUN-003 reste en VERIFY jusqu'à la revue humaine et à l'intégration ; aucun merge n'est présumé.
+
+### Clôture du 23 septembre 2026
+
+L'humain confirme que RUN-003 est vérifiée et la PR fusionnée. `git fetch origin` montre la [PR #4](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/4) fusionnée dans `origin/develop` au commit `1b99bb4`. RUN-003 passe à **DONE** ; sa décision de grille 16×16 et la réévaluation ultérieure des silhouettes/collisions sont conservées.
+
+## RUN-004 — Résolution et cadrage du prototype
+
+**Date :** 2026-09-23 · **Statut : VERIFY local** · **Branche :** `feature/run-004-resolution-camera`, créée depuis `origin/develop` à `1b99bb4` avec un arbre propre. Aucun push ni PR effectué.
+
+### Changement réalisé
+
+- `project.godot` passe le viewport de 320×180 à **640×360** ; la fenêtre initiale 1280×720, le stretch `viewport`/`integer`, le filtrage nearest et le pixel snapping restent actifs. Aucun niveau, coordonnée ni collision n'est redimensionné.
+- Le HUD conserve ses informations, mais ses bandeaux, le hint et l'overlay suivent désormais les bords du viewport. Police de 12 px pour les informations courantes, 16 px pour le titre d'overlay ; la pause s'ancre à droite. Les captures de départ, pause, mort et victoire sont conservées dans `docs/media/run-004-*.png`.
+- La caméra réutilisable du joueur ne porte plus les limites et offsets propres au slice. `scripts/level.gd` définit les limites `(0, -224, 2240, 304)`, l'offset `(32, -38)` et le smoothing `7` pour le niveau existant. La transition locale à `-54` lors de l'escalade est supprimée : à 640×360 elle déplaçait le cadre de 16 px sans apporter de visibilité utile au sommet. La caméra calcule désormais son suivi au tick physique, comme le joueur.
+
+### Vérification exécutée
+
+Le runner `GODOT_BIN=...Godot_v4.7.2-stable_win64_console.exe ./tools/test.sh` a importé le projet sans erreur, puis réussi **150 contrôles de jeu et 1 contrôle d'isolation `user://`**, 11 suites, code 0, sur la version finale. Logs : `work/test-results/run-bl4nYu5Z/` (local, ignoré par Git). Un premier passage avant la correction du suivi avait également réussi ; la version finale est celle de ce second passage. Les parcours hauts/bas et retours exercés par les suites couvrent sol, double saut, mur, bac, combat, chute, limites et sortie ; les tests clavier couvrent pause et reprise.
+
+Un contrôle graphique indépendant sous **Godot Windows 4.7.2**, OpenGL, a inspecté les captures 640×360 du HUD, de la pause, de la mort et de la victoire : textes et bandeaux non découpés, y compris une réserve bonus maximale. Le rendu a été contrôlé aux fenêtres **640×360 (×1), 1280×720 (×2), 1920×1080 (×3) et 1500×1000 (×2)** ; pour cette dernière, la transform mesurée centre le viewport avec 110 px de bande de chaque côté et 140 px en haut/bas. Les dimensions du viewport et les rectangles du HUD restent 640×360. Captures persistantes dans `docs/media/`, logs graphiques locaux dans `/tmp/milady-472-physics.log` et `/tmp/milady-472-size.log`.
+
+Le subagent a comparé le suivi au sol sur des ticks réels : l'ancien callback de rendu alternait des déplacements de caméra d'environ 1,2/2,4 px pour une marche régulière de 1,75 px/tick ; le callback physique de la version finale progresse régulièrement vers 1,75 px/tick, sans cette oscillation. Le cadrage de départ, du sommet, du bac, de la voie basse et de la fin reste dans les limites du décor. La transition `-54` supprimée ne modifie plus l'image lors du franchissement de sa zone. `git diff --check` et la revue du périmètre ne signalent aucune anomalie.
+
+**Limites :** les captures pause/victoire proviennent d'une fixture qui appelle `set_overlay`, alors que la mort appelle `player.die()` ; les interactions de pause et de sortie sont couvertes séparément par les suites. Les captures de viewport n'incluent pas les bandes physiques des fenêtres hors ratio ; celles-ci sont établies par la transform runtime. Les scripts graphiques temporaires ont produit des avertissements de ressources à la fermeture de leur fixture, sans erreur de chargement ni de rendu. Une revue humaine du résultat local et l'autorisation Git sont encore attendues pour l'intégration ; RUN-005 n'est pas lancée.

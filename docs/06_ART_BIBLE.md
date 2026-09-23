@@ -147,7 +147,7 @@ Les éléments importants pour le gameplay peuvent utiliser davantage de contras
 
 **Décision RUN-003 du 23 septembre 2026 : grille de terrain 16×16 retenue.** La comparaison [RUN-003](RUN-003_SCALE_COMPARISON.md) a été réalisée dans Godot à 640×360, avec joueur, Slime, terrain et maquettes d'humanoïde, décor, piège et coffre. La variante 32 agrandit les sprites existants sans ajouter de détail source ; elle ne valide pas un ensemble artistique 32×32. Le niveau 1 conçu à la main et plusieurs assets finaux n'existent pas encore.
 
-À l'intégration des véritables assets, réévaluer la taille **opaque** des personnages, leur proportion dans la scène et leurs collisions. Un personnage ou un décor peut occuper plusieurs cellules 16×16 ; sa taille de frame n'impose pas la taille de la grille. La résolution interne du jeu sera appliquée dans RUN-004.
+À l'intégration des véritables assets, réévaluer la taille **opaque** des personnages, leur proportion dans la scène et leurs collisions. Un personnage ou un décor peut occuper plusieurs cellules 16×16 ; sa taille de frame n'impose pas la taille de la grille. La résolution interne 640×360 est appliquée en RUN-004 ; la grille du niveau et ses coordonnées restent inchangées.
 
 ### Camera System
 

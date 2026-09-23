@@ -301,3 +301,28 @@ Le terrain du slice utilise des cellules 16×16. Le chevalier a une frame 32×32
 
 - `scenes/scale_comparison.tscn` et `scripts/scale_comparison.gd` : les deux variantes de la maquette.
 - `docs/RUN-003_SCALE_COMPARISON.md` : captures, mesures et limites de la décision.
+
+## RUN-004 — Agrandir le viewport sans agrandir le niveau
+
+### Ce qui a été réalisé
+
+Le jeu dessine désormais dans un viewport **640×360**. Les cellules du terrain, les positions du niveau, les personnages et les collisions gardent leurs dimensions. Le HUD utilise toute la largeur et sa barre d'indication reste au bas de l'écran. La caméra suit le joueur dans le slice avec ses limites propres au niveau.
+
+### Comment cela fonctionne
+
+Le **viewport** est la surface interne que Godot dessine. La fenêtre peut ensuite afficher cette surface à une taille entière : 640×360 à ×1, 1280×720 à ×2 et 1920×1080 à ×3. Avec une fenêtre hors ratio, Godot centre une image entière et laisse des bandes autour. Le réglage `nearest` conserve les pixels nets. Changer le viewport montre davantage de monde autour du joueur ; cela ne multiplie pas les coordonnées des plateformes ou des pièges.
+
+Les **ancrages** des éléments `Control` du HUD décrivent leur position par rapport aux bords du viewport. La barre du bas reste ainsi en bas quand la résolution change, et l'overlay couvre l'espace central. Les textes gardent une marge et une taille lisibles dans les captures de pause, mort et victoire.
+
+La **Camera2D** appartient au joueur, mais le niveau définit ses limites et son décalage : ces valeurs décrivent la géométrie du slice, pas une propriété universelle du personnage. Le joueur avance pendant les ticks physiques. Calculer le suivi de la caméra sur ces mêmes ticks évite l'alternance mesurée quand la caméra était mise à jour pendant le rendu. Le smoothing reste actif pour adoucir le suivi ; les limites empêchent de montrer une zone hors du niveau.
+
+### Exemple concret dans Milady’s Knight
+
+Au sommet du mur, l'ancienne correction locale de caméra remontait le cadre de 16 px. Avec 640×360, le sommet est déjà visible ; cette correction n'aide plus et a été retirée. Le parcours du mur et du bac reste le même, ce que les tests physiques ont vérifié.
+
+### À regarder dans le projet
+
+- `project.godot` : résolution interne et agrandissement entier.
+- `scenes/hud.tscn` : ancrages des bandeaux, textes et overlay.
+- `scenes/player.tscn` et `scripts/level.gd` : caméra générique et cadrage du slice.
+- `docs/media/run-004-*.png` : captures du HUD et des overlays à 640×360.
