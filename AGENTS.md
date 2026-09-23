@@ -17,6 +17,30 @@ Documentation describes intent. Inspect the actual files, references and Git sta
 - Complete authorized local work, including relevant checks and corrections, without asking permission at each step. Ask only for a missing decision that materially affects the result or an authorization boundary; continue independent work meanwhile.
 - Verification must match the risk, change type and scope, and exercise actual behavior for gameplay, collisions, UI, persistence and interactions. Never report an unexecuted test as successful or mark a run `DONE` with a mandatory test outstanding. See the lifecycle and verification guidance in `runs-workflow.md`.
 
+## Model Routing and Cost Control
+
+The user-level Codex technical configuration remains the source of truth.
+Do not add or modify a repository-level .codex/config.toml for the model, reasoning effort, sandbox, or approval settings unless explicitly requested.
+
+For run execution:
+
+- use the configured default main model for normal implementation work;
+- delegate bounded and mechanical tasks to Luna Low by default: targeted inspection, reference lookup, inventories, documentation, journaling, and small    well-specified modifications;
+- keep Sol Medium for normal implementation work requiring system understanding and coordinated changes;
+- use Sol High only for complex debugging, interactions across multiple systems, or when Medium reasoning has proven insufficient;
+- use Astra Medium for major architecture decisions, cross-cutting planning, complex audits, or problems that Sol did not resolve satisfactorily;
+- also prefer Astra Medium for visually sensitive game-development workflows that require significant visual or spatial judgment, such as evaluating art references, generating or adapting visual assets, translating concept art into game-ready assets, integrating visually complex assets into Godot, or validating visual results directly in the running game;
+- do not escalate routine asset operations to Astra when the expected result is already well specified: file organization, renaming, metadata, straightforward imports, known spritesheet slicing, simple resource wiring, and documentation should remain delegated to Luna or Sol as appropriate;
+- Astra High or higher should remain exceptional; do not automatically select XHigh, Max, or Pro.
+
+Before increasing the model tier or reasoning effort:
+
+1. reduce the context to the files actually required;
+2. verify that the run is not too broad;
+3. prefer targeted delegation over escalating the entire task.
+
+Parallelism is a ceiling, not a target: create multiple subagents only for tasks that are genuinely independent.
+
 ## Human changes and safety
 
 - The repository at the start of a run is the new baseline. Identify human changes, preserve them by default, adapt around them and record relevant consequences.
