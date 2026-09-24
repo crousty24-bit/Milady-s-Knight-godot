@@ -173,6 +173,14 @@ Les commits locaux peuvent matérialiser des checkpoints vérifiés pendant ACTI
 | DONE | push + PR ; merge into develop. |
 Une run peut être techniquement terminée et validée localement avant que l'humain ne décide de merger la branche.
 
+#### Revue Jev avant DONE
+
+Pour une run en `VERIFY`, rassembler les critères d'acceptation, les résultats réels des tests obligatoires, le bugtest, les régressions, le journal, le learning, les validations humaines requises et les blocages dans un fichier JSON local. Utiliser le format et la commande de [Run Completion Reviewer](tools/jev/run_completion_reviewer/README.md). Ne pas y placer de secret.
+
+Le reviewer refuse localement les éléments manquants, en attente ou en échec. Si ces contrôles passent, Jev estime si le texte des preuves étaye chaque affirmation. Examiner les probabilités avec les preuves originales et consigner dans `runs-journal.md` la commande, le résultat et toute limite. Une probabilité élevée ne prouve pas l'exécution d'un test ; aucun seuil automatique n'est établi et l'outil ne change jamais le statut.
+
+La décision `VERIFY → DONE` reste fondée sur les critères de la table ci-dessus, les tests réellement observés et les validations humaines requises. Si TypeSafe est indisponible, consigner cette limite et effectuer la revue des preuves directement ; une panne du service ne modifie pas les critères de clôture. Un défaut constaté suit le retour à `ACTIVE` décrit ci-dessus.
+
 ### Vérification proportionnée
 
 Les critères de chaque fiche restent obligatoires. Choisir les contrôles supplémentaires selon le risque et les interactions touchées :

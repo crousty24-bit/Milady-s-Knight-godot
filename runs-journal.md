@@ -53,6 +53,7 @@ Une attente en `VERIFY` peut être consignée, puis complétée par un suivi dat
 - résultat :
 - bugtest :
 - régressions vérifiées :
+- revue Jev avant DONE (si effectuée) : commande, résultat, preuves relues et limites ; sinon motif de la revue directe.
 - validation humaine (si requise) : objet, attente ou résultat reçu.
 
 ### Bugs rencontrés
