@@ -23,7 +23,7 @@ Le joueur incarne **The Ashen Knight**, traverse le royaume corrompu et rejoint 
 - HUD et messages français, sprites du prototype, décor dessiné en partie par code, quatre sons et une musique.
 - Onze suites de tests moteur et des pilotes de parcours.
 
-Le viewport actuel est **320×180**. La référence de production **640×360**, les coffres, le tir, l’équipement, les consommables, les secrets, la narration, le bestiaire avancé et les niveaux 2–10 restent à produire. La fixture de transition dans `tests/fixtures/` ne constitue pas un niveau supplémentaire.
+Le viewport actuel est **640×360** sur une grille de terrain 16×16. Les coffres, le tir, l’équipement, les consommables, les secrets, la narration, le bestiaire avancé et les niveaux 2–10 restent à produire. La fixture de transition dans `tests/fixtures/` ne constitue pas un niveau supplémentaire.
 
 ## Direction et roadmap
 

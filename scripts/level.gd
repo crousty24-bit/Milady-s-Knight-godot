@@ -10,11 +10,21 @@ var paused: bool = false
 var closing: bool = false
 var message_time: float = 0.0
 @onready var player: SlicePlayer = $Player
+@onready var camera: Camera2D = $Player/Camera2D
 @onready var hud = $HUD
 @onready var gate = $GoldGate
 @onready var progression = get_node("/root/Progression")
 func _ready() -> void:
 	get_tree().auto_accept_quit = false
+	# The authored slice owns its camera bounds and framing.
+	camera.position = Vector2(32, -38)
+	camera.limit_left = 0
+	camera.limit_top = -224
+	camera.limit_right = 2240
+	camera.limit_bottom = 304
+	camera.process_callback = Camera2D.CAMERA2D_PROCESS_PHYSICS
+	camera.position_smoothing_enabled = true
+	camera.position_smoothing_speed = 7.0
 	for coin in $Coins.get_children(): coin.collected.connect(_on_collected)
 	for enemy in $Enemies.get_children():
 		register_enemy(enemy)
@@ -25,11 +35,6 @@ func _ready() -> void:
 	_update_gold_hud()
 	hud.set_health(player.health)
 	$Music.play()
-func _physics_process(delta: float) -> void:
-	if paused or player.dead: return
-	var camera_height: float = -54.0 if player.position.x > 570 and player.position.x < 720 and player.position.y < 130 else -38.0
-	var camera: Camera2D = player.get_node("Camera2D")
-	camera.position.y = move_toward(camera.position.y, camera_height, delta * 60.0)
 func _process(delta: float) -> void:
 	if finished and Input.is_action_just_pressed("interact"):
 		if not reward_settled: _settle_reward()

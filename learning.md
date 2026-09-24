@@ -280,3 +280,49 @@ La licence appartient à la source identifiée, pas à un nom de fichier ressemb
 - `docs/11_GAME_ASSETS_LIBRARY.md` et `docs/12_SFX_LIBRARY.md` : fichiers présents, usages vérifiés et état des sources.
 - `docs/13_ASSET_REQUIREMENTS.md` : familles d'assets à produire ou choisir selon les versions.
 - `scenes/player.tscn` et `scenes/vertical_slice.tscn` : exemples de références effectivement chargées par Godot.
+
+## RUN-003 — Choisir la grille visuelle
+
+### Ce qui a été réalisé
+
+Une scène d'essai Godot compare une grille 16×16 et une grille 32×32 dans deux captures de 640×360. Le choix validé est **16×16 pour le terrain**. Le jeu garde encore son viewport 320×180 ; son changement relève de RUN-004.
+
+### Comment cela fonctionne
+
+Une **cellule de terrain** sert à placer les blocs du niveau. La **frame** d'un sprite est le rectangle réservé à une image d'animation ; elle peut contenir de la transparence. Le chevalier actuel occupe une frame de 32×32, mais seulement 13×19 pixels sont opaques sur la frame de repos mesurée. La frame ne donne donc pas directement la taille perçue du personnage.
+
+Une **collision** est une forme définie séparément du dessin. Le joueur utilise une capsule de 10 px de large et 18 px de haut, le Slime un rectangle de 14×12. Agrandir un sprite ne règle pas automatiquement ses collisions ni sa lisibilité. L'essai 32 double les images existantes et leurs contours indicatifs ; il ne représente pas un nouvel art détaillé.
+
+### Exemple concret dans Milady's Knight
+
+Le terrain du slice utilise des cellules 16×16. Le chevalier a une frame 32×32 et peut donc occuper plusieurs cellules sans changer cette grille. Quand son véritable sprite sera intégré, on examinera sa silhouette opaque à l'écran, puis sa capsule de collision sur les animations utiles avant de fixer ses dimensions.
+
+### À regarder dans le projet
+
+- `scenes/scale_comparison.tscn` et `scripts/scale_comparison.gd` : les deux variantes de la maquette.
+- `docs/RUN-003_SCALE_COMPARISON.md` : captures, mesures et limites de la décision.
+
+## RUN-004 — Agrandir le viewport sans agrandir le niveau
+
+### Ce qui a été réalisé
+
+Le jeu dessine désormais dans un viewport **640×360**. Les cellules du terrain, les positions du niveau, les personnages et les collisions gardent leurs dimensions. Le HUD utilise toute la largeur et sa barre d'indication reste au bas de l'écran. La caméra suit le joueur dans le slice avec ses limites propres au niveau.
+
+### Comment cela fonctionne
+
+Le **viewport** est la surface interne que Godot dessine. La fenêtre peut ensuite afficher cette surface à une taille entière : 640×360 à ×1, 1280×720 à ×2 et 1920×1080 à ×3. Avec une fenêtre hors ratio, Godot centre une image entière et laisse des bandes autour. Le réglage `nearest` conserve les pixels nets. Changer le viewport montre davantage de monde autour du joueur ; cela ne multiplie pas les coordonnées des plateformes ou des pièges.
+
+Les **ancrages** des éléments `Control` du HUD décrivent leur position par rapport aux bords du viewport. La barre du bas reste ainsi en bas quand la résolution change, et l'overlay couvre l'espace central. Les textes gardent une marge et une taille lisibles dans les captures de pause, mort et victoire.
+
+La **Camera2D** appartient au joueur, mais le niveau définit ses limites et son décalage : ces valeurs décrivent la géométrie du slice, pas une propriété universelle du personnage. Le joueur avance pendant les ticks physiques. Calculer le suivi de la caméra sur ces mêmes ticks évite l'alternance mesurée quand la caméra était mise à jour pendant le rendu. Le smoothing reste actif pour adoucir le suivi ; les limites empêchent de montrer une zone hors du niveau.
+
+### Exemple concret dans Milady’s Knight
+
+Au sommet du mur, l'ancienne correction locale de caméra remontait le cadre de 16 px. Avec 640×360, le sommet est déjà visible ; cette correction n'aide plus et a été retirée. Le parcours du mur et du bac reste le même, ce que les tests physiques ont vérifié.
+
+### À regarder dans le projet
+
+- `project.godot` : résolution interne et agrandissement entier.
+- `scenes/hud.tscn` : ancrages des bandeaux, textes et overlay.
+- `scenes/player.tscn` et `scripts/level.gd` : caméra générique et cadrage du slice.
+- `docs/media/run-004-*.png` : captures du HUD et des overlays à 640×360.
