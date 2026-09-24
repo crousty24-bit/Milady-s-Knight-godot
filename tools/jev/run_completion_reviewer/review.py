@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Ask Jev whether supplied run-completion evidence supports its claims."""
+"""Request an advisory Jev review of a run's written completion evidence."""
 
 from __future__ import annotations
 
@@ -11,9 +11,9 @@ from pathlib import Path
 from typing import Any
 
 try:
-    from typesafe_sdk import Noul, TypeSafeClient
+    from typesafe_sdk import Choice, Noul, TypeSafeClient
 except ImportError:  # pragma: no cover - user-facing setup error
-    Noul = TypeSafeClient = None  # type: ignore[assignment,misc]
+    Choice = Noul = TypeSafeClient = None  # type: ignore[assignment,misc]
 
 
 ALLOWED_ITEM_STATUSES = {"passed", "not_applicable"}
@@ -56,11 +56,11 @@ def validate(payload: Any) -> tuple[list[dict[str, str]], list[str]]:
             name = f"{label} {item_id}"
             if not _nonempty(description):
                 blockers.append(f"{name}: description is missing.")
-            if status not in allowed_statuses:
+            if not isinstance(status, str) or status not in allowed_statuses:
                 blockers.append(f"{name}: status must be one of {sorted(allowed_statuses)}; got {status!r}.")
             if not _nonempty(evidence):
                 blockers.append(f"{name}: evidence or an N/A reason is missing.")
-            if _nonempty(description) and status in allowed_statuses and _nonempty(evidence):
+            if _nonempty(description) and isinstance(status, str) and status in allowed_statuses and _nonempty(evidence):
                 evidence_items.append({
                     "id": f"{field}_{index}",
                     "label": name,
@@ -127,7 +127,7 @@ def collect_items_from_object(
 ) -> None:
     status = row.get("status")
     evidence = row.get("evidence")
-    if status not in allowed_statuses:
+    if not isinstance(status, str) or status not in allowed_statuses:
         blockers.append(f"{label}: status must be one of {sorted(allowed_statuses)}; got {status!r}.")
     if not _nonempty(evidence):
         blockers.append(f"{label}: evidence or an N/A reason is missing.")
@@ -136,7 +136,7 @@ def collect_items_from_object(
         blockers.append(f"{label}: description must be a non-empty string when supplied.")
     if (
         review_with_jev
-        and status in allowed_statuses
+        and isinstance(status, str) and status in allowed_statuses
         and _nonempty(evidence)
         and _nonempty(description)
     ):
@@ -149,53 +149,78 @@ def collect_items_from_object(
         })
 
 
-def review(payload: dict[str, Any], evidence_items: list[dict[str, str]]) -> dict[str, Any]:
-    if TypeSafeClient is None or Noul is None:
+def review(payload: dict[str, Any]) -> dict[str, Any]:
+    if TypeSafeClient is None or Noul is None or Choice is None:
         raise RuntimeError("TypeSafe SDK is missing; install tools/jev/run_completion_reviewer/requirements.txt.")
     if not os.environ.get("TYPESAFE_API_KEY"):
         raise RuntimeError("TYPESAFE_API_KEY is not set in this shell.")
 
     state = {
         "run_id": payload["run_id"],
-        "project_policy": (
-            "A run can be DONE only when its acceptance criteria are satisfied, required tests really ran and passed, "
-            "relevant bugtests and regressions are complete, the journal and learning are current, and every required "
-            "human validation has been received. Written evidence does not prove that an action occurred."
+        "acceptance_criteria": payload["acceptance_criteria"],
+        "required_checks": payload["required_checks"],
+        "bugtest": payload["bugtest"],
+        "regressions": payload["regressions"],
+        "journal": payload["journal"],
+        "learning": payload["learning"],
+        "human_validation": payload["human_validation"],
+        "open_blockers": payload["open_blockers"],
+        "review_scope": (
+            "Evaluate only the supplied written claims and evidence. The Python precheck already verifies "
+            "declared statuses and explicit blockers. Neither Jev nor this dossier proves that tests actually ran. "
+            "A Jev result never changes the run status or replaces required human validation."
         ),
     }
     questions = {
-        item["id"]: Noul(
-            instructions={
-                "question": (
-                    "Does the supplied evidence explicitly support the stated status for this run-completion item? "
-                    "Judge only what the text says. A claim that a test passed is not proof unless the evidence states "
-                    "an observed result; missing, vague, or contradictory evidence should receive a low probability."
-                ),
-                "item": item["label"],
-                "description": item["description"],
-                "status": item["status"],
-                "evidence": item["evidence"],
-            }
-        )
-        for item in evidence_items
+        "acceptance_criteria_coverage": Noul(instructions=(
+            "Do the written results and evidence in `acceptance_criteria` sufficiently cover every declared "
+            "acceptance criterion for this run? Judge textual coherence and coverage only, not whether tests ran. "
+            "Answer no for vague, absent, or contradictory support."
+        )),
+        "required_verification_complete": Noul(instructions=(
+            "Do the written evidence in `required_checks`, `bugtest`, and `regressions` indicate that every "
+            "mandatory verification was completed successfully? Look for unexecuted tests, unresolved failures, "
+            "incomplete bugtests, unchecked regressions, and missing controls. Judge the text, not actual execution."
+        )),
+        "blocking_issue_present": Noul(instructions=(
+            "Do the supplied evidence or limitations indicate an unresolved issue that reasonably prevents "
+            "closure? Consider unvalidated behavior, known defects, scope conflicts, pending human validation, "
+            "and contradictions needing inspection. Answer yes when such an issue is indicated."
+        )),
+        "completion_status": Choice(
+            instructions=(
+                "Which advisory completion status best fits the entire written dossier? Judge its coherence "
+                "and limitations. If text explicitly reports an unresolved failed mandatory check, choose BLOCKED "
+                "even when its declared status says passed. This is never the official workflow status."
+            ),
+            criteria={
+                "READY_FOR_DONE": "The text coherently supports proposing the run for human closure review; no obvious issue is visible.",
+                "VERIFY": "The text is insufficient or ambiguous, without a concrete unresolved failure established.",
+                "BLOCKED": "The text establishes a concrete unresolved issue or failed mandatory check incompatible with closure.",
+            },
+        ),
     }
 
     with TypeSafeClient() as client:
         response = client.system_one(model="jev-latest", state=state, questions=questions)
 
-    answers = [
-        {
-            "item": item["label"],
-            "probability_evidence_supports_status": response.answers[item["id"]].noul,
-        }
-        for item in evidence_items
-    ]
+    nouls = {name: response.answers[name].noul for name in (
+        "acceptance_criteria_coverage", "required_verification_complete", "blocking_issue_present"
+    )}
+    status = response.answers["completion_status"]
     return {
         "run_id": payload["run_id"],
         "model": response.model,
-        "recommendation": "inspect_evidence_reviews",
-        "note": "No probability threshold is calibrated; Jev cannot authorize or perform a VERIFY-to-DONE transition.",
-        "evidence_reviews": answers,
+        "decisions": {
+            **{name: {"probability_yes": probability} for name, probability in nouls.items()},
+            "completion_status": {
+                "choice": status.choice,
+                "confidence": status.confidence,
+                "probabilities": status.probabilities,
+            },
+        },
+        "final_workflow_action": "HUMAN_REVIEW_REQUIRED",
+        "note": "Uncalibrated probabilities are advisory; inspect original evidence. Jev never authorizes DONE.",
         "usage": {
             "input_tokens": response.usage.input_tokens,
             "output_tokens": response.usage.output_tokens,
@@ -203,9 +228,31 @@ def review(payload: dict[str, Any], evidence_items: list[dict[str, str]]) -> dic
     }
 
 
+def format_review(result: dict[str, Any]) -> str:
+    decisions = result["decisions"]
+    labels = (
+        ("acceptance_criteria_coverage", "Acceptance criteria coverage"),
+        ("required_verification_complete", "Required verification complete"),
+        ("blocking_issue_present", "Blocking issue present"),
+    )
+    lines = ["JEV RUN COMPLETION REVIEW", result["run_id"], ""]
+    for key, label in labels:
+        lines.extend((label, f"probability of yes: {decisions[key]['probability_yes']:.3f}", ""))
+    status = decisions["completion_status"]
+    lines.extend((
+        "Completion status", status["choice"], f"confidence: {status['confidence']:.3f}",
+        "option probabilities: " + ", ".join(
+            f"{key}={value:.3f}" for key, value in status["probabilities"].items()
+        ), "", "Final workflow action", "HUMAN REVIEW REQUIRED", "",
+        "Jev judged written evidence only. Inspect the original records before changing workflow status.",
+    ))
+    return "\n".join(lines)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("input", type=Path, help="JSON evidence bundle for one run")
+    parser.add_argument("--json", action="store_true", help="Print the full machine-readable result")
     args = parser.parse_args()
 
     try:
@@ -214,7 +261,7 @@ def main() -> int:
         print(json.dumps({"error": f"Cannot read valid JSON input: {exc}"}), file=sys.stderr)
         return 2
 
-    evidence_items, blockers = validate(payload)
+    _, blockers = validate(payload)
     if blockers:
         print(json.dumps({
             "run_id": payload.get("run_id") if isinstance(payload, dict) else None,
@@ -224,7 +271,7 @@ def main() -> int:
         }, ensure_ascii=False, indent=2))
         return 1
 
-    if TypeSafeClient is None or Noul is None:
+    if TypeSafeClient is None or Noul is None or Choice is None:
         print(json.dumps({
             "run_id": payload["run_id"],
             "recommendation": "review_unavailable",
@@ -242,7 +289,7 @@ def main() -> int:
         return 2
 
     try:
-        result = review(payload, evidence_items)
+        result = review(payload)
     except Exception as exc:  # SDK/network errors go back to the operator without a DONE decision.
         print(json.dumps({
             "run_id": payload["run_id"],
@@ -252,7 +299,7 @@ def main() -> int:
         }, ensure_ascii=False, indent=2))
         return 2
 
-    print(json.dumps(result, ensure_ascii=False, indent=2))
+    print(json.dumps(result, ensure_ascii=False, indent=2) if args.json else format_review(result))
     return 0
 
 
