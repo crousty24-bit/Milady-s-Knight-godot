@@ -69,7 +69,7 @@ run_check() {
 
 run_check import 180 --headless --editor --import --quit
 run_check user-data-path 30 --headless --script res://tests/user_data_path.gd
-for suite in movement physics mobility combat platform boundaries keyboard integration bonus routes backtracking; do
+for suite in movement physics mobility combat platform boundaries keyboard integration bonus routes backtracking damage_profiles; do
   run_check "$suite" 90 --headless --fixed-fps 60 --script "res://tests/$suite.gd"
 done
-printf '11 suites terminées ; isolation user:// vérifiée. Logs : %s\n' "$results_dir"
+printf '12 suites terminées ; isolation user:// vérifiée. Logs : %s\n' "$results_dir"

@@ -33,7 +33,7 @@ func _ready() -> void:
 	gate.offering_requested.connect(try_offering)
 	$ExitArea.body_entered.connect(_on_exit)
 	_update_gold_hud()
-	hud.set_health(player.health)
+	hud.set_health(player.health, player.max_health)
 	$Music.play()
 func _process(delta: float) -> void:
 	if finished and Input.is_action_just_pressed("interact"):

@@ -3,7 +3,7 @@
 ## Statut de cette planification
 
 Audit documentaire et inspection du dépôt effectués le **21 septembre 2026**, à partir de l’état de travail courant, et non du seul commit `0870462`.
-**RUN-001 à RUN-004 DONE ; RUN-005 VERIFY, résultat validé par l’humain.** Les [PR #1](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/1), [#2](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/2), [#4](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/4) et [#5](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/5) sont fusionnées dans `develop` ; les validations humaines de RUN-003 et RUN-004 sont confirmées. RUN-006 à RUN-011 restent `BACKLOG`. Les versions suivantes seront affinées après chaque jalon.
+**RUN-001 à RUN-005 DONE ; RUN-006 VERIFY local.** Les PR #1, #2, #4, #5 et [#8](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/8) sont fusionnées dans `develop`. RUN-007 à RUN-011 restent `BACKLOG`. Les versions suivantes seront affinées après chaque jalon.
 
 La cible finale validée est **0.9.0 beta**, une démo de dix niveaux conçus à la main. `0.1.0` est un premier jalon technique de production, pas une étiquette affirmant que le dépôt actuel satisfait déjà les nouvelles règles. Les numéros sont des cibles validées ; des patchs `0.x.1`, etc., pourront contenir des corrections vérifiées sans renommer arbitrairement les runs.
 
@@ -118,7 +118,7 @@ Aucune valeur non définie ci-dessous n’est implicitement décidée par la roa
 
 | ID | Question concrète / source | Jalon qui doit la résoudre |
 | --- | --- | --- |
-| D01 | `01`/`04`/`05` : PV joueur affichés en demi-cœurs, dégâts Fire Gauntlet de 0,2 sur les ennemis : représentation numérique adaptée aux deux, sans inventer de dégâts joueur à 0,2 ; effet immédiat d’un bonus MAX HP sur CURRENT HP à préciser. | Santé en 0.1, bonus HP en 0.4. |
+| D01 | RUN-006 : santé stockée en dixièmes entiers, texte HUD exact et cœurs arrondis au demi-cœur supérieur. L'effet immédiat d'un bonus MAX HP sur CURRENT HP reste à préciser. | Santé en 0.1, bonus HP en 0.4. |
 | D02 | `01`/`04` : RANGE en unités à relier aux tiles ; variation des stats selon armes/niveaux, ATK SPEED positif jusqu’au niveau 5 ; timings de hit-stun/recul et seuil/rayon du slam encore ouverts. | Sword en 0.1, tables en 0.3, slam en 0.5. |
 | D03 | `03` : « sauvegarde uniquement au passage de niveau » versus équipement/uniques sauvés aussi après fermeture en plein niveau. Choisir les événements de sauvegarde durable et le snapshot de tentative. | Contrat de persistance 0.2 avant tout schéma. |
 | D04 | `03`/`04` : ordre de dépense banque/gains, banque après dépense puis mort, base retenue à 20/50 %, croissance des prix/poids/drop soins, gains de swarm/invocations et farm possible, seconde offrande sans première. Migration de l’ancien bonus (qui inclut du surplus de coins) à décider, sans conversion silencieuse. | Contrat 0.2, tables 0.3, swarm 0.4, offrandes 0.5/0.6. |
@@ -283,7 +283,7 @@ Rendre la base existante reproductible, fixer son échelle et aligner le combat 
 
 ### RUN-005 — Adopter les actions clavier de production
 
-**Priorité : P0 · Statut : VERIFY · Dépendances : RUN-001 (DONE).**
+**Priorité : P0 · Statut : DONE · Dépendances : RUN-001 (DONE).**
 
 - **Résultat / scope :** Flèches, Space, E, maintien F, G, R spécial, A équipement, Escape ; retirer le reset direct R au profit du futur menu. G/R/A peuvent rester sans effet tant que leur système manque.
 - **Acceptation, test et bugtest :** Vrais événements clavier, aucune collision R spécial/reset ; menus et gameplay ne consomment pas le même appui deux fois ; aucun support souris/manette ajouté.
@@ -291,15 +291,17 @@ Rendre la base existante reproductible, fixer son échelle et aligner le combat 
 - **Périmètre précisé au lancement :** `project.godot`, `scripts/player.gd`, `scripts/level.gd`, tests clavier/intégration/bonus et documentation des commandes. Les flèches remplacent Q/D/Z/S ; F répète les frappes ; G/R/A sont des actions mappées sans capacité nouvelle. La mort et la victoire finale proposent `E` pour rejouer, sans redémarrage volontaire pendant une tentative avant le futur menu de pause. Le dialogue, l'équipement, les capacités et le menu complet restent hors de cette run.
 - **Résultat vérifié localement :** import Godot 4.7.2 et 11 suites réussis, 170 contrôles de jeu et un contrôle d'isolation `user://`. Événements clavier réels pour les flèches, Space, E, F maintenu, G/R/A et Escape ; `R` sans reset, `E` bloqué pendant pause puis actionné une seule fois au portail après nouvelle pression. Après validation humaine du premier résultat, ajustement de la réponse horizontale et du cycle F à 0,28 s, avec direction du coup fixée pendant sa fenêtre de contact. Détails et limites dans `runs-journal.md` ; aucun push, PR ni fusion.
 - **Validation humaine du 25 septembre 2026 :** ressenti du réglage vérifié et validé pour l’instant ; push de la branche et ouverture d’une PR vers `develop` explicitement autorisés. La cadence reste provisoire jusqu’à l’ATK SPEED des armes.
-- **Livraison Git :** branche poussée et [PR #8](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/8) ouverte vers `develop` ; revue et fusion en attente. RUN-005 reste en VERIFY.
+- **Livraison Git :** branche poussée et [PR #8](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/8) fusionnée dans `develop` au commit `95ec7f9` le 25 septembre 2026. RUN-005 est DONE.
 
 ### RUN-006 — Unifier la santé fractionnaire et les réactions aux dégâts
 
-**Priorité : P0 · Statut : BACKLOG · Dépendances : RUN-005.**
+**Priorité : P0 · Statut : VERIFY local · Dépendances : RUN-005 (DONE).**
 
 - **Résultat / scope :** Faire évoluer santé joueur/ennemi et signaux pour 0,5 HP et 0,2 DMG ; fixer la représentation numérique et l’affichage arrondi avant les consommables (D01). Contrat minimal contact/mêlée, projectile, piège solide, flamme, swarm et vide ; appliquer les réactions définies sans construire tout le bestiaire. Bloquer réellement attaque durant hit-stun et saut durant recul ; régler les durées par essai et préserver les décisions de mobilité existantes sauf preuve contraire.
 - **Acceptation, test et bugtest :** Suites de dégâts 0,5 et 0,2, zéro exact, soin borné, mort unique ; aucune perte par conversion int et aucun HP négatif. Matrice de sources dans une fixture : invulnérabilité, interruption, hit-stun et knockback conformes ; le vide reste fatal. F/Space maintenus ou pressés pendant impact, mur, atterrissage, plusieurs contacts ; reprise des actions à la fin exacte du blocage.
 - **Learning pressenti :** Types numériques, précision, signaux et bornes de santé. Données de dégâts, responsabilité de la source et du receveur. Timers, états concurrents et priorité des actions.
+- **Périmètre réalisé :** Santé et dégâts représentés en dixièmes entiers, API et signaux en HP fractionnaires ; HUD numérique exact et cœurs arrondis au demi-cœur supérieur. Profils joueur contact/mêlée, projectile, piège solide, flamme, swarm et vide. L'humain a choisi pour la flamme le profil du piège : invulnérabilité et recul. Le Slime accepte 0,2 DMG sans perte de précision. Aucun nouvel ennemi, projectile ou pouvoir n'est créé.
+- **Vérification locale :** Godot 4.7.2 : import, isolation `user://`, 12 suites et 242 contrôles de jeu réussis ; trois captures HUD inspectées. Les durées initiales 0,18 s de hit-stun et 0,16 s de recul sont provisoires, soumises au ressenti de jeu en VERIFY. Détails dans `runs-journal.md`.
 
 ### RUN-007 — Aligner le combat Sword et les Slimes existants
 
@@ -557,4 +559,4 @@ Livrer une démo 0.9.0 beta complète, équilibrée et testée, avec une distrib
 
 ## Point d’arrêt
 
-RUN-001 à RUN-004 sont DONE après fusion des PR #1, #2, #4 et #5. La correspondance fichier-source reste reportée par décision humaine à la recette des assets distribués. Les catalogues 11–12 deviennent locaux et ignorés par Git. La grille 16×16 est retenue après comparaison visuelle, avec les limites de la maquette consignées. Le prototype utilise désormais un viewport 640×360. RUN-005 est en VERIFY avec résultat validé par l’humain ; RUN-006 n'est pas lancée. Après 0.1.0, détailler 0.2.0 à partir du résultat réel.
+RUN-001 à RUN-005 sont DONE après fusion des PR #1, #2, #4, #5 et #8. La correspondance fichier-source reste reportée par décision humaine à la recette des assets distribués. Les catalogues 11–12 deviennent locaux et ignorés par Git. La grille 16×16 est retenue après comparaison visuelle, avec les limites de la maquette consignées. Le prototype utilise désormais un viewport 640×360. RUN-006 est en VERIFY local pour apprécier le ressenti des réactions aux dégâts ; RUN-007 n'est pas lancée. Après 0.1.0, détailler 0.2.0 à partir du résultat réel.

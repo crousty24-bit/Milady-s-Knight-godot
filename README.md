@@ -84,7 +84,7 @@ Suite complète (Bash, `rg`, `timeout` et `mktemp` requis) :
 GODOT_BIN=/chemin/vers/godot ./tools/test.sh
 ```
 
-Cette commande importe le projet, vérifie le chemin effectif de `user://`, puis exécute les onze suites. Chaque invocation écrit ses logs dans `work/test-results/run-*`. Les erreurs moteur, un échec, un timeout ou une fin de suite absente font échouer la commande, même si Godot retourne 0.
+Cette commande importe le projet, vérifie le chemin effectif de `user://`, puis exécute les douze suites. Chaque invocation écrit ses logs dans `work/test-results/run-*`. Les erreurs moteur, un échec, un timeout ou une fin de suite absente font échouer la commande, même si Godot retourne 0.
 
 Les données utilisateur et la configuration sont isolées dès l’import : profil XDG sous Linux ; profil NTFS temporaire transmis à `APPDATA`/`LOCALAPPDATA` sous Windows via WSL. Ce dernier mode requiert `wslpath` et PowerShell Windows. Le profil est supprimé après succès et conservé après échec ; les logs restent disponibles. Le lancement normal via `run.sh` conserve la sauvegarde habituelle. Pour un import depuis zéro sans toucher au cache de travail, lancer la suite dans une copie du dépôt dépourvue de `.godot/` et `work/`.
 

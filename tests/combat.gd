@@ -104,6 +104,7 @@ func run() -> void:
 	contact.position = Vector2(170, 200)
 	await frames(4)
 	check(player.health == 2, "credible physical overlap deals one contact damage")
+	check(player.hit_stun_time > 0.0 and player.knockback_time > 0.0, "actual Slime collision applies stun and recoil")
 	await frames(8)
 	check(player.health == 2, "invulnerability prevents immediate repeated contact damage")
 	await spawn()

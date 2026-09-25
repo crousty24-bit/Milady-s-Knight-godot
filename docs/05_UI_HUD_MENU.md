@@ -20,6 +20,7 @@
 	- elle affiche dans la zone supérieure gauche : 
 		- l'avatar du joueur : purement stylistique, n'apporte aucune information sur le gameplay => **A DEFINIR** si pertinent (après premiers playtests réels) où si consomme trop d'espace et gène visuellement
 		- les HP du joueur répartis sur 2 lignes, icon coeurs : les coeurs s'affichent visuellement par coeurs entiers ou par demi-coeurs
+			- pour les HP fractionnaires, la valeur numérique reste exacte ; l'icône arrondit vers le demi-cœur supérieur afin qu'un joueur encore vivant conserve un demi-cœur visible (décision RUN-006)
 		- un compteur de gold coins avec une icon : x gold coin /12
 		- un compteur de shards : doit afficher les current shards collectés (+35) et les saved shards (/50)
 		- les 2 slots d'armes affichés verticalement : slot 1 (mêlée) et slot 2 (tir)

@@ -12,8 +12,11 @@ func _compact(value: int) -> String:
 	if value < 1000000: return "%.1fk" % (value / 1000.0)
 	if value < 1000000000: return "%.1fM" % (value / 1000000.0)
 	return "%.1fG" % (value / 1000000000.0)
-func set_health(value: int) -> void:
-	$Health.text = "VIE " + "◆".repeat(value) + "◇".repeat(3-value)
+func set_health(value: float, maximum: float = 3.0) -> void:
+	var current_units := HealthUnits.from_hp(value)
+	var maximum_units := HealthUnits.from_hp(maximum)
+	$Health.text = "VIE " + HealthUnits.format_hp(current_units)
+	$HealthHearts.set_values(current_units, maximum_units)
 func set_hint(value: String) -> void:
 	$Hint.text = value
 func set_overlay(title: String, subtitle: String) -> void:
