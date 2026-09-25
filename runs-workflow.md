@@ -3,7 +3,7 @@
 ## Statut de cette planification
 
 Audit documentaire et inspection du dépôt effectués le **21 septembre 2026**, à partir de l’état de travail courant, et non du seul commit `0870462`.
-**RUN-001 à RUN-004 DONE ; RUN-005 VERIFY local.** Les [PR #1](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/1), [#2](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/2), [#4](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/4) et [#5](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/5) sont fusionnées dans `develop` ; les validations humaines de RUN-003 et RUN-004 sont confirmées. RUN-006 à RUN-011 restent `BACKLOG`. Les versions suivantes seront affinées après chaque jalon.
+**RUN-001 à RUN-004 DONE ; RUN-005 VERIFY, résultat validé par l’humain.** Les [PR #1](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/1), [#2](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/2), [#4](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/4) et [#5](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/5) sont fusionnées dans `develop` ; les validations humaines de RUN-003 et RUN-004 sont confirmées. RUN-006 à RUN-011 restent `BACKLOG`. Les versions suivantes seront affinées après chaque jalon.
 
 La cible finale validée est **0.9.0 beta**, une démo de dix niveaux conçus à la main. `0.1.0` est un premier jalon technique de production, pas une étiquette affirmant que le dépôt actuel satisfait déjà les nouvelles règles. Les numéros sont des cibles validées ; des patchs `0.x.1`, etc., pourront contenir des corrections vérifiées sans renommer arbitrairement les runs.
 
@@ -283,13 +283,14 @@ Rendre la base existante reproductible, fixer son échelle et aligner le combat 
 
 ### RUN-005 — Adopter les actions clavier de production
 
-**Priorité : P0 · Statut : VERIFY local · Dépendances : RUN-001 (DONE).**
+**Priorité : P0 · Statut : VERIFY · Dépendances : RUN-001 (DONE).**
 
 - **Résultat / scope :** Flèches, Space, E, maintien F, G, R spécial, A équipement, Escape ; retirer le reset direct R au profit du futur menu. G/R/A peuvent rester sans effet tant que leur système manque.
 - **Acceptation, test et bugtest :** Vrais événements clavier, aucune collision R spécial/reset ; menus et gameplay ne consomment pas le même appui deux fois ; aucun support souris/manette ajouté.
 - **Learning pressenti :** Input Map, actions logiques, pressed/just_pressed et propagation des entrées.
 - **Périmètre précisé au lancement :** `project.godot`, `scripts/player.gd`, `scripts/level.gd`, tests clavier/intégration/bonus et documentation des commandes. Les flèches remplacent Q/D/Z/S ; F répète les frappes ; G/R/A sont des actions mappées sans capacité nouvelle. La mort et la victoire finale proposent `E` pour rejouer, sans redémarrage volontaire pendant une tentative avant le futur menu de pause. Le dialogue, l'équipement, les capacités et le menu complet restent hors de cette run.
 - **Résultat vérifié localement :** import Godot 4.7.2 et 11 suites réussis, 170 contrôles de jeu et un contrôle d'isolation `user://`. Événements clavier réels pour les flèches, Space, E, F maintenu, G/R/A et Escape ; `R` sans reset, `E` bloqué pendant pause puis actionné une seule fois au portail après nouvelle pression. Après validation humaine du premier résultat, ajustement de la réponse horizontale et du cycle F à 0,28 s, avec direction du coup fixée pendant sa fenêtre de contact. Détails et limites dans `runs-journal.md` ; aucun push, PR ni fusion.
+- **Validation humaine du 25 septembre 2026 :** ressenti du réglage vérifié et validé pour l’instant ; push de la branche et ouverture d’une PR vers `develop` explicitement autorisés. La cadence reste provisoire jusqu’à l’ATK SPEED des armes.
 
 ### RUN-006 — Unifier la santé fractionnaire et les réactions aux dégâts
 
@@ -555,4 +556,4 @@ Livrer une démo 0.9.0 beta complète, équilibrée et testée, avec une distrib
 
 ## Point d’arrêt
 
-RUN-001 à RUN-004 sont DONE après fusion des PR #1, #2, #4 et #5. La correspondance fichier-source reste reportée par décision humaine à la recette des assets distribués. Les catalogues 11–12 deviennent locaux et ignorés par Git. La grille 16×16 est retenue après comparaison visuelle, avec les limites de la maquette consignées. Le prototype utilise désormais un viewport 640×360. RUN-005 est en VERIFY local ; RUN-006 n'est pas lancée. Après 0.1.0, détailler 0.2.0 à partir du résultat réel.
+RUN-001 à RUN-004 sont DONE après fusion des PR #1, #2, #4 et #5. La correspondance fichier-source reste reportée par décision humaine à la recette des assets distribués. Les catalogues 11–12 deviennent locaux et ignorés par Git. La grille 16×16 est retenue après comparaison visuelle, avec les limites de la maquette consignées. Le prototype utilise désormais un viewport 640×360. RUN-005 est en VERIFY avec résultat validé par l’humain ; RUN-006 n'est pas lancée. Après 0.1.0, détailler 0.2.0 à partir du résultat réel.
