@@ -73,6 +73,7 @@ func run() -> void:
 	player.velocity=Vector2.ZERO
 	await frames(5)
 	check(player.health==2,"actual thorn overlap removes one HP")
+	check(player.knockback_time > 0.0 and player.hit_stun_time == 0.0, "actual thorn overlap applies recoil without hit-stun")
 	level.queue_free()
 	await process_frame
 	OS.delay_msec(150)

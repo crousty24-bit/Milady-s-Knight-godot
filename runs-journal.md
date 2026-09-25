@@ -283,3 +283,25 @@ L'humain confirme : « Ressenti vérifié OK validé pour l'instant. Run validé
 ### Livraison Git du 25 septembre 2026
 
 `git fetch origin develop` confirme que la branche RUN-005 est issue de `origin/develop` sans commit divergent (`0` derrière, `2` devant avant le commit de validation) ; `git diff origin/develop...HEAD --check` passe. Le commit `8e7420c` consigne la validation humaine. La branche `feature/run-005-production-keyboard` est poussée sur `origin` et la [PR #8](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/8) est ouverte vers `develop`. `gh pr view` la rapporte `OPEN`, base `develop`, `MERGEABLE`, sans décision de revue ni contrôle CI déclaré au moment de l'inspection. Aucune fusion effectuée ; RUN-005 reste en VERIFY. Cette mise à jour documentaire ne modifie pas le jeu et ne nécessite pas de relancer Godot.
+
+### Fusion et clôture du 25 septembre 2026
+
+L'humain confirme la fusion et que son `develop` local est à jour avec `origin`. Vérification Git : `develop` propre au commit `95ec7f9`, identique à `origin/develop` ; la PR #8 est `MERGED` le 25 septembre 2026 à 14:19:48 UTC, commit de fusion `95ec7f940abb67a4093bcfb63af7c5634666ea4f`. La validation du ressenti et les contrôles requis étaient déjà consignés ci-dessus. RUN-005 passe à **DONE** ; RUN-006 peut démarrer depuis cette base.
+
+## RUN-006 — Santé fractionnaire et réactions aux dégâts
+
+### Démarrage et décision produit du 25 septembre 2026
+
+Branche `feature/run-006-fractional-health` créée depuis `develop` propre à `95ec7f9`. Les scènes et scripts réels du joueur, du Slime, des ronces, de la fosse et du HUD ont été inspectés avant édition. La spécification ne définissait pas la réaction à une flamme qui blesse le joueur ; l'humain a choisi explicitement « Piège : invulnérabilité + recul ». La flamme infligeant 0,2 DMG aux ennemis est un cas distinct. Les nouveaux profils projectile, flamme et swarm sont exercés dans une fixture sans ajouter d'ennemis ou d'armes à cette run.
+
+### Réalisation et essais locaux
+
+`HealthUnits` convertit les HP en dixièmes entiers pour éviter les pertes par conversion en entier de HP ; les API et signaux du joueur et du Slime exposent des valeurs fractionnaires. Le joueur conserve une borne de 0 à MAX HP, un soin borné et une mort unique. Le HUD affiche la valeur exacte ; les cœurs sont arrondis vers le demi-cœur supérieur. Le contrat de dégâts distingue contact/mêlée (invulnérabilité, hit-stun, recul, interruption), projectile (invulnérabilité, interruption), piège et flamme (invulnérabilité, recul), swarm (invulnérabilité) et vide (mort malgré l'invulnérabilité). Le contact réel du Slime et les ronces existantes utilisent leur profil ; la fosse utilise le vide. F reste bloqué pendant le hit-stun et Space pendant le recul, y compris au mur et à l'atterrissage. Les durées initiales sont 0,85 s d'invulnérabilité, 0,18 s de hit-stun et 0,16 s de recul ; leur ressenti reste à confirmer.
+
+Godot Windows 4.7.2 avec `GODOT_EXE='…/Godot_v4.7.2-stable_win64_console.exe' ./tools/test.sh` : import, isolation `user://`, **12 suites et 242 contrôles de jeu réussis**, code 0. Logs : `work/test-results/run-VqASB9xs/`, résumé `work/test-results/run-006-suite.log`. `tests/damage_profiles.gd` ajoute 70 contrôles sur 0,5 HP, 0,2 DMG, zéro exact, soin, mort et récompense uniques, cinq profils, vide, F/Space, mur, atterrissage et contacts répétés. `tests/combat.gd` et `tests/physics.gd` vérifient aussi les réactions lors des contacts réels du Slime et des ronces. `tests/health_visual.gd` a produit trois captures graphiques locales dans `work/` ; les états plein, demi-cœur et 0,2 HP arrondi ont été inspectés sans chevauchement visible.
+
+Un premier essai de la fixture échouait sur le compteur de mort du Slime : la variable locale capturée par une lambda n'était pas mise à jour comme attendu. Le compteur est devenu un membre de fixture et les 70 contrôles finaux passent. Le soin MAX HP futur et les attaques/ennemis encore absents ne sont pas implémentés. Les ronces actuelles sont traversables ; les pièges solides appartiennent à RUN-008. RUN-006 est en **VERIFY local** pour apprécier la sensation des durées et des réactions ; aucun push ni PR n'est autorisé pour cette run à ce stade.
+
+### Revue Jev du 25 septembre 2026
+
+Le dossier local `work/test-results/RUN-006/review.json` a été relu contre les logs et le diff, puis soumis via `.local/typesafe-venv/bin/python tools/jev/run_completion_reviewer/review.py work/test-results/RUN-006/review.json --json` ; sortie `work/test-results/RUN-006/review-result.json`. Jev 1.13.0 estime la couverture à **0,80**, les vérifications à **0,69** et la présence d'un blocage à **0,72** (probabilités de oui) ; il choisit **VERIFY** (confiance 0,38 ; READY_FOR_DONE 0,30, VERIFY 0,59, BLOCKED 0,11). La revue directe des preuves ne trouve pas d'échec final ; le signal de blocage n'identifie pas à lui seul un défaut reproductible. Le choix VERIFY est cohérent avec l'essai de sensation encore attendu pour les durées provisoires. Jev n'a pas exécuté Godot.

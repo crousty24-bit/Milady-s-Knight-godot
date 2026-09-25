@@ -348,3 +348,28 @@ Près de la poterne, E peut offrir les douze pièces pendant le jeu. Si la pause
 - `project.godot` : association des touches aux actions.
 - `scripts/player.gd` et `scripts/level.gd` : lecture des actions pendant le jeu et sur les overlays.
 - `tests/keyboard.gd` : événements clavier réels et cas de pause/confirmation.
+
+## RUN-006 — Compter les points de vie fractionnaires
+
+### Ce qui a été réalisé
+
+Le joueur et les Slimes peuvent perdre des fractions de point de vie. Une perte de 0,5 HP pour le joueur et des coups de 0,2 DMG sur un ennemi s'accumulent exactement. Le HUD montre le nombre exact de HP et des cœurs entiers ou à moitié remplis. Les réactions du joueur dépendent maintenant de la source du dégât.
+
+### Comment cela fonctionne
+
+Le jeu stocke chaque point de vie sous forme de **dix unités entières**. Ainsi, 3 HP valent 30 unités, 0,5 HP vaut 5 unités et 0,2 DMG en retire 2. Le calcul évite qu'une conversion en HP entiers efface une fraction. Les scripts exposent pourtant les valeurs familières en HP aux autres systèmes et aux signaux `health_changed`. Un soin ne dépasse jamais le maximum, et une mort ne peut être émise qu'une fois.
+
+Le HUD affiche la valeur numérique sans arrondir. Pour le dessin, il arrondit au demi-cœur supérieur : avec 0,2 HP, « VIE 0.2 » accompagne un demi-cœur visible. Cette convention évite de montrer zéro cœur tant que le joueur vit encore ; la valeur écrite reste la référence précise.
+
+Chaque source de dégât indique son profil au joueur. Le contact d'un Slime interrompt l'attaque, bloque brièvement F, repousse le personnage et bloque le saut pendant le recul. Un projectile interrompt l'attaque sans recul ; un piège ou une flamme repousse sans interrompre l'attaque ; un swarm accorde seulement l'invulnérabilité. Le vide tue même pendant l'invulnérabilité. La flamme suit le profil du piège selon la décision prise pour cette run. Les durées sont provisoires et pourront être ajustées après essai du ressenti.
+
+### Exemple concret dans Milady's Knight
+
+Si le joueur touche les ronces, il perd 1 HP, recule et ne peut pas sauter pendant les 0,16 premières secondes du recul. Si un Slime le touche, il subit aussi 0,18 seconde de hit-stun : maintenir F ne relance une frappe qu'après ce délai. Après la fenêtre d'invulnérabilité de 0,85 seconde, un nouveau contact peut infliger un autre dégât.
+
+### À regarder dans le projet
+
+- `scripts/health_units.gd` : conversion exacte entre HP et unités.
+- `scripts/player.gd` et `scripts/slime.gd` : santé, signaux et profils de dégâts.
+- `scripts/health_hearts.gd` et `scripts/hud.gd` : valeur écrite et cœurs dessinés.
+- `tests/damage_profiles.gd` : scénarios de fractions et de réactions.

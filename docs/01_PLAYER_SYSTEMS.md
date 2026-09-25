@@ -76,6 +76,7 @@
 			- le joueur subit un dégâts suite à une attaque de mêlée d'un mob : Skeleton Warrior, Sorcerer, mobs d'élite, Boss
 		- cas où les effets ci-dessus s'appliquent différemment :
 			- le joueur subit un dégâts suite à une collision avec un piège : invincibilité temporaire et knockback = oui ; hit-stun et interruption d'attaque = non
+			- une flamme qui blesse le joueur suit le profil du piège : invincibilité temporaire et knockback = oui ; hit-stun et interruption d'attaque = non (décision RUN-006)
 			- le joueur subit un dégâts suite à une attaque de tir d'un mob (Skeleton Archer) :  invincibilité temporaire et interruption d'attaque = oui ; knockback et hit-stun = non
 			-  le joueur subit un dégâts suite à une collision avec un piège à projectiles (tir des mini-tourelles) : invincibilité temporaire et interruption d'attaque = oui ; knockback et hit-stun = non
 			- le joueur subit un dégâts suite à une collision avec un mob swarm (Possessed Skulls) : invincibilité temporaire uniquement

@@ -1,6 +1,7 @@
 class_name SliceSlime
 extends CharacterBody2D
 signal defeated(bonus: int, at: Vector2)
+signal health_changed(value: float, maximum: float)
 enum Kind { GREEN, PURPLE }
 const GREEN_PATROL_SPEED = 30.0
 const PURPLE_PATROL_SPEED = 34.0
@@ -8,7 +9,12 @@ const PURPLE_PATROL_SPEED = 34.0
 @export var patrol_right: float = 40.0
 @export var variant: Kind = Kind.GREEN
 @export_range(0, 1000000, 1) var bonus_reward: int = 1
-var health: int = 3
+var max_health_units: int = 30
+var health_units: int = 30
+var health: float:
+	get: return HealthUnits.to_hp(health_units)
+var max_health: float:
+	get: return HealthUnits.to_hp(max_health_units)
 var direction: int = -1
 var origin_x: float
 var stagger: float = 0.0
@@ -17,7 +23,8 @@ var dead: bool = false
 
 func _ready() -> void:
 	origin_x = position.x
-	health = 4 if variant == Kind.PURPLE else 3
+	max_health_units = 40 if variant == Kind.PURPLE else 30
+	health_units = max_health_units
 	sprite.play("purple" if variant == Kind.PURPLE else "green")
 
 func _physics_process(delta: float) -> void:
@@ -37,15 +44,16 @@ func _physics_process(delta: float) -> void:
 	if stagger > 0.0: return
 	for body in $ContactArea.get_overlapping_bodies():
 		if body is SlicePlayer:
-			body.take_damage(1, Vector2(100.0 if body.global_position.x > global_position.x else -100.0, -150.0))
+			body.take_damage(1.0, Vector2(100.0 if body.global_position.x > global_position.x else -100.0, -150.0), SlicePlayer.DamageSource.CONTACT_MELEE)
 
-func take_damage(amount: int, impulse: Vector2) -> void:
-	if dead: return
-	health = maxi(0, health - amount)
+func take_damage(amount: float, impulse: Vector2, _source: int = SlicePlayer.DamageSource.CONTACT_MELEE) -> void:
+	if dead or amount <= 0.0: return
+	health_units = maxi(0, health_units - HealthUnits.from_hp(amount))
+	health_changed.emit(health, max_health)
 	velocity = impulse
 	stagger = 0.12
 	$HitSound.play()
-	if health <= 0:
+	if health_units == 0:
 		dead = true
 		defeated.emit(bonus_reward, global_position)
 		$CollisionShape2D.set_deferred("disabled", true)

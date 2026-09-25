@@ -1,6 +1,7 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 [ext_resource type="Script" path="res://scripts/hud.gd" id="1"]
 [ext_resource type="FontFile" path="res://assets/fonts/PixelOperator8.ttf" id="2"]
+[ext_resource type="Script" path="res://scripts/health_hearts.gd" id="3"]
 [sub_resource type="Theme" id="theme"]
 default_font = ExtResource("2")
 default_font_size = 12
@@ -33,6 +34,13 @@ offset_bottom = 27.0
 theme = SubResource("theme")
 text = "VIE"
 mouse_filter = 2
+[node name="HealthHearts" type="Control" parent="."]
+offset_left = 76.0
+offset_top = 5.0
+offset_right = 132.0
+offset_bottom = 28.0
+mouse_filter = 2
+script = ExtResource("3")
 [node name="Gold" type="Label" parent="."]
 offset_left = 140.0
 offset_top = 7.0

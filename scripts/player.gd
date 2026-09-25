@@ -2,8 +2,9 @@ class_name SlicePlayer
 extends CharacterBody2D
 enum MotionState { GROUND, AIR, WALL_SLIDE, DEAD }
 
-signal health_changed(value: int)
+signal health_changed(value: float, maximum: float)
 signal died
+enum DamageSource { CONTACT_MELEE, PROJECTILE, SOLID_TRAP, FLAME, SWARM, VOID }
 const SPEED = 105.0
 const GRAVITY = 760.0
 const JUMP_SPEED = -255.0
@@ -15,7 +16,15 @@ const ATTACK_DURATION = 0.28
 # Keep the original windup, contact and recovery proportions as the cycle changes.
 const ATTACK_HIT_START_TIME = ATTACK_DURATION * (0.25 / 0.32)
 const ATTACK_HIT_END_TIME = ATTACK_DURATION * (0.11 / 0.32)
-var health: int = 3
+const INVULNERABILITY_DURATION = 0.85
+const HIT_STUN_DURATION = 0.18
+const KNOCKBACK_DURATION = 0.16
+var max_health_units: int = 30
+var health_units: int = 30
+var health: float:
+	get: return HealthUnits.to_hp(health_units)
+var max_health: float:
+	get: return HealthUnits.to_hp(max_health_units)
 var facing: int = 1
 var attack_facing: int = 1
 var dead: bool = false
@@ -24,6 +33,7 @@ var coyote: float = 0.0
 var jump_buffer: float = 0.0
 var invulnerability: float = 0.0
 var knockback_time: float = 0.0
+var hit_stun_time: float = 0.0
 var attack_time: float = 0.0
 var hit_targets: Array[int] = []
 var can_double_jump: bool = false
@@ -42,6 +52,7 @@ var attack_cancelled: bool = false
 func _physics_process(delta: float) -> void:
 	invulnerability = maxf(0.0, invulnerability - delta)
 	knockback_time = maxf(0.0, knockback_time - delta)
+	hit_stun_time = maxf(0.0, hit_stun_time - delta)
 	jump_flash = maxf(0.0, jump_flash - delta)
 	wall_detach_time = maxf(0.0, wall_detach_time - delta)
 	wall_control_time = maxf(0.0, wall_control_time - delta)
@@ -60,16 +71,16 @@ func _physics_process(delta: float) -> void:
 	jump_buffer = maxf(0.0, jump_buffer - delta)
 	var direction: float = Input.get_axis("move_left", "move_right") if controls_enabled else 0.0
 	_update_wall_state(direction)
-	if controls_enabled and Input.is_action_just_pressed("jump"):
+	if controls_enabled and knockback_time <= 0.0 and Input.is_action_just_pressed("jump"):
 		jump_buffer = 0.12
-	if jump_buffer > 0.0 and coyote > 0.0:
+	if knockback_time <= 0.0 and jump_buffer > 0.0 and coyote > 0.0:
 		velocity.y = JUMP_SPEED
 		jump_buffer = 0.0
 		coyote = 0.0
 		can_double_jump = true
 		$JumpSound.pitch_scale = 1.0
 		$JumpSound.play()
-	elif jump_buffer > 0.0 and wall_normal != 0.0 and not is_on_floor():
+	elif knockback_time <= 0.0 and jump_buffer > 0.0 and wall_normal != 0.0 and not is_on_floor():
 		velocity = Vector2(wall_normal * WALL_JUMP_SPEED, JUMP_SPEED)
 		facing = int(wall_normal)
 		blocked_wall_normal = wall_normal
@@ -82,7 +93,7 @@ func _physics_process(delta: float) -> void:
 		motion_state = MotionState.AIR
 		$JumpSound.pitch_scale = 1.12
 		$JumpSound.play()
-	elif jump_buffer > 0.0 and can_double_jump and not wall_jump_lockout:
+	elif knockback_time <= 0.0 and jump_buffer > 0.0 and can_double_jump and not wall_jump_lockout:
 		velocity.y = DOUBLE_JUMP_SPEED
 		jump_buffer = 0.0
 		can_double_jump = false
@@ -100,7 +111,7 @@ func _physics_process(delta: float) -> void:
 			attack_facing = facing
 	if knockback_time <= 0.0 and wall_control_time <= 0.0:
 		velocity.x = move_toward(velocity.x, direction * SPEED, 2100.0 * delta)
-	if controls_enabled and Input.is_action_pressed("attack") and attack_time <= 0.0 and motion_state != MotionState.WALL_SLIDE:
+	if controls_enabled and hit_stun_time <= 0.0 and Input.is_action_pressed("attack") and attack_time <= 0.0 and motion_state != MotionState.WALL_SLIDE:
 		attack_time = ATTACK_DURATION
 		attack_facing = facing
 		attack_cancelled = false
@@ -148,31 +159,55 @@ func _update_wall_state(direction: float) -> void:
 	else:
 		motion_state = MotionState.AIR
 
-func take_damage(amount: int, impulse: Vector2 = Vector2.ZERO) -> void:
-	if dead or invulnerability > 0.0:
+func take_damage(amount: float, impulse: Vector2 = Vector2.ZERO, source: int = DamageSource.CONTACT_MELEE) -> void:
+	if dead:
 		return
-	health = maxi(0, health - amount)
-	health_changed.emit(health)
-	$HurtSound.play()
-	if health == 0:
+	if source == DamageSource.VOID:
 		die()
 		return
-	invulnerability = 0.85
-	knockback_time = 0.16
-	attack_time = 0.0
-	wall_control_time = 0.0
-	velocity = impulse
+	if invulnerability > 0.0 or amount <= 0.0:
+		return
+	health_units = maxi(0, health_units - HealthUnits.from_hp(amount))
+	$HurtSound.play()
+	if health_units == 0:
+		die()
+		return
+	health_changed.emit(health, max_health)
+	invulnerability = INVULNERABILITY_DURATION
+	var has_knockback: bool = source == DamageSource.CONTACT_MELEE or source == DamageSource.SOLID_TRAP or source == DamageSource.FLAME
+	var interrupts_attack: bool = source == DamageSource.CONTACT_MELEE or source == DamageSource.PROJECTILE
+	if source == DamageSource.CONTACT_MELEE:
+		hit_stun_time = HIT_STUN_DURATION
+	if interrupts_attack:
+		attack_time = 0.0
+		attack_cancelled = true
+	if has_knockback:
+		knockback_time = KNOCKBACK_DURATION
+		jump_buffer = 0.0
+		wall_control_time = 0.0
+		velocity = impulse
+
+func heal(amount: float) -> float:
+	if dead or amount <= 0.0:
+		return 0.0
+	var before := health_units
+	health_units = mini(max_health_units, health_units + HealthUnits.from_hp(amount))
+	if health_units != before:
+		health_changed.emit(health, max_health)
+	return HealthUnits.to_hp(health_units - before)
 
 func die() -> void:
 	if dead:
 		return
 	dead = true
 	motion_state = MotionState.DEAD
-	health = 0
+	health_units = 0
 	attack_time = 0.0
+	hit_stun_time = 0.0
+	knockback_time = 0.0
 	sprite.modulate = Color.WHITE
 	sprite.play("dead")
-	health_changed.emit(0)
+	health_changed.emit(0.0, max_health)
 	died.emit()
 	queue_redraw()
 
