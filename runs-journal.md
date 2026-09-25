@@ -279,3 +279,7 @@ Revue Jev mise à jour sur le dossier `work/test-results/RUN-005/review.json` ap
 ### Validation humaine et autorisation Git du 25 septembre 2026
 
 L'humain confirme : « Ressenti vérifié OK validé pour l'instant. Run validé, ok pour push et PR. » Le réglage de réactivité de RUN-005 satisfait donc la validation de sensation de jeu demandée après l'ajustement. Le push de `feature/run-005-production-keyboard` et la création d'une PR vers `develop` sont autorisés ; aucune autorisation de fusion n'est inférée. La branche reste en VERIFY pendant la revue et l'intégration Git. La cadence F de 0,28 s est provisoire, à réévaluer avec l'ATK SPEED des armes.
+
+### Livraison Git du 25 septembre 2026
+
+`git fetch origin develop` confirme que la branche RUN-005 est issue de `origin/develop` sans commit divergent (`0` derrière, `2` devant avant le commit de validation) ; `git diff origin/develop...HEAD --check` passe. Le commit `8e7420c` consigne la validation humaine. La branche `feature/run-005-production-keyboard` est poussée sur `origin` et la [PR #8](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/8) est ouverte vers `develop`. `gh pr view` la rapporte `OPEN`, base `develop`, `MERGEABLE`, sans décision de revue ni contrôle CI déclaré au moment de l'inspection. Aucune fusion effectuée ; RUN-005 reste en VERIFY. Cette mise à jour documentaire ne modifie pas le jeu et ne nécessite pas de relancer Godot.
