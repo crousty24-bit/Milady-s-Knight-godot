@@ -140,6 +140,14 @@ func run() -> void:
 	await frames(1)
 	check(player.velocity.y < 0.0, "fresh Space press jumps after recoil")
 
+	await spawn(Vector2(100, 100))
+	Input.action_press("jump")
+	await frames(1)
+	player.take_damage(0.5, Vector2(0, -150), SlicePlayer.DamageSource.SOLID_TRAP)
+	Input.action_release("jump")
+	await frames(1)
+	check(player.knockback_time > 0.0 and player.velocity.y < -90.0, "releasing Space during recoil preserves the upward damage impulse")
+
 	await spawn(Vector2(194.92, 40))
 	player.velocity.y = 100.0
 	await frames(5)

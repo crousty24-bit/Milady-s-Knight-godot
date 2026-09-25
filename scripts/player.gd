@@ -101,7 +101,7 @@ func _physics_process(delta: float) -> void:
 		jump_effect_origin = global_position
 		$JumpSound.pitch_scale = 1.35
 		$JumpSound.play()
-	if controls_enabled and Input.is_action_just_released("jump") and not Input.is_action_pressed("jump") and velocity.y < -90.0:
+	if controls_enabled and knockback_time <= 0.0 and Input.is_action_just_released("jump") and not Input.is_action_pressed("jump") and velocity.y < -90.0:
 		velocity.y *= 0.45
 	if motion_state == MotionState.WALL_SLIDE:
 		velocity.y = minf(velocity.y, WALL_SLIDE_SPEED)
