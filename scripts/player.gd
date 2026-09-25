@@ -11,9 +11,13 @@ const DOUBLE_JUMP_SPEED = -225.0
 const WALL_SLIDE_SPEED = 35.0
 const WALL_JUMP_SPEED = 110.0
 const GRIPPABLE_MASK = 8
-const ATTACK_DURATION = 0.32
+const ATTACK_DURATION = 0.28
+# Keep the original windup, contact and recovery proportions as the cycle changes.
+const ATTACK_HIT_START_TIME = ATTACK_DURATION * (0.25 / 0.32)
+const ATTACK_HIT_END_TIME = ATTACK_DURATION * (0.11 / 0.32)
 var health: int = 3
 var facing: int = 1
+var attack_facing: int = 1
 var dead: bool = false
 var controls_enabled: bool = true
 var coyote: float = 0.0
@@ -90,12 +94,15 @@ func _physics_process(delta: float) -> void:
 		velocity.y *= 0.45
 	if motion_state == MotionState.WALL_SLIDE:
 		velocity.y = minf(velocity.y, WALL_SLIDE_SPEED)
-	if direction != 0.0 and attack_time <= 0.0 and wall_control_time <= 0.0:
+	if direction != 0.0 and wall_control_time <= 0.0 and (attack_time >= ATTACK_HIT_START_TIME or attack_time <= ATTACK_HIT_END_TIME):
 		facing = 1 if direction > 0.0 else -1
+		if attack_time >= ATTACK_HIT_START_TIME or attack_time <= 0.0:
+			attack_facing = facing
 	if knockback_time <= 0.0 and wall_control_time <= 0.0:
-		velocity.x = move_toward(velocity.x, direction * SPEED, 1100.0 * delta)
+		velocity.x = move_toward(velocity.x, direction * SPEED, 2100.0 * delta)
 	if controls_enabled and Input.is_action_pressed("attack") and attack_time <= 0.0 and motion_state != MotionState.WALL_SLIDE:
 		attack_time = ATTACK_DURATION
+		attack_facing = facing
 		attack_cancelled = false
 		hit_targets.clear()
 		$SwingSound.play()
@@ -171,11 +178,11 @@ func die() -> void:
 
 func _update_sword() -> void:
 	var angle: float = lerpf(-1.5, 1.2, 1.0 - attack_time / ATTACK_DURATION)
-	var blade_direction := Vector2(cos(angle) * facing, sin(angle))
-	var hand := Vector2(4.0 * facing, -10.0)
+	var blade_direction := Vector2(cos(angle) * attack_facing, sin(angle))
+	var hand := Vector2(4.0 * attack_facing, -10.0)
 	sword.position = hand + blade_direction * 12.0
 	sword.rotation = blade_direction.angle()
-	if attack_cancelled or dead or attack_time >= 0.25 or attack_time <= 0.11:
+	if attack_cancelled or dead or attack_time >= ATTACK_HIT_START_TIME or attack_time <= ATTACK_HIT_END_TIME:
 		return
 	var query := PhysicsShapeQueryParameters2D.new()
 	query.shape = $AttackArea/Shape.shape
@@ -189,7 +196,7 @@ func _update_sword() -> void:
 		if not get_world_2d().direct_space_state.intersect_ray(ray).is_empty():
 			continue
 		hit_targets.append(body.get_instance_id())
-		body.take_damage(1, Vector2(facing * 60.0, -55.0))
+		body.take_damage(1, Vector2(attack_facing * 60.0, -55.0))
 
 func _draw() -> void:
 	if motion_state == MotionState.WALL_SLIDE:
@@ -202,11 +209,11 @@ func _draw() -> void:
 		return
 	var progress: float = 1.0 - attack_time / ATTACK_DURATION
 	var angle: float = lerpf(-1.5, 1.2, progress)
-	var origin = Vector2(4.0 * facing, -10.0)
-	var tip = origin + Vector2(cos(angle) * facing, sin(angle)) * 24.0
-	if attack_time < 0.25 and attack_time > 0.11:
+	var origin = Vector2(4.0 * attack_facing, -10.0)
+	var tip = origin + Vector2(cos(angle) * attack_facing, sin(angle)) * 24.0
+	if attack_time < ATTACK_HIT_START_TIME and attack_time > ATTACK_HIT_END_TIME:
 		for i in range(4):
 			var a: float = angle - i * 0.16
-			draw_line(origin + Vector2(cos(a) * facing, sin(a)) * 12.0, origin + Vector2(cos(a) * facing, sin(a)) * 27.0, Color(0.95, 0.8, 0.44, 0.7 - i * 0.15), 2.0)
+			draw_line(origin + Vector2(cos(a) * attack_facing, sin(a)) * 12.0, origin + Vector2(cos(a) * attack_facing, sin(a)) * 27.0, Color(0.95, 0.8, 0.44, 0.7 - i * 0.15), 2.0)
 	draw_line(origin, tip, Color("e9e4c5"), 2.0)
-	draw_line(origin, origin - Vector2(cos(angle) * facing, sin(angle)) * 5.0, Color("ae7c42"), 3.0)
+	draw_line(origin, origin - Vector2(cos(angle) * attack_facing, sin(angle)) * 5.0, Color("ae7c42"), 3.0)
