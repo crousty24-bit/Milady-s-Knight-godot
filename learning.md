@@ -361,7 +361,7 @@ Le jeu stocke chaque point de vie sous forme de **dix unités entières**. Ainsi
 
 Le HUD affiche la valeur numérique sans arrondir. Pour le dessin, il arrondit au demi-cœur supérieur : avec 0,2 HP, « VIE 0.2 » accompagne un demi-cœur visible. Cette convention évite de montrer zéro cœur tant que le joueur vit encore ; la valeur écrite reste la référence précise.
 
-Chaque source de dégât indique son profil au joueur. Le contact d'un Slime interrompt l'attaque, bloque brièvement F, repousse le personnage et bloque le saut pendant le recul. Un projectile interrompt l'attaque sans recul ; un piège ou une flamme repousse sans interrompre l'attaque ; un swarm accorde seulement l'invulnérabilité. Le vide tue même pendant l'invulnérabilité. La flamme suit le profil du piège selon la décision prise pour cette run. Les durées sont provisoires et pourront être ajustées après essai du ressenti.
+Chaque source de dégât indique son profil au joueur. Le contact d'un Slime interrompt l'attaque, bloque brièvement F, repousse le personnage et bloque le saut pendant le recul. Un projectile interrompt l'attaque sans recul ; un piège ou une flamme repousse sans interrompre l'attaque ; un swarm accorde seulement l'invulnérabilité. Le vide tue même pendant l'invulnérabilité. La flamme suit le profil du piège selon la décision prise pour cette run. Le correctif et le ressenti ont été validés par l'humain ; les durées de 0,18 s de hit-stun et 0,16 s de recul, notamment au contact d'un Slime et des ronces, restent provisoires et seront équilibrées ultérieurement.
 
 ### Exemple concret dans Milady's Knight
 

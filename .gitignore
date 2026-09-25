@@ -6,4 +6,5 @@ build/
 11_GAME_ASSETS_LIBRARY.md
 12_SFX_LIBRARY.md
 .agents
+.claude
 .env
