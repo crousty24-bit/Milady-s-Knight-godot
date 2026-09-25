@@ -65,14 +65,16 @@ Sous Windows, `Lancer-Windows.cmd` accepte la variable `GODOT_EXE` ; son chemin 
 
 | Action | Touche actuelle |
 | --- | --- |
-| Aller à gauche / droite | Q / D |
+| Aller à gauche / droite | Flèches gauche / droite |
+| Monter / descendre (action réservée) | Flèches haut / bas |
 | Sauter / double saut / saut mural | Space |
-| Attaquer, une frappe par pression | F |
+| Attaquer, frappes répétées en maintien | F |
 | Interagir avec la porte | E |
-| Recommencer la tentative | R |
+| Confirmer le redémarrage après mort ou victoire finale | E |
+| Attaque d'atterrissage / spéciale / équipement (actions réservées) | G / R / A |
 | Pause / reprendre | Escape |
 
-Z/S sont déclarés mais sans grimpe. Les contrôles **cibles**, distincts de ceux actuellement implémentés, sont dans [docs/10_CONTROLS_KEYBINDS.md](docs/10_CONTROLS_KEYBINDS.md).
+Les flèches haut/bas et G/R/A sont mappées mais sans effet de gameplay pour l'instant. Il n'y a pas encore de menu de pause à trois choix ni de redémarrage volontaire en cours de tentative. La liste complète des touches est dans [docs/10_CONTROLS_KEYBINDS.md](docs/10_CONTROLS_KEYBINDS.md).
 
 ## Vérification et limites connues
 

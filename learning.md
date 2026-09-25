@@ -326,3 +326,25 @@ Au sommet du mur, l'ancienne correction locale de caméra remontait le cadre de 
 - `scenes/hud.tscn` : ancrages des bandeaux, textes et overlay.
 - `scenes/player.tscn` et `scripts/level.gd` : caméra générique et cadrage du slice.
 - `docs/media/run-004-*.png` : captures du HUD et des overlays à 640×360.
+
+## RUN-005 — Les touches deviennent des actions de jeu
+
+### Ce qui a été réalisé
+
+Le personnage se déplace avec les flèches gauche et droite ; haut et bas sont réservées aux interactions futures. Space saute, E interagit ou confirme l'écran de mort/victoire, F attaque en continu tant qu'il est maintenu et Escape met en pause ou reprend. G, R et A ont leur propre action, sans attaque d'atterrissage, pouvoir spécial ni équipement encore implémentés. R ne redémarre plus le niveau.
+
+### Comment cela fonctionne
+
+L'**Input Map** associe une touche physique à un nom d'action tel que `move_left` ou `special_attack`. Le code du personnage lit le nom de l'action, ce qui évite de disperser les codes des touches dans ses règles de mouvement. `is_action_pressed("attack")` reste vrai pendant le maintien de F : une nouvelle frappe commence quand le temps de récupération de la précédente est terminé. `is_action_just_pressed("interact")` ne vaut vrai qu'au début d'une nouvelle pression de E, ce qui évite qu'une touche maintenue confirme plusieurs fois.
+
+Après retour de jeu, le changement de vitesse gauche/droite est plus rapide : une inversion complète prend six ticks physiques à 60 Hz dans la fixture. Le cycle de frappe du prototype dure désormais 0,28 s ; les phases de préparation, de contact et de récupération gardent leurs proportions. Le personnage peut changer de côté pendant la préparation ou la récupération, tandis que `attack_facing` mémorise le côté frappé : une seule frappe ne touche pas des ennemis situés de part et d'autre du joueur. Cette cadence provisoire sera ajustée avec l'ATK SPEED propre aux armes.
+
+### Exemple concret dans Milady's Knight
+
+Près de la poterne, E peut offrir les douze pièces pendant le jeu. Si la pause est ouverte, l'appui sur E n'ouvre rien. Reprendre avec Escape alors que E est toujours enfoncé ne réutilise pas cet appui ; il faut relâcher puis presser E à nouveau. Après une mort ou une victoire finale, E confirme le redémarrage affiché à l'écran. Le menu de pause avec choix « Recommencer » n'est pas encore présent.
+
+### À regarder dans le projet
+
+- `project.godot` : association des touches aux actions.
+- `scripts/player.gd` et `scripts/level.gd` : lecture des actions pendant le jeu et sur les overlays.
+- `tests/keyboard.gd` : événements clavier réels et cas de pause/confirmation.

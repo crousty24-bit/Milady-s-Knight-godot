@@ -45,9 +45,9 @@ func slime(pos: Vector2, purple := false, moving := false) -> SliceSlime:
 	return enemy
 func swing() -> void:
 	Input.action_press("attack")
-	await frames(20)
+	await frames(14)
 	Input.action_release("attack")
-	await frames(4)
+	await frames(10)
 func run() -> void:
 	for purple in [false, true]:
 		await spawn()
@@ -85,6 +85,18 @@ func run() -> void:
 	await frames(3)
 	await swing()
 	check(first.health == 2 and second.health == 3, "one swing hits each nearby enemy once")
+	await spawn()
+	var right_enemy := slime(Vector2(181, 200))
+	var left_enemy := slime(Vector2(139, 200))
+	Input.action_press("attack")
+	await frames(7)
+	Input.action_press("move_left")
+	await frames(7)
+	Input.action_release("move_left")
+	check(right_enemy.health == 2 and left_enemy.health == 3 and player.facing == -1 and player.attack_facing == 1, "turning during a held attack cannot hit both sides in one swing")
+	await frames(10)
+	check(right_enemy.health == 2 and left_enemy.health == 2, "next held swing follows the new facing")
+	Input.action_release("attack")
 	await spawn()
 	var contact := slime(Vector2(174, 200), false, true)
 	await frames(6)
