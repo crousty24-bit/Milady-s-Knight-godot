@@ -43,16 +43,23 @@ result.
 
 Deterministic gates stop the API request if any required item is missing,
 pending, failed, or lacks evidence, if a blocker remains, or if the proposed
-status is not `VERIFY`. When those gates pass, independent Noul questions are
-sent in one Jev request for the evidence items. The JSON output includes each
-probability and the token usage. Human validation remains a hard workflow gate
-and is not decided by Jev. The example is intentionally pending, so running it
+status is not `VERIFY`. When those gates pass, the complete written dossier is
+sent as structured state in one Jev request. Three independent `Noul` questions
+assess acceptance coverage, required verification, and whether a blocking issue
+is indicated. One `Choice` selects `READY_FOR_DONE`, `VERIFY`, or `BLOCKED`.
+Questions do not see one another's answers. The terminal prints each `Noul`
+probability of **yes**, the selected `Choice`, its confidence, and its option
+probabilities. Use `--json` to save the complete machine-readable result in
+`work/test-results/...`. The example is intentionally pending, so running it
 unchanged stops before making an API request.
 
 Jev probabilities are evidence-alignment signals, not proof that a test really
-ran. Interpret low or ambiguous results with the original evidence; no decision
-threshold has been calibrated yet. Even a high result only means the supplied
-text appears to support the claim; it never authorizes `DONE`. Keep the
-project's mandatory checks and required human decisions as hard gates. Evaluate
-the questions on French run records before relying on them; Jev currently
-documents stronger accuracy for English.
+ran. A high probability on `blocking_issue_present` means **more** concern, not
+more readiness. No decision threshold has been calibrated, so the CLI does not
+convert probabilities to pass/fail labels or combine them into a score. A
+`READY_FOR_DONE` choice only proposes a human closure review; `DONE` remains a
+separate workflow status. Every result requires inspection of original evidence
+and any mandatory human decision. API errors return `review_unavailable`, distinct
+from local `not_ready` blockers and an advisory `VERIFY` or `BLOCKED` choice.
+Evaluate the questions on real French run records before relying on them; Jev
+currently documents stronger accuracy for English.
