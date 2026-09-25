@@ -76,13 +76,16 @@ func run() -> void:
 	level.get_node("Enemies/Slime1").take_damage(3, Vector2.ZERO)
 	level.player.die()
 	check(level.bonus == 0 and progress.banked_bonus == 28, "death discards only current-attempt bonuses")
-	await tap("restart")
+	await tap("interact")
 	level = current_scene
-	check(level.bonus == 0 and level.gold == 0 and progress.banked_bonus == 28, "restart retains bank and clears level currencies")
+	check(level.bonus == 0 and level.gold == 0 and progress.banked_bonus == 28, "death confirmation retains bank and clears level currencies")
 	level._on_collected(15)
-	await tap("restart")
+	await tap("special_attack")
+	check(current_scene == level and level.bonus == 3 and progress.banked_bonus == 28, "R cannot discard pending rewards by restarting")
+	level.player.die()
+	await tap("interact")
 	level = current_scene
-	check(level.bonus == 0 and progress.banked_bonus == 28, "voluntary restart also discards pending surplus")
+	check(level.bonus == 0 and progress.banked_bonus == 28, "confirmed death restart discards pending surplus")
 	level.next_level_scene = NEXT
 	level._on_collected(13)
 	level.try_offering()
@@ -129,13 +132,14 @@ func run() -> void:
 	level.try_offering()
 	level._on_exit(level.player)
 	check(level.finished and not level.reward_settled and level.bonus == 2 and progress.banked_bonus == 29, "failed victory save retains pending bonus and offers retry")
-	await tap("restart")
-	check(current_scene == level and level.bonus == 2, "restart cannot discard rewards while victory save is awaiting retry")
+	await tap("special_attack")
+	check(current_scene == level and level.bonus == 2, "R cannot discard rewards while victory save is awaiting retry")
 	progress.storage_path = path
 	await tap("interact")
 	check(level.reward_settled and progress.banked_bonus == 31, "E retries the victory save and credits once")
 	await tap("interact")
 	check(progress.banked_bonus == 31, "repeated E after settlement cannot award again")
+	level = current_scene
 	progress.persistence_enabled = false
 	level.hud.set_bonus(1234567, 23)
 	var label: Label = level.hud.get_node("Bonus")

@@ -95,8 +95,8 @@ func run() -> void:
 	player.take_damage(1,Vector2.ZERO)
 	player.die()
 	check(player.dead and player.health==0,"death is stable and health cannot become negative")
-	# Restart through the real action and SceneTree reload.
-	await tap("restart")
+	# Confirm restart through the death overlay and SceneTree reload.
+	await tap("interact")
 	await frames(12)
 	level=current_scene
 	player=level.get_node("Player")

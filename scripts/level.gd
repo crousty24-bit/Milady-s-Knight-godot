@@ -41,11 +41,11 @@ func _process(delta: float) -> void:
 		elif not next_level_scene.is_empty() and not transitioning:
 			transitioning = true
 			call_deferred("_next_level")
+		elif not transitioning:
+			_restart_attempt()
 		return
-	if Input.is_action_just_pressed("restart"):
-		if finished and not reward_settled: return
-		get_tree().paused = false
-		get_tree().reload_current_scene()
+	if player.dead and Input.is_action_just_pressed("interact"):
+		_restart_attempt()
 		return
 	if Input.is_action_just_pressed("pause") and not finished and not player.dead:
 		paused = not paused
@@ -59,7 +59,7 @@ func _process(delta: float) -> void:
 	elif absf(player.position.x-1544)<55 or (absf(player.position.x-1032)<55 and player.position.y>160):
 		hud.set_hint("Ronces lumineuses : danger. Sautez par-dessus.")
 	elif player.position.x < 240:
-		hud.set_hint("Q D marcher   ESPACE sauter   F attaquer")
+		hud.set_hint("FLECHES marcher   ESPACE sauter   F attaquer")
 	elif player.position.x < 510:
 		hud.set_hint("Le chariot est vide. Des traces vers l'est.")
 	elif player.position.x < 592:
@@ -125,19 +125,23 @@ func _settle_reward() -> void:
 		return
 	reward_settled = true
 	_update_gold_hud()
-	var action: String = "E  Niveau suivant" if not next_level_scene.is_empty() else "R  Rejouer"
+	var action: String = "E  Niveau suivant" if not next_level_scene.is_empty() else "E  Rejouer"
 	hud.set_overlay("LA POTERNE EST FRANCHIE", "Sa trace continue au-dela des murs.\n+%d bonus valides  |  Reserve %d\n%s" % [bonus, progression.banked_bonus, action])
 
 func _next_level() -> void:
 	var error: Error = progression.change_level(next_level_scene)
 	if error != OK:
 		transitioning = false
-		hud.set_overlay("NIVEAU SUIVANT INDISPONIBLE", "Vos bonus sont sauvegardes.\nE  Reessayer  |  R  Rejouer")
+		hud.set_overlay("NIVEAU SUIVANT INDISPONIBLE", "Vos bonus sont sauvegardes.\nE  Reessayer")
 
 func _on_died() -> void:
 	bonus = 0
 	_update_gold_hud()
-	hud.set_overlay("LE ROYAUME VOUS A PRIS", "R  Recommencer le niveau")
+	hud.set_overlay("LE ROYAUME VOUS A PRIS", "E  Recommencer le niveau")
+
+func _restart_attempt() -> void:
+	get_tree().paused = false
+	get_tree().reload_current_scene()
 
 func _exit_tree() -> void:
 	$Music.stop()

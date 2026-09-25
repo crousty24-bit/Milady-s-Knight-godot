@@ -94,7 +94,7 @@ func _physics_process(delta: float) -> void:
 		facing = 1 if direction > 0.0 else -1
 	if knockback_time <= 0.0 and wall_control_time <= 0.0:
 		velocity.x = move_toward(velocity.x, direction * SPEED, 1100.0 * delta)
-	if controls_enabled and Input.is_action_just_pressed("attack") and attack_time <= 0.0 and motion_state != MotionState.WALL_SLIDE:
+	if controls_enabled and Input.is_action_pressed("attack") and attack_time <= 0.0 and motion_state != MotionState.WALL_SLIDE:
 		attack_time = ATTACK_DURATION
 		attack_cancelled = false
 		hit_targets.clear()
