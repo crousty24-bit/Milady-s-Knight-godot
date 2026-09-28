@@ -137,10 +137,11 @@
 		- les armes disposent de 4 stats :
 			- dégâts infligés (DMG) : nombre de HP retirés au mob par attaques/coups
 			- vitesse d'attaque (ATK SPEED): vitesse à la laquelle les attaques sont donnés ; ici la valeur représente les secondes (voir profil ci-dessous) donc 1 ATK SPEED = 1 seconde => 1 attaque (hit) donné toute les 1 seconde (tant que touche attaque maintenue) ; plus cette valeur est basse, plus l'arme à une vitesse d'attaque élevée
-			- portée de mêlée (RANGE) : portée des attaques/coups
+			- portée de mêlée (RANGE) : longueur de la lame depuis la main jusqu’à la pointe ; 1 RANGE = 24 px = 1,5 bloc de terrain (décision humaine révisée RUN-007 après essai des 16 px). La grille de terrain reste à 16 px. Sword 0 dessine une lame de 24 px et utilise une forme de collision de 24×4 px centrée à 12 px de la main. La collision teste le volume du mob, pas uniquement son centre.
 			- portée de tir (FALLOFF) : distance maximal (en bloc) que les projectiles peuvent parcourir avant de disparaître SI ils ne sont pas entrés en contact (collision) avec un élément (terrain, objects, mobs)
 		- les armes ont différent type, ce qui détermine leur stats de départ (niveau 0) :
 			- *Sword* (mêlée) : 0,5 DMG | 1 ATK SPEED | 1 RANGE
+				- RUN-007 : départs espacés de 1 s, geste de 0,28 s avec fenêtre de contact conservée ; relâcher/reprendre F ou interrompre le coup ne remet pas le cooldown à zéro. Un coup par cible dans la fenêtre active ; l’attaque aérienne est autorisée, le wall slide annule la fenêtre active et interdit un nouveau départ.
 			- *Longsword* (mêlée) : 1 DMG | 1,5 ATK SPEED | 1,2 RANGE
 			- *Brutal Axe* (mêlée)  : 1,5 DMG | 1,2 ATK SPEED | 0,8 RANGE
 			- *Dark Scythe* (mêlée)  : 2 DMG | 2,5 ATK SPEED | 1,5 RANGE

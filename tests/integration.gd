@@ -67,28 +67,21 @@ func run() -> void:
 	player.facing=1
 	await tap("attack")
 	await frames(13)
-	check(enemy.health==2,"sword overlaps enemy: one damage per swing")
-	await frames(12)
+	check(enemy.health==0.5,"sword overlaps enemy: half damage once per swing")
+	await frames(45)
 	enemy.position=Vector2(339,144)
 	enemy.velocity=Vector2.ZERO
 	await frames(3)
 	await tap("attack")
 	await frames(16)
-	check(is_instance_valid(enemy) and enemy.health==1 and not enemy.dead,"Green survives two sword strikes")
-	await frames(12)
-	enemy.position=Vector2(339,144)
-	enemy.velocity=Vector2.ZERO
-	await frames(3)
-	await tap("attack")
-	await frames(16)
-	check(not is_instance_valid(enemy) or enemy.dead,"third sword strike kills Green")
+	check(not is_instance_valid(enemy) or enemy.dead,"second Sword strike kills Green after cooldown")
 	# Player damage, invulnerability, death idempotency.
 	player.invulnerability=0
 	player.take_damage(1,Vector2.ZERO)
 	check(player.health==2 and not player.dead,"contact damage leaves two HP")
 	player.take_damage(1,Vector2.ZERO)
 	check(player.health==2,"invulnerability blocks repeated impact")
-	await frames(55)
+	await frames(75)
 	player.take_damage(1,Vector2.ZERO)
 	check(player.health==1,"damage resumes after invulnerability")
 	player.invulnerability=0

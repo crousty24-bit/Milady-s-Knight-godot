@@ -373,3 +373,44 @@ Si le joueur touche les ronces, il perd 1 HP, recule et ne peut pas sauter penda
 - `scripts/player.gd` et `scripts/slime.gd` : santé, signaux et profils de dégâts.
 - `scripts/health_hearts.gd` et `scripts/hud.gd` : valeur écrite et cœurs dessinés.
 - `tests/damage_profiles.gd` : scénarios de fractions et de réactions.
+
+
+## RUN-007 — Séparer la frappe et sa cadence
+
+### Ce qui a été réalisé
+
+Sword niveau 0 inflige **0,5 HP** par coup. Deux frappes tuent un Green Slime (1 HP), quatre tuent un Purple (2 HP). La touche F maintenue répète le geste toutes les secondes. La lame mesure **24 px depuis la main**, soit un bloc et demi de terrain : son dessin et sa collision utilisent cette même longueur. Green inflige 0,5 HP au contact, Purple 1 HP.
+
+### Comment cela fonctionne
+
+Le **geste** dure 0,28 s : préparation, courte fenêtre de contact, puis récupération. Un autre compteur, le **cooldown**, mesure la seconde nécessaire entre deux départs. L’animation peut donc être terminée alors que le prochain coup est encore indisponible. Relâcher puis presser F ne réinitialise pas ce compteur ; une interruption annule le geste mais conserve le délai. Après un contact, il faut que le hit-stun du joueur et le cooldown soient tous deux terminés pour pouvoir frapper. La pause suspend les deux compteurs.
+
+Pendant la fenêtre active, Godot interroge une forme rectangulaire de 24×4 px, centrée à 12 px de la main et tournée avec la lame. Une liste mémorise les ennemis déjà touchés par ce coup : rester dans la forme plusieurs ticks ne multiplie pas les dégâts. Un rayon contre le terrain empêche de frapper à travers un mur. Le coup reste possible en l’air ; entrer en wall slide annule sa fenêtre active.
+
+Le **recul** d’un Slime préserve brièvement sa vitesse d’impulsion au lieu de l’écraser par sa vitesse de patrouille. Le Slime continue de bouger et son contact reste actif. Son flash jaune ne signifie pas qu’il est inoffensif ou invincible : deux impacts indépendants sont acceptés immédiatement. La mort protège son signal de récompense contre une seconde émission.
+
+### Exemple concret dans Milady’s Knight
+
+Après un premier coup contre un Green, le joueur doit garder ses distances pendant le délai avant de donner le second. Le pilote des parcours utilise maintenant les touches de déplacement pour maintenir cet espacement ; les suites de parcours ne modifient ni la santé, ni la position, ni les compteurs pour contourner les combats.
+
+### À regarder dans le projet
+
+- `scripts/player.gd` : durée du geste, cooldown, portée et déduplication des impacts.
+- `scripts/slime.gd` : profils Green/Purple et recul sans immunité.
+- `tests/combat.gd` : cadence, portée, interruptions, collisions et patrouille exercées dans Godot.
+- `tests/route_driver.gd` : maintien de la distance avec des entrées réelles.
+
+Les contrôles automatiques et les captures vérifient le fonctionnement ; l’humain valide la run et les changements finaux le 28 septembre 2026, après révision de la portée et de la protection.
+
+
+### RUN-007 — Rendre la protection après impact visible
+
+L’audit a mesuré les anciennes 0,85 s d’invulnérabilité : elles existaient bien, même au contact de deux Slimes. Le combat était devenu plus exigeant parce qu’un Slime blessé reste dangereux et que Sword attend 1 s entre ses coups. Après validation humaine, la protection passe à **1,20 s**. Les **0,16 s de recul** et **0,18 s de hit-stun** restent distinctes : être protégé ne bloque pas le joueur pendant toute cette seconde.
+
+Un petit **shader** remplace la couleur des pixels du personnage par du blanc pendant **0,10 s**, en conservant leur transparence originale. Ensuite, le sprite alterne entre une opacité de 0,25 et de 1 pendant le reste de la protection. Chaque joueur possède son propre matériau : toucher une instance ne fait pas clignoter une autre. Les compteurs évoluent sur les ticks physiques, donc la pause les suspend. La mort retire le flash et rend le sprite opaque.
+
+Le recul des ronces utilisait auparavant le regard du personnage : regarder à l’opposé du piège pouvait provoquer une poussée vers lui. Il compare maintenant les positions horizontales du joueur et des ronces pour choisir le côté qui éloigne du danger. Si les centres sont exactement alignés, il choisit le côté opposé au regard. Le dégât de 1 HP et l’impulsion verticale sont conservés.
+
+L’humain a validé la run et ces changements après ses retours en jeu. Les durées restent des paramètres d’équilibrage qui pourront évoluer lors de playtests ultérieurs.
+
+Ces comportements ont été vérifiés dans Godot par 35 nouveaux contrôles, intégrés à une suite complète de 296 contrôles de jeu. Cinq captures vérifient le flash, les deux phases du clignotement et le retour normal. Les parcours restent traversables sans modifier le niveau.

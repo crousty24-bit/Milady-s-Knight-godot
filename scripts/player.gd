@@ -12,11 +12,16 @@ const DOUBLE_JUMP_SPEED = -225.0
 const WALL_SLIDE_SPEED = 35.0
 const WALL_JUMP_SPEED = 110.0
 const GRIPPABLE_MASK = 8
+const SWORD_DAMAGE = 0.5
+# RANGE 1 = 24 px (1.5 terrain blocks), measured from the hand to the tip.
+const SWORD_RANGE = 24.0
+const ATTACK_INTERVAL = 1.0
 const ATTACK_DURATION = 0.28
 # Keep the original windup, contact and recovery proportions as the cycle changes.
 const ATTACK_HIT_START_TIME = ATTACK_DURATION * (0.25 / 0.32)
 const ATTACK_HIT_END_TIME = ATTACK_DURATION * (0.11 / 0.32)
-const INVULNERABILITY_DURATION = 0.85
+const INVULNERABILITY_DURATION = 1.20
+const HURT_FLASH_DURATION = 0.10
 const HIT_STUN_DURATION = 0.18
 const KNOCKBACK_DURATION = 0.16
 var max_health_units: int = 30
@@ -32,9 +37,11 @@ var controls_enabled: bool = true
 var coyote: float = 0.0
 var jump_buffer: float = 0.0
 var invulnerability: float = 0.0
+var hurt_flash_time: float = 0.0
 var knockback_time: float = 0.0
 var hit_stun_time: float = 0.0
 var attack_time: float = 0.0
+var attack_cooldown: float = 0.0
 var hit_targets: Array[int] = []
 var can_double_jump: bool = false
 var wall_jump_lockout: bool = false
@@ -48,9 +55,15 @@ var wall_control_time: float = 0.0
 var attack_cancelled: bool = false
 @onready var sprite: AnimatedSprite2D = $Sprite
 @onready var sword: Area2D = $AttackArea
+@onready var hurt_material: ShaderMaterial = sprite.material
 
 func _physics_process(delta: float) -> void:
+	attack_cooldown = maxf(0.0, attack_cooldown - delta)
 	invulnerability = maxf(0.0, invulnerability - delta)
+	hurt_flash_time = maxf(0.0, hurt_flash_time - delta)
+	# Remove countdown roundoff at the exact expiration tick.
+	if invulnerability < 0.000001: invulnerability = 0.0
+	if hurt_flash_time < 0.000001: hurt_flash_time = 0.0
 	knockback_time = maxf(0.0, knockback_time - delta)
 	hit_stun_time = maxf(0.0, hit_stun_time - delta)
 	jump_flash = maxf(0.0, jump_flash - delta)
@@ -111,15 +124,16 @@ func _physics_process(delta: float) -> void:
 			attack_facing = facing
 	if knockback_time <= 0.0 and wall_control_time <= 0.0:
 		velocity.x = move_toward(velocity.x, direction * SPEED, 2100.0 * delta)
-	if controls_enabled and hit_stun_time <= 0.0 and Input.is_action_pressed("attack") and attack_time <= 0.0 and motion_state != MotionState.WALL_SLIDE:
+	if controls_enabled and hit_stun_time <= 0.0 and Input.is_action_pressed("attack") and attack_time <= 0.0 and attack_cooldown <= 0.000001 and motion_state != MotionState.WALL_SLIDE:
 		attack_time = ATTACK_DURATION
+		attack_cooldown = ATTACK_INTERVAL
 		attack_facing = facing
 		attack_cancelled = false
 		hit_targets.clear()
 		$SwingSound.play()
 	attack_time = maxf(0.0, attack_time - delta)
 	sprite.flip_h = facing < 0
-	sprite.modulate = Color(1.0, 0.65, 0.65, 0.45 if int(invulnerability * 18) % 2 == 0 else 1.0) if invulnerability > 0.0 else Color.WHITE
+	_update_damage_visuals()
 	if attack_time > 0.0:
 		sprite.play("jump")
 	elif not is_on_floor():
@@ -174,6 +188,7 @@ func take_damage(amount: float, impulse: Vector2 = Vector2.ZERO, source: int = D
 		return
 	health_changed.emit(health, max_health)
 	invulnerability = INVULNERABILITY_DURATION
+	hurt_flash_time = HURT_FLASH_DURATION
 	var has_knockback: bool = source == DamageSource.CONTACT_MELEE or source == DamageSource.SOLID_TRAP or source == DamageSource.FLAME
 	var interrupts_attack: bool = source == DamageSource.CONTACT_MELEE or source == DamageSource.PROJECTILE
 	if source == DamageSource.CONTACT_MELEE:
@@ -186,6 +201,14 @@ func take_damage(amount: float, impulse: Vector2 = Vector2.ZERO, source: int = D
 		jump_buffer = 0.0
 		wall_control_time = 0.0
 		velocity = impulse
+	_update_damage_visuals()
+
+func _update_damage_visuals() -> void:
+	hurt_material.set_shader_parameter("white_flash", 1.0 if hurt_flash_time > 0.0 and not dead else 0.0)
+	sprite.modulate = Color.WHITE
+	if not dead and hurt_flash_time <= 0.0 and invulnerability > 0.0:
+		var blink_elapsed := maxf(0.0, INVULNERABILITY_DURATION - invulnerability - HURT_FLASH_DURATION)
+		sprite.modulate.a = 0.25 if int(blink_elapsed * 10.0) % 2 == 0 else 1.0
 
 func heal(amount: float) -> float:
 	if dead or amount <= 0.0:
@@ -205,7 +228,8 @@ func die() -> void:
 	attack_time = 0.0
 	hit_stun_time = 0.0
 	knockback_time = 0.0
-	sprite.modulate = Color.WHITE
+	hurt_flash_time = 0.0
+	_update_damage_visuals()
 	sprite.play("dead")
 	health_changed.emit(0.0, max_health)
 	died.emit()
@@ -215,7 +239,7 @@ func _update_sword() -> void:
 	var angle: float = lerpf(-1.5, 1.2, 1.0 - attack_time / ATTACK_DURATION)
 	var blade_direction := Vector2(cos(angle) * attack_facing, sin(angle))
 	var hand := Vector2(4.0 * attack_facing, -10.0)
-	sword.position = hand + blade_direction * 12.0
+	sword.position = hand + blade_direction * (SWORD_RANGE * 0.5)
 	sword.rotation = blade_direction.angle()
 	if attack_cancelled or dead or attack_time >= ATTACK_HIT_START_TIME or attack_time <= ATTACK_HIT_END_TIME:
 		return
@@ -231,7 +255,7 @@ func _update_sword() -> void:
 		if not get_world_2d().direct_space_state.intersect_ray(ray).is_empty():
 			continue
 		hit_targets.append(body.get_instance_id())
-		body.take_damage(1, Vector2(attack_facing * 60.0, -55.0))
+		body.take_damage(SWORD_DAMAGE, Vector2(attack_facing * 60.0, -55.0))
 
 func _draw() -> void:
 	if motion_state == MotionState.WALL_SLIDE:
@@ -245,10 +269,10 @@ func _draw() -> void:
 	var progress: float = 1.0 - attack_time / ATTACK_DURATION
 	var angle: float = lerpf(-1.5, 1.2, progress)
 	var origin = Vector2(4.0 * attack_facing, -10.0)
-	var tip = origin + Vector2(cos(angle) * attack_facing, sin(angle)) * 24.0
+	var tip = origin + Vector2(cos(angle) * attack_facing, sin(angle)) * SWORD_RANGE
 	if attack_time < ATTACK_HIT_START_TIME and attack_time > ATTACK_HIT_END_TIME:
 		for i in range(4):
 			var a: float = angle - i * 0.16
-			draw_line(origin + Vector2(cos(a) * attack_facing, sin(a)) * 12.0, origin + Vector2(cos(a) * attack_facing, sin(a)) * 27.0, Color(0.95, 0.8, 0.44, 0.7 - i * 0.15), 2.0)
+			draw_line(origin + Vector2(cos(a) * attack_facing, sin(a)) * (SWORD_RANGE * 0.5), origin + Vector2(cos(a) * attack_facing, sin(a)) * SWORD_RANGE, Color(0.95, 0.8, 0.44, 0.7 - i * 0.15), 2.0)
 	draw_line(origin, tip, Color("e9e4c5"), 2.0)
 	draw_line(origin, origin - Vector2(cos(angle) * attack_facing, sin(angle)) * 5.0, Color("ae7c42"), 3.0)
