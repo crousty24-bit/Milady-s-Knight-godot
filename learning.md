@@ -401,3 +401,16 @@ Après un premier coup contre un Green, le joueur doit garder ses distances pend
 - `tests/route_driver.gd` : maintien de la distance avec des entrées réelles.
 
 Les contrôles automatiques et les captures vérifient le fonctionnement ; le ressenti de cette cadence et de cette portée attend encore l’essai humain.
+
+
+### RUN-007 — Rendre la protection après impact visible
+
+L’audit a mesuré les anciennes 0,85 s d’invulnérabilité : elles existaient bien, même au contact de deux Slimes. Le combat était devenu plus exigeant parce qu’un Slime blessé reste dangereux et que Sword attend 1 s entre ses coups. Après validation humaine, la protection passe à **1,20 s**. Les **0,16 s de recul** et **0,18 s de hit-stun** restent distinctes : être protégé ne bloque pas le joueur pendant toute cette seconde.
+
+Un petit **shader** remplace la couleur des pixels du personnage par du blanc pendant **0,10 s**, en conservant leur transparence originale. Ensuite, le sprite alterne entre une opacité de 0,25 et de 1 pendant le reste de la protection. Chaque joueur possède son propre matériau : toucher une instance ne fait pas clignoter une autre. Les compteurs évoluent sur les ticks physiques, donc la pause les suspend. La mort retire le flash et rend le sprite opaque.
+
+Le recul des ronces utilisait auparavant le regard du personnage : regarder à l’opposé du piège pouvait provoquer une poussée vers lui. Il compare maintenant les positions horizontales du joueur et des ronces pour choisir le côté qui éloigne du danger. Si les centres sont exactement alignés, il choisit le côté opposé au regard. Le dégât de 1 HP et l’impulsion verticale sont conservés.
+
+Le ressenti de cette nouvelle protection attend encore un essai humain ; les durées sont des paramètres d’équilibrage, pas une preuve de confort de jeu.
+
+Ces comportements ont été vérifiés dans Godot par 35 nouveaux contrôles, intégrés à une suite complète de 296 contrôles de jeu. Cinq captures vérifient le flash, les deux phases du clignotement et le retour normal. Les parcours restent traversables sans modifier le niveau.

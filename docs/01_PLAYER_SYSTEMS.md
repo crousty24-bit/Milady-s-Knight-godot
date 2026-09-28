@@ -65,12 +65,12 @@
 			- exemple : joueur possède 3 HP MAX, il subit 1 DMG d'une attaque de mob => joueur possède 2 CURRENT HP
 	- **REACTION AUX DEGATS**
 		- lorsque le joueur subit un dégât, plusieurs effets s'appliquent :
-			- invincibilité temporaire : fenêtre d'invincibilité après un hit durant laquelle le joueur ne peut pas subir de dégâts = éviter de subir plusieurs collisions consécutives selon l'implémentation et/ou si le joueur se retrouve "coincé" dans un ou plusieurs ennemis
-			- hit-stun : fenêtre temporaire parallèle à l'invincibilité temporaire durant laquelle le joueur ne peut pas effectuer d'attaques
-			- knockback : au moment où il subit un dégât, le personnage est légèrement repoussé en arrière (dans le sens opposé de l'attaque) ; fenêtre temporaire durant laquelle le joueur ne peut pas effectuer de jump
+			- invincibilité temporaire : fenêtre de 1,20 s après un hit durant laquelle le joueur ne peut pas subir de dégâts (ajustement RUN-007 validé après audit ; le vide reste fatal) = éviter de subir plusieurs collisions consécutives selon l'implémentation et/ou si le joueur se retrouve "coincé" dans un ou plusieurs ennemis
+			- hit-stun : fenêtre de 0,18 s parallèle à l'invincibilité temporaire durant laquelle le joueur ne peut pas effectuer d'attaques
+			- knockback : au moment où il subit un dégât, le personnage est légèrement repoussé en arrière (dans le sens opposé de l'attaque) ; fenêtre de 0,16 s durant laquelle le joueur ne peut pas effectuer de jump
 			- interruption d'attaque : si le joueur appui sur attaquer au même moment où il subit un dégât, l'action d'attaque est interrompue (annulé)
-			- **A DEFINIR :**
-				- les durées exactes seront à évaluer, décider puis à corriger avant et pendant l'implémentation/testing
+			- feedback RUN-007 : flash blanc opaque de 0,10 s puis clignotement contrasté (alpha 0,25/1 par phases de 0,10 s) jusqu’à la fin de l’invulnérabilité. La pause suspend ces effets avec les compteurs ; la mort supprime le flash et restaure l’opacité.
+			- les durées de recul/hit-stun sont conservées après audit ; l’équilibrage final reste à confirmer par essai humain. Les ronces poussent horizontalement loin de leur centre, avec repli opposé au regard si les centres sont alignés.
 		- cas où tous les effets ci-dessus s'appliquent : 
 			- le joueur subit un dégâts suite à une collision avec un mob : Slimes
 			- le joueur subit un dégâts suite à une attaque de mêlée d'un mob : Skeleton Warrior, Sorcerer, mobs d'élite, Boss

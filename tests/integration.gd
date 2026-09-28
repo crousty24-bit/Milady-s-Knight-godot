@@ -81,7 +81,7 @@ func run() -> void:
 	check(player.health==2 and not player.dead,"contact damage leaves two HP")
 	player.take_damage(1,Vector2.ZERO)
 	check(player.health==2,"invulnerability blocks repeated impact")
-	await frames(55)
+	await frames(75)
 	player.take_damage(1,Vector2.ZERO)
 	check(player.health==1,"damage resumes after invulnerability")
 	player.invulnerability=0

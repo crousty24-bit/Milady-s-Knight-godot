@@ -20,7 +20,8 @@ const ATTACK_DURATION = 0.28
 # Keep the original windup, contact and recovery proportions as the cycle changes.
 const ATTACK_HIT_START_TIME = ATTACK_DURATION * (0.25 / 0.32)
 const ATTACK_HIT_END_TIME = ATTACK_DURATION * (0.11 / 0.32)
-const INVULNERABILITY_DURATION = 0.85
+const INVULNERABILITY_DURATION = 1.20
+const HURT_FLASH_DURATION = 0.10
 const HIT_STUN_DURATION = 0.18
 const KNOCKBACK_DURATION = 0.16
 var max_health_units: int = 30
@@ -36,6 +37,7 @@ var controls_enabled: bool = true
 var coyote: float = 0.0
 var jump_buffer: float = 0.0
 var invulnerability: float = 0.0
+var hurt_flash_time: float = 0.0
 var knockback_time: float = 0.0
 var hit_stun_time: float = 0.0
 var attack_time: float = 0.0
@@ -53,10 +55,15 @@ var wall_control_time: float = 0.0
 var attack_cancelled: bool = false
 @onready var sprite: AnimatedSprite2D = $Sprite
 @onready var sword: Area2D = $AttackArea
+@onready var hurt_material: ShaderMaterial = sprite.material
 
 func _physics_process(delta: float) -> void:
 	attack_cooldown = maxf(0.0, attack_cooldown - delta)
 	invulnerability = maxf(0.0, invulnerability - delta)
+	hurt_flash_time = maxf(0.0, hurt_flash_time - delta)
+	# Remove countdown roundoff at the exact expiration tick.
+	if invulnerability < 0.000001: invulnerability = 0.0
+	if hurt_flash_time < 0.000001: hurt_flash_time = 0.0
 	knockback_time = maxf(0.0, knockback_time - delta)
 	hit_stun_time = maxf(0.0, hit_stun_time - delta)
 	jump_flash = maxf(0.0, jump_flash - delta)
@@ -126,7 +133,7 @@ func _physics_process(delta: float) -> void:
 		$SwingSound.play()
 	attack_time = maxf(0.0, attack_time - delta)
 	sprite.flip_h = facing < 0
-	sprite.modulate = Color(1.0, 0.65, 0.65, 0.45 if int(invulnerability * 18) % 2 == 0 else 1.0) if invulnerability > 0.0 else Color.WHITE
+	_update_damage_visuals()
 	if attack_time > 0.0:
 		sprite.play("jump")
 	elif not is_on_floor():
@@ -181,6 +188,7 @@ func take_damage(amount: float, impulse: Vector2 = Vector2.ZERO, source: int = D
 		return
 	health_changed.emit(health, max_health)
 	invulnerability = INVULNERABILITY_DURATION
+	hurt_flash_time = HURT_FLASH_DURATION
 	var has_knockback: bool = source == DamageSource.CONTACT_MELEE or source == DamageSource.SOLID_TRAP or source == DamageSource.FLAME
 	var interrupts_attack: bool = source == DamageSource.CONTACT_MELEE or source == DamageSource.PROJECTILE
 	if source == DamageSource.CONTACT_MELEE:
@@ -193,6 +201,14 @@ func take_damage(amount: float, impulse: Vector2 = Vector2.ZERO, source: int = D
 		jump_buffer = 0.0
 		wall_control_time = 0.0
 		velocity = impulse
+	_update_damage_visuals()
+
+func _update_damage_visuals() -> void:
+	hurt_material.set_shader_parameter("white_flash", 1.0 if hurt_flash_time > 0.0 and not dead else 0.0)
+	sprite.modulate = Color.WHITE
+	if not dead and hurt_flash_time <= 0.0 and invulnerability > 0.0:
+		var blink_elapsed := maxf(0.0, INVULNERABILITY_DURATION - invulnerability - HURT_FLASH_DURATION)
+		sprite.modulate.a = 0.25 if int(blink_elapsed * 10.0) % 2 == 0 else 1.0
 
 func heal(amount: float) -> float:
 	if dead or amount <= 0.0:
@@ -212,7 +228,8 @@ func die() -> void:
 	attack_time = 0.0
 	hit_stun_time = 0.0
 	knockback_time = 0.0
-	sprite.modulate = Color.WHITE
+	hurt_flash_time = 0.0
+	_update_damage_visuals()
 	sprite.play("dead")
 	health_changed.emit(0.0, max_health)
 	died.emit()
