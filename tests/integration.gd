@@ -105,7 +105,7 @@ func run() -> void:
 	check(not paused,"escape resumes tree")
 	await teleport(Vector2(880,290))
 	await frames(15)
-	check(player.dead,"pit causes death through actual area collision")
+	check(player.dead,"level void limit causes death during actual fall")
 	level.queue_free()
 	await process_frame
 	print("RESULT ",checks," checks; ",failures," failures")

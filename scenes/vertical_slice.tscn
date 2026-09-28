@@ -20,6 +20,8 @@
 [ext_resource type="Script" path="res://scripts/hud.gd" id="18_qsiwk"]
 [ext_resource type="AudioStream" path="res://assets/music/time_for_adventure.ogg" id="19_obgh5"]
 
+[ext_resource type="PackedScene" path="res://scenes/spikes.tscn" id="20_spikes"]
+
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_22hp6"]
 texture = ExtResource("3_fepne")
 8:0/0 = 0
@@ -40,15 +42,13 @@ size = Vector2(16, 640)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_38dmk"]
 size = Vector2(2240, 16)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lwc7x"]
-size = Vector2(2240, 32)
-
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ltu6f"]
 size = Vector2(50, 100)
 
 [node name="VerticalSlice" type="Node2D"]
 process_mode = 3
 script = ExtResource("1_wiyk5")
+void_y = 304.0
 
 [node name="Kingdom" type="Node2D" parent="."]
 script = ExtResource("2_nmwyv")
@@ -307,15 +307,12 @@ collision_layer = 0
 collision_mask = 2
 script = ExtResource("12_42r47")
 
-[node name="Pit" type="Area2D" parent="Hazards"]
-collision_layer = 0
-collision_mask = 2
-script = ExtResource("12_42r47")
-lethal = true
+[node name="FloorSpikes" parent="Hazards" instance=ExtResource("20_spikes")]
+position = Vector2(1120, 224)
 
-[node name="@CollisionShape2D@5" type="CollisionShape2D" parent="Hazards/Pit"]
-position = Vector2(1120, 320)
-shape = SubResource("RectangleShape2D_lwc7x")
+[node name="WallSpikes" parent="Hazards" instance=ExtResource("20_spikes")]
+position = Vector2(2240, 80)
+rotation = -1.5707964
 
 [node name="Platforms" type="Node2D" parent="."]
 process_mode = 1

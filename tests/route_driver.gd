@@ -170,6 +170,8 @@ func lower(right := true) -> void:
 		await jump(928)
 		await walk(1004)
 		await jump(1080)
+		await walk(1088)
+		await jump(1168)
 		await walk(1267)
 		await jump(1308)
 		await walk(1331)
@@ -177,6 +179,8 @@ func lower(right := true) -> void:
 		await walk(1390)
 		await jump(1430)
 	else:
+		await walk(1168)
+		await jump(1080)
 		await walk(1068)
 		await jump(992)
 		await walk(925)

@@ -387,3 +387,32 @@ Commande exécutée après chargement silencieux de la configuration locale : `.
 Inspection directe déclenchée par cette revue : critères Sword/Slimes/protection comparés au code livré à `e97a526`, logs de chacune des 13 suites revus (296 contrôles, zéro échec), import et isolation confirmés, deux parcours et retours à 3 HP, logs du rendu et captures inspectées lors de l’implémentation, preuves de bugtest et correctifs revues, journal/learning actualisés. Validation humaine explicite obtenue dans le message précédent. Aucun contrôle obligatoire en échec, non exécuté ou en attente ; aucun blocage constaté. Les probabilités modérées du reviewer ne conduisent pas à redemander une validation déjà obtenue. Conclusion : **RUN-007 DONE localement**.
 
 État Git avant clôture documentaire propre sur `feature/run-007-combat-sword-slimes`. Gameplay livré aux commits `8e43085`, `b12c4f5`, `e97a526` ; commit humain `4c7438b` préservé. La clôture change seulement brief/workflow/journal/learning ; `git diff --check` et `git diff --cached --check` réussis ; contenu staged limité aux quatre documents de clôture et revu avant commit local. Aucun push, PR ni fusion autorisé ou effectué dans cette clôture. RUN-008 reste BACKLOG et n’est pas lancée.
+
+
+## RUN-008 — Piques fixes solides et vide par niveau (28 septembre 2026)
+
+**Statut : VERIFY, revue humaine attendue.** Lancement explicitement demandé. Base propre `develop` à `260c8a8`, RUN-007 fusionnée via PR #11 ; branche dédiée `feature/run-008-solid-spikes`. Aucun changement humain local préexistant. Inspection ciblée des systèmes dégâts, niveau, hazards, collisions et parcours. Une inspection/revue indépendante en lecture seule a été déléguée à Luna Low.
+
+### Implémentation et périmètre
+
+Nouvelle scène `scenes/spikes.tscn` et script `scripts/spikes.gd` : corps statique terrain 1 sans grippable, rectangle solide 32×12 px, capteur joueur 34×14 px ; dessin provisoire de quatre dents. Rotation commune des formes/dessin/impulsion. Contact 0,5 HP via SOLID_TRAP : recul sans hit-stun ni interruption, protection existante 1,20 s. Piques au sol `(1120,224)` et vers la gauche `(2240,80)` sur la limite droite. Deux ronces existantes à 1 HP conservées ; aucune tuile ni source d’asset modifiée. Indication de saut près des nouvelles piques au sol. Le pilote du chemin bas ajoute un saut par-dessus les piques dans chaque sens avec entrées de jeu publiques.
+
+Le niveau exporte `void_y=304` en coordonnées locales ; sa boucle physique applique VOID sous cette limite, hors pause et tant que le niveau n’est pas terminé. Retrait du `y>340` dans le joueur et de la zone Pit redondante. La valeur 304 conserve l’ancien bord supérieur de cette zone, sans prétendre reproduire exactement le tick d’entrée d’un capteur sur la capsule. La mort reste unique et traverse l’invulnérabilité. Reprise manuelle inchangée (RUN-009 non lancée).
+
+### Preuves exécutées
+
+Moteur Windows **4.7.2.stable.official.ed1daf0bf** via `GODOT_BIN` ciblant l’exécutable console installé dans `C:/Users/allen/OneDrive/Documents/Godot Engine/`.
+
+- `./tools/test.sh` : code 0, import réussi (cache existant, aucune revendication d’import depuis zéro), contrôle d’isolation `user://` réussi, **14 suites / 335 contrôles de jeu**, zéro échec/erreur/fuite dans les logs. Profil temporaire isolé supprimé par le lanceur. Logs : `work/test-results/run-g3diTC5Q/`, sortie consolidée `work/run-008-tests.log`.
+- `tests/spikes_void.gd` : **39 contrôles**. Approches par `move_and_collide` contre la forme réelle, dans quatre orientations ; dégâts exacts, contact répété protégé puis nouveau dégât lorsque la protection est retirée, impulsion hors de la surface, attaque préservée sans stun, sondes murales ignorant les piques. Les compteurs du joueur sont figés dans ces fixtures pour isoler le contact ; leur durée réelle reste exercée par les 35 contrôles `damage_protection`. Chute avec limite abaissée à 500 px : le joueur survit sous 340 ; pause, retour de limite à 300, mort fatale malgré protection et émission unique. Chute par gravité sur les piques intégrées : dégâts et recul observés.
+- Régressions : mobilité, physique, murs grippables, ferry, limites, combat, clavier/pause, collecte/offrande, mort/reprise/transition et bonus réussis. Parcours haut/bas terminés respectivement à **3 / 2 HP** ; retours terminés à **2 / 1,5 HP**, sans tricher sur santé/position/compteurs. Ils prouvent la traversabilité, pas un parcours sans dégâts ni un équilibrage humain.
+- `./tools/run.sh --fixed-fps 60 --script res://tests/spikes_visual.gd` : code 0, **2 contrôles graphiques** ; rendu Windows OpenGL Compatibility / RTX 4070 Ti. Captures `work/run-008-spikes-floor.png` et `work/run-008-spikes-wall.png`, toutes deux inspectées. Piques claires visibles au sol, silhouette vers la gauche à la limite droite. Log `work/run-008-visual.log`.
+- Import final après ajout du script de capture : code 0, aucune erreur dans `work/run-008-final-import.log` ; UID de scripts générés par Godot. `git diff --check` réussi. Journal, learning, brief et contrat technique du piège/vide actualisés. Dossier de revue préparé dans `work/test-results/RUN-008/review.json`, validation humaine explicitement en attente.
+
+### Bugtest et limites
+
+Les scénarios ciblés ont tenté les contacts répétés, chaque orientation, les sondes murales sur les piques, une limite de vide différente, la pause et une chute prolongée après mort. Aucun échec constaté ; aucun correctif de bug nécessaire pendant cette passe. Le dessin a une collision rectangulaire couvrant son emprise, sans collision dent par dent. Aucun asset final ni équilibrage humain revendiqué.
+
+Revue indépendante Luna Low : aucun défaut concret constaté dans le diff ni les nouvelles formes, le contact et le contrôle pause/vide ; les angles cardinaux et placements actuels sont le périmètre vérifié. Inspection racine du code et des logs concordante.
+
+La revue humaine prévue en VERIFY reste attendue sur la lisibilité/placement et le ressenti du recul. La revue Jev avant DONE n’est pas encore exécutée, puisque cette validation est en attente. Aucun push, PR ou merge effectué ; pas de lancement de RUN-009.
