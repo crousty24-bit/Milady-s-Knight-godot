@@ -400,7 +400,7 @@ Après un premier coup contre un Green, le joueur doit garder ses distances pend
 - `tests/combat.gd` : cadence, portée, interruptions, collisions et patrouille exercées dans Godot.
 - `tests/route_driver.gd` : maintien de la distance avec des entrées réelles.
 
-Les contrôles automatiques et les captures vérifient le fonctionnement ; le ressenti de cette cadence et de cette portée attend encore l’essai humain.
+Les contrôles automatiques et les captures vérifient le fonctionnement ; l’humain valide la run et les changements finaux le 28 septembre 2026, après révision de la portée et de la protection.
 
 
 ### RUN-007 — Rendre la protection après impact visible
@@ -411,6 +411,6 @@ Un petit **shader** remplace la couleur des pixels du personnage par du blanc pe
 
 Le recul des ronces utilisait auparavant le regard du personnage : regarder à l’opposé du piège pouvait provoquer une poussée vers lui. Il compare maintenant les positions horizontales du joueur et des ronces pour choisir le côté qui éloigne du danger. Si les centres sont exactement alignés, il choisit le côté opposé au regard. Le dégât de 1 HP et l’impulsion verticale sont conservés.
 
-Le ressenti de cette nouvelle protection attend encore un essai humain ; les durées sont des paramètres d’équilibrage, pas une preuve de confort de jeu.
+L’humain a validé la run et ces changements après ses retours en jeu. Les durées restent des paramètres d’équilibrage qui pourront évoluer lors de playtests ultérieurs.
 
 Ces comportements ont été vérifiés dans Godot par 35 nouveaux contrôles, intégrés à une suite complète de 296 contrôles de jeu. Cinq captures vérifient le flash, les deux phases du clignotement et le retour normal. Les parcours restent traversables sans modifier le niveau.

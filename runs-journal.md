@@ -373,3 +373,17 @@ L’humain répond **« Oui »** aux quatre ajustements proposés. Implémentati
 `tests/damage_feedback_visual.gd`, rendu GL Compatibility sur RTX 4070 Ti, code 0 : **5 contrôles visuels réussis**. Log `work/test-results/run-007-protection-visual.log` ; captures `work/run-007-protection-{flash,blink-dim,blink-visible,protected-end,normal}.png`. Captures du flash, des deux phases de clignotement et de la fin inspectées : silhouette blanche opaque, alternance avec le sprite normal/translucide, retour à l’apparence normale sans toucher le HUD. Absence d’erreur de shader, script ou fuite dans les logs finaux. `git diff --check` passe.
 
 Specs, brief, workflow, learning et dossier local de revue actualisés. RUN-007 revient à **VERIFY** : proposition technique validée et implémentée, nouvel essai humain du ressenti attendu avant clôture. Revue Jev de clôture non exécutée pendant cette attente. Aucun push, PR ni fusion ; RUN-008 reste BACKLOG.
+
+
+### Validation humaine de RUN-007 (28 septembre 2026)
+
+L’humain confirme : **« Je valide la run et les changements. »** La validation de la run et de son résultat final est obtenue après les retours sur la portée et la protection. Dossier local `work/test-results/RUN-007/review.json` actualisé avec validation humaine `passed` et preuves finales de `run-iYLHAGNL/`. Les logs existants confirment 13 suites / 296 contrôles de jeu et 5 contrôles visuels réussis ; les parcours et retours se terminent à 3 HP. Aucun changement de gameplay depuis le commit `e97a526` et aucun test de gameplay relancé pour cette clôture documentaire. Revue Jev et décision de clôture à consigner ci-dessous.
+
+
+### Revue Jev et clôture locale de RUN-007 (28 septembre 2026)
+
+Commande exécutée après chargement silencieux de la configuration locale : `.local/typesafe-venv/bin/python tools/jev/run_completion_reviewer/review.py work/test-results/RUN-007/review.json --json`, sortie conservée dans `work/test-results/RUN-007/jev-final.json`, code 0. Modèle `jev-1.13.0`. Les quatre décisions sont examinées individuellement : couverture des critères (Noul oui 0,81), vérifications obligatoires complètes (Noul oui 0,67), blocage présent (Noul oui 0,25), Choice **READY_FOR_DONE** (confiance 0,43 ; probabilités READY_FOR_DONE 0,61 / VERIFY 0,24 / BLOCKED 0,15). Ces probabilités non calibrées ne constituent ni un test ni une autorisation automatique.
+
+Inspection directe déclenchée par cette revue : critères Sword/Slimes/protection comparés au code livré à `e97a526`, logs de chacune des 13 suites revus (296 contrôles, zéro échec), import et isolation confirmés, deux parcours et retours à 3 HP, logs du rendu et captures inspectées lors de l’implémentation, preuves de bugtest et correctifs revues, journal/learning actualisés. Validation humaine explicite obtenue dans le message précédent. Aucun contrôle obligatoire en échec, non exécuté ou en attente ; aucun blocage constaté. Les probabilités modérées du reviewer ne conduisent pas à redemander une validation déjà obtenue. Conclusion : **RUN-007 DONE localement**.
+
+État Git avant clôture documentaire propre sur `feature/run-007-combat-sword-slimes`. Gameplay livré aux commits `8e43085`, `b12c4f5`, `e97a526` ; commit humain `4c7438b` préservé. La clôture change seulement brief/workflow/journal/learning ; `git diff --check` et `git diff --cached --check` réussis ; contenu staged limité aux quatre documents de clôture et revu avant commit local. Aucun push, PR ni fusion autorisé ou effectué dans cette clôture. RUN-008 reste BACKLOG et n’est pas lancée.
