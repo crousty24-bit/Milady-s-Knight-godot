@@ -1,4 +1,5 @@
 extends Node2D
+@export var void_y: float = 304.0
 @export_file("*.tscn") var next_level_scene: String = ""
 const COIN_SCENE = preload("res://scenes/coin.tscn")
 var gold: int = 0
@@ -35,6 +36,10 @@ func _ready() -> void:
 	_update_gold_hud()
 	hud.set_health(player.health, player.max_health)
 	$Music.play()
+func _physics_process(_delta: float) -> void:
+	if not paused and not finished and player.position.y > void_y:
+		player.take_damage(0.0, Vector2.ZERO, SlicePlayer.DamageSource.VOID)
+
 func _process(delta: float) -> void:
 	if finished and Input.is_action_just_pressed("interact"):
 		if not reward_settled: _settle_reward()
@@ -56,6 +61,8 @@ func _process(delta: float) -> void:
 	if message_time > 0.0: return
 	if gate.player_near() and not gate.opened:
 		hud.set_hint("E  Offrir 12 or" if gold >= 12 else "Poterne scellee : %d / 12 or" % gold)
+	elif absf(player.position.x-1120)<55 and player.position.y>160:
+		hud.set_hint("Fixed spikes: jump over them.")
 	elif absf(player.position.x-1544)<55 or (absf(player.position.x-1032)<55 and player.position.y>160):
 		hud.set_hint("Ronces lumineuses : danger. Sautez par-dessus.")
 	elif player.position.x < 240:

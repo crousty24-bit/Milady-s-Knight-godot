@@ -188,3 +188,12 @@
 			- à l'inverse, posséder une arme Légendaire va volontairement rendre le joueur OP et donner un avantage considérable sur le combat du Boss Final : parti pris assumé compte tenu de la faible chance de drop une légendaire
 - en cas de mort du joueur : reset au début du niveau (zone de spawn fixe)
 	- le jeu se veut donc difficile (die and retry) avec une part de randomness et une approche rogue lite sans être non plus trop hardcore ni trop punitif
+
+
+## Implémentation vérifiée — RUN-008 (28 septembre 2026)
+
+`scenes/spikes.tscn` est un piège fixe orientable par rotation (0°, 90°, 180°, −90°). Son corps `StaticBody2D` bloque sur la couche terrain 1, sans la couche grippable 4 ; son `Area2D` de contact ne détecte que le joueur (couche 2). Le rectangle solide est de 32×12 px et le capteur de 34×14 px, légèrement plus large pour détecter le contact malgré la séparation physique. Le dessin provisoire présente quatre dents claires sur cette emprise rectangulaire ; il ne constitue pas un sprite final validé.
+
+Le contact inflige 0,5 HP avec protection 1,20 s et recul 0,16 s, sans hit-stun ni interruption de Sword. L’impulsion est tournée avec le piège et dirigée hors de sa surface. Le slice conserve ses ronces à 1 HP et ajoute deux placements de piques : sol `(1120,224)` et limite droite `(2240,80)`. Le terrain existant reste inchangé.
+
+Le niveau exporte `void_y`, exprimé dans ses coordonnées locales. Lorsque les pieds du joueur passent sous ce seuil, le profil VOID provoque une mort unique même pendant l’invulnérabilité ; la pause suspend le contrôle. Le slice règle ce seuil à 304 px, ancien bord supérieur de Pit. La zone Pit redondante et la limite globale `y > 340` du joueur sont retirées. La reprise reste manuelle jusqu’à RUN-009.

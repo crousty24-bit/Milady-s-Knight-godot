@@ -144,8 +144,6 @@ func _physics_process(delta: float) -> void:
 	_update_wall_state(direction)
 	_update_sword()
 	queue_redraw()
-	if global_position.y > 340.0:
-		die()
 
 func _update_wall_state(direction: float) -> void:
 	wall_normal = 0.0

@@ -414,3 +414,14 @@ Le recul des ronces utilisait auparavant le regard du personnage : regarder à l
 L’humain a validé la run et ces changements après ses retours en jeu. Les durées restent des paramètres d’équilibrage qui pourront évoluer lors de playtests ultérieurs.
 
 Ces comportements ont été vérifiés dans Godot par 35 nouveaux contrôles, intégrés à une suite complète de 296 contrôles de jeu. Cinq captures vérifient le flash, les deux phases du clignotement et le retour normal. Les parcours restent traversables sans modifier le niveau.
+
+
+## RUN-008 — Bloquer avec un corps, blesser avec une zone
+
+Les piques fixes utilisent deux éléments complémentaires. Le `StaticBody2D` empêche le joueur de traverser leur volume. L’`Area2D`, un peu plus grande, détecte le joueur même lorsque la collision solide l’arrête juste devant. Un seul corps solide ne suffirait pas à appliquer automatiquement les dégâts ; une zone seule serait traversable, comme les ronces conservées.
+
+Le corps appartient à la couche terrain, mais pas à celle des murs grimpables : il bloque sans accorder de saut mural. Le capteur ne cherche que la couche joueur. La rotation du nœud tourne ensemble dessin, formes et impulsion ; la même scène fonctionne au sol, au plafond et sur les deux côtés d’un mur. Un contact retire exactement cinq unités de santé, soit 0,5 HP. Le profil de piège conserve Sword et n’ajoute pas de hit-stun, mais repousse le personnage et déclenche sa protection de 1,20 s.
+
+Le vide dépend maintenant du niveau. Dans l’inspecteur du niveau, `void_y` définit la hauteur au-delà de laquelle les pieds du joueur provoquent sa mort. Le slice utilise 304 px : la hauteur de son ancienne fosse létale. Un autre niveau peut choisir une hauteur plus basse sans devoir modifier le script du personnage. La pause suspend ce contrôle et `die()` garantit une seule émission du signal de mort. Le reset automatique appartient à RUN-009.
+
+Godot a exécuté 39 nouveaux contrôles de collisions/contact dans les quatre orientations, maintien de l’attaque, protection, sondes murales et chute réelle avec limite modifiée. La suite complète compte 335 contrôles réussis ; deux captures des placements au sol et au mur ont été inspectées. Les tests d’orientation utilisent des déplacements `move_and_collide` contrôlés et figent les compteurs du joueur pour isoler le contact ; ils ne représentent pas une partie humaine. Une chute réelle sur les piques du niveau et les parcours aller/retour complètent ces fixtures. L’humain confirme RUN-008 vérifiée et validée le 28 septembre 2026. La revue de clôture confirme les critères et preuves ; RUN-008 est DONE localement.
