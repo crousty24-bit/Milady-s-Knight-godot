@@ -347,3 +347,14 @@ Les Slimes Green/Purple ont 1/2 HP et infligent 0,5/1 DMG au contact. Le timer d
 Revue statique ciblée indépendante sans défaut bloquant trouvé ; elle ne compte pas comme vérification runtime. Revue directe du diff, des logs et des captures faite par l’agent principal. `git diff --check` passe. `.claude/rules/visual-assets.md` existe toujours localement, est ignoré et `git ls-files .claude` ne retourne plus d’entrée. Les skills locaux et `skills-lock.json` humain sont préservés.
 
 RUN-007 passe à **VERIFY** : essai humain attendu sur cadence, portée et contacts pendant recul. Dossier `work/test-results/RUN-007/review.json` préparé avec validation humaine `pending` ; aucune revue Jev de clôture n’est revendiquée avant cet essai. Aucun push, PR ni fusion ; RUN-008 non lancée.
+
+
+### Révision de portée après essai humain (28 septembre 2026)
+
+L’humain juge la portée de 16 px trop courte et demande le passage à 24 px. La conversion de mêlée devient **1 RANGE = 24 px = 1,5 bloc de terrain**, toujours mesurée depuis la main jusqu’à la pointe. La grille du terrain reste à 16 px. Le dessin utilise maintenant `SWORD_RANGE = 24.0`, et la forme de collision mesure 24×4 px, centrée à 12 px de la main. La portée augmente de 50 % ; dégâts, cadence, fenêtre active, patrouilles et pilote des parcours restent inchangés. La fixture de portée déplace ses cibles de limite à x=193/196 pour distinguer volume accessible et volume au-delà de la pointe.
+
+État humain de départ préservé : commit `4c7438b` sur `skills-lock.json`, ajouté après le checkpoint `8e43085`. Aucun changement de ce fichier dans cette révision.
+
+Retest : même commande `GODOT_BIN='…/Godot_v4.7.2-stable_win64_console.exe' ./tools/test.sh`, Godot **4.7.2.stable.official.ed1daf0bf**, code 0 ; import, isolation `user://`, **12 suites / 261 contrôles de jeu, zéro échec**. Logs : `work/test-results/run-fiV2rgTT/`, résumé `work/test-results/run-007-range24-suite.log`. Les deux parcours et leurs retours restent réussis, sans retoucher le pilote. `tests/combat_visual.gd` en GL Compatibility termine avec code 0 et **2 contrôles visuels réussis** ; log `work/test-results/run-007-range24-visual.log`. Captures gauche/droite actualisées dans `work/run-007-sword-right.png` et `work/run-007-sword-left.png`, inspectées : lame étendue et traînée présentes du bon côté. Copies des captures précédentes conservées dans `work/run-007-sword16-right.png` et `work/run-007-sword16-left.png`.
+
+Specs, brief, workflow, learning et dossier local de revue actualisés pour 24 px. `git diff --check` passe. RUN-007 reste **VERIFY**, en attente d’un nouvel essai humain de portée avant clôture. Aucun push, PR ni fusion.

@@ -103,9 +103,9 @@ func run() -> void:
 	check(left.health == 0.5, "mirrored sword hits on left")
 	await spawn()
 	var shape: RectangleShape2D = player.get_node("AttackArea/Shape").shape
-	check(shape.size == Vector2(16, 4), "RANGE 1 uses a 16 px blade collision from hand to tip")
-	var near_tip := slime(Vector2(185, 200))
-	var past_tip := slime(Vector2(188, 200), true)
+	check(shape.size == Vector2(24, 4), "RANGE 1 uses a 24 px blade collision from hand to tip")
+	var near_tip := slime(Vector2(193, 200))
+	var past_tip := slime(Vector2(196, 200), true)
 	await frames(3)
 	await swing()
 	check(near_tip.health == 0.5 and past_tip.health == 2.0, "Sword hits an enemy volume inside range but misses one beyond the tip")

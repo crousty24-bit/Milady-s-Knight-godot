@@ -137,7 +137,7 @@
 		- les armes disposent de 4 stats :
 			- dégâts infligés (DMG) : nombre de HP retirés au mob par attaques/coups
 			- vitesse d'attaque (ATK SPEED): vitesse à la laquelle les attaques sont donnés ; ici la valeur représente les secondes (voir profil ci-dessous) donc 1 ATK SPEED = 1 seconde => 1 attaque (hit) donné toute les 1 seconde (tant que touche attaque maintenue) ; plus cette valeur est basse, plus l'arme à une vitesse d'attaque élevée
-			- portée de mêlée (RANGE) : longueur de la lame depuis la main jusqu’à la pointe ; 1 RANGE = 1 bloc de terrain = 16 px (décision humaine RUN-007). Sword 0 dessine une lame de 16 px et utilise une forme de collision de 16×4 px centrée à 8 px de la main. La collision teste le volume du mob, pas uniquement son centre.
+			- portée de mêlée (RANGE) : longueur de la lame depuis la main jusqu’à la pointe ; 1 RANGE = 24 px = 1,5 bloc de terrain (décision humaine révisée RUN-007 après essai des 16 px). La grille de terrain reste à 16 px. Sword 0 dessine une lame de 24 px et utilise une forme de collision de 24×4 px centrée à 12 px de la main. La collision teste le volume du mob, pas uniquement son centre.
 			- portée de tir (FALLOFF) : distance maximal (en bloc) que les projectiles peuvent parcourir avant de disparaître SI ils ne sont pas entrés en contact (collision) avec un élément (terrain, objects, mobs)
 		- les armes ont différent type, ce qui détermine leur stats de départ (niveau 0) :
 			- *Sword* (mêlée) : 0,5 DMG | 1 ATK SPEED | 1 RANGE

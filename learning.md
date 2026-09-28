@@ -379,13 +379,13 @@ Si le joueur touche les ronces, il perd 1 HP, recule et ne peut pas sauter penda
 
 ### Ce qui a été réalisé
 
-Sword niveau 0 inflige **0,5 HP** par coup. Deux frappes tuent un Green Slime (1 HP), quatre tuent un Purple (2 HP). La touche F maintenue répète le geste toutes les secondes. La lame mesure **16 px depuis la main**, soit un bloc de terrain : son dessin et sa collision utilisent cette même longueur. Green inflige 0,5 HP au contact, Purple 1 HP.
+Sword niveau 0 inflige **0,5 HP** par coup. Deux frappes tuent un Green Slime (1 HP), quatre tuent un Purple (2 HP). La touche F maintenue répète le geste toutes les secondes. La lame mesure **24 px depuis la main**, soit un bloc et demi de terrain : son dessin et sa collision utilisent cette même longueur. Green inflige 0,5 HP au contact, Purple 1 HP.
 
 ### Comment cela fonctionne
 
 Le **geste** dure 0,28 s : préparation, courte fenêtre de contact, puis récupération. Un autre compteur, le **cooldown**, mesure la seconde nécessaire entre deux départs. L’animation peut donc être terminée alors que le prochain coup est encore indisponible. Relâcher puis presser F ne réinitialise pas ce compteur ; une interruption annule le geste mais conserve le délai. Après un contact, il faut que le hit-stun du joueur et le cooldown soient tous deux terminés pour pouvoir frapper. La pause suspend les deux compteurs.
 
-Pendant la fenêtre active, Godot interroge une forme rectangulaire de 16×4 px, centrée à 8 px de la main et tournée avec la lame. Une liste mémorise les ennemis déjà touchés par ce coup : rester dans la forme plusieurs ticks ne multiplie pas les dégâts. Un rayon contre le terrain empêche de frapper à travers un mur. Le coup reste possible en l’air ; entrer en wall slide annule sa fenêtre active.
+Pendant la fenêtre active, Godot interroge une forme rectangulaire de 24×4 px, centrée à 12 px de la main et tournée avec la lame. Une liste mémorise les ennemis déjà touchés par ce coup : rester dans la forme plusieurs ticks ne multiplie pas les dégâts. Un rayon contre le terrain empêche de frapper à travers un mur. Le coup reste possible en l’air ; entrer en wall slide annule sa fenêtre active.
 
 Le **recul** d’un Slime préserve brièvement sa vitesse d’impulsion au lieu de l’écraser par sa vitesse de patrouille. Le Slime continue de bouger et son contact reste actif. Son flash jaune ne signifie pas qu’il est inoffensif ou invincible : deux impacts indépendants sont acceptés immédiatement. La mort protège son signal de récompense contre une seconde émission.
 

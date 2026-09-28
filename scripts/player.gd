@@ -13,8 +13,8 @@ const WALL_SLIDE_SPEED = 35.0
 const WALL_JUMP_SPEED = 110.0
 const GRIPPABLE_MASK = 8
 const SWORD_DAMAGE = 0.5
-# RANGE 1 = one 16 px terrain block, measured from the hand to the tip.
-const SWORD_RANGE = 16.0
+# RANGE 1 = 24 px (1.5 terrain blocks), measured from the hand to the tip.
+const SWORD_RANGE = 24.0
 const ATTACK_INTERVAL = 1.0
 const ATTACK_DURATION = 0.28
 # Keep the original windup, contact and recovery proportions as the cycle changes.
