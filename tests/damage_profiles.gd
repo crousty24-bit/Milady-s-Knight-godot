@@ -75,12 +75,12 @@ func run() -> void:
 	var slime_events: Array[Array] = []
 	slime.defeated.connect(func(_bonus: int, _at: Vector2): enemy_deaths += 1)
 	slime.health_changed.connect(func(value: float, maximum: float): slime_events.append([value, maximum]))
-	for i in range(15):
+	for i in range(5):
 		slime.take_damage(0.2, Vector2.ZERO, SlicePlayer.DamageSource.FLAME)
-		check(slime.health_units == 28 - i * 2, "flame damage in fifths accumulates exactly: hit %d" % (i + 1))
-	check(slime.dead and enemy_deaths == 1 and slime_events.size() == 15 and slime_events.back() == [0.0, 3.0], "enemy fractional health and defeat signals are exact and unique")
+		check(slime.health_units == 8 - i * 2, "flame damage in fifths accumulates exactly: hit %d" % (i + 1))
+	check(slime.dead and enemy_deaths == 1 and slime_events.size() == 5 and slime_events.back() == [0.0, 1.0], "enemy fractional health and defeat signals are exact and unique")
 	slime.take_damage(0.2, Vector2.ZERO, SlicePlayer.DamageSource.FLAME)
-	check(enemy_deaths == 1 and slime_events.size() == 15, "dead enemy cannot grant a second reward or health event")
+	check(enemy_deaths == 1 and slime_events.size() == 5, "dead enemy cannot grant a second reward or health event")
 
 	var profiles := [
 		[SlicePlayer.DamageSource.CONTACT_MELEE, true, true, true],
@@ -118,14 +118,18 @@ func run() -> void:
 	await frames(10)
 	check(player.hit_stun_time > 0.0 and player.attack_time == 0.0, "held F stays blocked through hit-stun")
 	await frames(1)
-	check(player.hit_stun_time == 0.0 and player.attack_time > 0.0, "held F resumes on the first unblocked physics tick")
+	check(player.hit_stun_time == 0.0 and player.attack_time == 0.0, "ending hit-stun does not bypass the Sword cooldown")
+	await frames(50)
+	check(player.attack_time > 0.0, "held F resumes after both hit-stun and cooldown expire")
 	await spawn()
 	Input.action_press("attack")
 	await frames(2)
 	player.take_damage(0.5, Vector2.ZERO, SlicePlayer.DamageSource.PROJECTILE)
 	check(player.attack_time == 0.0 and player.hit_stun_time == 0.0, "projectile interrupts the current swing without hit-stun")
 	await frames(1)
-	check(player.attack_time > 0.0, "held F can start a new swing on the next tick after projectile interruption")
+	check(player.attack_time == 0.0 and player.attack_cooldown > 0.0, "projectile interruption preserves Sword cooldown without adding hit-stun")
+	await frames(60)
+	check(player.attack_time > 0.0, "held F resumes after the preserved projectile-interrupted cooldown")
 
 	await spawn()
 	player.take_damage(0.5, Vector2.ZERO, SlicePlayer.DamageSource.SOLID_TRAP)

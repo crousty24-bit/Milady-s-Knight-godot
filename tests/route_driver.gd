@@ -30,10 +30,16 @@ func step(direction: float, combat := true) -> void:
 		for enemy in level.get_node("Enemies").get_children():
 			if enemy.dead: continue
 			var distance: Vector2 = enemy.position - player.position
-			if absf(distance.y) < 18 and absf(distance.x) < 36:
-				if player.is_on_floor() and absf(distance.x) < 27:
-					direction = signf(distance.x) if player.facing != int(signf(distance.x)) else 0.0
-				if player.attack_time <= 0 and tick % 2 == 0:
+			if absf(distance.y) < 18 and absf(distance.x) < 40:
+				var side := signf(distance.x)
+				var gap := absf(distance.x)
+				if player.is_on_floor():
+					# Stay inside sword reach, outside contact, and kite during recovery.
+					if player.attack_time > 0.0 or player.attack_cooldown <= 0.05:
+						direction = side if gap > 23.0 or player.facing != int(side) else 0.0
+					else:
+						direction = side if gap > 24.0 else (-side if gap < 22.0 else 0.0)
+				if gap < 28.0 and (player.attack_time > 0.0 or player.attack_cooldown <= 0.05):
 					Input.action_press("attack")
 				break
 	if direction < 0: Input.action_press("move_left")

@@ -62,9 +62,7 @@ func run() -> void:
 	key(KEY_F, true)
 	await frames(2)
 	check(player.attack_time > 0, "F key attacks in air")
-	await frames(16)
-	check(player.attack_time > 0.2, "holding F starts another swing within 18 physics frames")
-	await frames(7)
+	await frames(5)
 	var swing_facing: int = player.attack_facing
 	var reverse_key: Key = KEY_LEFT if swing_facing > 0 else KEY_RIGHT
 	key(reverse_key, true)
@@ -73,6 +71,10 @@ func run() -> void:
 	await frames(5)
 	check(player.facing == -swing_facing and player.attack_facing == swing_facing, "recovery allows visual turn without redirecting the current sword swing")
 	key(reverse_key, false)
+	await frames(46)
+	check(player.attack_time == 0.0, "held F cannot repeat before one second")
+	await frames(2)
+	check(player.attack_time > 0.2, "held F repeats when the one-second interval expires")
 	key(KEY_F, false)
 	await frames(22)
 	check(player.attack_time == 0, "releasing F ends repeated attacks")

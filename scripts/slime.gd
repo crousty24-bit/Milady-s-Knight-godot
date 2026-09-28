@@ -9,29 +9,30 @@ const PURPLE_PATROL_SPEED = 34.0
 @export var patrol_right: float = 40.0
 @export var variant: Kind = Kind.GREEN
 @export_range(0, 1000000, 1) var bonus_reward: int = 1
-var max_health_units: int = 30
-var health_units: int = 30
+var max_health_units: int = 10
+var health_units: int = 10
 var health: float:
 	get: return HealthUnits.to_hp(health_units)
 var max_health: float:
 	get: return HealthUnits.to_hp(max_health_units)
 var direction: int = -1
 var origin_x: float
-var stagger: float = 0.0
+const KNOCKBACK_DURATION = 0.12
+var knockback_time: float = 0.0
 var dead: bool = false
 @onready var sprite: AnimatedSprite2D = $Sprite
 
 func _ready() -> void:
 	origin_x = position.x
-	max_health_units = 40 if variant == Kind.PURPLE else 30
+	max_health_units = 20 if variant == Kind.PURPLE else 10
 	health_units = max_health_units
 	sprite.play("purple" if variant == Kind.PURPLE else "green")
 
 func _physics_process(delta: float) -> void:
 	if dead: return
-	stagger = maxf(0.0, stagger - delta)
+	knockback_time = maxf(0.0, knockback_time - delta)
 	velocity.y = minf(velocity.y + 760.0 * delta, 400.0)
-	if stagger <= 0.0:
+	if knockback_time <= 0.0:
 		if position.x < origin_x + patrol_left: direction = 1
 		if position.x > origin_x + patrol_right: direction = -1
 		$EdgeRay.position.x = direction * 10
@@ -40,18 +41,17 @@ func _physics_process(delta: float) -> void:
 		velocity.x = direction * (PURPLE_PATROL_SPEED if variant == Kind.PURPLE else GREEN_PATROL_SPEED)
 	move_and_slide()
 	sprite.flip_h = direction > 0
-	sprite.modulate = Color("fff1a6") if stagger > 0.0 else Color.WHITE
-	if stagger > 0.0: return
+	sprite.modulate = Color("fff1a6") if knockback_time > 0.0 else Color.WHITE
 	for body in $ContactArea.get_overlapping_bodies():
 		if body is SlicePlayer:
-			body.take_damage(1.0, Vector2(100.0 if body.global_position.x > global_position.x else -100.0, -150.0), SlicePlayer.DamageSource.CONTACT_MELEE)
+			body.take_damage(1.0 if variant == Kind.PURPLE else 0.5, Vector2(100.0 if body.global_position.x > global_position.x else -100.0, -150.0), SlicePlayer.DamageSource.CONTACT_MELEE)
 
 func take_damage(amount: float, impulse: Vector2, _source: int = SlicePlayer.DamageSource.CONTACT_MELEE) -> void:
 	if dead or amount <= 0.0: return
 	health_units = maxi(0, health_units - HealthUnits.from_hp(amount))
 	health_changed.emit(health, max_health)
 	velocity = impulse
-	stagger = 0.12
+	knockback_time = KNOCKBACK_DURATION
 	$HitSound.play()
 	if health_units == 0:
 		dead = true
