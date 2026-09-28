@@ -3,7 +3,7 @@
 ## Statut de cette planification
 
 Audit documentaire et inspection du dépôt effectués le **21 septembre 2026**, à partir de l’état de travail courant, et non du seul commit `0870462`.
-**RUN-001 à RUN-007 DONE ; RUN-008 VERIFY.** Les PR #1, #2, #4, #5, [#8](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/8) et [#9](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/9) sont fusionnées dans `develop`. RUN-007 est `DONE`, fusionnée dans `develop` via la PR #11 (`260c8a8`). RUN-008 est `VERIFY` sur `feature/run-008-solid-spikes`, en attente de revue humaine ; RUN-009 à RUN-011 restent `BACKLOG`. Les versions suivantes seront affinées après chaque jalon.
+**RUN-001 à RUN-008 DONE (RUN-008 clôturée localement).** Les PR #1, #2, #4, #5, [#8](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/8) et [#9](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/9) sont fusionnées dans `develop`. RUN-007 est `DONE`, fusionnée dans `develop` via la PR #11 (`260c8a8`). RUN-008 est `DONE` localement sur `feature/run-008-solid-spikes`, après validation humaine et revue de clôture ; livraison distante non effectuée ; RUN-009 à RUN-011 restent `BACKLOG`. Les versions suivantes seront affinées après chaque jalon.
 
 La cible finale validée est **0.9.0 beta**, une démo de dix niveaux conçus à la main. `0.1.0` est un premier jalon technique de production, pas une étiquette affirmant que le dépôt actuel satisfait déjà les nouvelles règles. Les numéros sont des cibles validées ; des patchs `0.x.1`, etc., pourront contenir des corrections vérifiées sans renommer arbitrairement les runs.
 
@@ -324,13 +324,15 @@ Rendre la base existante reproductible, fixer son échelle et aligner le combat 
 
 ### RUN-008 — Créer les piques fixes solides et borner le vide par niveau
 
-**Priorité : P1 · Statut : VERIFY · Dépendances : RUN-006 (DONE).**
+**Priorité : P1 · Statut : DONE · Dépendances : RUN-006 (DONE).**
 
 - **Résultat / scope :** Introduire le piège fixe 0,5 DMG horizontal/vertical ; remplacer le seuil global y>340 par une limite de niveau adaptée. Ne pas supprimer les ronces sans traiter leur usage.
 - **Acceptation, test et bugtest :** Contact sur chaque orientation, knockback sans hit-stun/interruption, invulnérabilité ; chute mortelle une fois ; murs grimpables inchangés.
 - **Learning pressenti :** Body2D/Area2D, layer/mask et zones létales.
-- **Résultat vérifié (28 septembre 2026) :** scène `spikes.tscn` solide sur terrain uniquement, capteur joueur, rotation pour les quatre faces, 0,5 DMG et profil SOLID_TRAP. Deux placements : sol `(1120,224)` et limite droite `(2240,80)`, sans changement des tuiles ni des ronces. `level.gd` possède `void_y=304`, remplaçant la zone Pit et le seuil joueur 340. Import et isolation, 14 suites / 335 contrôles réussis sous Godot 4.7.2 ; deux captures graphiques inspectées. Les parcours et retours restent traversables (vie finale 3 / 2 / 2 / 1,5 HP). **Revue humaine attendue** : placement/lisibilité des piques et ressenti du recul. Journal et learning à jour ; RUN-009 non lancée.
+- **Résultat vérifié (28 septembre 2026) :** scène `spikes.tscn` solide sur terrain uniquement, capteur joueur, rotation pour les quatre faces, 0,5 DMG et profil SOLID_TRAP. Deux placements : sol `(1120,224)` et limite droite `(2240,80)`, sans changement des tuiles ni des ronces. `level.gd` possède `void_y=304`, remplaçant la zone Pit et le seuil joueur 340. Import et isolation, 14 suites / 335 contrôles réussis sous Godot 4.7.2 ; deux captures graphiques inspectées. Les parcours et retours restent traversables (vie finale 3 / 2 / 2 / 1,5 HP). **Validation humaine reçue le 28 septembre 2026** : « Ok run 008 vérifiée et validée ». Journal et learning à jour ; RUN-009 non lancée.
 - **Périmètre au lancement (28 septembre 2026) :** branche `feature/run-008-solid-spikes` issue de `develop` propre (RUN-007 fusionnée via PR #11). Ajouter une scène de piques fixes orientable et des placements complémentaires sans modifier le terrain ni les ronces. Déplacer la responsabilité du vide vers une limite exportée du niveau, conserver le seuil effectif du slice (304 px, bord supérieur de son ancienne zone Pit). Vérifier contacts et solidité dans quatre orientations, recul/protection/attaque, pause, chute unique et régressions des parcours et murs.
+
+- **Clôture locale (28 septembre 2026) :** gameplay au commit `03f42ba`, 335 contrôles et 2 contrôles graphiques réussis ; journal/learning à jour, validation humaine obtenue. Revue Jev READY_FOR_DONE et inspection directe des critères, logs et limites satisfaisantes. Aucun changement gameplay ni nouveau test requis pour cette clôture documentaire.
 
 ### RUN-009 — Automatiser la mort et la reprise
 
@@ -572,4 +574,4 @@ Livrer une démo 0.9.0 beta complète, équilibrée et testée, avec une distrib
 
 ## Point d’arrêt
 
-RUN-001 à RUN-006 sont DONE après fusion des PR #1, #2, #4, #5, #8 et #9. La correspondance fichier-source reste reportée par décision humaine à la recette des assets distribués. Les catalogues 11–12 deviennent locaux et ignorés par Git. La grille 16×16 est retenue après comparaison visuelle, avec les limites de la maquette consignées. Le prototype utilise désormais un viewport 640×360 et une santé fractionnaire. Les durées de hit-stun et de recul de RUN-006 restent à équilibrer. RUN-007 est DONE et fusionnée dans develop via PR #11. RUN-008 est VERIFY après implémentation et vérifications, en attente de revue humaine. Après 0.1.0, détailler 0.2.0 à partir du résultat réel.
+RUN-001 à RUN-006 sont DONE après fusion des PR #1, #2, #4, #5, #8 et #9. La correspondance fichier-source reste reportée par décision humaine à la recette des assets distribués. Les catalogues 11–12 deviennent locaux et ignorés par Git. La grille 16×16 est retenue après comparaison visuelle, avec les limites de la maquette consignées. Le prototype utilise désormais un viewport 640×360 et une santé fractionnaire. Les durées de hit-stun et de recul de RUN-006 restent à équilibrer. RUN-007 est DONE et fusionnée dans develop via PR #11. RUN-008 est DONE localement après validation humaine et revue des preuves ; livraison distante non effectuée. Après 0.1.0, détailler 0.2.0 à partir du résultat réel.

@@ -391,7 +391,7 @@ Inspection directe déclenchée par cette revue : critères Sword/Slimes/protect
 
 ## RUN-008 — Piques fixes solides et vide par niveau (28 septembre 2026)
 
-**Statut : VERIFY, revue humaine attendue.** Lancement explicitement demandé. Base propre `develop` à `260c8a8`, RUN-007 fusionnée via PR #11 ; branche dédiée `feature/run-008-solid-spikes`. Aucun changement humain local préexistant. Inspection ciblée des systèmes dégâts, niveau, hazards, collisions et parcours. Une inspection/revue indépendante en lecture seule a été déléguée à Luna Low.
+**Statut : DONE localement après validation humaine et revue de clôture.** Lancement explicitement demandé. Base propre `develop` à `260c8a8`, RUN-007 fusionnée via PR #11 ; branche dédiée `feature/run-008-solid-spikes`. Aucun changement humain local préexistant. Inspection ciblée des systèmes dégâts, niveau, hazards, collisions et parcours. Une inspection/revue indépendante en lecture seule a été déléguée à Luna Low.
 
 ### Implémentation et périmètre
 
@@ -415,4 +415,15 @@ Les scénarios ciblés ont tenté les contacts répétés, chaque orientation, l
 
 Revue indépendante Luna Low : aucun défaut concret constaté dans le diff ni les nouvelles formes, le contact et le contrôle pause/vide ; les angles cardinaux et placements actuels sont le périmètre vérifié. Inspection racine du code et des logs concordante.
 
-La revue humaine prévue en VERIFY reste attendue sur la lisibilité/placement et le ressenti du recul. La revue Jev avant DONE n’est pas encore exécutée, puisque cette validation est en attente. Aucun push, PR ou merge effectué ; pas de lancement de RUN-009.
+À la fin de l’implémentation, la revue humaine de lisibilité/placement et de ressenti du recul, puis la revue Jev, restaient attendues. Elles sont réalisées à la clôture consignée ci-dessous. Aucun push, PR ou merge effectué ; pas de lancement de RUN-009.
+
+
+### Validation et clôture locale de RUN-008 (28 septembre 2026)
+
+L’humain confirme : **« Ok run 008 vérifiée et validée »**. Validation enregistrée `passed` dans `work/test-results/RUN-008/review.json`. État Git propre sur `feature/run-008-solid-spikes` à `03f42ba`, sans changement gameplay depuis les vérifications.
+
+Après chargement silencieux de la configuration locale, commande `.local/typesafe-venv/bin/python tools/jev/run_completion_reviewer/review.py work/test-results/RUN-008/review.json --json`, sortie `work/test-results/RUN-008/jev-final.json`, code 0, modèle `jev-1.13.0`. Résultats examinés individuellement : couverture des critères (Noul oui **0,80**), vérifications complètes (Noul oui **0,72**), blocage présent (Noul oui **0,28**), Choice **READY_FOR_DONE** (confiance **0,32** ; probabilités READY_FOR_DONE **0,54** / VERIFY **0,30** / BLOCKED **0,16**). Probabilités consultatives, non calibrées ; Jev n’exécute pas les contrôles et n’autorise pas DONE.
+
+Inspection directe des preuves : chacun des logs de `run-g3diTC5Q/` confirme ses résultats, total **335 contrôles de jeu** sur 14 suites, plus isolation ; aucun FAIL, SCRIPT ERROR, ERROR ou fuite relevé. Import et log graphique relus ; **2 contrôles graphiques** réussis et captures déjà inspectées pendant l’implémentation. Code piques/vide, critères, bugtest et limites rapprochés des preuves : contacts physiques dans quatre orientations, profil de dégâts, absence d’accrochage, chute configurable, pause et mort unique couverts ; les parcours restent traversables. La validation humaine reçue porte sur le résultat final. Aucun test obligatoire restant, aucun blocage constaté. Conclusion : **RUN-008 DONE localement**.
+
+Clôture documentaire seulement : brief/workflow/journal/learning mis à jour, sans nouvelle modification de gameplay ni relance des tests de jeu. Contrôle du diff et du contenu staged avant commit local. Aucun push, PR ou merge autorisé ou effectué ; RUN-009 reste BACKLOG.
