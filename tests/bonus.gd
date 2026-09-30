@@ -76,16 +76,16 @@ func run() -> void:
 	level.get_node("Enemies/Slime1").take_damage(3, Vector2.ZERO)
 	level.player.die()
 	check(level.bonus == 0 and progress.banked_bonus == 28, "death discards only current-attempt bonuses")
-	await tap("interact")
+	await frames(210)
 	level = current_scene
-	check(level.bonus == 0 and level.gold == 0 and progress.banked_bonus == 28, "death confirmation retains bank and clears level currencies")
+	check(level.bonus == 0 and level.gold == 0 and progress.banked_bonus == 28, "automatic death restart retains bank and clears level currencies")
 	level._on_collected(15)
 	await tap("special_attack")
 	check(current_scene == level and level.bonus == 3 and progress.banked_bonus == 28, "R cannot discard pending rewards by restarting")
 	level.player.die()
-	await tap("interact")
+	await frames(210)
 	level = current_scene
-	check(level.bonus == 0 and progress.banked_bonus == 28, "confirmed death restart discards pending surplus")
+	check(level.bonus == 0 and progress.banked_bonus == 28, "repeated automatic death restart discards pending surplus")
 	level.next_level_scene = NEXT
 	level._on_collected(13)
 	level.try_offering()

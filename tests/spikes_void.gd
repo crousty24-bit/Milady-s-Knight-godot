@@ -13,6 +13,7 @@ func check(ok: bool, label: String) -> void:
 	print("PASS " if ok else "FAIL ", label)
 	if not ok: failures += 1
 func clear_room() -> void:
+	paused = false
 	if is_instance_valid(room):
 		room.queue_free()
 		await frames(3)

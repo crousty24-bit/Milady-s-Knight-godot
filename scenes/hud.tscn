@@ -121,3 +121,9 @@ theme = SubResource("theme")
 text = ""
 mouse_filter = 2
 horizontal_alignment = 1
+[node name="DeathFade" type="ColorRect" parent="."]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0)
+mouse_filter = 2

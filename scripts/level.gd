@@ -10,6 +10,10 @@ var finished: bool = false
 var paused: bool = false
 var closing: bool = false
 var message_time: float = 0.0
+const DEATH_MESSAGE_DURATION: float = 3.0
+const DEATH_FADE_DURATION: float = 0.4
+var death_elapsed: float = -1.0
+var death_reloading: bool = false
 @onready var player: SlicePlayer = $Player
 @onready var camera: Camera2D = $Player/Camera2D
 @onready var hud = $HUD
@@ -41,6 +45,14 @@ func _physics_process(_delta: float) -> void:
 		player.take_damage(0.0, Vector2.ZERO, SlicePlayer.DamageSource.VOID)
 
 func _process(delta: float) -> void:
+	if death_elapsed >= 0.0:
+		death_elapsed += delta
+		if death_elapsed >= DEATH_MESSAGE_DURATION:
+			hud.set_death_fade(minf(1.0, (death_elapsed - DEATH_MESSAGE_DURATION) / DEATH_FADE_DURATION))
+		if death_elapsed >= DEATH_MESSAGE_DURATION + DEATH_FADE_DURATION and not death_reloading:
+			death_reloading = true
+			_restart_attempt()
+		return
 	if finished and Input.is_action_just_pressed("interact"):
 		if not reward_settled: _settle_reward()
 		elif not next_level_scene.is_empty() and not transitioning:
@@ -48,9 +60,6 @@ func _process(delta: float) -> void:
 			call_deferred("_next_level")
 		elif not transitioning:
 			_restart_attempt()
-		return
-	if player.dead and Input.is_action_just_pressed("interact"):
-		_restart_attempt()
 		return
 	if Input.is_action_just_pressed("pause") and not finished and not player.dead:
 		paused = not paused
@@ -142,9 +151,13 @@ func _next_level() -> void:
 		hud.set_overlay("NIVEAU SUIVANT INDISPONIBLE", "Vos bonus sont sauvegardes.\nE  Reessayer")
 
 func _on_died() -> void:
+	if death_elapsed >= 0.0: return
 	bonus = 0
 	_update_gold_hud()
-	hud.set_overlay("LE ROYAUME VOUS A PRIS", "E  Recommencer le niveau")
+	hud.show_death_overlay()
+	death_elapsed = 0.0
+	paused = true
+	get_tree().paused = true
 
 func _restart_attempt() -> void:
 	get_tree().paused = false
