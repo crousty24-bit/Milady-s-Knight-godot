@@ -3,7 +3,7 @@
 ## Statut de cette planification
 
 Audit documentaire et inspection du dépôt effectués le **21 septembre 2026**, à partir de l’état de travail courant, et non du seul commit `0870462`.
-**RUN-001 à RUN-009 DONE.** Les PR #1, #2, #4, #5, [#8](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/8) et [#9](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/9) sont fusionnées dans `develop`. RUN-007 est `DONE`, fusionnée dans `develop` via la PR #11 (`260c8a8`). RUN-008 est `DONE` et fusionnée via la PR #12 (`6c4ee22`). RUN-009 est validée par l'humain et fusionnée dans `develop` via la [PR #14](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/14) (`a2ac33c`). RUN-010 et RUN-011 restent `BACKLOG`. Les versions suivantes seront affinées après chaque jalon.
+**RUN-001 à RUN-009 DONE.** Les PR #1, #2, #4, #5, [#8](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/8) et [#9](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/9) sont fusionnées dans `develop`. RUN-007 est `DONE`, fusionnée dans `develop` via la PR #11 (`260c8a8`). RUN-008 est `DONE` et fusionnée via la PR #12 (`6c4ee22`). RUN-009 est validée par l'humain et fusionnée dans `develop` via la [PR #14](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/14) (`a2ac33c`). RUN-010 est en `VERIFY` sur `feature/run-010-audio-buses`, en attente de l'écoute humaine ; RUN-011 reste `BACKLOG`. Les versions suivantes seront affinées après chaque jalon.
 
 La cible finale validée est **0.9.0 beta**, une démo de dix niveaux conçus à la main. `0.1.0` est un premier jalon technique de production, pas une étiquette affirmant que le dépôt actuel satisfait déjà les nouvelles règles. Les numéros sont des cibles validées ; des patchs `0.x.1`, etc., pourront contenir des corrections vérifiées sans renommer arbitrairement les runs.
 
@@ -362,11 +362,14 @@ Rendre la base existante reproductible, fixer son échelle et aligner le combat 
 
 ### RUN-010 — Installer les bus et les feedbacks élémentaires
 
-**Priorité : P1 · Statut : BACKLOG · Dépendances : RUN-002, RUN-009, RUN-007.**
+**Priorité : P1 · Statut : VERIFY · Dépendances : RUN-002, RUN-009, RUN-007 (DONE).**
 
 - **Résultat / scope :** Master/Music/Ambient/SFX/UI ; brancher les sons P0 du mouvement, mêlée, dégâts, mort, collecte et mort Slime, en réutilisant provisoirement des sons autorisés.
 - **Acceptation, test et bugtest :** Écoute réelle avec actions simultanées, sans clipping ; sons UI non positionnels et sons monde 2D pertinents ; aucun footstep.
 - **Learning pressenti :** Bus audio, AudioStreamPlayer2D, formats WAV/OGG et niveaux sonores.
+- **Périmètre au lancement (30 septembre 2026) :** branche `feature/run-010-audio-buses` depuis `develop` propre. Sources demandées par l'humain : bibliothèques locales SFX et Music. SFX pris uniquement dans *Pixel Combat* de Helton Yan (CC BY 4.0), compatible avec le dépôt public ; *Minifantasy Dungeon SFX* écarté car sa licence interdit la redistribution des fichiers. Musique Pixabay provisoire pour le slice. Atterrissage, wall slide, sons UI/menu et ambiances restent hors périmètre.
+- **Résultat vérifié (30 septembre 2026) :** `default_bus_layout.tres` déclare Master (limiteur −1 dB), Music, Ambient, SFX et UI. Saut, double saut, wall jump, trois swings, trois impacts, trois dégâts joueur, mort, trois pièces et trois morts Slime proviennent de dérivés normalisés par `tools/prepare_audio.py` ; les sons fréquents tournent via `AudioStreamRandomizer`. Joueur non positionnel, Slime et pièces en `AudioStreamPlayer2D`, musique en boucle sur Music. Le son de mort traverse la pause de mort ; l'impact final et l'éclaboussure survivent au Slime supprimé. 16 suites / **377 contrôles** réussis, dont 24 audio. Capture Movie Maker limiteur coupé : pire empilement −5,5 dBFS de crête, aucun écrêtage. Provenance dans `assets/AUDIO_CREDITS.md`.
+- **Validation humaine attendue :** écoute en jeu du choix des sons, de leur caractère dark fantasy, de l'équilibre SFX/musique (musique volontairement discrète, ≈ −37 dB RMS comme l'ancien mix) et du morceau provisoire. Les bus UI et Ambient existent sans contenu : aucun son UI n'existe encore.
 
 ### RUN-011 — Valider et corriger le socle de production
 
@@ -592,4 +595,4 @@ Livrer une démo 0.9.0 beta complète, équilibrée et testée, avec une distrib
 
 ## Point d’arrêt
 
-RUN-001 à RUN-006 sont DONE après fusion des PR #1, #2, #4, #5, #8 et #9. La correspondance fichier-source reste reportée par décision humaine à la recette des assets distribués. Les catalogues 11–12 deviennent locaux et ignorés par Git. La grille 16×16 est retenue après comparaison visuelle, avec les limites de la maquette consignées. Le prototype utilise désormais un viewport 640×360 et une santé fractionnaire. Les durées de hit-stun et de recul de RUN-006 restent à équilibrer. RUN-007 est DONE et fusionnée dans develop via PR #11 ; RUN-008 via PR #12 ; RUN-009, validée par l'humain, via PR #14. RUN-010 reste BACKLOG et n'est pas lancée. Après 0.1.0, détailler 0.2.0 à partir du résultat réel.
+RUN-001 à RUN-006 sont DONE après fusion des PR #1, #2, #4, #5, #8 et #9. La correspondance fichier-source reste reportée par décision humaine à la recette des assets distribués. Les catalogues 11–12 deviennent locaux et ignorés par Git. La grille 16×16 est retenue après comparaison visuelle, avec les limites de la maquette consignées. Le prototype utilise désormais un viewport 640×360 et une santé fractionnaire. Les durées de hit-stun et de recul de RUN-006 restent à équilibrer. RUN-007 est DONE et fusionnée dans develop via PR #11 ; RUN-008 via PR #12 ; RUN-009, validée par l'humain, via PR #14. RUN-010 est lancée le 30 septembre 2026 et attend en VERIFY l'écoute humaine. Après 0.1.0, détailler 0.2.0 à partir du résultat réel.

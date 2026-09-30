@@ -22,3 +22,4 @@ shape = SubResource("area")
 stream = ExtResource("2")
 pitch_scale = 0.5
 volume_db = -10.0
+bus = &"SFX"

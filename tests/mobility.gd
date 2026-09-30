@@ -49,7 +49,7 @@ func run() -> void:
 	await release("jump")
 	await press("jump")
 	check(player.velocity.y < -190 and not player.can_double_jump, "double jump gives distinct second impulse")
-	check(player.jump_flash > 0 and player.get_node("JumpSound").pitch_scale > 1.0, "double jump has visual and sound feedback")
+	check(player.jump_flash > 0 and player.get_node("DoubleJumpSound").playing, "double jump has visual and dedicated sound feedback")
 	await press("attack")
 	check(player.attack_time > 0, "attack during double jump")
 	await release("jump")

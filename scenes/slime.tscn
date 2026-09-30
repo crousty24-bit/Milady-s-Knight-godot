@@ -1,7 +1,8 @@
-[gd_scene load_steps=16 format=3]
+[gd_scene load_steps=17 format=3]
 [ext_resource type="Script" path="res://scripts/slime.gd" id="1"]
 [ext_resource type="Texture2D" path="res://assets/sprites/slime_green.png" id="2"]
-[ext_resource type="AudioStream" path="res://assets/sounds/hurt.wav" id="3"]
+[ext_resource type="AudioStream" path="res://assets/sounds/sfx_melee_hit.tres" id="3"]
+[ext_resource type="AudioStream" path="res://assets/sounds/sfx_slime_death.tres" id="5"]
 [ext_resource type="Texture2D" path="res://assets/sprites/slime_purple.png" id="4"]
 [sub_resource type="AtlasTexture" id="green0"]
 atlas = ExtResource("2")
@@ -55,7 +56,13 @@ collision_mask = 2
 [node name="Shape" type="CollisionShape2D" parent="ContactArea"]
 position = Vector2(0,-6)
 shape = SubResource("contact")
-[node name="HitSound" type="AudioStreamPlayer" parent="."]
+[node name="HitSound" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("3")
-pitch_scale = 1.4
-volume_db = -16.0
+volume_db = -8.0
+max_distance = 480.0
+bus = &"SFX"
+[node name="DeathSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("5")
+volume_db = -9.0
+max_distance = 480.0
+bus = &"SFX"
