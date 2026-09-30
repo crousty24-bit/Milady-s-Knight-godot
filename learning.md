@@ -433,3 +433,17 @@ Quand le joueur meurt, le niveau suspend le gameplay et affiche « Thou hast per
 Le joueur émet le signal de mort une seule fois et le niveau garde aussi un verrou pendant le rechargement. Les bonus obtenus durant la tentative sont effacés ; la réserve déjà validée dans `Progression` n'est pas modifiée. Recharger la scène restaure le spawn, la vie, les pièces, la porte et les ennemis. Le test attend ensuite quatre secondes au spawn : aucun danger n'y tue le joueur dans le niveau actuel.
 
 Godot 4.7.2 a passé l'import, l'isolation des sauvegardes et 15 suites totalisant 353 contrôles de jeu. Les cas ciblés couvrent le délai, le fondu, plusieurs morts, la pause, l'attaque, la perte des gains et le rechargement unique. Deux captures du message et du fondu ont été inspectées. Ces preuves portent sur le niveau actuel ; elles ne garantissent pas les futurs points de spawn.
+
+L'humain a validé RUN-009 et sa PR #14 a été fusionnée dans `develop` le 30 septembre 2026.
+
+## RUN-010 — Faire passer les sons par des bus
+
+Godot mélange chaque son dans un **bus audio** avant de l'envoyer à la sortie. Le fichier `default_bus_layout.tres`, chargé automatiquement, déclare cinq bus : Master, puis Music, Ambient, SFX et UI qui se déversent tous dans Master. Chaque `AudioStreamPlayer` indique son bus dans sa propriété `bus`. Un futur réglage « volume de la musique » n'aura qu'à modifier le bus Music avec `AudioServer.set_bus_volume_db`, sans toucher aux scènes. Master porte un limiteur de sécurité à −1 dB. Le mix a toutefois été mesuré sans lui : il ne sert pas à cacher un volume trop élevé.
+
+Les sons du joueur utilisent un `AudioStreamPlayer` classique : la caméra suit le personnage, une position ne donnerait aucune information utile. Les Slimes et les pièces utilisent `AudioStreamPlayer2D` : Godot baisse leur volume avec la distance à la caméra et les place à gauche ou à droite. Un son très fréquent passe par un `AudioStreamRandomizer`, qui choisit l'une des trois variantes et modifie légèrement pitch et volume pour éviter la répétition mécanique.
+
+Un nœud en pause arrête aussi ses sons. Or la mort met l'arbre en pause : le son de mort utilise donc `PROCESS_MODE_ALWAYS`. De même, un son enfant d'un Slime disparaîtrait avec lui ; au coup fatal, l'impact et l'éclaboussure sont déplacés vers la scène avec `reparent()`, puis se libèrent à leur fin.
+
+Les fichiers de la bibliothèque ne sont jamais modifiés. `tools/prepare_audio.py` en crée des copies courtes en WAV mono 16 bits pour les effets, et en Ogg Vorbis bouclé pour la musique, dont le volume perçu est ramené à −16 LUFS. Les SFX viennent d'un pack CC BY 4.0 : le crédit de Helton Yan devra apparaître dans le jeu. `assets/AUDIO_CREDITS.md` conserve la source de chaque fichier.
+
+Godot 4.7.2 a passé 16 suites et 377 contrôles, dont 24 dédiés à l'audio. Une capture Movie Maker empile sept sons sur la musique : le pic reste à −5,5 dBFS, sous la saturation. À l'écoute, l'humain a validé cette première itération. Il demande toutefois une musique plus forte et différente, des SFX moins forts, ainsi que d'autres sons pour l'impact d'épée, le saut et le double saut. Une mesure sans saturation ne garantit donc pas un mix agréable.

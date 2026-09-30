@@ -1,9 +1,12 @@
-[gd_scene load_steps=28 format=3]
+[gd_scene load_steps=31 format=3]
 [ext_resource type="Script" path="res://scripts/player.gd" id="1"]
 [ext_resource type="Texture2D" path="res://assets/sprites/knight.png" id="2"]
-[ext_resource type="AudioStream" path="res://assets/sounds/jump.wav" id="3"]
-[ext_resource type="AudioStream" path="res://assets/sounds/hurt.wav" id="4"]
-[ext_resource type="AudioStream" path="res://assets/sounds/tap.wav" id="5"]
+[ext_resource type="AudioStream" path="res://assets/sounds/sfx_player_jump.wav" id="3"]
+[ext_resource type="AudioStream" path="res://assets/sounds/sfx_player_hit.tres" id="4"]
+[ext_resource type="AudioStream" path="res://assets/sounds/sfx_melee_swing_light.tres" id="5"]
+[ext_resource type="AudioStream" path="res://assets/sounds/sfx_player_double_jump.wav" id="7"]
+[ext_resource type="AudioStream" path="res://assets/sounds/sfx_player_wall_jump.wav" id="8"]
+[ext_resource type="AudioStream" path="res://assets/sounds/sfx_player_death.wav" id="9"]
 
 [ext_resource type="Shader" path="res://assets/shaders/hurt_flash.gdshader" id="6"]
 
@@ -111,11 +114,26 @@ shape = SubResource("blade")
 [node name="Camera2D" type="Camera2D" parent="."]
 [node name="JumpSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("3")
-volume_db = -15.0
+volume_db = -14.0
+bus = &"SFX"
+[node name="DoubleJumpSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("7")
+volume_db = -14.0
+bus = &"SFX"
+[node name="WallJumpSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("8")
+volume_db = -12.0
+bus = &"SFX"
 [node name="HurtSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("4")
-volume_db = -12.0
+volume_db = -6.0
+bus = &"SFX"
 [node name="SwingSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("5")
-pitch_scale = 0.65
-volume_db = -8.0
+volume_db = -9.0
+bus = &"SFX"
+[node name="DeathSound" type="AudioStreamPlayer" parent="."]
+process_mode = 3
+stream = ExtResource("9")
+volume_db = -4.0
+bus = &"SFX"

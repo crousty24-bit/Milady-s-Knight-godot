@@ -52,9 +52,12 @@ func take_damage(amount: float, impulse: Vector2, _source: int = SlicePlayer.Dam
 	health_changed.emit(health, max_health)
 	velocity = impulse
 	knockback_time = KNOCKBACK_DURATION
-	$HitSound.play()
-	if health_units == 0:
+	if health_units > 0:
+		$HitSound.play()
+	else:
 		dead = true
+		_play_detached($HitSound)
+		_play_detached($DeathSound)
 		defeated.emit(bonus_reward, global_position)
 		$CollisionShape2D.set_deferred("disabled", true)
 		$ContactArea/Shape.set_deferred("disabled", true)
@@ -62,3 +65,13 @@ func take_damage(amount: float, impulse: Vector2, _source: int = SlicePlayer.Dam
 		tween.tween_property(sprite, "scale", Vector2(1.4, 0.25), 0.13)
 		tween.parallel().tween_property(sprite, "modulate:a", 0.0, 0.22)
 		tween.tween_callback(queue_free)
+
+func _play_detached(sound: AudioStreamPlayer2D) -> void:
+	# The final impact and splash outlive the slime's removal, where it died.
+	# They leave the enemy container, whose children are all expected to be enemies.
+	var holder: Node = get_tree().current_scene if get_tree().current_scene != null else get_parent()
+	if holder != null and holder != self:
+		sound.reparent(holder)
+		sound.process_mode = Node.PROCESS_MODE_PAUSABLE
+		sound.finished.connect(sound.queue_free)
+	sound.play()

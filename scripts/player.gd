@@ -91,7 +91,6 @@ func _physics_process(delta: float) -> void:
 		jump_buffer = 0.0
 		coyote = 0.0
 		can_double_jump = true
-		$JumpSound.pitch_scale = 1.0
 		$JumpSound.play()
 	elif knockback_time <= 0.0 and jump_buffer > 0.0 and wall_normal != 0.0 and not is_on_floor():
 		velocity = Vector2(wall_normal * WALL_JUMP_SPEED, JUMP_SPEED)
@@ -104,16 +103,14 @@ func _physics_process(delta: float) -> void:
 		coyote = 0.0
 		jump_buffer = 0.0
 		motion_state = MotionState.AIR
-		$JumpSound.pitch_scale = 1.12
-		$JumpSound.play()
+		$WallJumpSound.play()
 	elif knockback_time <= 0.0 and jump_buffer > 0.0 and can_double_jump and not wall_jump_lockout:
 		velocity.y = DOUBLE_JUMP_SPEED
 		jump_buffer = 0.0
 		can_double_jump = false
 		jump_flash = 0.22
 		jump_effect_origin = global_position
-		$JumpSound.pitch_scale = 1.35
-		$JumpSound.play()
+		$DoubleJumpSound.play()
 	if controls_enabled and knockback_time <= 0.0 and Input.is_action_just_released("jump") and not Input.is_action_pressed("jump") and velocity.y < -90.0:
 		velocity.y *= 0.45
 	if motion_state == MotionState.WALL_SLIDE:
@@ -180,10 +177,10 @@ func take_damage(amount: float, impulse: Vector2 = Vector2.ZERO, source: int = D
 	if invulnerability > 0.0 or amount <= 0.0:
 		return
 	health_units = maxi(0, health_units - HealthUnits.from_hp(amount))
-	$HurtSound.play()
 	if health_units == 0:
 		die()
 		return
+	$HurtSound.play()
 	health_changed.emit(health, max_health)
 	invulnerability = INVULNERABILITY_DURATION
 	hurt_flash_time = HURT_FLASH_DURATION
@@ -229,6 +226,8 @@ func die() -> void:
 	hurt_flash_time = 0.0
 	_update_damage_visuals()
 	sprite.play("dead")
+	# DeathSound keeps playing while the level pauses for the death transition.
+	$DeathSound.play()
 	health_changed.emit(0.0, max_health)
 	died.emit()
 	queue_redraw()
