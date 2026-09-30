@@ -135,6 +135,20 @@ Autres garde-fous de scope : pas de génération procédurale, checkpoints intra
 
 Les invariants, le routage du contexte, les outils, la délégation et les autorisations Git sont définis dans [AGENTS.md](AGENTS.md). Les repères documentaires de chaque version orientent vers les sources utiles ; ils ne prescrivent pas leur lecture intégrale à chaque run.
 
+Codex et Claude peuvent contribuer en parallèle à la même run ACTIVE si leurs tâches et fichiers sont séparés selon `AGENTS.md`. Le [conseiller de routage Jev `task_router`](tools/jev/task_router/README.md) aide au choix d'un subagent avant délégation. Il reste indépendant de la revue Jev avant `DONE` ci-dessous.
+
+### Choix et délégation pendant la run ACTIVE
+
+Dès qu'une tâche autonome se présente, le main agent vérifie son périmètre, les fichiers attribués, les modèles disponibles et le nombre de subagents actifs (quatre au maximum). Il choisit un [custom agent du projet](AGENTS.md#delegation) adapté, ou un subagent ordinaire si aucun profil ne convient. Si le propriétaire Codex/Claude, le profil ou le niveau de raisonnement est incertain, il prépare une entrée JSON selon [`task_router/example.json`](tools/jev/task_router/example.json) et lance `tools/jev/task_router/route.py` comme indiqué dans son [README](tools/jev/task_router/README.md). La recommandation et les probabilités Jev sont consultatives : le main agent décide, délègue, intègre et vérifie ; `task_router` ne lance pas de subagent. Si Jev est indisponible, appliquer directement les règles d'[AGENTS.md](AGENTS.md).
+
+| Custom agent | Main agent | Tâche cible | Modèle / raisonnement par défaut |
+| --- | --- | --- | --- |
+| `mechanical_worker` | Codex | Inventaire et travail mécanique borné | GPT-6 Luna Low |
+| `code_worker` | Codex | Implémentation de code ciblée | GPT-6 Sol Medium |
+| `architecture_reviewer` | Codex | Audit d'architecture complexe et délimité | GPT-6 Astra Medium |
+| `visual_architect` | Claude | Cohérence et choix artistiques | Opus 5.5 Medium |
+| `asset_integrator` | Claude | Préparation et intégration d'assets cadrées | Sonnet 5.5 Medium |
+
 ### Planification
 
 - **Horizon de détail** : roadmap lointaine = objectifs, dépendances et critères de jalon ; prochaine version = runs détaillées ; run active = périmètre et preuve attendue très précis. Seule 0.1.0 est détaillée aujourd’hui. Les axes futurs ne sont pas des runs monolithiques à exécuter tels quels.

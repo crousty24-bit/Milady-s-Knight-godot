@@ -19,27 +19,22 @@ Documentation describes intent. Inspect the actual files, references and Git sta
 
 ## Model Routing and Cost Control
 
-The user-level Codex technical configuration remains the source of truth.
+The user-level Codex technical configuration remains the source of truth for available models and execution settings.
 Do not add or modify a repository-level .codex/config.toml for the model, reasoning effort, sandbox, or approval settings unless explicitly requested.
 
-For run execution:
+For run execution, the intended Codex main agent is **GPT-6 Sol Medium**. It orchestrates the run and primarily owns planning, coordination, review, debugging, analysis and code implementation. If the available configuration differs, report the mismatch rather than claiming a model switch occurred.
 
-- use the configured default main model for normal implementation work;
-- delegate bounded and mechanical tasks to Luna Low by default: targeted inspection, reference lookup, inventories, documentation, journaling, and small    well-specified modifications;
-- keep Sol Medium for normal implementation work requiring system understanding and coordinated changes;
-- use Sol High only for complex debugging, interactions across multiple systems, or when Medium reasoning has proven insufficient;
-- use Astra Medium for major architecture decisions, cross-cutting planning, complex audits, or problems that Sol did not resolve satisfactorily;
-- also prefer Astra Medium for visually sensitive game-development workflows that require significant visual or spatial judgment, such as evaluating art references, generating or adapting visual assets, translating concept art into game-ready assets, integrating visually complex assets into Godot, or validating visual results directly in the running game;
-- do not escalate routine asset operations to Astra when the expected result is already well specified: file organization, renaming, metadata, straightforward imports, known spritesheet slicing, simple resource wiring, and documentation should remain delegated to Luna or Sol as appropriate;
-- Astra High or higher should remain exceptional; do not automatically select XHigh, Max, or Pro.
+Codex subagents default to **GPT-6 Luna**, with Low, Medium or High reasoning according to the task: Low for bounded mechanical inspection, inventory and documentation; Medium for well-scoped implementation or verification requiring some system understanding; High for a difficult bounded investigation. Use Sol Medium/High for subwork that exceeds Luna's scope; reserve Astra Medium for exceptional architecture or complex audits that Sol cannot resolve satisfactorily. Escalate only after narrowing the context and the task. Routine asset file operations remain suitable for Luna or Sol.
+
+Claude Code complements Codex. Its intended main agent is **Opus 5.5**, primarily reserved for visual coherence, art direction, asset generation, analysis, selection and adaptation, spritesheets and visually sensitive Godot integration. Its subagents default to **Sonnet 5.5**, with Low to High reasoning according to complexity. Codex owns the nonvisual engineering work by default. A visual task can include the minimum technical integration needed to validate its result; agree on file ownership before either agent edits a shared scene or resource. See [CLAUDE.md](CLAUDE.md) for Claude-specific instructions.
+
+Codex and Claude may work simultaneously in two chats on distinct, explicitly scoped parts of the same authorized run. Assign each chat separate files or isolated worktrees, share interface and asset contracts, and hand off results explicitly. Do not give both chats the same edit or verification responsibility, or let parallel work start another run while one is ACTIVE.
 
 Before increasing the model tier or reasoning effort:
 
 1. reduce the context to the files actually required;
 2. verify that the run is not too broad;
 3. prefer targeted delegation over escalating the entire task.
-
-Parallelism is a ceiling, not a target: create multiple subagents only for tasks that are genuinely independent.
 
 ## Human changes and safety
 
@@ -59,8 +54,10 @@ Parallelism is a ceiling, not a target: create multiple subagents only for tasks
 
 ## Delegation
 
-- Delegate bounded, independent work when useful parallelism outweighs coordination: separate system inspections, focused research, regression review, asset/licence analysis or investigation alongside implementation.
-- Define each subagent's scope and expected result. Avoid trivial delegation and concurrent edits to the same script, `.tscn`, `.tres`, resource or tightly coupled systems; prefer read-only subtasks when ownership overlaps.
+- At the start of each run and whenever a separable task appears, delegate as soon as it is useful for the task and its complexity. Examples: separate system inspections, focused research, regression review, asset/licence analysis, documentation or investigation alongside implementation. Keep a trivial or tightly sequential action with the main agent when delegation would add coordination without useful work.
+- Each main agent may have **at most four active subagents**. This is a ceiling, not a target; spawn only independent work that can proceed safely in parallel. Use a matching project custom agent when its definition is available: Codex profiles in `.codex/agents/` are `mechanical_worker` (inventory and simple edits), `code_worker` (scoped implementation) and `architecture_reviewer` (complex audit); Claude profiles in `.claude/agents/` are `visual_architect` (artistic judgment) and `asset_integrator` (concrete asset pipeline). Use an ordinary subagent for bounded work outside those roles.
+- When ownership, custom-agent fit or reasoning level is ambiguous, consult the [Jev task router](tools/jev/task_router/README.md) if it is available. Its ranked suggestion is advisory and never starts an agent; check the actual task, candidate model availability and file ownership before delegating. If Jev is unavailable, use the routing rules here directly.
+- Define each subagent's task, model/reasoning choice, files it may edit and expected result. Avoid concurrent edits to the same script, `.tscn`, `.tres`, resource or tightly coupled systems; prefer read-only subtasks when ownership overlaps.
 - Subagents must not expand scope. The root agent owns integration, conflict resolution, final verification and run coherence.
 
 ## Git boundaries

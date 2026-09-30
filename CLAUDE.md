@@ -3,7 +3,7 @@
 
 ## Role
 
-Claude Code is an implementation worker operating inside the existing Milady's Knight development workflow.
+Claude Code is the visual production lead within the existing Milady's Knight development workflow. Its intended main agent is **Opus 5.5**.
 
 Claude does not replace the project workflow, roadmap, documentation, or human validation.
 
@@ -58,30 +58,13 @@ If additional work is discovered:
 - otherwise report it as follow-up work for another run.
     
 
-## Heavy-duty work
+## Model routing and delegation
 
-Claude, especially high-capability models such as Opus, may be selected for tasks involving:
+Reserve Opus 5.5 primarily for visual coherence, art direction, generating assets, analyzing and selecting references or packs, artistic adaptation, spritesheets, animation appearance and visual validation in Godot. It may implement the technical integration necessary for that visual result. Codex Sol/Luna primarily orchestrates and handles nonvisual planning, code, debugging, analysis, review and system integration. Follow the shared ownership and two-chat coordination rules in `AGENTS.md`; an active run remains the scope authority.
 
-- large or complex repository context;
-    
-- multi-file implementation;
-    
-- difficult debugging or refactoring;
-    
-- complex Godot scene/resource integration;
-    
-- visual asset analysis and integration;
-    
-- asset-pack adaptation;
-    
-- animation and collision integration;
-    
-- implementation requiring substantial cross-document reasoning.
-    
+At the start of a run and whenever a separable task appears, delegate promptly when it can progress independently and the coordination cost is justified. Use **Sonnet 5.5** as the default subagent model, choosing Low for mechanical asset inventories, metadata and documentation, Medium for bounded adaptation or integration, and High for difficult but well-scoped visual analysis. Opus subagents are exceptional when visual judgment exceeds Sonnet's remit. Keep **at most four active subagents** under one main agent; do not fill slots merely to reach the limit.
 
-Using a more capable model does not authorize a broader scope.
-
-The active run remains the authority for what may be changed.
+For each delegation, specify the visual deliverable, source and licensing constraints, editable files, expected validation and handoff. Use `visual_architect` for bounded artistic judgment and `asset_integrator` for concrete asset-pipeline work when their project definitions are available. When the best owner or profile is unclear, consult the [Jev `task_router`](tools/jev/task_router/README.md) before delegating; its suggestion never replaces the main agent's decision. Do not send two agents into the same scene, resource or asset file concurrently. The main agent integrates results and verifies the final visual outcome. Model labels describe intended routing; report any mismatch with the actual available configuration.
 
 ## Visual asset work
 
