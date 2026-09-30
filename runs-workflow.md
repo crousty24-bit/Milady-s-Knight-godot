@@ -3,7 +3,7 @@
 ## Statut de cette planification
 
 Audit documentaire et inspection du dépôt effectués le **21 septembre 2026**, à partir de l’état de travail courant, et non du seul commit `0870462`.
-**RUN-001 à RUN-009 DONE localement (RUN-009 sans livraison distante).** Les PR #1, #2, #4, #5, [#8](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/8) et [#9](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/9) sont fusionnées dans `develop`. RUN-007 est `DONE`, fusionnée dans `develop` via la PR #11 (`260c8a8`). RUN-008 est `DONE` localement après validation humaine et revue de clôture ; livraison distante non effectuée. RUN-009 est clôturée localement sur `feature/run-009-auto-respawn` ; RUN-010 et RUN-011 restent `BACKLOG`. Les versions suivantes seront affinées après chaque jalon.
+**RUN-001 à RUN-009 DONE.** Les PR #1, #2, #4, #5, [#8](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/8) et [#9](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/9) sont fusionnées dans `develop`. RUN-007 est `DONE`, fusionnée dans `develop` via la PR #11 (`260c8a8`). RUN-008 est `DONE` et fusionnée via la PR #12 (`6c4ee22`). RUN-009 est validée par l'humain et fusionnée dans `develop` via la [PR #14](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/14) (`a2ac33c`). RUN-010 et RUN-011 restent `BACKLOG`. Les versions suivantes seront affinées après chaque jalon.
 
 La cible finale validée est **0.9.0 beta**, une démo de dix niveaux conçus à la main. `0.1.0` est un premier jalon technique de production, pas une étiquette affirmant que le dépôt actuel satisfait déjà les nouvelles règles. Les numéros sont des cibles validées ; des patchs `0.x.1`, etc., pourront contenir des corrections vérifiées sans renommer arbitrairement les runs.
 
@@ -350,7 +350,7 @@ Rendre la base existante reproductible, fixer son échelle et aligner le combat 
 
 ### RUN-009 — Automatiser la mort et la reprise
 
-**Priorité : P0 · Statut : DONE localement · Dépendances : RUN-006, RUN-008 (DONE).**
+**Priorité : P0 · Statut : DONE · Dépendances : RUN-006, RUN-008 (DONE).**
 
 - **Résultat / scope :** Message anglais « Thou hast perished. », assombrissement 3 s puis fondu/reset ; spawn sûr et vie restaurée, sans appui requis.
 - **Acceptation, test et bugtest :** Morts répétées, mort en pause/attaque, aucune double recharge ; attendre au spawn ne tue pas ; gains de tentative actuels perdus une fois.
@@ -358,6 +358,7 @@ Rendre la base existante reproductible, fixer son échelle et aligner le combat 
 - **Résultat vérifié (30 septembre 2026) :** mort unique, écran assombri « Thou hast perished. » pendant 3 s, fondu noir de 0,4 s puis rechargement automatique. La mort suspend le gameplay, même si elle est déclenchée durant une pause ; la nouvelle scène retire la pause. Gains de tentative perdus, réserve validée conservée. Import, isolation `user://`, 15 suites / 353 contrôles de jeu réussis ; captures de l'écran de mort et du fondu inspectées. Aucune livraison distante autorisée.
 - **Périmètre au lancement (30 septembre 2026) :** branche `feature/run-009-auto-respawn` créée depuis `develop` propre. Remplacer uniquement la confirmation manuelle à la mort et ses tests ; conserver la progression validée et le comportement de victoire. Exercices ciblés : délai et fondu, morts répétées, pause/attaque, rechargement unique, retour sûr au spawn, bonus de tentative et régressions clavier/parcours.
 - **Clôture locale (30 septembre 2026) :** critères, bugtest/retest, régressions, journal et learning satisfaits ; captures graphiques inspectées. Revue Jev `READY_FOR_DONE` consultative, suivie d'une inspection directe des preuves. Aucune validation humaine explicitement requise pour cette run. Pas de push, PR ni merge.
+- **Validation et livraison (30 septembre 2026) :** l'humain confirme « Run validée et PR merged ». La PR #14 contenant `760ad06` est fusionnée dans `develop` au commit `a2ac33c`. RUN-009 reste `DONE` ; aucune run suivante lancée.
 
 ### RUN-010 — Installer les bus et les feedbacks élémentaires
 
@@ -591,4 +592,4 @@ Livrer une démo 0.9.0 beta complète, équilibrée et testée, avec une distrib
 
 ## Point d’arrêt
 
-RUN-001 à RUN-006 sont DONE après fusion des PR #1, #2, #4, #5, #8 et #9. La correspondance fichier-source reste reportée par décision humaine à la recette des assets distribués. Les catalogues 11–12 deviennent locaux et ignorés par Git. La grille 16×16 est retenue après comparaison visuelle, avec les limites de la maquette consignées. Le prototype utilise désormais un viewport 640×360 et une santé fractionnaire. Les durées de hit-stun et de recul de RUN-006 restent à équilibrer. RUN-007 est DONE et fusionnée dans develop via PR #11. RUN-008 est DONE localement après validation humaine ; RUN-009 est DONE localement après tests, captures et revue des preuves. Livraison distante non effectuée. Après 0.1.0, détailler 0.2.0 à partir du résultat réel.
+RUN-001 à RUN-006 sont DONE après fusion des PR #1, #2, #4, #5, #8 et #9. La correspondance fichier-source reste reportée par décision humaine à la recette des assets distribués. Les catalogues 11–12 deviennent locaux et ignorés par Git. La grille 16×16 est retenue après comparaison visuelle, avec les limites de la maquette consignées. Le prototype utilise désormais un viewport 640×360 et une santé fractionnaire. Les durées de hit-stun et de recul de RUN-006 restent à équilibrer. RUN-007 est DONE et fusionnée dans develop via PR #11 ; RUN-008 via PR #12 ; RUN-009, validée par l'humain, via PR #14. RUN-010 reste BACKLOG et n'est pas lancée. Après 0.1.0, détailler 0.2.0 à partir du résultat réel.

@@ -433,3 +433,5 @@ Quand le joueur meurt, le niveau suspend le gameplay et affiche « Thou hast per
 Le joueur émet le signal de mort une seule fois et le niveau garde aussi un verrou pendant le rechargement. Les bonus obtenus durant la tentative sont effacés ; la réserve déjà validée dans `Progression` n'est pas modifiée. Recharger la scène restaure le spawn, la vie, les pièces, la porte et les ennemis. Le test attend ensuite quatre secondes au spawn : aucun danger n'y tue le joueur dans le niveau actuel.
 
 Godot 4.7.2 a passé l'import, l'isolation des sauvegardes et 15 suites totalisant 353 contrôles de jeu. Les cas ciblés couvrent le délai, le fondu, plusieurs morts, la pause, l'attaque, la perte des gains et le rechargement unique. Deux captures du message et du fondu ont été inspectées. Ces preuves portent sur le niveau actuel ; elles ne garantissent pas les futurs points de spawn.
+
+L'humain a validé RUN-009 et sa PR #14 a été fusionnée dans `develop` le 30 septembre 2026.
