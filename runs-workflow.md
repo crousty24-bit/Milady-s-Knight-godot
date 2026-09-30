@@ -3,7 +3,7 @@
 ## Statut de cette planification
 
 Audit documentaire et inspection du dépôt effectués le **21 septembre 2026**, à partir de l’état de travail courant, et non du seul commit `0870462`.
-**RUN-001 à RUN-009 DONE.** Les PR #1, #2, #4, #5, [#8](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/8) et [#9](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/9) sont fusionnées dans `develop`. RUN-007 est `DONE`, fusionnée dans `develop` via la PR #11 (`260c8a8`). RUN-008 est `DONE` et fusionnée via la PR #12 (`6c4ee22`). RUN-009 est validée par l'humain et fusionnée dans `develop` via la [PR #14](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/14) (`a2ac33c`). RUN-010 est `DONE` : première itération audio validée par l'humain le 30 septembre 2026, avec des limites consignées, sur `feature/run-010-audio-buses` non poussée ; RUN-011 reste `BACKLOG`. Les versions suivantes seront affinées après chaque jalon.
+**RUN-001 à RUN-011 DONE.** Les PR #1, #2, #4, #5, [#8](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/8) et [#9](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/9) sont fusionnées dans `develop`. RUN-007 est fusionnée via la PR #11 (`260c8a8`), RUN-008 via la PR #12 (`6c4ee22`), RUN-009 via la [PR #14](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/14) (`a2ac33c`) et RUN-010 via la PR #15 (`24213f2`). RUN-011 clôt le socle 0.1.0 localement après recette technique et validation humaine du saut mural ; aucune livraison distante de cette branche. Le découpage 0.2.0 est détaillé ci-dessous sans lancer ses runs. Les versions suivantes seront affinées après chaque jalon.
 
 La cible finale validée est **0.9.0 beta**, une démo de dix niveaux conçus à la main. `0.1.0` est un premier jalon technique de production, pas une étiquette affirmant que le dépôt actuel satisfait déjà les nouvelles règles. Les numéros sont des cibles validées ; des patchs `0.x.1`, etc., pourront contenir des corrections vérifiées sans renommer arbitrairement les runs.
 
@@ -222,7 +222,7 @@ Références de la révision du workflow du **22 septembre 2026** : recommandati
 | Cible | Objectif | Priorité | Runs prévues | Prérequis principaux |
 | --- | --- | --- | --- | --- |
 | 0.1.0 | Socle de production vérifié | P0 | 11 détaillées | Accord de démarrage |
-| 0.2.0 | Premier niveau et boucle de reprise | P0 | 9–11 indicatives | 0.1.0 validée ; D03–D05 |
+| 0.2.0 | Premier niveau et boucle de reprise | P0 | 10 détaillées | 0.1.0 validée ; D03–D05 |
 | 0.3.0 | Économie de coffres et niveau 2 | P1 | 6–8 indicatives | 0.2.0 validée ; D02/D04/D06 |
 | 0.4.0 | Ennemis avancés, secrets et niveaux 3–4 | P1 | 7–9 indicatives | 0.3.0 validée ; D01/D04/D06/D07 |
 | 0.5.0 | Verticalité, capacités et niveaux 5–6 | P1 | 8–10 indicatives | 0.4.0 validée ; D02/D04/D06–D08 |
@@ -231,13 +231,13 @@ Références de la révision du workflow du **22 septembre 2026** : recommandati
 | 0.8.0 | Cohérence visuelle et sonore de la démo | P2 | 3–5 indicatives | 0.7.0 validée ; D10 |
 | 0.9.0 beta | Démo beta finale distribuable | P0 | 4–6 indicatives | 0.8.0 validée ; plateformes et budget D10 |
 
-**Enveloppe indicative : 59 à 75 runs au total, dont 11 seulement définies aujourd’hui.** Les fourchettes incluent intégration, bugtest, corrections ciblées et recette de chaque version. Elles seront réévaluées au jalon précédent ; un dépassement justifié vaut mieux qu’une run monolithique ou des tests supprimés pour tenir un quota. Les variantes et leurs interactions simples peuvent rejoindre leur système ; un nouveau comportement risqué garde une run propre.
+**Enveloppe indicative : 60 à 74 runs au total, dont 21 détaillées aujourd’hui.** Les fourchettes incluent intégration, bugtest, corrections ciblées et recette de chaque version. Elles seront réévaluées au jalon précédent ; un dépassement justifié vaut mieux qu’une run monolithique ou des tests supprimés pour tenir un quota. Les variantes et leurs interactions simples peuvent rejoindre leur système ; un nouveau comportement risqué garde une run propre.
 
-Les 138 fiches initiales sont remplacées par cette planification progressive. Aucune n’avait été exécutée : RUN-001 est conservée ; les autres identifiants de 0.1.0 sont réattribués ci-dessous. Les identifiants suivants seront attribués lors de l’affinage, puis resteront stables après lancement. Les critères de jalon et les spécifications produit restent la référence pour détailler les futurs tests.
+Les 138 fiches initiales sont remplacées par cette planification progressive. Aucune n’avait été exécutée : RUN-001 est conservée ; les autres identifiants de 0.1.0 sont réattribués ci-dessous. RUN-012 à RUN-021 détaillent 0.2.0 ; les identifiants ultérieurs seront attribués lors de l’affinage, puis resteront stables après lancement. Les critères de jalon et les spécifications produit restent la référence pour détailler les futurs tests.
 
 ## Version 0.1.0 — Socle de production vérifié
 
-**Priorité : P0.** **Statut : planifiée, non atteinte.**
+**Priorité : P0.** **Statut : validée localement ; livraison distante non effectuée.**
 
 Rendre la base existante reproductible, fixer son échelle et aligner le combat élémentaire sur les spécifications, dans la scène de test conservée.
 
@@ -247,10 +247,10 @@ Rendre la base existante reproductible, fixer son échelle et aligner le combat 
 
 **Critères de validation du jalon :**
 
-- [ ] Moteur et import reproductibles ; erreurs Windows observées pendant l’audit résolues ou isolées avec un contournement validé et testé.
-- [ ] Comparaison visuelle 16/32 réalisée, décision explicite ; référence 640×360 et caméra lisibles sans réécriture automatique du terrain humain.
-- [ ] Clavier cible, santé fractionnaire, maintien F, réactions aux dégâts et reset automatique testés dans Godot.
-- [ ] Les invariants conservés de mobilité, bac, murs, collecte et porte passent ; les anciennes assertions remplacées sont justifiées.
+- [x] Moteur et import reproductibles ; erreurs Windows observées pendant l’audit résolues ou isolées avec un contournement validé et testé.
+- [x] Comparaison visuelle 16/32 réalisée, décision explicite ; référence 640×360 et caméra lisibles sans réécriture automatique du terrain humain.
+- [x] Clavier cible, santé fractionnaire, maintien F, réactions aux dégâts et reset automatique testés dans Godot.
+- [x] Les invariants conservés de mobilité, bac, murs, collecte et porte passent ; les anciennes assertions remplacées sont justifiées.
 
 **Runs dans l’ordre prévu :**
 
@@ -374,15 +374,18 @@ Rendre la base existante reproductible, fixer son échelle et aligner le combat 
 
 ### RUN-011 — Valider et corriger le socle de production
 
-**Priorité : P0 · Statut : BACKLOG · Dépendances : RUN-004, RUN-005, RUN-007, RUN-008, RUN-009, RUN-010.**
+**Priorité : P0 · Statut : DONE localement · Dépendances : RUN-004, RUN-005, RUN-007, RUN-008, RUN-009, RUN-010 (DONE).**
 
 - **Résultat / scope :** Fermer 0.1.0 après correction des défauts ciblés de ce jalon, sans retouche globale du niveau. Réévaluer le dépôt et détailler les runs de 0.2.0 en fin de recette, en ajustant son enveloppe si nécessaire.
 - **Acceptation, test et bugtest :** Import propre, suites adaptées, deux branches et retours, pause/mort ; contrôle graphique 30/60/144 fps et essai humain du saut mural.
 - **Learning pressenti :** Tests de physique, différence test ciblé/parcours, reproduction et preuve de régression.
+- **Périmètre au lancement (30 septembre 2026) :** branche `feature/run-011-production-foundation` créée depuis `develop` propre à `24213f2`. Vérifier le socle 0.1.0 avec import et suites, parcours aller/retour des deux branches, pause/mort, rendu et comportement à 30/60/144 fps ; corriger seulement les défauts reproduits dans ce périmètre. L'essai humain du saut mural reste requis avant `DONE`. Affiner le découpage de 0.2.0 à partir des constats de la recette.
+- **Résultat en VERIFY (30 septembre 2026) :** Godot 4.7.2 : import propre, isolation `user://`, 16 suites / 377 contrôles réussis. Parcours des deux branches, retours et changement de branche, pause, mort et reprise vérifiés. Rendu OpenGL mesuré à 30/60/144 fps, 9 contrôles de comportement et 9 captures 640×360 par cadence ; images représentatives inspectées. Aucun défaut reproduit, donc aucun correctif gameplay. L'humain a essayé le saut mural et répondu « Jouable, je valide ». RUN-012 à RUN-021 détaillent désormais 0.2.0 sans la démarrer. Preuves dans `runs-journal.md` et `learning.md`.
+- **Clôture locale (30 septembre 2026) :** critères du jalon, bugtest, régressions, journal, learning et essai humain satisfaits. Revue Jev `READY_FOR_DONE` consultative, suivie d'une inspection directe des preuves. Aucun push, PR ni merge de cette branche.
 
 ## Version 0.2.0 — Premier niveau et boucle de reprise
 
-**Priorité : P0.** **Statut : intention de jalon, découpage à affiner.**
+**Priorité : P0.** **Statut : planifiée ; aucune run ACTIVE.**
 
 Transformer la scène actuelle en point de départ de The Eidolon Vale et livrer son tutoriel avec sauvegarde, interface clavier et Longbow.
 
@@ -397,16 +400,87 @@ Transformer la scène actuelle en point de départ de The Eidolon Vale et livrer
 - [ ] New Game/Continue/Controls/Quit, pause et dialogues entièrement clavier, textes anglais, aucune superposition de modales.
 - [ ] N1 court et facile, spawn sûr, sortie à 12 coins ; transition testée vers fixture, aucun N2 final revendiqué.
 
-**Enveloppe : 9–11 runs**, recette et corrections ciblées incluses. Aucun identifiant n’est réservé à ce stade.
+**Découpage : 10 runs, RUN-012 à RUN-021**, recette et corrections ciblées incluses. Les identifiants restent associés aux résultats ci-dessous ; les règles ouvertes D03–D05 sont décidées avant le code qui en dépend. Le menu complet et le tir effectif du Longbow appartiennent déjà aux critères du jalon. La présentation et les sons nécessaires à N1 s'intègrent aux runs concernées ; les limites audio de RUN-010 restent visibles pour la recette, sans lancer une refonte sonore générale.
 
-**Axes dans l’ordre de dépendance :**
+### RUN-012 — Fixer les contrats de reprise et de progression
 
-- **Contrats de reprise et progression :** trancher D03/D04/D05 avant le schéma : banque/tentative, dépenses, v1, dialogues vus et refus du coffre. Définir les identifiants de niveaux, transitions et séparation coins/shards.
-- **Équipement et persistance :** introduire les deux slots et Longbow, puis raccorder sauvegarde versionnée et reprise aux événements validés ; tester migration, corruption, échec disque et absence de double attribution.
-- **Interface et tutoriel :** arbitrer focus/modales avant HUD et menus clavier ; Controls, dialogue de The Ancient Spirit, coffre gratuit, potion mineure et messages contextuels s’intègrent au parcours.
-- **Niveau et recette :** adapter le slice à The Eidolon Vale, intégrer présentation et audio, puis parcourir New Game → sortie, mort/reprise et Continue à froid. Réserver des runs distinctes aux fondations et à cette intégration.
+**Priorité : P0 · Statut : BACKLOG · Dépendance : RUN-011.**
 
-**Learning à décliner lors de l’affinage :** sauvegardes versionnées, transactions, scènes de projectile, focus clavier, dialogues et parcours introductif.
+- **Résultat / scope :** Décider D03–D05 avant le schéma de sauvegarde : état des coins, shards, banque, gains de tentative, équipement, uniques et dialogues après mort, sortie, fermeture/rechargement, dépense et refus de coffre. Définir les identifiants de niveaux et le passage vers la fixture sans inventer N2.
+- **Acceptation, test et bugtest :** Matrice des événements et états attendus, règle explicite de migration de la sauvegarde v1 et de l'ancien bonus, priorités de dialogue/coffre/contexte/pause, disposition des deux slots. Rejouer sur papier les cas achat puis mort, coffre refusé puis repris et fermeture en plein niveau ; obtenir les décisions humaines ouvertes avant tout code dépendant.
+- **Learning pressenti :** Contrat d'état, tentative contre état durable, migration explicite.
+
+### RUN-013 — Ordonner les interactions et modales clavier
+
+**Priorité : P0 · Statut : BACKLOG · Dépendance : RUN-012.**
+
+- **Résultat / scope :** Implémenter la priorité des entrées et l'exclusivité menu, pause, Controls, dialogue, coffre et contextualisation selon le contrat décidé.
+- **Acceptation, test et bugtest :** Focus visible ; Espace, E, flèches et Échap agissent selon l'état ; aucun input de déplacement/attaque ne traverse une modale, aucune double fenêtre, annulation et fermeture conduisent à l'état prévu. Tester clavier et rendu dans Godot.
+- **Learning pressenti :** États de focus, consommation des entrées, interfaces exclusives.
+
+### RUN-014 — Versionner et fiabiliser la progression
+
+**Priorité : P0 · Statut : BACKLOG · Dépendance : RUN-012.**
+
+- **Résultat / scope :** Séparer coins et shards, état de tentative et état durable ; enregistrer équipement et uniques aux événements décidés. Migrer ou refuser explicitement la v1 selon RUN-012.
+- **Acceptation, test et bugtest :** Sauvegarde/rechargement isolés, fermeture en milieu de niveau, mort, sortie, dépense puis mort, sauvegarde corrompue, version inconnue et échec disque ; aucune conversion silencieuse de l'ancien bonus ni double attribution. Les valeurs observées correspondent à la matrice RUN-012.
+- **Learning pressenti :** Schéma versionné, transaction et reprise à froid.
+
+### RUN-015 — Livrer menu principal, Controls et pause
+
+**Priorité : P0 · Statut : BACKLOG · Dépendances : RUN-013, RUN-014.**
+
+- **Résultat / scope :** New Game, Continue, Controls, Quit et pause Reprendre/Recommencer/Quitter, avec navigation entièrement clavier.
+- **Acceptation, test et bugtest :** Continue sans sauvegarde, nouvelle partie, reprise à froid, affichage des touches, retour Échap, restart et fermeture respectent les contrats ; aucun double déclenchement ni perte silencieuse d'état. Vérifier rendu/focus, pause et interactions dans Godot.
+- **Learning pressenti :** Arbre de menus, focus clavier, continuité de scène.
+
+### RUN-016 — Afficher le HUD et les deux slots
+
+**Priorité : P0 · Statut : BACKLOG · Dépendances : RUN-012, RUN-013, RUN-014.**
+
+- **Résultat / scope :** Montrer vie, coins, shards, arme de mêlée et arme de tir ; A change le slot actif selon la disposition décidée.
+- **Acceptation, test et bugtest :** Compteurs distincts exacts après collecte, dépense, mort et reprise ; sélection visible et cohérente avec l'équipement durable ; HUD lisible à 640×360 sans chevauchement des modales.
+- **Learning pressenti :** UI réactive à l'état, équipement et présentation de ressources.
+
+### RUN-017 — Faire tirer le Longbow niveau 0
+
+**Priorité : P0 · Statut : BACKLOG · Dépendances : RUN-014, RUN-016.**
+
+- **Résultat / scope :** Projectile et tir continu du Longbow 0, utilisable une fois équipé ; garder Sword fonctionnelle dans l'autre slot.
+- **Acceptation, test et bugtest :** F maintenu tire à 1,5 s d'intervalle ; projectile orienté depuis le joueur, 1 dégât par impact, portée maximale de 20 blocs, disparition sur cible/terrain/portée. Vérifier gauche/droite, pause, changement de slot, occlusion et absence de dégâts multipliés par tick.
+- **Learning pressenti :** Scène de projectile, cadence et collision ponctuelle.
+
+### RUN-018 — Introduire The Ancient Spirit et les indications
+
+**Priorité : P0 · Statut : BACKLOG · Dépendances : RUN-013, RUN-014.**
+
+- **Résultat / scope :** Dialogue d'introduction anglais et indications contextuelles du tutoriel N1.
+- **Acceptation, test et bugtest :** Texte au bas de l'écran, animation et saut par Espace ; joueur immobilisé sans danger pendant le dialogue puis libéré ; rejouabilité après mort/rechargement conforme à RUN-012. Les indications ne superposent pas d'autre modale ni ne capturent les touches hors de leur état.
+- **Learning pressenti :** Dialogue séquencé, animation de texte, état vu.
+
+### RUN-019 — Donner le Longbow et placer la potion mineure
+
+**Priorité : P0 · Statut : BACKLOG · Dépendances : RUN-013, RUN-014, RUN-016, RUN-017.**
+
+- **Résultat / scope :** Coffre tutoriel gratuit à récompense fixe Longbow 0, plus une potion mineure dans N1.
+- **Acceptation, test et bugtest :** Acceptation/refus/fermeture du coffre et persistance suivent RUN-012 ; jamais d'amélioration ou de second Longbow. Potion : soin de 0,5 HP, ne disparaît pas si la vie est pleine, état cohérent après mort/reprise. Vérifier interaction et rendu dans Godot.
+- **Learning pressenti :** Récompense unique, transaction de coffre, pickup conditionnel.
+
+### RUN-020 — Adapter The Eidolon Vale
+
+**Priorité : P0 · Statut : BACKLOG · Dépendances : RUN-015 à RUN-019.**
+
+- **Résultat / scope :** Transformer le slice en N1 court et facile sans régénération globale ; raccorder Spirit, Green/Purple, piques/vide, coffre, potion, coins, Longbow et sortie.
+- **Acceptation, test et bugtest :** Parcours du menu à la sortie, porte à 12 coins, spawn sûr même après mort, tir et tutoriel utilisables, branches et retours vérifiés ; transition vers la fixture, sans la présenter comme N2 final. Contrôle graphique et intégration audio adaptée au contenu réellement livré.
+- **Learning pressenti :** Intégration d'un niveau auteur et preuve de parcours.
+
+### RUN-021 — Recetter la boucle N1
+
+**Priorité : P0 · Statut : BACKLOG · Dépendances : RUN-012 à RUN-020.**
+
+- **Résultat / scope :** Corriger les défauts ciblés révélés par la recette du jalon 0.2.0.
+- **Acceptation, test et bugtest :** New Game → sortie, coffre accepté/refusé, potion à vie pleine/blessée, tir, Controls, pause, mort/reprise, fermeture puis Continue à froid et transition fixture. Comparer chaque sauvegarde à RUN-012 ; retester les bugs corrigés et les régressions de N1, sans perte silencieuse d'équipement ni modales superposées.
+- **Learning pressenti :** Parcours complet et preuve de régression.
 
 ## Version 0.3.0 — Économie de coffres et niveau 2
 
