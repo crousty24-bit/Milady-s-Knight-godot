@@ -88,12 +88,12 @@ func run() -> void:
 	player.take_damage(1,Vector2.ZERO)
 	player.die()
 	check(player.dead and player.health==0,"death is stable and health cannot become negative")
-	# Confirm restart through the death overlay and SceneTree reload.
-	await tap("interact")
-	await frames(12)
+	# Death transition reloads the attempt without an interaction.
+	check(level.hud.get_node("Overlay/Title").text == "Thou hast perished.", "death overlay announces the loss")
+	await frames(210)
 	level=current_scene
 	player=level.get_node("Player")
-	check(level.gold==0 and player.health==3 and not level.gate.opened and level.get_node("Coins").get_child_count()==18,"restart restores whole attempt")
+	check(level.gold==0 and player.health==3 and not level.gate.opened and level.get_node("Coins").get_child_count()==18,"automatic restart restores whole attempt")
 	await tap("pause")
 	check(paused,"escape pauses tree")
 	var before: Vector2 = player.position
@@ -106,6 +106,10 @@ func run() -> void:
 	await teleport(Vector2(880,290))
 	await frames(15)
 	check(player.dead,"level void limit causes death during actual fall")
+	await frames(210)
+	level = current_scene
+	player = level.get_node("Player")
+	check(not player.dead and player.health == 3, "void death also restarts automatically")
 	level.queue_free()
 	await process_frame
 	print("RESULT ",checks," checks; ",failures," failures")

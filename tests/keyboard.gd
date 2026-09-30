@@ -129,10 +129,11 @@ func run() -> void:
 	key(KEY_E, true)
 	await frames(3)
 	key(KEY_E, false)
-	await frames(5)
+	check(current_scene == level and player.dead, "E cannot skip the death transition")
+	await frames(210)
 	level = current_scene
 	player = level.get_node("Player")
-	check(not player.dead and player.health == 3 and player.position.x < 50, "E confirms restart on death overlay")
+	check(not player.dead and player.health == 3 and player.position.x < 50, "death automatically restores player at spawn")
 	level.gold = 12
 	level.try_offering()
 	level._on_exit(player)

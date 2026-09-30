@@ -25,3 +25,12 @@ func set_overlay(title: String, subtitle: String) -> void:
 	$Overlay/Subtitle.text = subtitle
 func clear_overlay() -> void:
 	$Overlay.hide()
+func show_death_overlay() -> void:
+	set_overlay("Thou hast perished.", "")
+	$Hint.text = ""
+	$PauseHint.hide()
+func set_death_fade(alpha: float) -> void:
+	$DeathFade.visible = alpha > 0.0
+	var fade_color: Color = $DeathFade.color
+	fade_color.a = alpha
+	$DeathFade.color = fade_color
