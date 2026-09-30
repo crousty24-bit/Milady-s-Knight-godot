@@ -13,7 +13,7 @@
 
 Pour les sons très répétitifs, prévoir plusieurs variantes d'un même asset lorsque pertinent (`01`, `02`, `03`...).
 
-RUN-010 (30 septembre 2026) : les lignes cochées « Intégré » sont branchées dans le slice ; provenance, fichiers et transformations dans [assets/AUDIO_CREDITS.md](../assets/AUDIO_CREDITS.md).
+RUN-010 (30 septembre 2026) : les lignes cochées « Intégré » sont branchées dans le slice ; provenance, fichiers et transformations dans [assets/AUDIO_CREDITS.md](../assets/AUDIO_CREDITS.md). Première itération validée par l'humain avec ces limites à reprendre : musique trop basse et à remplacer par un autre morceau ; SFX globalement trop forts ; impact d'épée (`sfx_melee_hit`) peu agréable, à remplacer ; sons de saut et de double saut à remplacer.
 
 
 ### Player — Movement

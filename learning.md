@@ -446,4 +446,4 @@ Un nœud en pause arrête aussi ses sons. Or la mort met l'arbre en pause : le s
 
 Les fichiers de la bibliothèque ne sont jamais modifiés. `tools/prepare_audio.py` en crée des copies courtes en WAV mono 16 bits pour les effets, et en Ogg Vorbis bouclé pour la musique, dont le volume perçu est ramené à −16 LUFS. Les SFX viennent d'un pack CC BY 4.0 : le crédit de Helton Yan devra apparaître dans le jeu. `assets/AUDIO_CREDITS.md` conserve la source de chaque fichier.
 
-Godot 4.7.2 a passé 16 suites et 377 contrôles, dont 24 dédiés à l'audio. Une capture Movie Maker empile sept sons sur la musique : le pic reste à −5,5 dBFS, sous la saturation. L'écoute humaine doit encore juger le choix des sons et l'équilibre.
+Godot 4.7.2 a passé 16 suites et 377 contrôles, dont 24 dédiés à l'audio. Une capture Movie Maker empile sept sons sur la musique : le pic reste à −5,5 dBFS, sous la saturation. À l'écoute, l'humain a validé cette première itération. Il demande toutefois une musique plus forte et différente, des SFX moins forts, ainsi que d'autres sons pour l'impact d'épée, le saut et le double saut. Une mesure sans saturation ne garantit donc pas un mix agréable.

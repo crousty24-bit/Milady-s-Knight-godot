@@ -29,6 +29,10 @@ Médias audio intégrés par RUN-010 (30 septembre 2026). Les originaux restent 
 - **Licence :** [Pixabay Content License](https://pixabay.com/service/license-summary/) — usage gratuit, modification permise, attribution non requise ; vente ou distribution du contenu seul, sous une forme substantiellement identique, interdite.
 - **Transformation :** MP3 → Ogg Vorbis q5 44,1 kHz, loudness normalisée à −16 LUFS (true peak −1,5 dBFS), boucle activée à l'import.
 
+## Retour d'écoute (30 septembre 2026)
+
+Première itération validée. À reprendre : musique trop basse et à remplacer par un autre morceau ; SFX globalement trop forts ; impact d'épée (`sfx_melee_hit`) peu agréable, à remplacer ; sons de saut et de double saut à remplacer. Les sélections ci-dessus restent donc provisoires.
+
 ## Médias hérités
 
 `coin.wav` (encore utilisé par la porte), `jump.wav`, `hurt.wav`, `tap.wav` et `time_for_adventure.ogg` restent dans le dépôt sans provenance établie ; ce contrôle reste différé à la recette des licences avant distribution.
