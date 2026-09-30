@@ -1,0 +1,15 @@
+{
+  "run_id": "example-active-run",
+  "run_status": "ACTIVE",
+  "task_summary": "Inventory existing Godot scenes and document their resource references without editing gameplay files.",
+  "complexity": "low",
+  "visual_judgment": false,
+  "affected_files": [],
+  "concurrent_edit_files": [],
+  "active_subagents": 0,
+  "available_models": [
+    "gpt-6-luna",
+    "gpt-6-sol",
+    "gpt-6-astra"
+  ]
+}
