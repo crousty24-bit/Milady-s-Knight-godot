@@ -465,3 +465,13 @@ Une **version** décrit un résultat utilisable, pas le nombre de runs effectué
 La version actuelle est aussi inscrite dans `project.godot` sous `config/version`. Cette métadonnée ne crée ni tag Git, ni export, ni écran de version. De même, une run DONE peut être validée localement alors que sa branche n’est pas fusionnée : ici, la validation de la réorganisation et des compléments retenus, puis la fusion autorisée, doivent précéder le travail vers 0.2.0.
 
 Chaque lot indique son orchestrateur à l’avance. Le défaut Codex et son profil de travail de code utilisent désormais `gpt-6.1-sol` ; les autres profils et les décisions de délégation restent en place. Jev conseille toujours le routage et la clôture : il ne démarre pas les runs, ne remplace pas les tests et ne fusionne pas les branches.
+
+## RUN-012 — Dessiner un personnage avec du code
+
+Un sprite en pixel art est une grille de couleurs. `tools/art/knight.py` écrit cette grille sous forme de texte : chaque caractère est un pixel (`o` le contour, `1` à `5` l'acier du plus sombre au plus clair, `R` la cape…). Le chevalier est découpé en **calques** — cape, jambe arrière, jambe avant, torse, heaume, bras — superposés dans un ordre fixe. Une course de six images réutilise ainsi le même torse avec des poses de jambes différentes. La jambe arrière est la même grille que la jambe avant, assombrie automatiquement d'un ton : la profondeur coûte une ligne de code.
+
+Toutes les images partagent un **point d'ancrage** : les pieds au bas de la ligne 30 et le corps centré sur la colonne 16. Sans cela, le personnage semblerait glisser d'une image à l'autre. Comme le torse est symétrique autour de cette colonne, retourner le sprite vers la gauche ne le décale pas. Le script écrit aussi le `SpriteFrames` de Godot : chaque image y est une `AtlasTexture` qui découpe une région de la planche.
+
+L'épée n'est pas dans le sprite : sa position vient du gameplay, qui fait tourner la lame autour de la main pendant 0,28 s. Faire pivoter une petite image de pixel art la rend floue ou crénelée. Le script pré-dessine donc l'épée sous 32 angles et le jeu choisit la plus proche de l'angle réel. Le dessin suit ainsi exactement la zone de dégâts. La collision du joueur (10×18) n'a pas changé : un sprite plus grand ne doit pas modifier la façon dont le personnage passe sous un plafond de deux tuiles.
+
+Enfin, un nœud en pause n'anime plus. La mort met tout le jeu en pause : l'animation de chute restait figée sur sa première image. Le sprite passe donc en `PROCESS_MODE_ALWAYS` à la mort, comme le son de mort de RUN-010.

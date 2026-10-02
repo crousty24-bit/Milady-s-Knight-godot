@@ -411,10 +411,12 @@ Ces trois réserves sont **BACKLOG, non lancées**. L’humain pourra en retenir
 
 ### RUN-012 — Personnage et feedbacks visuels du socle
 
-**Lot A · Main agent : Claude Opus 5.5 · Statut : BACKLOG · Dépendances : RUN-011 DONE ; sélection humaine du lot.**
+**Lot A · Main agent : Claude Opus 5.5 · Statut : VERIFY · Dépendances : RUN-011 DONE ; sélection humaine du lot.**
 
 - **Résultat / scope :** Sélection, adaptation et intégration cohérente du chevalier, Sword et animations/feedbacks existants. Conserver sources, licences et contrats gameplay.
 - **Décisions avant implémentation dépendante :** Confirmer les assets et le périmètre artistique avant adaptation.
+- **Lancement (2 octobre 2026) :** l'humain retient les trois lots 012–014, à exécuter dans l'ordre sur `feature/run-011-production-foundation`, avec validation visuelle et d'écoute groupée en fin de lot C. Aucun chevalier compatible dans la bibliothèque locale (Soldier Zerie ≈ 17×21 px, vue RPG, licence sans redistribution) ; les packs d'effets/icônes inspectés interdisent la redistribution dans un dépôt public, sauf les icônes CC0 de Shade et les fichiers PixelLab de l'humain. **Décision humaine :** générer l'Ashen Knight en pixel art d'après l'artwork du projet (plaques acier, cape rouge, tabard à emblème or), corps ≈ 20×28 px, capsule 10×18, épée (dégâts, portée 24 px, cadence, fenêtre) inchangées. Périmètre : spritesheet idle/course/saut/chute/glissade/attaque/dégâts/mort, épée et traînée pré-rendues, VFX existants (double saut, poussière murale, impact) ; scènes `player.tscn`/`player.gd` côté visuel uniquement.
+- **Résultat en VERIFY (2 octobre 2026) :** Ashen Knight généré (`tools/art/knight.py`, 24 frames sur 8 animations), épée en 32 angles avec traînée, étincelle d'impact, anneau de double saut et poussière murale ; animation de mort désormais jouée pendant la pause. Gameplay et collisions inchangés. Import et 16 suites / 377 contrôles réussis ; nouvelle suite `knight_visual` 17/17 et 21 captures inspectées ; suites visuelles existantes réussies. Provenance dans `assets/VISUAL_CREDITS.md`. **Attend la validation visuelle humaine groupée** (choix artistique, ressenti des animations, lisibilité en jeu).
 - **Acceptation, tests et bugtest :** Rendu, silhouette, ancrages, transitions d’animation et lisibilité des dégâts ; collisions, portée et mobilité non régressées dans Godot ; validation visuelle humaine.
 - **Clôture :** corrections et régressions du périmètre, revue Jev selon le cycle existant, preuves au journal et learning fondé sur le résultat réel ; validation humaine des choix artistiques ou playtests requis.
 

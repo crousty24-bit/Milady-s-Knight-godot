@@ -24,6 +24,15 @@ const INVULNERABILITY_DURATION = 1.20
 const HURT_FLASH_DURATION = 0.10
 const HIT_STUN_DURATION = 0.18
 const KNOCKBACK_DURATION = 0.16
+# Pre-rendered pixel art (tools/art/knight.py): 32 blade angles, crescent smear and VFX strips.
+const SWORD_TEXTURE = preload("res://assets/sprites/ashen_sword.png")
+const SMEAR_TEXTURE = preload("res://assets/sprites/ashen_sword_smear.png")
+const SPARK_TEXTURE = preload("res://assets/sprites/vfx_hit_spark.png")
+const PUFF_TEXTURE = preload("res://assets/sprites/vfx_air_puff.png")
+const DUST_TEXTURE = preload("res://assets/sprites/vfx_wall_dust.png")
+const SWORD_FRAME = 64
+const SWORD_ANGLES = 32
+const SPARK_DURATION = 0.2
 var max_health_units: int = 30
 var health_units: int = 30
 var health: float:
@@ -53,6 +62,8 @@ var blocked_wall_normal: float = 0.0
 var wall_detach_time: float = 0.0
 var wall_control_time: float = 0.0
 var attack_cancelled: bool = false
+# Impact sparks in world space: [position, age]. Purely visual.
+var hit_sparks: Array = []
 @onready var sprite: AnimatedSprite2D = $Sprite
 @onready var sword: Area2D = $AttackArea
 @onready var hurt_material: ShaderMaterial = sprite.material
@@ -73,7 +84,9 @@ func _physics_process(delta: float) -> void:
 	if dead:
 		motion_state = MotionState.DEAD
 		velocity.x = move_toward(velocity.x, 0.0, 600.0 * delta)
+		_age_sparks(delta)
 		move_and_slide()
+		queue_redraw()
 		return
 	if is_on_floor() and velocity.y >= 0.0:
 		coyote = 0.10
@@ -131,12 +144,8 @@ func _physics_process(delta: float) -> void:
 	attack_time = maxf(0.0, attack_time - delta)
 	sprite.flip_h = facing < 0
 	_update_damage_visuals()
-	if attack_time > 0.0:
-		sprite.play("jump")
-	elif not is_on_floor():
-		sprite.play("jump")
-	else:
-		sprite.play("run" if absf(velocity.x) > 5.0 else "idle")
+	_update_animation()
+	_age_sparks(delta)
 	move_and_slide()
 	_update_wall_state(direction)
 	_update_sword()
@@ -225,6 +234,8 @@ func die() -> void:
 	knockback_time = 0.0
 	hurt_flash_time = 0.0
 	_update_damage_visuals()
+	# The level pauses on death; the collapse keeps playing under the death overlay.
+	sprite.process_mode = Node.PROCESS_MODE_ALWAYS
 	sprite.play("dead")
 	# DeathSound keeps playing while the level pauses for the death transition.
 	$DeathSound.play()
@@ -253,23 +264,52 @@ func _update_sword() -> void:
 			continue
 		hit_targets.append(body.get_instance_id())
 		body.take_damage(SWORD_DAMAGE, Vector2(attack_facing * 60.0, -55.0))
+		hit_sparks.append([body.global_position + Vector2(-attack_facing * 4.0, -7.0), 0.0])
+
+func _update_animation() -> void:
+	if knockback_time > 0.0 or hit_stun_time > 0.0:
+		sprite.play("hurt")
+	elif attack_time > 0.0 and not attack_cancelled:
+		# Body pose follows the blade: guard, cut, follow-through.
+		var progress: float = 1.0 - attack_time / ATTACK_DURATION
+		sprite.animation = "attack"
+		sprite.frame = 0 if progress < 0.22 else (1 if progress < 0.66 else 2)
+	elif motion_state == MotionState.WALL_SLIDE:
+		sprite.play("wall")
+	elif not is_on_floor():
+		sprite.play("rise" if velocity.y < 0.0 else "fall")
+	else:
+		sprite.play("run" if absf(velocity.x) > 5.0 else "idle")
+
+func _age_sparks(delta: float) -> void:
+	for spark in hit_sparks:
+		spark[1] += delta
+	hit_sparks = hit_sparks.filter(func(spark): return spark[1] < SPARK_DURATION)
+
+func _strip_frame(texture: Texture2D, frames: int, index: int) -> Rect2:
+	var w: float = texture.get_width() / float(frames)
+	return Rect2(w * clampi(index, 0, frames - 1), 0, w, texture.get_height())
 
 func _draw() -> void:
 	if motion_state == MotionState.WALL_SLIDE:
-		var dust_y: float = float(Engine.get_physics_frames() % 12)
-		draw_rect(Rect2(-wall_normal * 6.0 - 1.0, -5.0 + dust_y, 2, 2), Color("b8ad94"))
+		var dust_frame: int = (Engine.get_physics_frames() / 4) % 3
+		draw_texture_rect_region(DUST_TEXTURE, Rect2(Vector2(-wall_normal * 6.0 - 3.0, -8.0), Vector2(6, 8)), _strip_frame(DUST_TEXTURE, 3, dust_frame))
 	if jump_flash > 0.0:
-		var radius: float = 4.0 + (1.0 - jump_flash / 0.22) * 12.0
-		draw_arc(to_local(jump_effect_origin), radius, 0, TAU, 16, Color(0.75, 0.87, 0.95, jump_flash / 0.22), 1.0)
+		var puff_frame: int = int((1.0 - jump_flash / 0.22) * 5.0)
+		draw_texture_rect_region(PUFF_TEXTURE, Rect2(to_local(jump_effect_origin) - Vector2(12, 6), Vector2(24, 10)), _strip_frame(PUFF_TEXTURE, 5, puff_frame))
+	for spark in hit_sparks:
+		var spark_frame: int = int(spark[1] / SPARK_DURATION * 5.0)
+		draw_texture_rect_region(SPARK_TEXTURE, Rect2(to_local(spark[0]) - Vector2(8, 8), Vector2(16, 16)), _strip_frame(SPARK_TEXTURE, 5, spark_frame))
 	if attack_time <= 0.0 or attack_cancelled:
 		return
+	# Draw facing right and mirror: the pre-rendered angles are authored for that side.
 	var progress: float = 1.0 - attack_time / ATTACK_DURATION
 	var angle: float = lerpf(-1.5, 1.2, progress)
-	var origin = Vector2(4.0 * attack_facing, -10.0)
-	var tip = origin + Vector2(cos(angle) * attack_facing, sin(angle)) * SWORD_RANGE
+	var index: int = posmod(roundi(angle / TAU * SWORD_ANGLES), SWORD_ANGLES)
+	var origin := Vector2(4.0, -10.0)
+	var dest := Rect2(origin - Vector2(SWORD_FRAME, SWORD_FRAME) * 0.5, Vector2(SWORD_FRAME, SWORD_FRAME))
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2(attack_facing, 1.0))
 	if attack_time < ATTACK_HIT_START_TIME and attack_time > ATTACK_HIT_END_TIME:
-		for i in range(4):
-			var a: float = angle - i * 0.16
-			draw_line(origin + Vector2(cos(a) * attack_facing, sin(a)) * (SWORD_RANGE * 0.5), origin + Vector2(cos(a) * attack_facing, sin(a)) * SWORD_RANGE, Color(0.95, 0.8, 0.44, 0.7 - i * 0.15), 2.0)
-	draw_line(origin, tip, Color("e9e4c5"), 2.0)
-	draw_line(origin, origin - Vector2(cos(angle) * attack_facing, sin(angle)) * 5.0, Color("ae7c42"), 3.0)
+		draw_texture_rect_region(SMEAR_TEXTURE, dest, _strip_frame(SMEAR_TEXTURE, SWORD_ANGLES, index))
+	draw_texture_rect_region(SWORD_TEXTURE, dest, _strip_frame(SWORD_TEXTURE, SWORD_ANGLES, index))
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
