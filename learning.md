@@ -501,3 +501,9 @@ L'attaque montre comment séparer présentation et règle. La règle de `docs/01
 Pour attaquer en courant sans « patiner », le personnage est rendu en **deux calques** : un `AnimatedSprite2D` pour les jambes, la jupe du tabard et la cape, et un enfant `Upper` pour le torse, les bras et l'épée. `use_parent_material` partage le shader de flash blanc et la modulation du parent, donc le clignotement d'invulnérabilité s'applique aux deux. En passant de `run` à `base_run`, le script recopie l'image et la progression de l'animation (`set_frame_and_progress`) : la foulée continue sans à-coup.
 
 Côté interface, une information n'apparaît que lorsqu'elle sert (`docs/05`). Le bandeau d'indications a disparu ; l'invite de la porte est dessinée par le HUD mais placée sur la porte : sa position dans le monde est convertie en position d'écran avec la transformation du canevas de la vue. Enfin, tous les PNG du dépôt sont reproduits à l'identique par leurs générateurs : on le vérifie en comparant leurs empreintes MD5 avant et après régénération.
+
+### Clôture 0.1.0 — Vérifier le résultat assemblé
+
+La dernière validation porte sur l’assemblage des passes, pas seulement sur chacune séparément. Les 377 contrôles de jeu passent encore après les changements d’animations, de décor et de HUD ; 49 contrôles avec rendu vérifient ensuite les états du chevalier, l’invite de porte et les effets qui doivent se libérer après lecture. Les tests et l’inspection des captures complètent la validation artistique donnée par l’humain.
+
+La version 0.1.0 comprend les runs 001–014 et 029. Le numéro 029 évite de renuméroter les lots déjà planifiés : il ne signifie pas que 015–028 ont été réalisés. Le plan compte maintenant 29 identifiants, dont 15 réalisés et 14 à venir. L’ouverture de la PR clôt la préparation de la livraison ; sa fusion dans `develop` reste nécessaire avant de commencer RUN-015 vers la 0.2.0.

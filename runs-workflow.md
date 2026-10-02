@@ -3,9 +3,9 @@
 ## Statut de cette planification
 
 Audit documentaire et inspection du dépôt effectués le **21 septembre 2026**, à partir de l’état de travail courant, et non du seul commit `0870462`.
-**RUN-001 à RUN-014 DONE** (012–014 : passes visuelles et audio Claude, validées le 2 octobre 2026) ; **RUN-029**, seconde passe visuelle demandée par l’humain sur la même branche, en **VERIFY**. Les PR #1, #2, #4, #5, [#8](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/8) et [#9](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/9) sont fusionnées dans `develop`. RUN-007 est fusionnée via la PR #11 (`260c8a8`), RUN-008 via la PR #12 (`6c4ee22`), RUN-009 via la [PR #14](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/14) (`a2ac33c`) et RUN-010 via la PR #15 (`24213f2`). RUN-011 clôt le socle 0.1.0 localement après recette technique et validation humaine du saut mural ; aucune livraison distante de cette branche. La validation des onze premières runs et du socle **0.1.0** est confirmée par l’humain le **2 octobre 2026**. La réorganisation ci-dessous reste sur `feature/run-011-production-foundation` ; aucune run suivante n’est lancée.
+**RUN-001 à RUN-014 et RUN-029 DONE. Version 0.1.0 clôturée et validée localement le 2 octobre 2026**, après validation humaine de toutes les passes et audit final. La PR vers `develop` est autorisée ; fusion encore à effectuer. Les PR #1, #2, #4, #5, [#8](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/8) et [#9](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/9) sont fusionnées dans `develop`. RUN-007 est fusionnée via la PR #11 (`260c8a8`), RUN-008 via la PR #12 (`6c4ee22`), RUN-009 via la [PR #14](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/14) (`a2ac33c`) et RUN-010 via la PR #15 (`24213f2`). RUN-011 clôt le socle 0.1.0 localement après recette technique et validation humaine du saut mural ; livraison de cette branche préparée pour la PR autorisée. La validation des onze premières runs et du socle **0.1.0** est confirmée par l’humain le **2 octobre 2026**. La réorganisation ci-dessous reste sur `feature/run-011-production-foundation` ; aucune run 0.2.0 n’est lancée.
 
-Plan réorganisé le **2 octobre 2026** : **28 identifiants au total**, dont 11 runs DONE, 3 réserves visuelles conditionnelles et 14 lots de production. La cible finale devient **0.5.0 beta**, toujours une démo de dix niveaux conçus à la main. **0.1.0 est la version actuelle validée localement** ; 0.2.0 est la prochaine cible, soumise au verrou de branche ci-dessous. Les patchs `0.x.1` restent possibles pour des corrections vérifiées, sans créer systématiquement une run ni une version par tâche.
+Plan réorganisé le **2 octobre 2026** : **29 identifiants au total**, dont 15 runs DONE (001–014 et 029) et 14 lots de production BACKLOG (015–028). La cible finale devient **0.5.0 beta**, toujours une démo de dix niveaux conçus à la main. **0.1.0 est la version actuelle validée localement** ; 0.2.0 est la prochaine cible, soumise au verrou de branche ci-dessous. Les patchs `0.x.1` restent possibles pour des corrections vérifiées, sans créer systématiquement une run ni une version par tâche.
 
 Ce plan couvre les spécifications de `docs/00` à `docs/13`, y compris art, audio, narration et livraison. Les durées de travail ne sont pas estimées. L’objectif de 1–2 heures de jeu reste à mesurer. Le nombre futur de runs est une enveloppe de planification révisable, pas une promesse de calendrier ni une réduction du scope produit.
 
@@ -224,13 +224,13 @@ Références de la révision du workflow du **22 septembre 2026** : recommandati
 
 | Cible | Résultat | Runs | Orchestrateur principal |
 | --- | --- | --- | --- |
-| **0.1.0 actuelle** | Socle validé ; compléments visuels et audio réalisés | 001–014 DONE ; 029 en VERIFY | Historique conservé ; Claude Opus 5.5 pour les compléments |
+| **0.1.0 actuelle** | Socle validé ; compléments visuels et audio réalisés | 001–014 et 029 DONE | Historique conservé ; Claude Opus 5.5 pour les compléments |
 | **0.2.0** | N1 complet, menus, tutoriel, tir et reprise | 015–017 : 3 lots | Codex GPT-6.1 Sol Medium |
 | **0.3.0** | Économie et équipement standard, bestiaire et exploration N2–4 | 018–021 : 4 lots | Codex GPT-6.1 Sol Medium ; Claude Opus 5.5 pour 021 |
 | **0.4.0** | Capacités, légendaires, N5–10, Boss et conclusion | 022–026 : 5 lots | Codex GPT-6.1 Sol Medium ; Claude Opus 5.5 pour 025 |
 | **0.5.0 beta** | Présentation finale, équilibrage, recette et exports | 027–028 : 2 lots | Claude Opus 5.5 pour 027 ; Codex GPT-6.1 Sol Medium pour 028 |
 
-**Total : 11 + 3 réserves + 14 lots = 28 identifiants**, y compris les runs déjà réalisées, **plus RUN-029** (seconde passe visuelle ajoutée le 2 octobre 2026) : **29 identifiants**, sous la limite de 30. Sans les réserves, 25 runs exécutées ; avec deux ou trois passes Claude, 27 ou 28. Une réserve non retenue sera CANCELLED par décision humaine avec motif, sans renuméroter les suivantes. Le plan conserve tous les systèmes, les dix niveaux, les recettes et les validations artistiques/humaines ; il regroupe le travail, pas les preuves en un unique test superficiel.
+**Total : 15 runs DONE + 14 lots BACKLOG = 29 identifiants**, sous la limite de 30. Les trois passes 012–014 ont été retenues et réalisées ; RUN-029 ajoute la seconde passe visuelle demandée explicitement. Les identifiants futurs restent inchangés. Le plan conserve tous les systèmes, les dix niveaux, les recettes et les validations artistiques/humaines.
 
 ### Correspondance avec le plan remplacé
 
@@ -247,19 +247,13 @@ Cette table sert uniquement à relire les anciennes références du journal. Les
 
 ### Verrou de la branche actuelle
 
-`feature/run-011-production-foundation` reste ouverte pour cette réorganisation et les **éventuelles deux ou trois passes visuelles Claude**. Leur réservation ne les lance pas et ne remet pas en cause la validation des onze premières runs.
+Les conditions locales sont satisfaites le **2 octobre 2026** : réorganisation et modèles alignés, passes Claude 012–014 et 029 réalisées, recette intégrée réussie, validation humaine finale reçue. L’humain demande l’ouverture de la PR ; le push nécessaire et la PR vers `develop` sont autorisés.
 
-Avant de fusionner cette branche dans `develop`, il faut :
-
-1. terminer et vérifier la réorganisation documentaire et le changement ciblé des modèles ; obtenir la validation humaine de ce résultat ;
-2. décider quelles réserves 012–014 sont retenues (ou explicitement aucune), terminer et valider celles retenues, consigner celles abandonnées ;
-3. vérifier le résultat intégré de la branche selon les changements réellement effectués et obtenir la validation humaine finale ainsi que l’autorisation de livraison Git.
-
-**La fusion effective dans `develop` est ensuite un prérequis de RUN-015 et de toute implémentation 0.2.0.** Préparer la roadmap n’autorise ni cette fusion ni le démarrage de 0.2.0. Après fusion seulement, reprendre sur une feature issue du nouveau `develop` selon le workflow habituel. Aucun push, PR ou merge n’est effectué par cette réorganisation.
+**Condition restante : la fusion effective de `feature/run-011-production-foundation` dans `develop`.** La version 0.1.0 est DONE localement ; cette clôture ouvre la PR sans effectuer la fusion. **RUN-015 et toute implémentation 0.2.0 attendent cette fusion**, puis reprennent sur une feature issue du nouveau `develop`. L’autorisation d’ouvrir la PR ne vaut pas ordre de fusion.
 
 ## Version 0.1.0 — Socle de production vérifié
 
-**Priorité : P0.** **Statut : validée localement ; livraison distante non effectuée.**
+**Priorité : P0.** **Statut : DONE, clôturée et validée localement ; PR autorisée vers develop, fusion en attente.**
 
 Rendre la base existante reproductible, fixer son échelle et aligner le combat élémentaire sur les spécifications, dans la scène de test conservée.
 
@@ -405,9 +399,9 @@ Rendre la base existante reproductible, fixer son échelle et aligner le combat 
 - **Résultat en VERIFY (30 septembre 2026) :** Godot 4.7.2 : import propre, isolation `user://`, 16 suites / 377 contrôles réussis. Parcours des deux branches, retours et changement de branche, pause, mort et reprise vérifiés. Rendu OpenGL mesuré à 30/60/144 fps, 9 contrôles de comportement et 9 captures 640×360 par cadence ; images représentatives inspectées. Aucun défaut reproduit, donc aucun correctif gameplay. L'humain a essayé le saut mural et répondu « Jouable, je valide ». Le découpage BACKLOG établi à cette date est remplacé par les lots RUN-015–017 le 2 octobre 2026, sans démarrer 0.2.0. Preuves dans `runs-journal.md` et `learning.md`.
 - **Clôture locale (30 septembre 2026) :** critères du jalon, bugtest, régressions, journal, learning et essai humain satisfaits. Revue Jev `READY_FOR_DONE` consultative, suivie d'une inspection directe des preuves. Aucun push, PR ni merge de cette branche.
 
-## Compléments conditionnels 0.1.0 — Même branche
+## Compléments réalisés 0.1.0 — Même branche
 
-Ces trois réserves sont **BACKLOG, non lancées**. L’humain pourra en retenir deux ou trois, ou décider de ne pas les réaliser ; leur périmètre exact sera confirmé avant passage READY. Elles améliorent le slice et ne doivent pas anticiper menus, progression ou contenu N1 de 0.2.0. Le jalon validé reste 0.1.0 ; aucun changement de version mineure n’est imposé par une passe visuelle.
+Les passes **012–014** ont été retenues, réalisées et validées ; la seconde passe **029** est également validée à la clôture finale. Elles améliorent le slice sans implémenter les menus, la progression ou le contenu N1 de 0.2.0. Elles appartiennent toutes à la version **0.1.0**.
 
 ### RUN-012 — Personnage et feedbacks visuels du socle
 
@@ -447,7 +441,7 @@ Ces trois réserves sont **BACKLOG, non lancées**. L’humain pourra en retenir
 
 ### RUN-029 — Seconde passe visuelle du socle
 
-**Lot A2 · Main agent : Claude Opus 5.5 · Statut : VERIFY · Dépendances : RUN-012–014 DONE ; demande humaine du 2 octobre 2026.**
+**Lot A2 · Main agent : Claude Opus 5.5 · Statut : DONE · Dépendances : RUN-012–014 DONE ; demande humaine du 2 octobre 2026.**
 
 Identifiant pris après la dernière réserve pour ne pas renuméroter les lots suivants ; le plan passe à **29 identifiants** (limite 30). Complément 0.1.0 sur `feature/run-011-production-foundation`, à la demande explicite de l’humain (« toujours sur la même branche »). N’anticipe ni menus, ni dialogues, ni progression 0.2.0.
 
@@ -455,8 +449,10 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 - **Contrats gameplay conservés :** Sword 0,5 DMG, cadence 1 s, geste 0,28 s, fenêtre de contact, lame 24 px depuis la main, déduplication et occlusion inchangées ; chaque coup tenu reste un hit selon ATK SPEED (`docs/01`). Les trois mouvements alternent visuellement à chaque hit et balaient le même arc pendant la même fenêtre de contact. Collisions, valeurs, placements du niveau et textes existants inchangés, sauf retrait des messages du bandeau inférieur ; l’invite de la porte devient une indication contextuelle près de la porte.
 - **Propriété :** chevalier (`tools/art/knight.py`, `player.gd`/`player.tscn` côté visuel) et intégration finale par le main agent ; décor (`tools/art/world.py`, `backdrop.gd`, `kingdom.gd`, `terrain_skin.gd`), éléments/VFX (`creatures.py` hors icônes HUD, `hazards.py`, `vfx.py` et scènes d’objets côté visuel) et UI (`hud.tscn`, `hud.gd`, `health_hearts.gd`, messages de `level.gd`, nouveau `tools/art/ui.py`) délégués à trois subagents Sonnet sur fichiers distincts ; `vertical_slice.tscn` réservé au main agent ; appels Godot sérialisés par verrou.
 - **Acceptation, tests et bugtest :** les 16 suites existantes réussies sans assouplir d’assertion gameplay ; suites visuelles mises à jour (sélection des animations, enchaînement des trois mouvements pendant le maintien, absence du bandeau hors dialogue) ; captures 640×360 du slice inspectées ; lisibilité joueur/ennemis/dangers, ancrages et filtrage vérifiés ; provenance et licences consignées. **Validation humaine requise** : rendu artistique, ressenti des animations et de l’attaque, lisibilité en jeu.
-- **Résultat en VERIFY (2 octobre 2026) :** chevalier redessiné sur squelette (`tools/art/knight.py`, frames 64×64) : garde de combat, course épée traînante, montée, chute, atterrissage avec poussière, glissade face au mur (main contre le mur, pied en appui), dégâts, mort avec épée lâchée ; enchaînement taille / revers fendant / frappe à deux mains, poursuivi tant que F est maintenu, avec haut du corps superposé aux jambes en course et en l’air. Gameplay inchangé. Décor, éléments/VFX et HUD enrichis par trois subagents Sonnet ; bandeau inférieur supprimé, `DialogueBanner` masqué, invite de porte au-dessus du sceau, voile de mort allégé. Blueprint Studio : 0 crédit utilisé. Import propre ; 16 suites / **377 contrôles** réussis ; `knight_visual` 31, `hud_visual` 11, `feedback_visual` 7 et autres suites visuelles réussies ; cadences 30/60/144 fps 9/9 ; générateurs reproductibles (MD5). **Attend la validation visuelle humaine** (rendu, ressenti des animations et de l’enchaînement, lisibilité en jeu).
+- **Résultat en VERIFY (2 octobre 2026) :** chevalier redessiné sur squelette (`tools/art/knight.py`, frames 64×64) : garde de combat, course épée traînante, montée, chute, atterrissage avec poussière, glissade face au mur (main contre le mur, pied en appui), dégâts, mort avec épée lâchée ; enchaînement taille / revers fendant / frappe à deux mains, poursuivi tant que F est maintenu, avec haut du corps superposé aux jambes en course et en l’air. Gameplay inchangé. Décor, éléments/VFX et HUD enrichis par trois subagents Sonnet ; bandeau inférieur supprimé, `DialogueBanner` masqué, invite de porte au-dessus du sceau, voile de mort allégé. Blueprint Studio : 0 crédit utilisé. Import propre ; 16 suites / **377 contrôles** réussis ; `knight_visual` 31, `hud_visual` 11, `feedback_visual` 7 et autres suites visuelles réussies ; cadences 30/60/144 fps 9/9 ; générateurs reproductibles (MD5). La validation alors attendue est reçue lors de la clôture finale ci-dessous.
 - **Clôture :** corrections et régressions du périmètre, revue Jev selon le cycle existant, preuves au journal et learning fondé sur le résultat réel.
+
+- **Clôture finale (2 octobre 2026) :** l’humain valide toutes les runs réalisées. Audit final sur `40fd477` : import, isolation, 377 contrôles de jeu, 49 contrôles visuels non headless, 23 WAV et 4 tests du routeur réussis ; captures inspectées et revue indépendante sans défaut concret. Jev propose READY_FOR_DONE ; revue directe des preuves satisfaisante, aucun test obligatoire restant ni blocage. RUN-029 **DONE**. Preuves et limites acceptées dans `runs-journal.md` ; 0.1.0 clôturée, PR autorisée.
 
 ## Version 0.2.0 — Premier niveau et boucle de reprise
 
@@ -654,6 +650,6 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 ## Point d’arrêt
 
-**2 octobre 2026 : RUN-001–014 DONE ; version actuelle 0.1.0 validée localement par l’humain.** RUN-029 (seconde passe visuelle, même branche `feature/run-011-production-foundation`) est en **VERIFY** et attend la validation visuelle humaine. Aucune run 0.2.0 lancée, aucune livraison distante effectuée.
+**2 octobre 2026 : version 0.1.0 clôturée ; RUN-001–014 et RUN-029 DONE.** Réorganisation et toutes les passes réalisées validées par l’humain ; audit technique final réussi. Ouverture de PR vers `develop` autorisée sur `feature/run-011-production-foundation` ; aucune fusion effectuée dans cette clôture.
 
-Après validation de RUN-029, l’humain valide la branche et autorise sa livraison/fusion ; **après fusion seulement**, RUN-015 ouvre les lots vers 0.2.0. Les sons de saut et de double saut restent suivis en RUN-027, sans invalider le socle déjà accepté.
+**Prochaine phase : RUN-015 vers 0.2.0, après fusion effective de la PR uniquement.** RUN-015–028 restent BACKLOG, aucune run ACTIVE. Les sons de saut/double saut restent à reprendre en RUN-027, sans rouvrir le socle accepté.

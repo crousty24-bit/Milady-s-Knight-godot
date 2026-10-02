@@ -124,7 +124,7 @@ Lorsque l'élément est complexe, compléter sa ligne principale par une fiche d
 
 ## RUN-002 — Livrables visuels par jalon (planification, 23 septembre 2026)
 
-Les jalons ci-dessous suivent le regroupement du 2 octobre 2026 : 0.2.0 / RUN-015–017, 0.3.0 / RUN-018–021, 0.4.0 / RUN-022–026 et 0.5.0 beta / RUN-027–028. Plusieurs familles peuvent partager un jalon ; leurs exigences restent distinctes. Les réserves visuelles RUN-012–014 ne produisent que des améliorations du socle 0.1.0 si elles sont retenues.
+Les jalons ci-dessous suivent le regroupement du 2 octobre 2026 : 0.2.0 / RUN-015–017, 0.3.0 / RUN-018–021, 0.4.0 / RUN-022–026 et 0.5.0 beta / RUN-027–028. Plusieurs familles peuvent partager un jalon ; leurs exigences restent distinctes. Les passes visuelles/audio RUN-012–014 et RUN-029 sont réalisées et validées dans le socle 0.1.0 ; elles ne livrent pas les systèmes futurs de N1.
 
 La matrice ci-dessus exprime le catalogue cible, **pas l'état d'intégration**. Les priorités P0/P1/P2 sont celles du besoin ; la colonne « premier jalon » indique quand l'asset devient nécessaire dans la roadmap. Une ligne P0 qui n'entre en jeu qu'au niveau 10 n'est donc pas un livrable de 0.1.0. RUN-003 a fixé la grille de terrain à 16×16 ; nombres de frames, dimensions opaques des personnages, collisions, palettes et candidats restent à confirmer avec les véritables assets et scènes. Le statut des médias présents est détaillé dans le catalogue local `11_GAME_ASSETS_LIBRARY.md` lorsqu'il est disponible ; ce fichier n'est plus suivi par Git.
 

@@ -49,7 +49,7 @@ La durée de vie annoncée ici est encore une estimation approximative car celle
 La vision global est celle d'un mini-jeu. Il n'y a pas vocation de créer un jeu avec 10 ou 20 heures de jouabilité.
 
 Le scope établi ici est de produire un prototype jouable et testable = jeu en version alpha.
-Le socle **0.1.0** est validé localement (RUN-001–011). La planification du 2 octobre 2026 regroupe la suite en lots cohérents vers **0.2.0** (N1), **0.3.0** (N2–4), **0.4.0** (N5–10 et conclusion), puis **0.5.0 beta** (démo complète distribuable). Les 28 identifiants prévus incluent les onze runs réalisées et trois réserves visuelles conditionnelles ; le scope des dix niveaux reste inchangé. Voir [runs-workflow.md](../runs-workflow.md) pour les critères, orchestrateurs et le verrou de fusion avant 0.2.0.
+Le socle **0.1.0** est validé localement (RUN-001–014 et RUN-029). La planification du 2 octobre 2026 regroupe la suite en lots cohérents vers **0.2.0** (N1), **0.3.0** (N2–4), **0.4.0** (N5–10 et conclusion), puis **0.5.0 beta** (démo complète distribuable). Les 29 identifiants prévus incluent quinze runs réalisées et validées, dont quatre passes visuelles/audio ; le scope des dix niveaux reste inchangé. Voir [runs-workflow.md](../runs-workflow.md) pour les critères, orchestrateurs et le verrou de fusion avant 0.2.0.
 
 ##### Influences Principales
 

@@ -4,23 +4,24 @@
 ![Version actuelle](https://img.shields.io/badge/Version-0.1.0-blue)
 ![Language](https://img.shields.io/badge/Language-GDScript-478CBF)
 ![Status](https://img.shields.io/badge/Status-Playable%20Prototype-f0ad4e)
-[![Tests RUN-011](https://img.shields.io/badge/Tests-377%20%2B%201%20passing-brightgreen)](#vérification-et-limites-connues)
+[![Tests clôture 0.1.0](https://img.shields.io/badge/Tests-377%20%2B%201%20passing-brightgreen)](#vérification-et-limites-connues)
 
 **Milady's Knight** entre en production pour devenir une démo d’action-platformer 2D en pixel-art Dark Fantasy : dix niveaux conçus à la main, combat mêlée/distance, exploration, progression d’équipement et boss final.
 
 Le joueur incarne **The Ashen Knight**, traverse le royaume corrompu et rejoint Darkveil Dungeon pour vaincre **Lupikal The Doombringer** et libérer **Princess Karla**. L’objectif de durée est de 1 à 2 heures, à confirmer par playtests.
 
-**Version actuelle : 0.1.0, socle validé localement ; RUN-001–011 DONE.** Le dépôt contient encore un slice jouable. La prochaine cible est **0.2.0** (N1 complet) et la démo finale vise **0.5.0 beta**. La branche RUN-011 reste ouverte pour la réorganisation et d’éventuelles passes Claude avant validation finale et fusion.
+**Version actuelle : 0.1.0, clôturée et validée localement ; RUN-001–014 et RUN-029 DONE.** Le dépôt contient un slice jouable avec les passes visuelles et audio Claude intégrées. La prochaine cible est **0.2.0** (N1 complet), après fusion de la PR de clôture vers `develop` ; la démo finale vise **0.5.0 beta**.
 
 ## Ce qui existe aujourd’hui
 
-État vérifié par RUN-011 le 30 septembre 2026, validation confirmée le 2 octobre :
+État vérifié par l’audit final du 2 octobre 2026 :
 
 - Un niveau de test à deux branches avec retours : 18 coins, huit Slimes Green/Purple, ronces, fosse, bac mobile et porte de sortie à 12 coins.
 - Marche, saut variable, double saut, wall slide/wall jump et épée au sol/en l’air.
 - Santé fractionnaire, dégâts, recul, invulnérabilité, mort puis reprise automatique et pause simple.
 - Une banque de bonus sauvegardée après sortie ; elle combine kills et surplus de coins et **n’est pas encore l’économie de shards cible**.
-- HUD et messages français, sprites du prototype, décor dessiné en partie par code, sons de feedback par bus audio et musique provisoire (provenance : `assets/AUDIO_CREDITS.md`).
+- Ashen Knight animé sur squelette avec trois mouvements d’épée, décors en parallaxe, Slimes et VFX générés pour le projet ; HUD compact français avec portrait et invite de porte, sans bandeau inférieur d’indications. Provenance : `assets/VISUAL_CREDITS.md`.
+- Audio rééquilibré par bus et musique Dreamer ; sons de saut/double saut encore à reprendre en RUN-027. Provenance : `assets/AUDIO_CREDITS.md`.
 - Seize suites de tests moteur et des pilotes de parcours.
 
 Le viewport actuel est **640×360** sur une grille de terrain 16×16. Les coffres, le tir, l’équipement, les consommables, les secrets, la narration, le bestiaire avancé et les niveaux 2–10 restent à produire. La fixture de transition dans `tests/fixtures/` ne constitue pas un niveau supplémentaire.
@@ -31,15 +32,15 @@ La boucle cible est : exploration → Gold Coins → combat → Shards → coffr
 
 | Version | Résultat attendu | Runs |
 | --- | --- | --- |
-| **0.1.0 actuelle** | Socle validé ; compléments visuels conditionnels sur la branche ouverte | 001–011 DONE ; 012–014 réservées |
+| **0.1.0 actuelle** | Socle et passes visuelles/audio validés | 001–014 et 029 DONE |
 | 0.2.0 | N1, tutoriel, équipement, menus et reprise | 015–017 |
 | 0.3.0 | Économie, armes standard, bestiaire, secrets et N2–4 | 018–021 |
 | 0.4.0 | Capacités, légendaires, N5–10, Boss et conclusion | 022–026 |
 | 0.5.0 beta | Présentation finale, équilibrage, recette et exports | 027–028 |
 
-**28 identifiants au total, dont 11 déjà validés et trois réserves conditionnelles.** Chaque lot comprend intégration, tests et corrections, avec son orchestrateur désigné à l’avance dans [runs-workflow.md](runs-workflow.md) : Codex GPT-6.1 Sol Medium ou Claude Opus 5.5 selon le travail. La délégation et Jev restent inchangés hors remplacement ciblé du modèle Codex et de `code_worker`.
+**29 identifiants au total : 15 runs DONE et 14 lots BACKLOG.** Chaque lot comprend intégration, tests et corrections, avec son orchestrateur désigné à l’avance dans [runs-workflow.md](runs-workflow.md) : Codex GPT-6.1 Sol Medium ou Claude Opus 5.5 selon le travail. La délégation et Jev restent inchangés hors remplacement ciblé du modèle Codex et de `code_worker`.
 
-**Avant 0.2.0 :** validation de la réorganisation, choix des éventuelles passes Claude, achèvement et validation des travaux retenus sur `feature/run-011-production-foundation`, puis validation finale et fusion autorisée dans `develop`. RUN-015 ne démarre qu’après cette fusion effective.
+**Avant 0.2.0 :** audit final et validation de toutes les passes terminés ; PR vers `develop` autorisée. RUN-015 ne démarre qu’après la fusion effective de `feature/run-011-production-foundation`. Cette clôture n’effectue pas la fusion.
 
 Le scope ne prévoit pas de génération procédurale, multijoueur, checkpoint intra-niveau, remapping, support souris/manette ni contenu jouable après la libération de Karla.
 
@@ -86,7 +87,7 @@ Cette commande importe le projet, vérifie le chemin effectif de `user://`, puis
 
 Les données utilisateur et la configuration sont isolées dès l’import : profil XDG sous Linux ; profil NTFS temporaire transmis à `APPDATA`/`LOCALAPPDATA` sous Windows via WSL. Ce dernier mode requiert `wslpath` et PowerShell Windows. Le profil est supprimé après succès et conservé après échec ; les logs restent disponibles. Le lancement normal via `run.sh` conserve la sauvegarde habituelle. Pour un import depuis zéro sans toucher au cache de travail, lancer la suite dans une copie du dépôt dépourvue de `.godot/` et `work/`.
 
-Dernière recette : **RUN-011, 30 septembre 2026**, sous Godot 4.7.2 Windows : import, **377 contrôles de jeu / 16 suites**, plus isolation des sauvegardes ; 27 contrôles de cadence et 27 captures à 30/60/144 fps. Parcours des deux branches et retours, pause/mort et reprise vérifiés ; saut mural validé par essai humain. Aucun défaut reproduit dans ce périmètre. Ces contrôles n’ont pas été rejoués pour la réorganisation documentaire du 2 octobre.
+Dernière recette : **clôture 0.1.0, 2 octobre 2026**, Godot 4.7.2 Windows, état `40fd477` : import normal et isolation des sauvegardes, **377 contrôles / 16 suites**, puis **49 contrôles visuels non headless** (chevalier, HUD, feedbacks) ; captures représentatives inspectées. Les 23 WAV et quatre tests du routeur passent. Aucun défaut reproduit ; les validations visuelles et de ressenti sont reçues. Les 27 contrôles de cadence RUN-029 à 30/60/144 fps ont été relus sans être rejoués lors de cette clôture.
 
 RUN-001 avait également vérifié deux imports propres (WSL/UNC et disque Windows) après correction du remplissage RIFF de trois WAV, avec PCM et originaux conservés. Les preuves détaillées restent dans [runs-journal.md](runs-journal.md). Le binaire Linux 4.7.2 n’a pas été testé sur cette machine.
 
