@@ -455,3 +455,13 @@ La recette distingue trois types de preuve. Une suite ciblée isole une règle :
 Le moteur dessine des **images** à la cadence de l'écran, tandis que la physique avance ici à **60 ticks par seconde**. RUN-011 a plafonné le rendu à 30, 60 et 144 images par seconde sans changer ce pas physique. Les neuf contrôles de saut, attaque, glissade, bac et verrou de double saut ont réussi aux trois cadences mesurées. Des captures 640×360 montrent le mur, le sommet, les autres zones et l'écran de mort ; elles vérifient le cadrage et la lisibilité, pas la sensation de jeu.
 
 L'import et les 16 suites ont passé 377 contrôles de jeu. Les tests de parcours, de pause et de mort ont aussi exercé les régressions les plus pertinentes pour ce socle. Aucun défaut n'a été reproduit, donc aucun code gameplay n'a été changé pour cette run. L'humain a joué le saut mural et l'a validé. Cette validation concerne le slice actuel : The Eidolon Vale, son menu, le Longbow et sa sauvegarde restent à réaliser dans les runs de 0.2.0.
+
+## Réorganisation du 2 octobre 2026 — Runs, lots et versions
+
+Une **run** devient un lot de travail cohérent : par exemple la reprise réunit son contrat, la sauvegarde et les menus qui l’utilisent. Elle peut contenir plusieurs sessions, tâches déléguées et commits. Regrouper ces étapes évite de rouvrir un chantier pour chaque petite tâche ; chaque comportement conserve ses propres vérifications avant la recette intégrée.
+
+Une **version** décrit un résultat utilisable, pas le nombre de runs effectuées. Les onze premières runs forment le socle validé **0.1.0**. La roadmap réserve trois éventuelles passes visuelles supplémentaires sur la branche actuelle, puis regroupe le reste en quatorze lots jusqu’à **0.5.0 beta**. Le nombre total d’identifiants est donc 28, sans réduire les dix niveaux ni leurs systèmes. Cette modification du planning n’implémente aucun de ces futurs systèmes.
+
+La version actuelle est aussi inscrite dans `project.godot` sous `config/version`. Cette métadonnée ne crée ni tag Git, ni export, ni écran de version. De même, une run DONE peut être validée localement alors que sa branche n’est pas fusionnée : ici, la validation de la réorganisation et des compléments retenus, puis la fusion autorisée, doivent précéder le travail vers 0.2.0.
+
+Chaque lot indique son orchestrateur à l’avance. Le défaut Codex et son profil de travail de code utilisent désormais `gpt-6.1-sol` ; les autres profils et les décisions de délégation restent en place. Jev conseille toujours le routage et la clôture : il ne démarre pas les runs, ne remplace pas les tests et ne fusionne pas les branches.

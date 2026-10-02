@@ -67,11 +67,15 @@ Les détails complets restent dans `docs/`.
 
 ## État du projet
 
-Audit du **21 septembre 2026**, complété par les vérifications jusqu'au **30 septembre 2026**. Les preuves d’exécution sont dans [runs-journal.md](runs-journal.md) ; l’audit initial et la planification restent dans [runs-workflow.md](runs-workflow.md).
+Audit du **21 septembre 2026**, complété par les vérifications jusqu'au **30 septembre 2026** et la réorganisation du **2 octobre 2026**. Les preuves d’exécution sont dans [runs-journal.md](runs-journal.md) ; l’audit initial et la planification restent dans [runs-workflow.md](runs-workflow.md).
 
 ### Jalon atteint et prochaine cible
 
-**0.1.0 : socle validé localement.** La roadmap va jusqu’à **0.9.0 beta**, démo finale. RUN-001 à RUN-011 sont DONE ; RUN-010 est fusionnée dans `develop` via la PR #15, RUN-011 est clôturée sur sa branche locale après recette technique et validation humaine du saut mural. Les dix runs de 0.2.0 sont détaillées mais restent BACKLOG. Les catalogues 11–12 sont locaux et le rattachement des licences aux fichiers hérités est différé à la recette des assets retenus. Le dépôt reste une scène de test issue du vertical slice, pas encore le niveau 1 conforme aux nouvelles spécifications.
+**Version actuelle : 0.1.0, socle validé localement.** L’humain confirme RUN-001–011 validées le 2 octobre 2026. RUN-010 est fusionnée dans `develop` via la PR #15 ; RUN-011 et cette réorganisation restent sur `feature/run-011-production-foundation`. Le dépôt reste un slice, pas encore N1 conforme.
+
+La roadmap regroupe désormais **28 identifiants maximum prévus**, dont 11 DONE, trois réserves conditionnelles Claude (012–014) sur cette même branche et 14 lots vers **0.2.0 → 0.3.0 → 0.4.0 → 0.5.0 beta**. Chaque lot désigne son orchestrateur : Codex GPT-6.1 Sol Medium pour l’ingénierie, Claude Opus 5.5 pour le visuel. La délégation et Jev conservent leur fonctionnement.
+
+**Verrou :** faire valider la réorganisation, décider des éventuelles passes visuelles, terminer et valider celles retenues, puis obtenir la validation finale et l’autorisation de livraison de la branche. **Fusion effective dans develop avant tout démarrage de RUN-015 / 0.2.0.** Aucune run future ni fusion n’est lancée par ce plan. Les catalogues 11–12 restent locaux ; le rattachement des licences aux fichiers hérités reste requis avant distribution en 0.5.0 beta.
 
 ### État vérifié
 
@@ -96,4 +100,4 @@ Une feature ou une modification importante doit servir directement la démo pré
 
 ## Workflow de développement
 
-Le projet avance par versions-cibles : 0.1.0 comporte 11 runs détaillées ; les versions suivantes restent des intentions à affiner après chaque jalon, avec une enveloppe totale indicative de 59 à 75 runs. La run active est précisée à partir du dépôt réel. [AGENTS.md](AGENTS.md) définit le routage du contexte, l’autonomie et la protection des changements humains ; [runs-workflow.md](runs-workflow.md#cycle-de-vie) définit les états, les vérifications et la clôture des runs.
+Le projet avance par lots cohérents, pouvant durer plusieurs sessions, pour accélérer la production et donner plus d’autonomie aux agents sans multiplier les runs. Le plan compte 28 identifiants, réserves comprises, dans une limite de 30 ; les tests, corrections et recettes appartiennent au lot concerné. [AGENTS.md](AGENTS.md) définit le routage, la délégation et la protection des changements humains ; [runs-workflow.md](runs-workflow.md) fait autorité pour les lots, versions, dépendances, états et conditions de clôture.

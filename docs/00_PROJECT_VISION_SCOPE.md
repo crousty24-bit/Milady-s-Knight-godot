@@ -49,10 +49,7 @@ La durée de vie annoncée ici est encore une estimation approximative car celle
 La vision global est celle d'un mini-jeu. Il n'y a pas vocation de créer un jeu avec 10 ou 20 heures de jouabilité.
 
 Le scope établi ici est de produire un prototype jouable et testable = jeu en version alpha.
-La première version visée est 0.1.0. L'intégration complète de toute les features définies dans ce document devra s'opérer sur de nombres itérations, tests et playtests qui mèneront à plusieurs versions, exemple :
-- 0.1.0 => 0.1.1 => 0.1.2 => 0.2.0 => etc.
-
-Cela devra être défini clairement au moment de la production.
+Le socle **0.1.0** est validé localement (RUN-001–011). La planification du 2 octobre 2026 regroupe la suite en lots cohérents vers **0.2.0** (N1), **0.3.0** (N2–4), **0.4.0** (N5–10 et conclusion), puis **0.5.0 beta** (démo complète distribuable). Les 28 identifiants prévus incluent les onze runs réalisées et trois réserves visuelles conditionnelles ; le scope des dix niveaux reste inchangé. Voir [runs-workflow.md](../runs-workflow.md) pour les critères, orchestrateurs et le verrou de fusion avant 0.2.0.
 
 ##### Influences Principales
 

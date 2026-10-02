@@ -3,13 +3,15 @@
 ## Statut de cette planification
 
 Audit documentaire et inspection du dépôt effectués le **21 septembre 2026**, à partir de l’état de travail courant, et non du seul commit `0870462`.
-**RUN-001 à RUN-011 DONE.** Les PR #1, #2, #4, #5, [#8](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/8) et [#9](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/9) sont fusionnées dans `develop`. RUN-007 est fusionnée via la PR #11 (`260c8a8`), RUN-008 via la PR #12 (`6c4ee22`), RUN-009 via la [PR #14](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/14) (`a2ac33c`) et RUN-010 via la PR #15 (`24213f2`). RUN-011 clôt le socle 0.1.0 localement après recette technique et validation humaine du saut mural ; aucune livraison distante de cette branche. Le découpage 0.2.0 est détaillé ci-dessous sans lancer ses runs. Les versions suivantes seront affinées après chaque jalon.
+**RUN-001 à RUN-011 DONE.** Les PR #1, #2, #4, #5, [#8](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/8) et [#9](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/9) sont fusionnées dans `develop`. RUN-007 est fusionnée via la PR #11 (`260c8a8`), RUN-008 via la PR #12 (`6c4ee22`), RUN-009 via la [PR #14](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/14) (`a2ac33c`) et RUN-010 via la PR #15 (`24213f2`). RUN-011 clôt le socle 0.1.0 localement après recette technique et validation humaine du saut mural ; aucune livraison distante de cette branche. La validation des onze premières runs et du socle **0.1.0** est confirmée par l’humain le **2 octobre 2026**. La réorganisation ci-dessous reste sur `feature/run-011-production-foundation` ; aucune run suivante n’est lancée.
 
-La cible finale validée est **0.9.0 beta**, une démo de dix niveaux conçus à la main. `0.1.0` est un premier jalon technique de production, pas une étiquette affirmant que le dépôt actuel satisfait déjà les nouvelles règles. Les numéros sont des cibles validées ; des patchs `0.x.1`, etc., pourront contenir des corrections vérifiées sans renommer arbitrairement les runs.
+Plan réorganisé le **2 octobre 2026** : **28 identifiants au total**, dont 11 runs DONE, 3 réserves visuelles conditionnelles et 14 lots de production. La cible finale devient **0.5.0 beta**, toujours une démo de dix niveaux conçus à la main. **0.1.0 est la version actuelle validée localement** ; 0.2.0 est la prochaine cible, soumise au verrou de branche ci-dessous. Les patchs `0.x.1` restent possibles pour des corrections vérifiées, sans créer systématiquement une run ni une version par tâche.
 
 Ce plan couvre les spécifications de `docs/00` à `docs/13`, y compris art, audio, narration et livraison. Les durées de travail ne sont pas estimées. L’objectif de 1–2 heures de jeu reste à mesurer. Le nombre futur de runs est une enveloppe de planification révisable, pas une promesse de calendrier ni une réduction du scope produit.
 
 ## Audit vérifié de la base
+
+**Archive du 21 septembre 2026.** Les constats de cette section décrivent la base avant RUN-001, pas l’état actuel ; consulter `brief.md` et les résultats des runs pour le socle 0.1.0.
 
 ### Moteur, réglages et changements humains
 
@@ -118,16 +120,16 @@ Aucune valeur non définie ci-dessous n’est implicitement décidée par la roa
 
 | ID | Question concrète / source | Jalon qui doit la résoudre |
 | --- | --- | --- |
-| D01 | RUN-006 : santé stockée en dixièmes entiers, texte HUD exact et cœurs arrondis au demi-cœur supérieur. L'effet immédiat d'un bonus MAX HP sur CURRENT HP reste à préciser. | Santé en 0.1, bonus HP en 0.4. |
-| D02 | `01`/`04` : RUN-007 fixe 1 RANGE = 24 px = 1,5 bloc depuis la main pour Sword ; variation des stats selon armes/niveaux, ATK SPEED positif jusqu’au niveau 5 ; timings de hit-stun/recul et seuil/rayon du slam encore ouverts. | Sword en 0.1, tables en 0.3, slam en 0.5. |
+| D01 | RUN-006 : santé stockée en dixièmes entiers, texte HUD exact et cœurs arrondis au demi-cœur supérieur. L'effet immédiat d'un bonus MAX HP sur CURRENT HP reste à préciser. | Santé en 0.1, bonus HP en 0.3. |
+| D02 | `01`/`04` : RUN-007 fixe 1 RANGE = 24 px = 1,5 bloc depuis la main pour Sword ; variation des stats selon armes/niveaux, ATK SPEED positif jusqu’au niveau 5 ; timings de hit-stun/recul et seuil/rayon du slam encore ouverts. | Sword en 0.1, tables en 0.3, slam en 0.4. |
 | D03 | `03` : « sauvegarde uniquement au passage de niveau » versus équipement/uniques sauvés aussi après fermeture en plein niveau. Choisir les événements de sauvegarde durable et le snapshot de tentative. | Contrat de persistance 0.2 avant tout schéma. |
-| D04 | `03`/`04` : ordre de dépense banque/gains, banque après dépense puis mort, base retenue à 20/50 %, croissance des prix/poids/drop soins, gains de swarm/invocations et farm possible, seconde offrande sans première. Migration de l’ancien bonus (qui inclut du surplus de coins) à décider, sans conversion silencieuse. | Contrat 0.2, tables 0.3, swarm 0.4, offrandes 0.5/0.6. |
+| D04 | `03`/`04` : ordre de dépense banque/gains, banque après dépense puis mort, base retenue à 20/50 %, croissance des prix/poids/drop soins, gains de swarm/invocations et farm possible, seconde offrande sans première. Migration de l’ancien bonus (qui inclut du surplus de coins) à décider, sans conversion silencieuse. | Contrat 0.2, tables 0.3, swarm 0.3, offrandes 0.4. |
 | D05 | `01`/`05`/`10` : Escape ne doit pas ouvrir pause pendant coffre/contexte, mais doit pouvoir annuler/fermer ; priorité exacte des dialogues ; portée de « dialogue non rejouable » après mort/reload ; refus/reprise du coffre tuto, confirmation des actions permanentes et disposition des slots (horizontale dans `04`, verticale dans `05`). | Modales, dialogue et coffre N1 en 0.2. |
-| D06 | `02`/`06` : aggro périmètre versus ligne de vue, poursuite/retour autour des bords, nombre de skulls et plafond d’invocations, devenir des invocations à la mort de la source. « niveau 5 et 9 » ambigu pour les profils Skeleton. Les variantes N2 de l’Art Bible sont des exemples, le bestiaire par niveau de `03` reste à respecter. | IA 0.3/0.4 puis profils et invocations 0.5/0.6. |
-| D07 | `01`/`04` : restrictions de grimpe, accumulation/rafraîchissement de Shield et Rage, sort des cooldowns au changement d’arme/reset ; déclenchement de secrets par mêlée/tir/impact. | Secrets/buffs 0.4, grimpe/capacités 0.5. |
-| D08 | `04` : durée/annulation de charge Dragon Slayer ; kills éligibles/compteur Obsidian ; portée/relief de Thunderstruck et « one shot n’importe quel mob » face au Boss. | Chaque Legendary 0.5 puis contrat Boss 0.7. |
-| D09 | `02`/`09` : 3/5 DMG du Boss non attribués à chaque attaque ; accélération d’attaque enrage non chiffrée ; départ immédiat versus dialogue et spawn AFK sûr ; état de fin/Continue après Karla. | Contrat Boss 0.7, avant l’arène. |
-| D10 | `06`/`11`/`13` : comparaison 16/32, gabarits/packs/licences, mapping final des skins et animations ; vocabulaire à harmoniser (Black Forrest/Forest, Ancien/Ancient, Fire/Dire Gauntlet). Plateformes distribuées, matériel et budget de performance non définis. | Échantillon 0.1, noms avant contenu, variantes 0.8, export 0.9. |
+| D06 | `02`/`06` : aggro périmètre versus ligne de vue, poursuite/retour autour des bords, nombre de skulls et plafond d’invocations, devenir des invocations à la mort de la source. « niveau 5 et 9 » ambigu pour les profils Skeleton. Les variantes N2 de l’Art Bible sont des exemples, le bestiaire par niveau de `03` reste à respecter. | IA 0.3 puis profils et invocations 0.4. |
+| D07 | `01`/`04` : restrictions de grimpe, accumulation/rafraîchissement de Shield et Rage, sort des cooldowns au changement d’arme/reset ; déclenchement de secrets par mêlée/tir/impact. | Secrets/buffs 0.3, grimpe/capacités 0.4. |
+| D08 | `04` : durée/annulation de charge Dragon Slayer ; kills éligibles/compteur Obsidian ; portée/relief de Thunderstruck et « one shot n’importe quel mob » face au Boss. | Chaque Legendary 0.4 puis contrat Boss 0.4. |
+| D09 | `02`/`09` : 3/5 DMG du Boss non attribués à chaque attaque ; accélération d’attaque enrage non chiffrée ; départ immédiat versus dialogue et spawn AFK sûr ; état de fin/Continue après Karla. | Contrat Boss 0.4, avant l’arène. |
+| D10 | `06`/`11`/`13` : comparaison 16/32, gabarits/packs/licences, mapping final des skins et animations ; vocabulaire à harmoniser (Black Forrest/Forest, Ancien/Ancient, Fire/Dire Gauntlet). Plateformes distribuées, matériel et budget de performance non définis. | Échantillon 0.1, noms avant contenu, variantes 0.5, export 0.5. |
 
 Autres garde-fous de scope : pas de génération procédurale, checkpoints intra-niveau, sélection de sauvegardes, remapping, support souris/manette ou exploration après Karla. Les offrandes ne doivent pas être confondues avec les paiements de portes. Aucun add-on ni grande réarchitecture n’est nécessaire par défaut.
 
@@ -144,20 +146,21 @@ Dès qu'une tâche autonome se présente, le main agent vérifie son périmètre
 | Custom agent | Main agent | Tâche cible | Modèle / raisonnement par défaut |
 | --- | --- | --- | --- |
 | `mechanical_worker` | Codex | Inventaire et travail mécanique borné | GPT-6 Luna Low |
-| `code_worker` | Codex | Implémentation de code ciblée | GPT-6 Sol Medium |
+| `code_worker` | Codex | Implémentation de code ciblée | GPT-6.1 Sol Medium |
 | `architecture_reviewer` | Codex | Audit d'architecture complexe et délimité | GPT-6 Astra Medium |
 | `visual_architect` | Claude | Cohérence et choix artistiques | Opus 5.5 Medium |
 | `asset_integrator` | Claude | Préparation et intégration d'assets cadrées | Sonnet 5.5 Medium |
 
 ### Planification
 
-- **Horizon de détail** : roadmap lointaine = objectifs, dépendances et critères de jalon ; prochaine version = runs détaillées ; run active = périmètre et preuve attendue très précis. Seule 0.1.0 est détaillée aujourd’hui. Les axes futurs ne sont pas des runs monolithiques à exécuter tels quels.
-- **Réévaluation au jalon** : après la recette de chaque version, inspecter le nouvel état réel et les changements humains, puis détailler seulement la suivante à partir des spécifications pertinentes et des défauts observés. Fusionner les tâches qui partagent un résultat testable ; séparer celles qui ont des risques ou décisions indépendants. Mettre à jour l’enveloppe et les dépendances sans créer une run de planification supplémentaire par défaut.
-- **Préparation de la run active** : préciser dans sa fiche les fichiers/systèmes réellement concernés, les limites du changement, les décisions requises et les scénarios de vérification. Cette précision repose sur l’inspection du moment, pas sur une architecture supposée des mois à l’avance.
-- **Priorités** : P0 bloque un jalon ou protège les données ; P1 requis pour le résultat fonctionnel prévu ; P2 présentation/complément reportable dans l’ordre mais à traiter si exigé par les specs ; P3 polish conditionnel. Un report de feature requise hors de la démo exige une décision de scope explicite.
-- **Ordre** : une seule run ACTIVE. Le tableau de versions donne l’ordre prévu ; les fiches détaillées ajoutent les dépendances techniques utiles. Chaque version commence après la recette de la précédente. Les dépendances implicites de version s’ajoutent aux dépendances nommées.
-- **Granularité** : résultat observable dans une fixture ou un niveau, pas nécessairement un nouveau niveau complet. Les runs de layout produisent un trajet traversable ; contenu et habillage viennent séparément. Une run d’intégration raccorde des systèmes déjà testés. Si un asset ou une correction exige plusieurs chantiers, scinder la run avant de l’exécuter, conserver sa traçabilité et mettre le compte à jour.
-- **Art/audio pendant les runs** : chaque nouveau comportement doit être visible et testable, et avoir ses feedbacks P0 (`docs/08`, `docs/13`), éventuellement partagés provisoirement et sous licence vérifiée. Les runs d’habillage améliorent les ressources intégrées ; elles ne repoussent pas toute la télégraphie ou les sons essentiels à 0.8.
+- **Objectif de la réorganisation** : accélérer la production du jeu et donner davantage d’autonomie aux agents, sans surdécouper le travail. Une run porte un lot cohérent, de ses contrats à son intégration et à sa recette ; elle peut durer plusieurs sessions et comporter des checkpoints locaux.
+- **Horizon de détail** : les 28 identifiants, résultats, dépendances et orchestrateurs sont prévus ci-dessous. Préciser les fichiers et scénarios de la run au lancement à partir du dépôt réel ; les étapes internes et tâches de subagents ne deviennent pas automatiquement de nouvelles runs.
+- **Réévaluation au jalon** : adapter le contenu aux constats réels sans supprimer de critère produit ou de test obligatoire. Préférer les sous-tâches et checkpoints à de nouveaux identifiants ; toute exception justifiée doit garder le total planifié à **30 maximum**, sinon obtenir une révision humaine explicite du plan.
+- **Préparation de la run active** : préciser ses fichiers/systèmes, limites, décisions requises et preuves attendues. Les décisions produit ouvertes sont obtenues avant le code dépendant, au sein du lot ; aucun résultat futur n’est présumé implémenté.
+- **Priorités** : P0 bloque un jalon ou protège les données ; P1 requis pour le résultat fonctionnel ; P2 présentation requise avant livraison ; P3 polish conditionnel. Aucun regroupement ne réduit le scope produit.
+- **Ordre** : une seule run ACTIVE. Chaque jalon attend la validation du précédent ; la 0.2.0 attend en plus le verrou de branche défini ci-dessous. Une fiche BACKLOG n’est pas une autorisation de démarrage.
+- **Orchestrateur** : chaque lot futur désigne son main agent en amont. **Codex GPT-6.1 Sol Medium** pilote l’ingénierie ; **Claude Opus 5.5** pilote les lots visuels. Le routage, les profils, la délégation, les limites de concurrence et les deux outils Jev restent ceux d’AGENTS.md et du cycle de vie existant. Cette planification ne change pas le modèle d’un chat déjà ouvert ; signaler une configuration différente.
+- **Art/audio pendant les runs** : chaque comportement doit être lisible et testable avec ses feedbacks P0 (`docs/08`, `docs/13`). Le lot final de présentation ne remplace pas ces intégrations. Dans un lot Codex, confier la contribution artistique à Claude selon les règles de propriété existantes ; ne pas éditer ensemble les mêmes fichiers.
 
 ### Cycle de vie
 
@@ -181,10 +184,10 @@ Les commits locaux peuvent matérialiser des checkpoints vérifiés pendant ACTI
 
 | État | Détail opérationnel Git Flow |
 | --- | --- |
-| READY | create/switch feature branch from develop. |
+| READY | Créer ou réutiliser une feature issue de develop pour un lot ou groupe cohérent ; respecter le verrou de branche. |
 | ACTIVE | local commits. |
 | VERIFY | human review. |
-| DONE | push + PR ; merge into develop. |
+| DONE | Validation locale ; push, PR et fusion restent distincts et soumis à autorisation humaine. |
 Une run peut être techniquement terminée et validée localement avant que l'humain ne décide de merger la branche.
 
 #### Revue Jev avant DONE
@@ -217,23 +220,42 @@ Corriger et retester les bugs du scope avant clôture. Un défaut indépendant a
 
 Références de la révision du workflow du **22 septembre 2026** : recommandations OpenAI sur [AGENTS.md et les skills avec Astra](https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra), [l’autonomie et le calibrage des tests](https://developers.openai.com/api/docs/guides/latest-model), [les skills](https://learn.chatgpt.com/docs/build-skills) et [les subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents). Les frontières Git et les validations propres au projet suivent les choix de l’utilisateur.
 
-## Versions-cibles validées
+## Versions-cibles et lots
 
-| Cible | Objectif | Priorité | Runs prévues | Prérequis principaux |
-| --- | --- | --- | --- | --- |
-| 0.1.0 | Socle de production vérifié | P0 | 11 détaillées | Accord de démarrage |
-| 0.2.0 | Premier niveau et boucle de reprise | P0 | 10 détaillées | 0.1.0 validée ; D03–D05 |
-| 0.3.0 | Économie de coffres et niveau 2 | P1 | 6–8 indicatives | 0.2.0 validée ; D02/D04/D06 |
-| 0.4.0 | Ennemis avancés, secrets et niveaux 3–4 | P1 | 7–9 indicatives | 0.3.0 validée ; D01/D04/D06/D07 |
-| 0.5.0 | Verticalité, capacités et niveaux 5–6 | P1 | 8–10 indicatives | 0.4.0 validée ; D02/D04/D06–D08 |
-| 0.6.0 | Derniers niveaux d’exploration | P1 | 6–8 indicatives | 0.5.0 validée ; D04/D06 |
-| 0.7.0 | Boss final et conclusion jouable | P1 | 5–7 indicatives | 0.6.0 validée ; D08/D09 |
-| 0.8.0 | Cohérence visuelle et sonore de la démo | P2 | 3–5 indicatives | 0.7.0 validée ; D10 |
-| 0.9.0 beta | Démo beta finale distribuable | P0 | 4–6 indicatives | 0.8.0 validée ; plateformes et budget D10 |
+| Cible | Résultat | Runs | Orchestrateur principal |
+| --- | --- | --- | --- |
+| **0.1.0 actuelle** | Socle validé ; éventuels compléments visuels avant fusion | 001–011 DONE ; 012–014 conditionnelles | Historique conservé ; Claude Opus 5.5 pour les compléments |
+| **0.2.0** | N1 complet, menus, tutoriel, tir et reprise | 015–017 : 3 lots | Codex GPT-6.1 Sol Medium |
+| **0.3.0** | Économie et équipement standard, bestiaire et exploration N2–4 | 018–021 : 4 lots | Codex GPT-6.1 Sol Medium ; Claude Opus 5.5 pour 021 |
+| **0.4.0** | Capacités, légendaires, N5–10, Boss et conclusion | 022–026 : 5 lots | Codex GPT-6.1 Sol Medium ; Claude Opus 5.5 pour 025 |
+| **0.5.0 beta** | Présentation finale, équilibrage, recette et exports | 027–028 : 2 lots | Claude Opus 5.5 pour 027 ; Codex GPT-6.1 Sol Medium pour 028 |
 
-**Enveloppe indicative : 60 à 74 runs au total, dont 21 détaillées aujourd’hui.** Les fourchettes incluent intégration, bugtest, corrections ciblées et recette de chaque version. Elles seront réévaluées au jalon précédent ; un dépassement justifié vaut mieux qu’une run monolithique ou des tests supprimés pour tenir un quota. Les variantes et leurs interactions simples peuvent rejoindre leur système ; un nouveau comportement risqué garde une run propre.
+**Total : 11 + 3 réserves + 14 lots = 28 identifiants**, y compris les runs déjà réalisées. Sans les réserves, 25 runs exécutées ; avec deux ou trois passes Claude, 27 ou 28. Une réserve non retenue sera CANCELLED par décision humaine avec motif, sans renuméroter les suivantes. Le plan conserve tous les systèmes, les dix niveaux, les recettes et les validations artistiques/humaines ; il regroupe le travail, pas les preuves en un unique test superficiel.
 
-Les 138 fiches initiales sont remplacées par cette planification progressive. Aucune n’avait été exécutée : RUN-001 est conservée ; les autres identifiants de 0.1.0 sont réattribués ci-dessous. RUN-012 à RUN-021 détaillent 0.2.0 ; les identifiants ultérieurs seront attribués lors de l’affinage, puis resteront stables après lancement. Les critères de jalon et les spécifications produit restent la référence pour détailler les futurs tests.
+### Correspondance avec le plan remplacé
+
+Cette table sert uniquement à relire les anciennes références du journal. Les RUN-001–011 ne sont ni renumérotées ni réinterprétées. Les anciens identifiants 012–021 étaient BACKLOG et n’avaient pas été lancés ; leurs fiches sont remplacées le 2 octobre 2026.
+
+| Ancien périmètre | Nouveau lot / jalon |
+| --- | --- |
+| Anciennes RUN-012 contrats, 013 modales, 014 sauvegarde, 015 menus | RUN-015, 0.2.0 |
+| Anciennes RUN-016 HUD, 017 Longbow, 019 coffre/potion | RUN-016, 0.2.0 |
+| Anciennes RUN-018 Spirit, 020 N1, 021 recette | RUN-017, 0.2.0 |
+| Ancien 0.3.0 (N2) et 0.4.0 (N3–4) | RUN-018–021, 0.3.0 |
+| Ancien 0.5.0 (N5–6), 0.6.0 (N7–9), 0.7.0 (N10/Boss) | RUN-022–026, 0.4.0 |
+| Ancien 0.8.0 (présentation) et 0.9.0 beta (livraison) | RUN-027–028, 0.5.0 beta |
+
+### Verrou de la branche actuelle
+
+`feature/run-011-production-foundation` reste ouverte pour cette réorganisation et les **éventuelles deux ou trois passes visuelles Claude**. Leur réservation ne les lance pas et ne remet pas en cause la validation des onze premières runs.
+
+Avant de fusionner cette branche dans `develop`, il faut :
+
+1. terminer et vérifier la réorganisation documentaire et le changement ciblé des modèles ; obtenir la validation humaine de ce résultat ;
+2. décider quelles réserves 012–014 sont retenues (ou explicitement aucune), terminer et valider celles retenues, consigner celles abandonnées ;
+3. vérifier le résultat intégré de la branche selon les changements réellement effectués et obtenir la validation humaine finale ainsi que l’autorisation de livraison Git.
+
+**La fusion effective dans `develop` est ensuite un prérequis de RUN-015 et de toute implémentation 0.2.0.** Préparer la roadmap n’autorise ni cette fusion ni le démarrage de 0.2.0. Après fusion seulement, reprendre sur une feature issue du nouveau `develop` selon le workflow habituel. Aucun push, PR ou merge n’est effectué par cette réorganisation.
 
 ## Version 0.1.0 — Socle de production vérifié
 
@@ -272,7 +294,7 @@ Rendre la base existante reproductible, fixer son échelle et aligner le combat 
 **Priorité : P0 · Statut : DONE · Dépendances : RUN-001 (DONE).**
 
 - **Résultat / scope :** Compléter docs/11–13 et les besoins d’animations/VFX de docs/13 ; inventorier les 12 médias présents, leurs usages, les sources/licences vérifiables et les lacunes. Définir source conservée / dérivé de jeu, sans déplacement massif.
-- **Acceptation, test et bugtest :** Médias et références actuels inventoriés ; sources/licences distinguées entre vérifiées et non rattachées ; besoins par jalon attribués ; cohérence des liens, tableaux et diff contrôlée. Les achats éventuels restent une décision humaine. **Décision humaine du 23 septembre 2026 :** faute de correspondance fichier-source, ne pas exiger maintenant une provenance vérifiable ou un remplacement pour chacun des 12 médias. Reporter ce contrôle à l'intégration des assets retenus et à la recette des licences/crédits avant distribution (0.8.0–0.9.0). Cette dérogation ne valide pas juridiquement les médias actuels.
+- **Acceptation, test et bugtest :** Médias et références actuels inventoriés ; sources/licences distinguées entre vérifiées et non rattachées ; besoins par jalon attribués ; cohérence des liens, tableaux et diff contrôlée. Les achats éventuels restent une décision humaine. **Décision humaine du 23 septembre 2026 :** faute de correspondance fichier-source, ne pas exiger maintenant une provenance vérifiable ou un remplacement pour chacun des 12 médias. Reporter ce contrôle à l'intégration des assets retenus et à la recette des licences/crédits avant distribution (désormais 0.5.0 beta, RUN-027–028). Cette dérogation ne valide pas juridiquement les médias actuels.
 - **Learning pressenti :** Import, spritesheet, licence, ressource référencée versus fichier seulement présent.
 - **Résultat validé :** branche `feature/run-002-asset-inventory` ; 12 médias de jeu recensés dans les catalogues locaux 11–12, besoins audio par jalon dans le catalogue 12, matrice visuelle/animations/VFX par jalon dans docs/13 et principe source conservée → dérivé documenté. Les licences des deux packs Zerie candidats ont été vérifiées sur leurs pages officielles ; aucune correspondance avec les 12 médias du prototype n'est établie. Aucun achat ni asset externe intégré. Revue humaine reçue et PR #2 fusionnée le 23 septembre 2026 (`1d176db`). Les catalogues 11–12 sont ensuite retirés du suivi Git à la demande humaine ; leurs copies locales sont conservées.
 
@@ -380,294 +402,236 @@ Rendre la base existante reproductible, fixer son échelle et aligner le combat 
 - **Acceptation, test et bugtest :** Import propre, suites adaptées, deux branches et retours, pause/mort ; contrôle graphique 30/60/144 fps et essai humain du saut mural.
 - **Learning pressenti :** Tests de physique, différence test ciblé/parcours, reproduction et preuve de régression.
 - **Périmètre au lancement (30 septembre 2026) :** branche `feature/run-011-production-foundation` créée depuis `develop` propre à `24213f2`. Vérifier le socle 0.1.0 avec import et suites, parcours aller/retour des deux branches, pause/mort, rendu et comportement à 30/60/144 fps ; corriger seulement les défauts reproduits dans ce périmètre. L'essai humain du saut mural reste requis avant `DONE`. Affiner le découpage de 0.2.0 à partir des constats de la recette.
-- **Résultat en VERIFY (30 septembre 2026) :** Godot 4.7.2 : import propre, isolation `user://`, 16 suites / 377 contrôles réussis. Parcours des deux branches, retours et changement de branche, pause, mort et reprise vérifiés. Rendu OpenGL mesuré à 30/60/144 fps, 9 contrôles de comportement et 9 captures 640×360 par cadence ; images représentatives inspectées. Aucun défaut reproduit, donc aucun correctif gameplay. L'humain a essayé le saut mural et répondu « Jouable, je valide ». RUN-012 à RUN-021 détaillent désormais 0.2.0 sans la démarrer. Preuves dans `runs-journal.md` et `learning.md`.
+- **Résultat en VERIFY (30 septembre 2026) :** Godot 4.7.2 : import propre, isolation `user://`, 16 suites / 377 contrôles réussis. Parcours des deux branches, retours et changement de branche, pause, mort et reprise vérifiés. Rendu OpenGL mesuré à 30/60/144 fps, 9 contrôles de comportement et 9 captures 640×360 par cadence ; images représentatives inspectées. Aucun défaut reproduit, donc aucun correctif gameplay. L'humain a essayé le saut mural et répondu « Jouable, je valide ». Le découpage BACKLOG établi à cette date est remplacé par les lots RUN-015–017 le 2 octobre 2026, sans démarrer 0.2.0. Preuves dans `runs-journal.md` et `learning.md`.
 - **Clôture locale (30 septembre 2026) :** critères du jalon, bugtest, régressions, journal, learning et essai humain satisfaits. Revue Jev `READY_FOR_DONE` consultative, suivie d'une inspection directe des preuves. Aucun push, PR ni merge de cette branche.
+
+## Compléments conditionnels 0.1.0 — Même branche
+
+Ces trois réserves sont **BACKLOG, non lancées**. L’humain pourra en retenir deux ou trois, ou décider de ne pas les réaliser ; leur périmètre exact sera confirmé avant passage READY. Elles améliorent le slice et ne doivent pas anticiper menus, progression ou contenu N1 de 0.2.0. Le jalon validé reste 0.1.0 ; aucun changement de version mineure n’est imposé par une passe visuelle.
+
+### RUN-012 — Personnage et feedbacks visuels du socle
+
+**Lot A · Main agent : Claude Opus 5.5 · Statut : BACKLOG · Dépendances : RUN-011 DONE ; sélection humaine du lot.**
+
+- **Résultat / scope :** Sélection, adaptation et intégration cohérente du chevalier, Sword et animations/feedbacks existants. Conserver sources, licences et contrats gameplay.
+- **Décisions avant implémentation dépendante :** Confirmer les assets et le périmètre artistique avant adaptation.
+- **Acceptation, tests et bugtest :** Rendu, silhouette, ancrages, transitions d’animation et lisibilité des dégâts ; collisions, portée et mobilité non régressées dans Godot ; validation visuelle humaine.
+- **Clôture :** corrections et régressions du périmètre, revue Jev selon le cycle existant, preuves au journal et learning fondé sur le résultat réel ; validation humaine des choix artistiques ou playtests requis.
+
+### RUN-013 — Décor et lisibilité du slice
+
+**Lot B · Main agent : Claude Opus 5.5 · Statut : BACKLOG · Dépendances : RUN-012 si retenue, sinon RUN-011 ; sélection humaine du lot.**
+
+- **Résultat / scope :** Harmoniser terrain, décor, Slimes, objets, dangers et HUD existants avec les assets retenus, sans régénération du niveau humain.
+- **Décisions avant implémentation dépendante :** Confirmer le choix des ressources, les zones retouchées et la propriété des scènes.
+- **Acceptation, tests et bugtest :** Comparer les branches, retours, mur, bac, pièges et overlays à 640×360 ; vérifier contraste, collisions et parcours ; validation visuelle humaine.
+- **Clôture :** corrections et régressions du périmètre, revue Jev selon le cycle existant, preuves au journal et learning fondé sur le résultat réel ; validation humaine des choix artistiques ou playtests requis.
+
+### RUN-014 — Finition visuelle et raccord sonore du socle
+
+**Lot C · Main agent : Claude Opus 5.5 · Statut : BACKLOG · Dépendances : lots A/B retenus validés ; sélection humaine du lot.**
+
+- **Résultat / scope :** Troisième passe éventuelle de cohérence visuelle/animation et, si retenu, raccord du mix : musique à remplacer et relever, SFX à baisser, impact Sword et sauts à remplacer selon les retours RUN-010. Les défauts audio non traités ici restent obligatoires en RUN-027.
+- **Décisions avant implémentation dépendante :** Fixer les retouches complémentaires réellement nécessaires après A/B.
+- **Acceptation, tests et bugtest :** Inspection intégrée du slice, écoute en jeu si audio modifié, mesure du mix sans écrêtage, provenance et parcours concernés ; validation humaine du rendu et de l’écoute.
+- **Clôture :** corrections et régressions du périmètre, revue Jev selon le cycle existant, preuves au journal et learning fondé sur le résultat réel ; validation humaine des choix artistiques ou playtests requis.
 
 ## Version 0.2.0 — Premier niveau et boucle de reprise
 
-**Priorité : P0.** **Statut : planifiée ; aucune run ACTIVE.**
+**Statut : BACKLOG, non lancée.** **Prérequis :** Verrou de branche levé et fusion effective dans develop ; D03–D05 avant leur code.
 
-Transformer la scène actuelle en point de départ de The Eidolon Vale et livrer son tutoriel avec sauvegarde, interface clavier et Longbow.
+**Repères documentaires :** 01, 03, 04, 05, 07, 08, 09, 10, 13 dans `docs/`.
 
-**Prérequis :** version 0.1.0 validée et contrats nécessaires résolus avant leur implémentation.
-
-**Repères documentaires :** 01, 03, 04, 05, 07, 08, 09, 10, 13 (numéros dans `docs/`).
-
-**Critères de validation du jalon :**
+**Critères de validation du jalon (conservés lors du regroupement) :**
 
 - [ ] N1 jouable du menu à la sortie : Spirit, explications, Green/Purple, piques/vide, une potion et coffre gratuit Longbow 0.
 - [ ] Coins et shards distincts ; équipement acquis persistant selon contrat validé, aucune sauvegarde joueur perdue silencieusement.
 - [ ] New Game/Continue/Controls/Quit, pause et dialogues entièrement clavier, textes anglais, aucune superposition de modales.
 - [ ] N1 court et facile, spawn sûr, sortie à 12 coins ; transition testée vers fixture, aucun N2 final revendiqué.
 
-**Découpage : 10 runs, RUN-012 à RUN-021**, recette et corrections ciblées incluses. Les identifiants restent associés aux résultats ci-dessous ; les règles ouvertes D03–D05 sont décidées avant le code qui en dépend. Le menu complet et le tir effectif du Longbow appartiennent déjà aux critères du jalon. La présentation et les sons nécessaires à N1 s'intègrent aux runs concernées ; les limites audio de RUN-010 restent visibles pour la recette, sans lancer une refonte sonore générale.
+### RUN-015 — Reprise, progression et interface clavier
 
-### RUN-012 — Fixer les contrats de reprise et de progression
+**Lot D · Main agent : Codex GPT-6.1 Sol Medium · Statut : BACKLOG · Dépendances : RUN-011 et verrou de branche levé.**
 
-**Priorité : P0 · Statut : BACKLOG · Dépendance : RUN-011.**
+- **Résultat / scope :** Regrouper contrats d’état, séparation coins/shards, tentative/état durable, sauvegarde versionnée, exclusivité des modales, New Game/Continue/Controls/Quit et pause Reprendre/Recommencer/Quitter.
+- **Décisions avant implémentation dépendante :** D03–D05 : événements de sauvegarde, ancien bonus, banque/gains, uniques/dialogues, priorité et annulation des modales, slots ; décisions humaines avant schéma/code.
+- **Acceptation, tests et bugtest :** Matrice mort/sortie/fermeture/rechargement/dépense ; migration v1 explicite, corruption/version inconnue/échec disque ; Continue sans save, reprise à froid, restart ; focus et rendu clavier, aucun input traversant une modale ni double déclenchement.
+- **Clôture :** corrections et régressions du périmètre, revue Jev selon le cycle existant, preuves au journal et learning fondé sur le résultat réel ; validation humaine des choix artistiques ou playtests requis.
 
-- **Résultat / scope :** Décider D03–D05 avant le schéma de sauvegarde : état des coins, shards, banque, gains de tentative, équipement, uniques et dialogues après mort, sortie, fermeture/rechargement, dépense et refus de coffre. Définir les identifiants de niveaux et le passage vers la fixture sans inventer N2.
-- **Acceptation, test et bugtest :** Matrice des événements et états attendus, règle explicite de migration de la sauvegarde v1 et de l'ancien bonus, priorités de dialogue/coffre/contexte/pause, disposition des deux slots. Rejouer sur papier les cas achat puis mort, coffre refusé puis repris et fermeture en plein niveau ; obtenir les décisions humaines ouvertes avant tout code dépendant.
-- **Learning pressenti :** Contrat d'état, tentative contre état durable, migration explicite.
+### RUN-016 — Équipement N1, Longbow et récompenses
 
-### RUN-013 — Ordonner les interactions et modales clavier
+**Lot E · Main agent : Codex GPT-6.1 Sol Medium · Statut : BACKLOG · Dépendances : RUN-015.**
 
-**Priorité : P0 · Statut : BACKLOG · Dépendance : RUN-012.**
+- **Résultat / scope :** HUD vie/coins/shards, deux slots et touche A, Sword conservée, Longbow 0 effectif, coffre tuto gratuit à récompense fixe et potion mineure.
+- **Décisions avant implémentation dépendante :** Appliquer les contrats RUN-015, y compris persistance et disposition des slots.
+- **Acceptation, tests et bugtest :** HUD exact après collecte/dépense/mort/reprise à 640×360 ; F maintenu tire toutes les 1,5 s, 1 DMG, portée 20 blocs, disparition cible/terrain/portée ; gauche/droite, pause, changement d’arme, occlusion et impact unique ; coffre accepter/refuser/fermer sans doublon/upgrade ; potion 0,5 HP conservée si vie pleine.
+- **Clôture :** corrections et régressions du périmètre, revue Jev selon le cycle existant, preuves au journal et learning fondé sur le résultat réel ; validation humaine des choix artistiques ou playtests requis.
 
-- **Résultat / scope :** Implémenter la priorité des entrées et l'exclusivité menu, pause, Controls, dialogue, coffre et contextualisation selon le contrat décidé.
-- **Acceptation, test et bugtest :** Focus visible ; Espace, E, flèches et Échap agissent selon l'état ; aucun input de déplacement/attaque ne traverse une modale, aucune double fenêtre, annulation et fermeture conduisent à l'état prévu. Tester clavier et rendu dans Godot.
-- **Learning pressenti :** États de focus, consommation des entrées, interfaces exclusives.
+### RUN-017 — The Eidolon Vale et recette 0.2.0
 
-### RUN-014 — Versionner et fiabiliser la progression
+**Lot F · Main agent : Codex GPT-6.1 Sol Medium · Statut : BACKLOG · Dépendances : RUN-015–016.**
 
-**Priorité : P0 · Statut : BACKLOG · Dépendance : RUN-012.**
+- **Résultat / scope :** Spirit, dialogue anglais animé et saut par Espace, tutoriel contextuel ; adaptation du slice en N1 court et facile avec coffre, potion, Slimes, dangers, tir et sortie ; art/audio P0 et recette complète.
+- **Décisions avant implémentation dépendante :** Contrats RUN-015 ; ne pas présenter la fixture comme N2 final.
+- **Acceptation, tests et bugtest :** New Game jusqu’à sortie à 12 coins puis fixture ; branches/retours, spawn sûr après mort, dialogue immobilisant sans danger puis reprise, états vus conformes au contrat ; coffre accepté/refusé, potion pleine/blessée, tir, pause, Controls, fermeture/Continue à froid ; aucune perte d’équipement ni modale superposée ; playtest humain N1.
+- **Clôture :** corrections et régressions du périmètre, revue Jev selon le cycle existant, preuves au journal et learning fondé sur le résultat réel ; validation humaine des choix artistiques ou playtests requis.
 
-- **Résultat / scope :** Séparer coins et shards, état de tentative et état durable ; enregistrer équipement et uniques aux événements décidés. Migrer ou refuser explicitement la v1 selon RUN-012.
-- **Acceptation, test et bugtest :** Sauvegarde/rechargement isolés, fermeture en milieu de niveau, mort, sortie, dépense puis mort, sauvegarde corrompue, version inconnue et échec disque ; aucune conversion silencieuse de l'ancien bonus ni double attribution. Les valeurs observées correspondent à la matrice RUN-012.
-- **Learning pressenti :** Schéma versionné, transaction et reprise à froid.
+## Version 0.3.0 — Économie, bestiaire et exploration N2–4
 
-### RUN-015 — Livrer menu principal, Controls et pause
+**Statut : BACKLOG, non lancée.** **Prérequis :** 0.2.0 validée ; D01, D02, D04, D06, D07 selon les systèmes.
 
-**Priorité : P0 · Statut : BACKLOG · Dépendances : RUN-013, RUN-014.**
+**Repères documentaires :** 01, 02, 03, 04, 05, 06, 07, 08, 13 dans `docs/`.
 
-- **Résultat / scope :** New Game, Continue, Controls, Quit et pause Reprendre/Recommencer/Quitter, avec navigation entièrement clavier.
-- **Acceptation, test et bugtest :** Continue sans sauvegarde, nouvelle partie, reprise à froid, affichage des touches, retour Échap, restart et fermeture respectent les contrats ; aucun double déclenchement ni perte silencieuse d'état. Vérifier rendu/focus, pause et interactions dans Godot.
-- **Learning pressenti :** Arbre de menus, focus clavier, continuité de scène.
-
-### RUN-016 — Afficher le HUD et les deux slots
-
-**Priorité : P0 · Statut : BACKLOG · Dépendances : RUN-012, RUN-013, RUN-014.**
-
-- **Résultat / scope :** Montrer vie, coins, shards, arme de mêlée et arme de tir ; A change le slot actif selon la disposition décidée.
-- **Acceptation, test et bugtest :** Compteurs distincts exacts après collecte, dépense, mort et reprise ; sélection visible et cohérente avec l'équipement durable ; HUD lisible à 640×360 sans chevauchement des modales.
-- **Learning pressenti :** UI réactive à l'état, équipement et présentation de ressources.
-
-### RUN-017 — Faire tirer le Longbow niveau 0
-
-**Priorité : P0 · Statut : BACKLOG · Dépendances : RUN-014, RUN-016.**
-
-- **Résultat / scope :** Projectile et tir continu du Longbow 0, utilisable une fois équipé ; garder Sword fonctionnelle dans l'autre slot.
-- **Acceptation, test et bugtest :** F maintenu tire à 1,5 s d'intervalle ; projectile orienté depuis le joueur, 1 dégât par impact, portée maximale de 20 blocs, disparition sur cible/terrain/portée. Vérifier gauche/droite, pause, changement de slot, occlusion et absence de dégâts multipliés par tick.
-- **Learning pressenti :** Scène de projectile, cadence et collision ponctuelle.
-
-### RUN-018 — Introduire The Ancient Spirit et les indications
-
-**Priorité : P0 · Statut : BACKLOG · Dépendances : RUN-013, RUN-014.**
-
-- **Résultat / scope :** Dialogue d'introduction anglais et indications contextuelles du tutoriel N1.
-- **Acceptation, test et bugtest :** Texte au bas de l'écran, animation et saut par Espace ; joueur immobilisé sans danger pendant le dialogue puis libéré ; rejouabilité après mort/rechargement conforme à RUN-012. Les indications ne superposent pas d'autre modale ni ne capturent les touches hors de leur état.
-- **Learning pressenti :** Dialogue séquencé, animation de texte, état vu.
-
-### RUN-019 — Donner le Longbow et placer la potion mineure
-
-**Priorité : P0 · Statut : BACKLOG · Dépendances : RUN-013, RUN-014, RUN-016, RUN-017.**
-
-- **Résultat / scope :** Coffre tutoriel gratuit à récompense fixe Longbow 0, plus une potion mineure dans N1.
-- **Acceptation, test et bugtest :** Acceptation/refus/fermeture du coffre et persistance suivent RUN-012 ; jamais d'amélioration ou de second Longbow. Potion : soin de 0,5 HP, ne disparaît pas si la vie est pleine, état cohérent après mort/reprise. Vérifier interaction et rendu dans Godot.
-- **Learning pressenti :** Récompense unique, transaction de coffre, pickup conditionnel.
-
-### RUN-020 — Adapter The Eidolon Vale
-
-**Priorité : P0 · Statut : BACKLOG · Dépendances : RUN-015 à RUN-019.**
-
-- **Résultat / scope :** Transformer le slice en N1 court et facile sans régénération globale ; raccorder Spirit, Green/Purple, piques/vide, coffre, potion, coins, Longbow et sortie.
-- **Acceptation, test et bugtest :** Parcours du menu à la sortie, porte à 12 coins, spawn sûr même après mort, tir et tutoriel utilisables, branches et retours vérifiés ; transition vers la fixture, sans la présenter comme N2 final. Contrôle graphique et intégration audio adaptée au contenu réellement livré.
-- **Learning pressenti :** Intégration d'un niveau auteur et preuve de parcours.
-
-### RUN-021 — Recetter la boucle N1
-
-**Priorité : P0 · Statut : BACKLOG · Dépendances : RUN-012 à RUN-020.**
-
-- **Résultat / scope :** Corriger les défauts ciblés révélés par la recette du jalon 0.2.0.
-- **Acceptation, test et bugtest :** New Game → sortie, coffre accepté/refusé, potion à vie pleine/blessée, tir, Controls, pause, mort/reprise, fermeture puis Continue à froid et transition fixture. Comparer chaque sauvegarde à RUN-012 ; retester les bugs corrigés et les régressions de N1, sans perte silencieuse d'équipement ni modales superposées.
-- **Learning pressenti :** Parcours complet et preuve de régression.
-
-## Version 0.3.0 — Économie de coffres et niveau 2
-
-**Priorité : P1.** **Statut : intention de jalon, découpage à affiner.**
-
-Rendre la progression d’équipement opérationnelle et livrer Blight Town avec ses premières menaces supplémentaires.
-
-**Prérequis :** version 0.2.0 validée et contrats nécessaires résolus avant leur implémentation.
-
-**Repères documentaires :** 02, 03, 04, 05, 07, 08, 11, 13 (numéros dans `docs/`).
-
-**Critères de validation du jalon :**
+**Critères de validation du jalon (conservés lors du regroupement) :**
 
 - [ ] Coûts common/rare, récompenses et upgrades conformes à une table validée ; Legendary encore exclu du pool jusqu’à son implémentation.
 - [ ] Armes standard hors Fire Gauntlet utilisables et persistantes ; soins de terrain et drops de soin testés.
 - [ ] N2 terminé à 18 coins, Red/Bloated Slime, piques rétractables et trappes ; N1 reste traversable.
 
-**Enveloppe : 6–8 runs**, recette et corrections ciblées incluses. Aucun identifiant n’est réservé à ce stade.
-
-**Axes dans l’ordre de dépendance :**
-
-- **Équipement et économie :** valider tables, coûts, poids et soins ; décliner les armes de mêlée standard et Throwing Knives depuis les contrats existants, puis coffres common/rare, choix/refus et upgrades.
-- **Menaces et soins :** Red et Bloated Slime avec aggro bornée, piques rétractables, trappes, potion majeure et soins sur kill ; leurs comportements restent vérifiés séparément.
-- **Niveau et recette :** construire et habiller Blight Town, connecter N1 → N2 ; bugtester mauvais tirages, dépenses/refus, reset/rechargement et régression N1.
-
-**Learning à décliner lors de l’affinage :** ressources paramétrées, pondération reproductible, transactions de récompenses, aggro et cycles de pièges.
-
-## Version 0.4.0 — Ennemis avancés, secrets et niveaux 3–4
-
-**Priorité : P1.** **Statut : intention de jalon, découpage à affiner.**
-
-Construire les quatre archétypes avancés séparément, introduire les secrets et livrer Black Forrest et Forbidden Graveyard.
-
-**Prérequis :** version 0.3.0 validée et contrats nécessaires résolus avant leur implémentation.
-
-**Repères documentaires :** 01, 02, 03, 04, 05, 06, 07, 08, 13 (numéros dans `docs/`).
-
-**Critères de validation du jalon :**
-
 - [ ] Warrior, Archer, Sorcerer, Swarm et Chud ont chacun leurs tests de comportement ; télégraphies et SFX P0 intégrés.
 - [ ] Tourelles, plantes, Magic Shield, mécanismes, portes secondaires, secrets permanents et HP bonus opérationnels.
 - [ ] N3/N4 jouables à 25/32 coins ; N4 contient son secret, sa potion majeure, son rare chest et son HP bonus ; toutes les dépenses optionnelles restent compatibles avec la sortie.
 
-**Enveloppe : 7–9 runs**, recette et corrections ciblées incluses. Aucun identifiant n’est réservé à ce stade.
+### RUN-018 — Économie et équipement standard
 
-**Axes dans l’ordre de dépendance :**
+**Lot G · Main agent : Codex GPT-6.1 Sol Medium · Statut : BACKLOG · Dépendances : RUN-017 ; 0.2.0 validée.**
 
-- **Bestiaire avancé :** fixer le contrat d’aggro, puis réaliser et tester Warrior, Archer, Blight Sorcerer et Possessed Skulls ; inclure Chud Blob et les télégraphies sans regrouper tout le bestiaire en une seule run.
-- **Exploration et progression :** tourelles, plantes dangereuses, Magic Shield, secrets permanents, portes payantes, plaques/boutons et HP bonus ; coûts et persistance reposent sur les contrats précédents.
-- **Niveaux et recette :** livrer Black Forrest et Forbidden Graveyard avec leurs récompenses et ambiances ; contrôler N1–4, dépenses optionnelles, invocations et reset des mécanismes.
+- **Résultat / scope :** Tables d’armes jusqu’au niveau 5, mêlée standard et Throwing Knives, common/rare chests, coûts/poids, choix/refus/upgrades, potion majeure et drops de soin.
+- **Décisions avant implémentation dépendante :** D02/D04 : stats et ATK SPEED positif, croissance prix/poids, base banque/gains, drops/farm.
+- **Acceptation, tests et bugtest :** Cadence/portée/dégâts de chaque arme ; tirages reproductibles, coût et refus sans double débit/récompense ; achat puis mort/fermeture, soins pleine/blessée, reprise ; Legendary exclu des pools jusqu’à RUN-023.
+- **Clôture :** corrections et régressions du périmètre, revue Jev selon le cycle existant, preuves au journal et learning fondé sur le résultat réel ; validation humaine des choix artistiques ou playtests requis.
 
-**Learning à décliner lors de l’affinage :** machines à états, attaques télégraphiées, groupes d’ennemis, mécanismes de niveau et état permanent.
+### RUN-019 — Menaces et exploration N2–4
 
-## Version 0.5.0 — Verticalité, capacités et niveaux 5–6
+**Lot H · Main agent : Codex GPT-6.1 Sol Medium · Statut : BACKLOG · Dépendances : RUN-018.**
 
-**Priorité : P1.** **Statut : intention de jalon, découpage à affiner.**
+- **Résultat / scope :** Red/Bloated Slime ; Warrior, Archer, Sorcerer, Swarm et Chud ; piques rétractables, trappes, tourelles/plantes, Magic Shield, secrets permanents, mécanismes, portes secondaires et HP bonus. Implémenter par familles testées dans le même lot, avec télégraphies/SFX P0.
+- **Décisions avant implémentation dépendante :** D01/D06/D07 : effet bonus MAX HP sur CURRENT HP, aggro/ligne de vue, plafonds et vie des invocations, cumul Shield et déclencheurs de secrets.
+- **Acceptation, tests et bugtest :** Tests propres à chaque comportement puis interactions : aggro/bords/retour, invocations bornées et récompenses, pièges cycliques, pause/mort, bouclier, déclencheurs, reset des mécanismes et persistance des secrets/HP ; sorties financièrement accessibles.
+- **Clôture :** corrections et régressions du périmètre, revue Jev selon le cycle existant, preuves au journal et learning fondé sur le résultat réel ; validation humaine des choix artistiques ou playtests requis.
 
-Compléter l’équipement, les consommables spéciaux et la persistance unique avant Haunted Caves et Desolands.
+### RUN-020 — Construction et recette de Blight Town à Forbidden Graveyard
 
-**Prérequis :** version 0.4.0 validée et contrats nécessaires résolus avant leur implémentation.
+**Lot I · Main agent : Codex GPT-6.1 Sol Medium · Statut : BACKLOG · Dépendances : RUN-018–019.**
 
-**Repères documentaires :** 01, 02, 03, 04, 05, 06, 07, 08, 13 (numéros dans `docs/`).
+- **Résultat / scope :** Construire et peupler N2 Blight Town, N3 Black Forrest et N4 Forbidden Graveyard ; raccorder N1–4 et toutes les récompenses/ambiances requises.
+- **Décisions avant implémentation dépendante :** Harmoniser les noms avant contenu (D10) ; suivre la répartition docs/03–04.
+- **Acceptation, tests et bugtest :** Sorties à 18/25/32 coins ; secret, potion majeure, rare chest et HP bonus de N4 ; parcours N1–4, achats/refus, dépenses optionnelles compatibles avec sortie, morts/reset/rechargement et invocations ; playtest humain difficulté/rythme.
+- **Clôture :** corrections et régressions du périmètre, revue Jev selon le cycle existant, preuves au journal et learning fondé sur le résultat réel ; validation humaine des choix artistiques ou playtests requis.
 
-**Critères de validation du jalon :**
+### RUN-021 — Cohérence visuelle N1–4 et validation 0.3.0
+
+**Lot J · Main agent : Claude Opus 5.5 · Statut : BACKLOG · Dépendances : RUN-020.**
+
+- **Résultat / scope :** Habiller les trois niveaux et harmoniser N1–4, sprites/animations des archétypes, VFX, objets et interfaces ; sources et crédits traçables.
+- **Décisions avant implémentation dépendante :** Choix d’assets et ownership des scènes avant intégration ; aucune modification implicite des profils gameplay.
+- **Acceptation, tests et bugtest :** Rendu des interactions du contenu livré, silhouettes et télégraphies, clavier, animations/collisions, parcours N1 et N4 puis régression des scènes modifiées ; critères 0.3.0 ci-dessus satisfaits et validation artistique humaine.
+- **Clôture :** corrections et régressions du périmètre, revue Jev selon le cycle existant, preuves au journal et learning fondé sur le résultat réel ; validation humaine des choix artistiques ou playtests requis.
+
+## Version 0.4.0 — Capacités et campagne complète N5–10
+
+**Statut : BACKLOG, non lancée.** **Prérequis :** 0.3.0 validée ; D01, D02, D04, D06–D09 avant les comportements concernés.
+
+**Repères documentaires :** 01, 02, 03, 04, 05, 06, 07, 08, 09, 13 dans `docs/`.
+
+**Critères de validation du jalon (conservés lors du regroupement) :**
 
 - [ ] Grimper, attaque d’atterrissage, flammes, Rage et Fire Gauntlet testés séparément puis combinés.
 - [ ] Quatre légendaires, golden chest, Enchant Juice et offrande N5 fonctionnels avec sauvegarde cohérente.
 - [ ] N5/N6 jouables à 40/50 coins, profils N5–9, palier 5 HP, secrets et récompenses uniques exactement répartis.
 
-**Enveloppe : 8–10 runs**, recette et corrections ciblées incluses. Aucun identifiant n’est réservé à ce stade.
-
-**Axes dans l’ordre de dépendance :**
-
-- **Verticalité et capacités :** grimpe, attaque d’atterrissage et flammes ; Rage, Fire Gauntlet et affichage des cooldowns. Régler les interactions avant l’intégration au terrain vertical.
-- **Équipement unique :** Dragon Slayer, Obsidian Relic, Thunderstruck et Demonic Crossbow gardent des validations propres ; Golden Chests, Enchant Juice et unicité persistante s’appuient sur l’économie existante.
-- **Progression et niveaux :** paliers HP N5/N8, première offrande N5 et profils ennemis N5–9 ; construire et habiller Haunted Caves et Desolands avec leurs secrets et uniques.
-- **Recette :** vérifier N1–6, combinaisons d’armes/capacités, cooldowns après reset, dépense/offrande et fermeture après récompense unique.
-
-**Learning à décliner lors de l’affinage :** états de locomotion, détection d’impact, cooldowns, buffs, capacités spécifiques et sauvegarde des uniques.
-
-## Version 0.6.0 — Derniers niveaux d’exploration
-
-**Priorité : P1.** **Statut : intention de jalon, découpage à affiner.**
-
-Livrer Rotbringer Camps, Fallen Temple et Darkveil Dungeon avec les dernières élites et la seconde offrande.
-
-**Prérequis :** version 0.5.0 validée et contrats nécessaires résolus avant leur implémentation.
-
-**Repères documentaires :** 02, 03, 04, 05, 06, 07, 08, 13 (numéros dans `docs/`).
-
-**Critères de validation du jalon :**
-
 - [ ] Chaos Champion et Necromancer conformes, charge et invocations télégraphiées, population bornée.
 - [ ] N7/8/9 jouables à 64/82/100 coins ; HP 7 à N8, deuxième offrande 50 % non additive.
 - [ ] Total N4–9 : 10 secrets, 3 Golden, 6 Rare secrets, 8 Major secrètes, 1 Enchant ; HP bonus répartis 1/1/2/3 sur N4/5/7/9.
-
-**Enveloppe : 6–8 runs**, recette et corrections ciblées incluses. Aucun identifiant n’est réservé à ce stade.
-
-**Axes dans l’ordre de dépendance :**
-
-- **Dernières élites :** charge de Chaos Champion, invocations et trois zones de Necromancer ; borner les populations et les récompenses, vérifier pause/mort et disparition des invocations.
-- **Derniers niveaux :** construire, peupler et habiller Rotbringer Camps, Fallen Temple et Darkveil Dungeon avec les systèmes déjà éprouvés ; deuxième offrande, palier N8 et répartition des secrets/uniques.
-- **Recette :** parcourir N1–9, tester densité de rencontres et économie avec/sans bonus HP ou sacrifices ; recharger aux paliers et contrôler les uniques.
-
-**Learning à décliner lors de l’affinage :** charge télégraphiée, cycle d’invocation, composition de niveaux et stress des interactions.
-
-## Version 0.7.0 — Boss final et conclusion jouable
-
-**Priorité : P1.** **Statut : intention de jalon, découpage à affiner.**
-
-Terminer Darkveil Dungeon Throne, le combat Lupikal et la libération de Karla ; la démo devient jouable de bout en bout.
-
-**Prérequis :** version 0.6.0 validée et contrats nécessaires résolus avant leur implémentation.
-
-**Repères documentaires :** 01, 02, 03, 04, 05, 06, 07, 08, 09, 13 (numéros dans `docs/`).
-
-**Critères de validation du jalon :**
 
 - [ ] N10 dédié au boss, spawn sûr, confrontation puis combat sans aggro/reset exploitable, caméra adaptée.
 - [ ] 50 HP, mêlée, quatre zones, boules de feu, charge, invocations et enrage ≤20 HP validés séparément puis ensemble.
 - [ ] Victoire puis dialogue Karla et fin de démo ; aucune onzième zone ajoutée pour le Heart of Corruption.
 - [ ] Boss vaincu en playtest avec 7 HP de base et armes 2/3 sans Legendary ; 14 HP avantageux sans trivialiser le combat.
 
-**Enveloppe : 5–7 runs**, recette et corrections ciblées incluses. Aucun identifiant n’est réservé à ce stade.
+### RUN-022 — Verticalité, capacités et consommables spéciaux
 
-**Axes dans l’ordre de dépendance :**
+**Lot K · Main agent : Codex GPT-6.1 Sol Medium · Statut : BACKLOG · Dépendances : RUN-021 ; 0.3.0 validée.**
 
-- **Contrat et arène :** trancher D08/D09, construire le trône et son spawn sûr avant l’intégration du boss.
-- **Combat Lupikal :** développer les attaques par familles testables : mêlée, explosions au sol, projectiles, charge et invocations ; intégrer ensuite l’ordonnancement, les télégraphies et l’enrage.
-- **Conclusion et recette :** relier HUD boss, introduction, art/audio du trône et libération de Karla ; tester le parcours complet, la mort simultanée, Continue après victoire et le combat sans Legendary.
+- **Résultat / scope :** Grimpe, attaque d’atterrissage, flammes, Rage, Fire Gauntlet et cooldowns visibles ; tests isolés puis combinés sur terrain vertical.
+- **Décisions avant implémentation dépendante :** D02/D07 : contraintes de grimpe, seuil/rayon slam, cumul/rafraîchissement buffs et cooldowns.
+- **Acceptation, tests et bugtest :** Grimpe et murs/bac, slam seuil/rayon/impact, souffle et flammes cycliques, buffs/cooldowns lors du changement d’arme, pause/mort/reset ; non-régression N1–4.
+- **Clôture :** corrections et régressions du périmètre, revue Jev selon le cycle existant, preuves au journal et learning fondé sur le résultat réel ; validation humaine des choix artistiques ou playtests requis.
 
-**Learning à décliner lors de l’affinage :** phases de boss, ordonnancement d’attaques, télégraphies, séquences narratives et état de fin.
+### RUN-023 — Légendaires et progression permanente
 
-## Version 0.8.0 — Cohérence visuelle et sonore de la démo
+**Lot L · Main agent : Codex GPT-6.1 Sol Medium · Statut : BACKLOG · Dépendances : RUN-022.**
 
-**Priorité : P2.** **Statut : intention de jalon, découpage à affiner.**
+- **Résultat / scope :** Dragon Slayer, Obsidian Relic, Thunderstruck, Demonic Crossbow ; Golden Chests, Enchant Juice, uniques, paliers HP N5/N8 et offrandes en fin de N5/N7.
+- **Décisions avant implémentation dépendante :** D04/D08 : bases des offrandes 20/50 %, seconde sans première, charge/compteur/portée ; contrat dégâts Boss résolu avant RUN-026.
+- **Acceptation, tests et bugtest :** Chaque Legendary testée séparément puis en combinaison ; charge/annulation, kills/compteur, portée/relief ; unicité après mort et fermeture, coffres et Enchant sans doublon, banque après sacrifice, seconde rétention 50 % non additive, paliers 5/7 HP.
+- **Clôture :** corrections et régressions du périmètre, revue Jev selon le cycle existant, preuves au journal et learning fondé sur le résultat réel ; validation humaine des choix artistiques ou playtests requis.
 
-Achever la présentation et la variété prévues ; aucun système gameplay essentiel ne doit être reporté à cette version.
+### RUN-024 — Dernières élites et niveaux N5–9
 
-**Prérequis :** version 0.7.0 validée et contrats nécessaires résolus avant leur implémentation.
+**Lot M · Main agent : Codex GPT-6.1 Sol Medium · Statut : BACKLOG · Dépendances : RUN-022–023.**
 
-**Repères documentaires :** 05, 06, 07, 08, 09, 11, 12, 13 (numéros dans `docs/`).
+- **Résultat / scope :** Profils N5–9, Chaos Champion et Necromancer ; charge, trois zones et invocations ; construire Haunted Caves, Desolands, Rotbringer Camps, Fallen Temple, Darkveil Dungeon et raccorder N1–9.
+- **Décisions avant implémentation dépendante :** D04/D06 : profils Skeleton N5/N9, cycle et disparition des invocations, farm et population.
+- **Acceptation, tests et bugtest :** N5–9 à 40/50/64/82/100 coins ; charge annoncée, populations/récompenses bornées, pause/mort/source détruite ; total N4–9 : 10 secrets, 3 Golden, 6 Rare secrets, 8 Major secrètes, 1 Enchant ; HP bonus 1/1/2/3 sur N4/5/7/9 ; parcours N1–9 et saves aux paliers, avec/sans sacrifices ; playtest humain.
+- **Clôture :** corrections et régressions du périmètre, revue Jev selon le cycle existant, preuves au journal et learning fondé sur le résultat réel ; validation humaine des choix artistiques ou playtests requis.
 
-**Critères de validation du jalon :**
+### RUN-025 — Habillage et lisibilité N5–9
+
+**Lot N · Main agent : Claude Opus 5.5 · Statut : BACKLOG · Dépendances : RUN-024.**
+
+- **Résultat / scope :** Ambiances, décors, animations d’élites, légendaires, capacités et secrets ; harmoniser les neuf niveaux et leur signalétique sans altérer leur distribution.
+- **Décisions avant implémentation dépendante :** D10 : palettes, skins, gabarits et contrats techniques à figer avant intégration.
+- **Acceptation, tests et bugtest :** Télégraphies charge/invocations, verticalité, secrets, effets de buffs/capacités lisibles ; collisions et parcours des scènes modifiées, contrôles N1 et N9, licences et validation artistique humaine.
+- **Clôture :** corrections et régressions du périmètre, revue Jev selon le cycle existant, preuves au journal et learning fondé sur le résultat réel ; validation humaine des choix artistiques ou playtests requis.
+
+### RUN-026 — Lupikal, Karla et recette de campagne 0.4.0
+
+**Lot O · Main agent : Codex GPT-6.1 Sol Medium · Statut : BACKLOG · Dépendances : RUN-025.**
+
+- **Résultat / scope :** N10 Darkveil Dungeon Throne, arène et spawn sûr ; Boss 50 HP avec mêlée/quatre zones/boules de feu/charge/invocations/enrage ≤20 HP ; introduction, HUD, télégraphies, art/audio P0, libération de Karla et conclusion.
+- **Décisions avant implémentation dépendante :** D08/D09 : effets Legendary face au Boss, attribution 3/5 DMG, accélération enrage, séquence dialogue/combat et état final.
+- **Acceptation, tests et bugtest :** Chaque attaque puis ordonnancement complet ; mort simultanée, aggro/reset non exploitable, Continue après victoire ; Boss vaincu en playtest humain à 7 HP avec armes 2/3 sans Legendary ; 14 HP avantageux sans trivialisation ; parcours complet N1–10 et persistance ; aucune onzième zone.
+- **Clôture :** corrections et régressions du périmètre, revue Jev selon le cycle existant, preuves au journal et learning fondé sur le résultat réel ; validation humaine des choix artistiques ou playtests requis.
+
+## Version 0.5.0 — Démo beta finale distribuable
+
+**Statut : BACKLOG, non lancée.** **Prérequis :** 0.4.0 validée ; plateformes et budget de performance D10 décidés avant les exports.
+
+**Repères documentaires :** 00 à 13 ; catalogues 11–12 locaux si disponibles dans `docs/`.
+
+**Critères de validation du jalon (conservés lors du regroupement) :**
 
 - [ ] Palette, échelle, animation et contraste cohérents dans les dix biomes ; variantes avancées retenues reconnaissables sans changer leur gameplay.
 - [ ] Toutes les lignes requises de docs/08 et docs/13 ont un asset intégré/testé ou une décision de scope validée ; aucun P0 manquant.
 - [ ] HUD, menus, artwork, logo, dialogues et audio final testés au clavier à 640×360 ; tous les textes visibles sont anglais.
 - [ ] Sources originales intactes, dérivés identifiables et crédits/licences complets pour les assets distribués.
 
-**Enveloppe : 3–5 runs**, recette et corrections ciblées incluses. Aucun identifiant n’est réservé à ce stade.
-
-**Axes dans l’ordre de dépendance :**
-
-- **Présentation cohérente :** compléter les variantes Warrior/Archer/Caster/Skulls/Bats retenues sans altérer leurs profils ; finaliser HUD, menus, artwork, logo et feedbacks contextuels.
-- **Audio et caméra :** compléter/mixer le catalogue requis, exposer les volumes et conserver leurs préférences ; ne retenir les effets facultatifs de caméra que s’ils améliorent la lisibilité (P3).
-- **Recette :** contrôler dix biomes, clavier, animations/collisions, anglais, mix et inventaires d’assets/licences ; conserver les sources et tester les dérivés.
-
-**Learning à décliner lors de l’affinage :** pipeline de variantes, ancrages d’animation, lisibilité, mix audio, réglages persistants et crédits.
-
-## Version 0.9.0 — Démo beta finale distribuable
-
-**Priorité : P0.** **Statut : intention de jalon, découpage à affiner.**
-
-Livrer une démo 0.9.0 beta complète, équilibrée et testée, avec une distribution reproductible sur les plateformes retenues.
-
-**Prérequis :** version 0.8.0 validée et contrats nécessaires résolus avant leur implémentation.
-
-**Repères documentaires :** `docs/00` à `docs/13`, `brief.md` et résultats du `runs-journal.md`.
-
-**Critères de validation du jalon :**
-
 - [ ] Dix niveaux, boss et conclusion terminables ; sessions humaines couvrent l’objectif de 1–2 h et les retries, sans prétendre garantir une durée non mesurée.
 - [ ] Aucun bug bloquant/critique ouvert ; toutes les règles persistantes, coûts, uniques et interactions testés après corrections.
 - [ ] Build autonome vérifié sur chaque plateforme de livraison retenue ; import propre, installation vierge, sauvegarde/reprise et fermeture corrects.
-- [ ] Version 0.9.0 beta affichée et documentée, licences/crédits et limites connues livrés ; aucune publication automatique.
+- [ ] Version 0.5.0 beta affichée et documentée, licences/crédits et limites connues livrés ; aucune publication automatique.
 
-**Enveloppe : 4–6 runs**, recette et corrections ciblées incluses. Aucun identifiant n’est réservé à ce stade.
+### RUN-027 — Présentation finale et cohérence de la démo
 
-**Axes dans l’ordre de dépendance :**
+**Lot P · Main agent : Claude Opus 5.5 · Statut : BACKLOG · Dépendances : RUN-026 ; 0.4.0 validée.**
 
-- **Playtests et corrections :** mesurer difficulté, économie et durée sur de vrais parcours ; corriger les problèmes observés, retester les situations et les interactions adjacentes.
-- **Robustesse :** durcir sauvegardes et transitions, mesurer les performances sur le matériel retenu, puis corriger les défauts reproductibles.
-- **Livraison et recette :** préparer exports et version beta, vérifier les builds autonomes sur les plateformes retenues, refaire la régression après les dernières corrections et livrer crédits/limites connues ; publication soumise à autorisation.
+- **Résultat / scope :** Harmoniser dix biomes et variantes avancées retenues, HUD/menus/logo/artwork/dialogues anglais ; compléter animations/VFX et audio requis, résoudre les retours RUN-010 restants, mixer et intégrer volumes/préférences persistantes avec contribution technique cadrée.
+- **Décisions avant implémentation dépendante :** D10 : variantes retenues et licences ; validation artistique et sonore humaine.
+- **Acceptation, tests et bugtest :** Toutes exigences docs/08 et docs/13 intégrées/testées ou décision de scope validée, aucun P0 absent ; rendu/clavier à 640×360, transitions d’animation/collisions, écoute humaine et mix, réglages après reprise, sources/dérivés et licences/crédits complets ; effets caméra facultatifs seulement si lisibles.
+- **Clôture :** corrections et régressions du périmètre, revue Jev selon le cycle existant, preuves au journal et learning fondé sur le résultat réel ; validation humaine des choix artistiques ou playtests requis.
 
-**Learning à décliner lors de l’affinage :** observation de joueurs, matrices de régression, profilage, exports reproductibles et recette hors éditeur.
+### RUN-028 — Équilibrage, robustesse et livraison 0.5.0 beta
+
+**Lot Q · Main agent : Codex GPT-6.1 Sol Medium · Statut : BACKLOG · Dépendances : RUN-027.**
+
+- **Résultat / scope :** Playtests complets, équilibrage économie/difficulté/durée, corrections ciblées, robustesse sauvegardes/transitions, profilage, exports reproductibles et recette hors éditeur.
+- **Décisions avant implémentation dépendante :** D10 : plateformes, matériel et budget performance ; validation humaine finale avant livraison autorisée.
+- **Acceptation, tests et bugtest :** Sessions humaines mesurant objectif 1–2 h et retries ; aucun bug bloquant/critique ; règles/coûts/uniques testés après corrections ; build autonome sur chaque plateforme retenue, installation vierge, import/save/reprise/fermeture ; version beta, crédits et limites livrés ; publication uniquement sur autorisation.
+- **Clôture :** corrections et régressions du périmètre, revue Jev selon le cycle existant, preuves au journal et learning fondé sur le résultat réel ; validation humaine des choix artistiques ou playtests requis.
 
 ## Point d’arrêt
 
-RUN-001 à RUN-006 sont DONE après fusion des PR #1, #2, #4, #5, #8 et #9. La correspondance fichier-source reste reportée par décision humaine à la recette des assets distribués. Les catalogues 11–12 deviennent locaux et ignorés par Git. La grille 16×16 est retenue après comparaison visuelle, avec les limites de la maquette consignées. Le prototype utilise désormais un viewport 640×360 et une santé fractionnaire. Les durées de hit-stun et de recul de RUN-006 restent à équilibrer. RUN-007 est DONE et fusionnée dans develop via PR #11 ; RUN-008 via PR #12 ; RUN-009, validée par l'humain, via PR #14. RUN-010 est DONE le 30 septembre 2026 (première itération audio validée ; à reprendre : musique trop basse et à remplacer par un autre morceau ; SFX globalement trop forts ; impact d'épée (`sfx_melee_hit`) peu agréable, à remplacer ; sons de saut et de double saut à remplacer). Après 0.1.0, détailler 0.2.0 à partir du résultat réel.
+**2 octobre 2026 : RUN-001–011 DONE ; version actuelle 0.1.0 validée localement par l’humain.** RUN-011 reste sur `feature/run-011-production-foundation`. La réorganisation est préparée sur cette même branche ; sa validation humaine et le choix des éventuelles passes Claude 012–014 restent à obtenir. Aucune run ACTIVE, aucune run 0.2.0 lancée, aucune livraison distante effectuée dans cette intervention.
+
+La prochaine action de production dépend du choix humain des compléments visuels. Une fois les tâches retenues terminées et validées, l’humain valide la branche et autorise sa livraison/fusion ; **après fusion seulement**, RUN-015 ouvre les lots vers 0.2.0. Les retours audio RUN-010 restent suivis en RUN-014 si retenue, sinon RUN-027, sans invalider le socle déjà accepté.
