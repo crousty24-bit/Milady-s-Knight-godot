@@ -16,9 +16,14 @@ const FAR_TOWERS = [preload("res://assets/sprites/prop_far_tower_a.png"), preloa
 const RIBBON_SPEAR = preload("res://assets/sprites/prop_ribbon_spear.png")
 
 # Draw a prop with its bottom-centre (or given anchor) at a world point.
-func prop(texture: Texture2D, foot: Vector2, anchor_x: float = -1.0) -> void:
+func prop(texture: Texture2D, foot: Vector2, anchor_x: float = -1.0, flip: bool = false) -> void:
 	var ax: float = texture.get_width() * 0.5 if anchor_x < 0.0 else anchor_x
-	draw_texture(texture, (foot - Vector2(ax, texture.get_height())).round())
+	var origin := (foot - Vector2(ax, texture.get_height())).round()
+	if flip:
+		# A negative width mirrors the prop: cheap variety for repeated trees.
+		draw_texture_rect(texture, Rect2(origin + Vector2(texture.get_width(), 0), Vector2(-texture.get_width(), texture.get_height())), false)
+	else:
+		draw_texture(texture, origin)
 
 func _draw() -> void:
 	# Distant fortification, growing closer toward the exit.
@@ -27,8 +32,8 @@ func _draw() -> void:
 	draw_rect(Rect2(1570, 150, 740, 64), Color("161b25"))
 	for i in range(24):
 		var x: int = i * 99 + 22
-		if i > 12: prop(DEAD_TREES[i % 2], Vector2(x + 2, 144))
-		else: prop(TREES[i % 2], Vector2(x + 2, 146))
+		if i > 12: prop(DEAD_TREES[i % 2], Vector2(x + 2, 144), -1.0, i % 4 >= 2)
+		else: prop(TREES[i % 2], Vector2(x + 2, 146), -1.0, i % 3 == 1)
 	prop(HOUSE, Vector2(70, 144))
 	prop(HOUSE_RUINED, Vector2(246, 144))
 	# Cart and its spilled cargo.

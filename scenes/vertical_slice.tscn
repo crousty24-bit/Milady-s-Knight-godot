@@ -18,7 +18,7 @@
 [ext_resource type="Script" path="res://scripts/gold_gate.gd" id="16_4bt3a"]
 [ext_resource type="PackedScene" path="res://scenes/hud.tscn" id="17_2qtki"]
 [ext_resource type="Script" path="res://scripts/hud.gd" id="18_qsiwk"]
-[ext_resource type="AudioStream" path="res://assets/music/music_slice_dark_fantasy_lofi.ogg" id="19_obgh5"]
+[ext_resource type="AudioStream" path="res://assets/music/music_slice_dreamer.ogg" id="19_obgh5"]
 
 [ext_resource type="PackedScene" path="res://scenes/spikes.tscn" id="20_spikes"]
 [ext_resource type="Script" path="res://scripts/backdrop.gd" id="21_backdrop"]

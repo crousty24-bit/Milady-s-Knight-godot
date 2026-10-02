@@ -18,6 +18,7 @@ var max_health: float:
 var direction: int = -1
 var origin_x: float
 const KNOCKBACK_DURATION = 0.12
+const SPLASH = preload("res://assets/sprites/vfx_slime_splash.png")
 var knockback_time: float = 0.0
 var dead: bool = false
 @onready var sprite: AnimatedSprite2D = $Sprite
@@ -59,12 +60,31 @@ func take_damage(amount: float, impulse: Vector2, _source: int = SlicePlayer.Dam
 		_play_detached($HitSound)
 		_play_detached($DeathSound)
 		defeated.emit(bonus_reward, global_position)
+		_splash()
 		$CollisionShape2D.set_deferred("disabled", true)
 		$ContactArea/Shape.set_deferred("disabled", true)
 		var tween = create_tween()
 		tween.tween_property(sprite, "scale", Vector2(1.4, 0.25), 0.13)
 		tween.parallel().tween_property(sprite, "modulate:a", 0.0, 0.22)
 		tween.tween_callback(queue_free)
+
+func _splash() -> void:
+	# Goo burst outlives the slime, in the scene like its detached sounds.
+	var holder: Node = get_tree().current_scene if get_tree().current_scene != null else get_parent()
+	if holder == null or holder == self: return
+	var splash := Sprite2D.new()
+	splash.texture = SPLASH
+	splash.hframes = 5
+	splash.vframes = 2
+	var first: int = 5 if variant == Kind.PURPLE else 0
+	splash.frame = first
+	splash.process_mode = Node.PROCESS_MODE_PAUSABLE
+	holder.add_child(splash)
+	splash.global_position = global_position + Vector2(0, -10)
+	var tween := splash.create_tween()
+	tween.tween_property(splash, "frame", first + 4, 0.32)
+	tween.tween_interval(0.08)
+	tween.tween_callback(splash.queue_free)
 
 func _play_detached(sound: AudioStreamPlayer2D) -> void:
 	# The final impact and splash outlive the slime's removal, where it died.

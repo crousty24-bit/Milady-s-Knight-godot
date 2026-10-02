@@ -29,6 +29,13 @@ Même méthode, sur la palette commune `tools/art/palette.py`. Générateurs : `
 | `sprites/enemy_slime_green.png`, `enemy_slime_purple.png` | Slimes, 6 frames 24×24. |
 | `sprites/item_gold_coin.png`, `hud_icons.png` | Pièce, 8 frames 16×16 ; cœurs plein/demi/vide, pièce et sceau en 12×12. |
 
+## Générés pour le projet (RUN-014, 2 octobre 2026)
+
+| Fichier de jeu | Contenu |
+| --- | --- |
+| `sprites/vfx_coin_sparkle.png` | Éclat de collecte de pièce, 5 × 16×16 (`tools/art/vfx.py`). |
+| `sprites/vfx_slime_splash.png` | Éclaboussure de mort, Green puis Purple, 5 × 32×20 (`tools/art/vfx.py`). |
+
 ## Bibliothèque locale examinée et non retenue (RUN-012)
 
 Le dépôt est public : un pack dont la licence interdit la redistribution des fichiers, même modifiés, ne peut pas y être intégré. Les pages itch.io n'ont pas pu être lues automatiquement (protection Cloudflare) ; ces verdicts proviennent de résumés de recherche et doivent être confirmés par l'humain avant toute réutilisation.
