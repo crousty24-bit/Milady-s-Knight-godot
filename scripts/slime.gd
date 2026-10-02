@@ -19,6 +19,7 @@ var direction: int = -1
 var origin_x: float
 const KNOCKBACK_DURATION = 0.12
 const SPLASH = preload("res://assets/sprites/vfx_slime_splash.png")
+const HIT_SPRAY = preload("res://assets/sprites/vfx_slime_hit.png")
 var knockback_time: float = 0.0
 var dead: bool = false
 @onready var sprite: AnimatedSprite2D = $Sprite
@@ -27,7 +28,10 @@ func _ready() -> void:
 	origin_x = position.x
 	max_health_units = 20 if variant == Kind.PURPLE else 10
 	health_units = max_health_units
-	sprite.play("purple" if variant == Kind.PURPLE else "green")
+	sprite.play(_base_animation())
+
+func _base_animation() -> StringName:
+	return &"purple" if variant == Kind.PURPLE else &"green"
 
 func _physics_process(delta: float) -> void:
 	if dead: return
@@ -42,6 +46,9 @@ func _physics_process(delta: float) -> void:
 		velocity.x = direction * (PURPLE_PATROL_SPEED if variant == Kind.PURPLE else GREEN_PATROL_SPEED)
 	move_and_slide()
 	sprite.flip_h = direction > 0
+	# Recoil frames only while the knockback lasts (tools/art/slime_art.py).
+	var wanted: StringName = _base_animation() if knockback_time <= 0.0 else StringName(String(_base_animation()) + "_hit")
+	if sprite.animation != wanted: sprite.play(wanted)
 	sprite.modulate = Color("fff1a6") if knockback_time > 0.0 else Color.WHITE
 	for body in $ContactArea.get_overlapping_bodies():
 		if body is SlicePlayer:
@@ -55,6 +62,7 @@ func take_damage(amount: float, impulse: Vector2, _source: int = SlicePlayer.Dam
 	knockback_time = KNOCKBACK_DURATION
 	if health_units > 0:
 		$HitSound.play()
+		_spray(impulse)
 	else:
 		dead = true
 		_play_detached($HitSound)
@@ -63,9 +71,10 @@ func take_damage(amount: float, impulse: Vector2, _source: int = SlicePlayer.Dam
 		_splash()
 		$CollisionShape2D.set_deferred("disabled", true)
 		$ContactArea/Shape.set_deferred("disabled", true)
+		# Collapse animation (bloat, burst, puddle) instead of a scaled sprite, then fade out.
+		sprite.play(StringName(String(_base_animation()) + "_death"))
 		var tween = create_tween()
-		tween.tween_property(sprite, "scale", Vector2(1.4, 0.25), 0.13)
-		tween.parallel().tween_property(sprite, "modulate:a", 0.0, 0.22)
+		tween.tween_property(sprite, "modulate:a", 0.0, 0.1).set_delay(0.12)
 		tween.tween_callback(queue_free)
 
 func _splash() -> void:
@@ -74,17 +83,37 @@ func _splash() -> void:
 	if holder == null or holder == self: return
 	var splash := Sprite2D.new()
 	splash.texture = SPLASH
-	splash.hframes = 5
+	splash.hframes = 6
 	splash.vframes = 2
-	var first: int = 5 if variant == Kind.PURPLE else 0
+	var first: int = 6 if variant == Kind.PURPLE else 0
 	splash.frame = first
 	splash.process_mode = Node.PROCESS_MODE_PAUSABLE
 	holder.add_child(splash)
-	splash.global_position = global_position + Vector2(0, -10)
+	# 40x24 frames: the bottom edge sits on the ground where the slime stood.
+	splash.global_position = global_position + Vector2(0, -12)
 	var tween := splash.create_tween()
-	tween.tween_property(splash, "frame", first + 4, 0.32)
-	tween.tween_interval(0.08)
+	tween.tween_property(splash, "frame", first + 5, 0.36)
+	tween.tween_interval(0.06)
 	tween.tween_callback(splash.queue_free)
+
+func _spray(impulse: Vector2) -> void:
+	# Short goo spray away from the blow on a non-lethal hit (tools/art/vfx.py).
+	var holder: Node = get_tree().current_scene if get_tree().current_scene != null else get_parent()
+	if holder == null or holder == self: return
+	var dir: float = -1.0 if impulse.x < 0.0 else 1.0
+	var spray := Sprite2D.new()
+	spray.texture = HIT_SPRAY
+	spray.hframes = 4
+	spray.vframes = 2
+	var first: int = 4 if variant == Kind.PURPLE else 0
+	spray.frame = first
+	spray.flip_h = dir < 0.0
+	spray.process_mode = Node.PROCESS_MODE_PAUSABLE
+	holder.add_child(spray)
+	spray.global_position = global_position + Vector2(5.0 * dir, -10.0)
+	var tween := spray.create_tween()
+	tween.tween_property(spray, "frame", first + 3, 0.18)
+	tween.tween_callback(spray.queue_free)
 
 func _play_detached(sound: AudioStreamPlayer2D) -> void:
 	# The final impact and splash outlive the slime's removal, where it died.

@@ -1,8 +1,12 @@
-# RUN-013: capture representative framings of the slice at 640x360 into work/run-013/.
+# RUN-013/029: capture representative framings of the slice at 640x360.
+# Default output: work/run-029/slice/. Override with: -- --out=work/some/dir
 extends SceneTree
 func _initialize() -> void: call_deferred("run")
 func run() -> void:
-	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("res://work/run-013"))
+	var out := "res://work/run-029/slice"
+	for arg in OS.get_cmdline_user_args():
+		if arg.begins_with("--out="): out = "res://" + arg.trim_prefix("--out=").trim_prefix("res://")
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(out))
 	var level = load("res://scenes/vertical_slice.tscn").instantiate()
 	root.add_child(level)
 	current_scene = level
@@ -19,7 +23,7 @@ func run() -> void:
 		player.sprite.modulate = Color.WHITE
 		await process_frame
 		await RenderingServer.frame_post_draw
-		root.get_texture().get_image().save_png("res://work/run-013/%s.png" % item[0])
+		root.get_texture().get_image().save_png("%s/%s.png" % [out, item[0]])
 		print("CAPTURE ", item[0])
 	level.queue_free()
 	await process_frame

@@ -3,8 +3,8 @@ extends Control
 const HEARTS_PER_ROW: int = 5
 const HEART_SPACING: int = 12
 const ROW_SPACING: int = 11
-# Full, half and empty hearts are the first three 12x12 icons (tools/art/creatures.py).
-const ICONS = preload("res://assets/sprites/hud_icons.png")
+# Full, half and empty hearts are the first three 12x12 icons (tools/art/ui.py).
+const ICONS = preload("res://assets/sprites/ui_icons.png")
 var current_units: int = 30
 var maximum_units: int = 30
 

@@ -1,4 +1,4 @@
-# RUN-014: render the coin pickup burst and the slime death splash in the slice.
+# RUN-014 / RUN-029: render the coin pickup burst, the slime hit spray and the death splash in the slice.
 extends SceneTree
 var failures := 0
 var checks := 0
@@ -13,10 +13,10 @@ func frames(count: int) -> void:
 		await process_frame
 func capture(name: String) -> void:
 	await RenderingServer.frame_post_draw
-	root.get_texture().get_image().save_png("res://work/run-014/%s.png" % name)
+	root.get_texture().get_image().save_png("res://work/run-029/elements/%s.png" % name)
 	print("CAPTURE ", name)
 func run() -> void:
-	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("res://work/run-014"))
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("res://work/run-029/elements"))
 	var level = load("res://scenes/vertical_slice.tscn").instantiate()
 	root.add_child(level)
 	current_scene = level
@@ -37,8 +37,21 @@ func run() -> void:
 	await frames(2)
 	check(coin.picked_up and coin.get_node("Sprite").animation == &"collect" and coin.get_node("Sprite").visible, "pickup plays the gold burst")
 	await capture("coin-burst")
-	await frames(14)
+	await frames(22)  # 7 frames at 24 fps = 0.29 s
 	check(not is_instance_valid(coin) or not coin.get_node("Sprite").visible, "burst ends without leaving a coin behind")
+	# A non-lethal hit shows the recoil frames and a short goo spray.
+	var wounded: SliceSlime = level.get_node("Enemies/Slime2")
+	wounded.position = Vector2(315, 144) + Vector2(60, 0)
+	wounded.set_physics_process(true)
+	wounded.take_damage(0.5, Vector2(100, -150))
+	await frames(2)
+	var spray: Sprite2D = null
+	for child in level.get_children():
+		if child is Sprite2D and child.texture != null and child.texture.resource_path.ends_with("vfx_slime_hit.png"): spray = child
+	check(spray != null and wounded.get_node("Sprite").animation == &"green_hit", "non-lethal hit plays recoil frames and a goo spray")
+	await capture("slime-hit")
+	await frames(20)
+	check(not is_instance_valid(spray) and wounded.get_node("Sprite").animation == &"green", "spray ends and the slime resumes its patrol animation")
 	# Finish a slime with the Sword: the splash stays where it died.
 	player.position = Vector2(315, 144)
 	player.facing = 1
@@ -50,12 +63,13 @@ func run() -> void:
 	Input.action_press("attack")
 	await frames(10)
 	Input.action_release("attack")
+	check(target.dead and target.get_node("Sprite").animation == &"green_death", "slime plays its death collapse animation")
 	var splash: Sprite2D = null
 	for child in level.get_children():
 		if child is Sprite2D and child.texture != null and child.texture.resource_path.ends_with("vfx_slime_splash.png"): splash = child
 	check(target.dead and splash != null, "slime death leaves a goo splash in the scene")
 	await capture("slime-splash")
-	await frames(30)
+	await frames(40)  # 6 frames over 0.36 s plus a short tail
 	check(not is_instance_valid(splash), "splash frees itself after playing")
 	level.queue_free()
 	await frames(2)

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://20vxd1dpmlbp"
-path="res://.godot/imported/ashen_sword.png-3d7cb5b69a57d2ac1bfe6d62d43e9a14.ctex"
+uid="uid://br4nyvi1jeafs"
+path="res://.godot/imported/prop_lantern_post.png-2528072feaaac4d588f1a1a8691df035.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/ashen_sword.png"
-dest_files=["res://.godot/imported/ashen_sword.png-3d7cb5b69a57d2ac1bfe6d62d43e9a14.ctex"]
+source_file="res://assets/sprites/prop_lantern_post.png"
+dest_files=["res://.godot/imported/prop_lantern_post.png-2528072feaaac4d588f1a1a8691df035.ctex"]
 
 [params]
 

@@ -1,133 +1,306 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=14 format=3]
 [ext_resource type="Script" path="res://scripts/hud.gd" id="1"]
 [ext_resource type="FontFile" path="res://assets/fonts/PixelOperator8.ttf" id="2"]
 [ext_resource type="Script" path="res://scripts/health_hearts.gd" id="3"]
-[ext_resource type="Texture2D" path="res://assets/sprites/hud_icons.png" id="4"]
+[ext_resource type="Texture2D" path="res://assets/sprites/ui_icons.png" id="4"]
+[ext_resource type="Texture2D" path="res://assets/sprites/ui_panel.png" id="5"]
+[ext_resource type="Texture2D" path="res://assets/sprites/ui_plate.png" id="6"]
+[ext_resource type="Texture2D" path="res://assets/sprites/ui_keycap.png" id="7"]
+[ext_resource type="Texture2D" path="res://assets/sprites/ui_avatar_frame.png" id="8"]
+[ext_resource type="Texture2D" path="res://assets/sprites/ui_portrait_knight.png" id="9"]
 [sub_resource type="AtlasTexture" id="coin_icon"]
+atlas = ExtResource("4")
+region = Rect2(36, 0, 12, 12)
+[sub_resource type="AtlasTexture" id="coin_icon_prompt"]
 atlas = ExtResource("4")
 region = Rect2(36, 0, 12, 12)
 [sub_resource type="Theme" id="theme"]
 default_font = ExtResource("2")
-default_font_size = 12
+default_font_size = 8
+Label/colors/font_color = Color(0.867, 0.886, 0.91, 1)
+Label/colors/font_shadow_color = Color(0.09, 0.075, 0.106, 1)
+Label/constants/shadow_offset_x = 1
+Label/constants/shadow_offset_y = 1
 [node name="HUD" type="CanvasLayer"]
 layer = 10
 script = ExtResource("1")
-[node name="Top" type="ColorRect" parent="."]
-anchor_right = 1.0
-offset_bottom = 32.0
-color = Color(0.067,0.059,0.078,0.94)
+[node name="PanelCluster" type="NinePatchRect" parent="."]
+offset_left = 44.0
+offset_top = 8.0
+offset_right = 196.0
+offset_bottom = 40.0
 mouse_filter = 2
-[node name="Rule" type="ColorRect" parent="."]
-anchor_right = 1.0
-offset_top = 31.0
-offset_bottom = 32.0
-color = Color(0.29,0.09,0.12,1)
+texture = ExtResource("5")
+patch_margin_left = 8
+patch_margin_top = 8
+patch_margin_right = 8
+patch_margin_bottom = 8
+[node name="Portrait" type="TextureRect" parent="."]
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 36.0
+offset_bottom = 36.0
 mouse_filter = 2
-[node name="Bottom" type="ColorRect" parent="."]
-anchor_right = 1.0
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_top = -28.0
-color = Color(0.067,0.059,0.078,0.94)
-mouse_filter = 2
-[node name="Health" type="Label" parent="."]
+texture = ExtResource("9")
+[node name="AvatarFrame" type="TextureRect" parent="."]
 offset_left = 8.0
-offset_top = 7.0
-offset_right = 130.0
-offset_bottom = 27.0
+offset_top = 8.0
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 2
+texture = ExtResource("8")
+[node name="HealthHearts" type="Control" parent="."]
+offset_left = 54.0
+offset_top = 12.0
+offset_right = 114.0
+offset_bottom = 24.0
+mouse_filter = 2
+script = ExtResource("3")
+[node name="Health" type="Label" parent="."]
+offset_left = 118.0
+offset_top = 14.0
+offset_right = 192.0
+offset_bottom = 24.0
 theme = SubResource("theme")
 text = "VIE"
 mouse_filter = 2
-[node name="HealthHearts" type="Control" parent="."]
-offset_left = 76.0
-offset_top = 9.0
-offset_right = 136.0
-offset_bottom = 28.0
-mouse_filter = 2
-script = ExtResource("3")
+theme_override_colors/font_color = Color(0.941, 0.478, 0.353, 1)
 [node name="GoldIcon" type="TextureRect" parent="."]
-offset_left = 140.0
-offset_top = 10.0
-offset_right = 152.0
-offset_bottom = 22.0
+offset_left = 54.0
+offset_top = 26.0
+offset_right = 66.0
+offset_bottom = 38.0
 texture = SubResource("coin_icon")
 mouse_filter = 2
 [node name="Gold" type="Label" parent="."]
-offset_left = 156.0
-offset_top = 7.0
-offset_right = 292.0
-offset_bottom = 27.0
+offset_left = 70.0
+offset_top = 28.0
+offset_right = 192.0
+offset_bottom = 38.0
 theme = SubResource("theme")
 text = "SCEAU 00/12"
 mouse_filter = 2
+[node name="PanelBonus" type="NinePatchRect" parent="."]
+offset_left = 424.0
+offset_top = 8.0
+offset_right = 576.0
+offset_bottom = 40.0
+mouse_filter = 2
+texture = ExtResource("5")
+patch_margin_left = 8
+patch_margin_top = 8
+patch_margin_right = 8
+patch_margin_bottom = 8
 [node name="Bonus" type="Label" parent="."]
-offset_left = 308.0
-offset_top = 2.0
-offset_right = 498.0
-offset_bottom = 17.0
+offset_left = 434.0
+offset_top = 12.0
+offset_right = 568.0
+offset_bottom = 22.0
 theme = SubResource("theme")
 text = "BONUS 0"
 mouse_filter = 2
+theme_override_colors/font_color = Color(0.941, 0.824, 0.478, 1)
 [node name="BonusPending" type="Label" parent="."]
-offset_left = 308.0
-offset_top = 16.0
-offset_right = 498.0
-offset_bottom = 31.0
+offset_left = 434.0
+offset_top = 24.0
+offset_right = 568.0
+offset_bottom = 34.0
 theme = SubResource("theme")
 text = "reserve 0"
 mouse_filter = 2
+theme_override_colors/font_color = Color(0.651, 0.682, 0.733, 1)
+[node name="PauseCap" type="NinePatchRect" parent="."]
+offset_left = 584.0
+offset_top = 8.0
+offset_right = 632.0
+offset_bottom = 24.0
+mouse_filter = 2
+texture = ExtResource("7")
+patch_margin_left = 3
+patch_margin_top = 3
+patch_margin_right = 3
+patch_margin_bottom = 3
 [node name="PauseHint" type="Label" parent="."]
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -68.0
-offset_top = 7.0
-offset_right = -8.0
-offset_bottom = 27.0
+offset_left = 588.0
+offset_top = 12.0
+offset_right = 628.0
+offset_bottom = 22.0
 theme = SubResource("theme")
 text = "ECHAP"
 mouse_filter = 2
-[node name="Hint" type="Label" parent="."]
-anchor_right = 1.0
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.09, 0.075, 0.106, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0)
+[node name="Prompt" type="Control" parent="."]
+visible = false
+offset_right = 64.0
+offset_bottom = 24.0
+mouse_filter = 2
+[node name="Bg" type="NinePatchRect" parent="Prompt"]
+offset_right = 64.0
+offset_bottom = 24.0
+mouse_filter = 2
+texture = ExtResource("6")
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 4
+patch_margin_bottom = 4
+[node name="Cap" type="NinePatchRect" parent="Prompt"]
+offset_left = 5.0
+offset_top = 5.0
+offset_right = 19.0
+offset_bottom = 19.0
+mouse_filter = 2
+texture = ExtResource("7")
+patch_margin_left = 3
+patch_margin_top = 3
+patch_margin_right = 3
+patch_margin_bottom = 3
+[node name="CapLabel" type="Label" parent="Prompt"]
+offset_left = 5.0
+offset_top = 6.0
+offset_right = 19.0
+offset_bottom = 16.0
+theme = SubResource("theme")
+text = "E"
+mouse_filter = 2
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.09, 0.075, 0.106, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0)
+[node name="Coin" type="TextureRect" parent="Prompt"]
+offset_left = 23.0
+offset_top = 6.0
+offset_right = 35.0
+offset_bottom = 18.0
+mouse_filter = 2
+texture = SubResource("coin_icon_prompt")
+[node name="Amount" type="Label" parent="Prompt"]
+offset_left = 38.0
+offset_top = 8.0
+offset_right = 58.0
+offset_bottom = 18.0
+theme = SubResource("theme")
+text = "12"
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.941, 0.824, 0.478, 1)
+[node name="DialogueBanner" type="Control" parent="."]
+visible = false
 anchor_top = 1.0
+anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 8.0
-offset_top = -25.0
+offset_top = -80.0
 offset_right = -8.0
-offset_bottom = -3.0
+offset_bottom = -8.0
+mouse_filter = 2
+[node name="Bg" type="NinePatchRect" parent="DialogueBanner"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+texture = ExtResource("5")
+patch_margin_left = 8
+patch_margin_top = 8
+patch_margin_right = 8
+patch_margin_bottom = 8
+[node name="Portrait" type="TextureRect" parent="DialogueBanner"]
+offset_left = 14.0
+offset_top = 20.0
+offset_right = 38.0
+offset_bottom = 44.0
+mouse_filter = 2
+[node name="AvatarFrame" type="TextureRect" parent="DialogueBanner"]
+offset_left = 10.0
+offset_top = 16.0
+offset_right = 42.0
+offset_bottom = 48.0
+mouse_filter = 2
+texture = ExtResource("8")
+[node name="Speaker" type="Label" parent="DialogueBanner"]
+offset_left = 54.0
+offset_top = 11.0
+offset_right = 400.0
+offset_bottom = 21.0
 theme = SubResource("theme")
 text = ""
 mouse_filter = 2
-horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.941, 0.824, 0.478, 1)
+[node name="Text" type="Label" parent="DialogueBanner"]
+offset_left = 54.0
+offset_top = 25.0
+offset_right = 600.0
+offset_bottom = 62.0
+theme = SubResource("theme")
+text = ""
+mouse_filter = 2
+autowrap_mode = 3
+[node name="Skip" type="Label" parent="DialogueBanner"]
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -150.0
+offset_top = 11.0
+offset_right = -14.0
+offset_bottom = 21.0
+theme = SubResource("theme")
+text = "ESPACE - Passer"
+mouse_filter = 2
+horizontal_alignment = 2
+theme_override_colors/font_color = Color(0.651, 0.682, 0.733, 1)
 [node name="Overlay" type="ColorRect" parent="."]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = 32.0
-offset_bottom = -28.0
-color = Color(0.035,0.044,0.055,0.91)
+color = Color(0.035, 0.044, 0.055, 0.88)
 mouse_filter = 2
-[node name="Title" type="Label" parent="Overlay"]
-anchor_right = 1.0
+[node name="Panel" type="NinePatchRect" parent="Overlay"]
+anchor_left = 0.5
 anchor_top = 0.5
+anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = 16.0
+offset_left = -240.0
 offset_top = -56.0
-offset_right = -16.0
+offset_right = 240.0
+offset_bottom = 56.0
+mouse_filter = 2
+texture = ExtResource("5")
+patch_margin_left = 8
+patch_margin_top = 8
+patch_margin_right = 8
+patch_margin_bottom = 8
+[node name="Rule" type="ColorRect" parent="Overlay"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -96.0
+offset_top = -18.0
+offset_right = 96.0
+offset_bottom = -17.0
+mouse_filter = 2
+color = Color(0.549, 0.42, 0.18, 1)
+[node name="Title" type="Label" parent="Overlay"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -224.0
+offset_top = -44.0
+offset_right = 224.0
 offset_bottom = -24.0
 theme = SubResource("theme")
 text = ""
 mouse_filter = 2
 horizontal_alignment = 1
-theme_override_colors/font_color = Color(0.94,0.8,0.5,1)
+theme_override_colors/font_color = Color(0.941, 0.824, 0.478, 1)
 theme_override_font_sizes/font_size = 16
 [node name="Subtitle" type="Label" parent="Overlay"]
-anchor_right = 1.0
+anchor_left = 0.5
 anchor_top = 0.5
+anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = 16.0
-offset_top = -16.0
-offset_right = -16.0
-offset_bottom = 64.0
+offset_left = -224.0
+offset_top = -10.0
+offset_right = 224.0
+offset_bottom = 46.0
 theme = SubResource("theme")
 text = ""
 mouse_filter = 2

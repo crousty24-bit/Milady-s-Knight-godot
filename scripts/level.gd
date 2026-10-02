@@ -9,7 +9,7 @@ var transitioning: bool = false
 var finished: bool = false
 var paused: bool = false
 var closing: bool = false
-var message_time: float = 0.0
+const GATE_PROMPT_OFFSET := Vector2(0, -132)
 const DEATH_MESSAGE_DURATION: float = 3.0
 const DEATH_FADE_DURATION: float = 0.4
 var death_elapsed: float = -1.0
@@ -65,31 +65,13 @@ func _process(delta: float) -> void:
 		paused = not paused
 		get_tree().paused = paused
 		hud.set_overlay("PAUSE", "ECHAP pour reprendre") if paused else hud.clear_overlay()
-	if finished or player.dead or paused: return
-	message_time = maxf(0.0, message_time - delta)
-	if message_time > 0.0: return
+	if finished or player.dead or paused:
+		hud.hide_prompt()
+		return
 	if gate.player_near() and not gate.opened:
-		hud.set_hint("E  Offrir 12 or" if gold >= 12 else "Poterne scellee : %d / 12 or" % gold)
-	elif absf(player.position.x-1120)<55 and player.position.y>160:
-		hud.set_hint("Fixed spikes: jump over them.")
-	elif absf(player.position.x-1544)<55 or (absf(player.position.x-1032)<55 and player.position.y>160):
-		hud.set_hint("Ronces lumineuses : danger. Sautez par-dessus.")
-	elif player.position.x < 240:
-		hud.set_hint("FLECHES marcher   ESPACE sauter   F attaquer")
-	elif player.position.x < 510:
-		hud.set_hint("Le chariot est vide. Des traces vers l'est.")
-	elif player.position.x < 592:
-		hud.set_hint("ESPACE puis ESPACE : double saut")
-	elif player.position.x < 720 and player.position.y < 120:
-		hud.set_hint("Mur : ESPACE rebondir. Pas de double saut.")
-	elif player.position.x < 1080 and player.position.y < 120:
-		hud.set_hint("Le bac relie les berges. Attendez son retour.")
-	elif player.position.x < 1350:
-		hud.set_hint("La banniere royale a ete arrachee.")
-	elif player.position.x < 1760:
-		hud.set_hint("Les racines ont noirci. Quelque chose avance.")
+		hud.show_prompt(gate.global_position + GATE_PROMPT_OFFSET, gate.COST, gold)
 	else:
-		hud.set_hint("Un ruban royal... Elle est passee par ici.")
+		hud.hide_prompt()
 func _on_collected(value: int) -> void:
 	if finished or player.dead or value <= 0: return
 	var for_seal: int = 0 if gate.opened else mini(value, maxi(0, gate.COST - gold))
@@ -117,14 +99,12 @@ func _update_gold_hud() -> void:
 func try_offering() -> bool:
 	if finished or player.dead or gate.opened: return false
 	if gold < gate.COST:
-		hud.set_hint("Il manque %d or. Les deux chemins restent ouverts." % (gate.COST-gold))
-		message_time = 2.5
+		hud.flash_prompt_failure()
 		return false
 	gold -= gate.COST
 	gate.open()
 	_update_gold_hud()
-	hud.set_hint("Le sceau cede. Traversez la poterne.")
-	message_time = 3.0
+	hud.flash_prompt_success()
 	return true
 func _on_exit(body: Node2D) -> void:
 	if body != player or player.dead or not gate.opened or finished: return
