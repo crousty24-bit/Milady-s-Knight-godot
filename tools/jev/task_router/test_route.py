@@ -14,7 +14,7 @@ class RouteGatesTest(unittest.TestCase):
             "complexity": "low", "visual_judgment": False,
             "affected_files": [], "concurrent_edit_files": [],
             "active_subagents": 0,
-            "available_models": ["gpt-6-luna", "gpt-6-sol", "claude-opus-5-5", "claude-sonnet-5-5"],
+            "available_models": ["gpt-6-luna", "gpt-6.1-sol", "claude-opus-5-5", "claude-sonnet-5-5"],
         }
 
     def test_conflicting_file_prevents_request(self):

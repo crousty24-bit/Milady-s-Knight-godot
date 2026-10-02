@@ -5,6 +5,8 @@
 
 Claude Code is the visual production lead within the existing Milady's Knight development workflow. Its intended main agent is **Opus 5.5**.
 
+Coherent larger runs can accelerate game production and increase agent autonomy without overfragmenting work. The roadmap defines each batch's orchestrator up front; keep delegation aligned with those coherent batches.
+
 Claude does not replace the project workflow, roadmap, documentation, or human validation.
 
 The active run defines the scope of work.

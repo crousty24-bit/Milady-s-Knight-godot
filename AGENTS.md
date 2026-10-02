@@ -22,7 +22,9 @@ Documentation describes intent. Inspect the actual files, references and Git sta
 The user-level Codex technical configuration remains the source of truth for available models and execution settings.
 Do not add or modify a repository-level .codex/config.toml for the model, reasoning effort, sandbox, or approval settings unless explicitly requested.
 
-For run execution, the intended Codex main agent is **GPT-6 Sol Medium**. It orchestrates the run and primarily owns planning, coordination, review, debugging, analysis and code implementation. If the available configuration differs, report the mismatch rather than claiming a model switch occurred.
+For run execution, the intended Codex main agent is **GPT-6.1 Sol Medium** (`gpt-6.1-sol`). It orchestrates the run and primarily owns planning, coordination, review, debugging, analysis and code implementation. If the available configuration differs, report the mismatch rather than claiming a model switch occurred.
+
+Coherent larger runs can accelerate game production and increase agent autonomy without overfragmenting work. The roadmap defines each batch's orchestrator up front; keep delegation aligned with those coherent batches.
 
 Codex subagents default to **GPT-6 Luna**, with Low, Medium or High reasoning according to the task: Low for bounded mechanical inspection, inventory and documentation; Medium for well-scoped implementation or verification requiring some system understanding; High for a difficult bounded investigation. Use Sol Medium/High for subwork that exceeds Luna's scope; reserve Astra Medium for exceptional architecture or complex audits that Sol cannot resolve satisfactorily. Escalate only after narrowing the context and the task. Routine asset file operations remain suitable for Luna or Sol.
 

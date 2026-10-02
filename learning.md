@@ -447,3 +447,63 @@ Un nœud en pause arrête aussi ses sons. Or la mort met l'arbre en pause : le s
 Les fichiers de la bibliothèque ne sont jamais modifiés. `tools/prepare_audio.py` en crée des copies courtes en WAV mono 16 bits pour les effets, et en Ogg Vorbis bouclé pour la musique, dont le volume perçu est ramené à −16 LUFS. Les SFX viennent d'un pack CC BY 4.0 : le crédit de Helton Yan devra apparaître dans le jeu. `assets/AUDIO_CREDITS.md` conserve la source de chaque fichier.
 
 Godot 4.7.2 a passé 16 suites et 377 contrôles, dont 24 dédiés à l'audio. Une capture Movie Maker empile sept sons sur la musique : le pic reste à −5,5 dBFS, sous la saturation. À l'écoute, l'humain a validé cette première itération. Il demande toutefois une musique plus forte et différente, des SFX moins forts, ainsi que d'autres sons pour l'impact d'épée, le saut et le double saut. Une mesure sans saturation ne garantit donc pas un mix agréable.
+
+## RUN-011 — Recetter le socle avant le premier niveau
+
+La recette distingue trois types de preuve. Une suite ciblée isole une règle : par exemple `render_timing.gd` déclenche un saut mural à un endroit préparé et vérifie vitesse et état du joueur. Le pilote de parcours part du niveau et commande réellement le joueur pour franchir les deux branches, revenir et sortir ; il détecte des problèmes d'enchaînement que la fixture isolée ne voit pas. Enfin, un essai humain juge si l'escalade paraît jouable, ce qu'un compteur de vitesse ne peut pas décider.
+
+Le moteur dessine des **images** à la cadence de l'écran, tandis que la physique avance ici à **60 ticks par seconde**. RUN-011 a plafonné le rendu à 30, 60 et 144 images par seconde sans changer ce pas physique. Les neuf contrôles de saut, attaque, glissade, bac et verrou de double saut ont réussi aux trois cadences mesurées. Des captures 640×360 montrent le mur, le sommet, les autres zones et l'écran de mort ; elles vérifient le cadrage et la lisibilité, pas la sensation de jeu.
+
+L'import et les 16 suites ont passé 377 contrôles de jeu. Les tests de parcours, de pause et de mort ont aussi exercé les régressions les plus pertinentes pour ce socle. Aucun défaut n'a été reproduit, donc aucun code gameplay n'a été changé pour cette run. L'humain a joué le saut mural et l'a validé. Cette validation concerne le slice actuel : The Eidolon Vale, son menu, le Longbow et sa sauvegarde restent à réaliser dans les runs de 0.2.0.
+
+## Réorganisation du 2 octobre 2026 — Runs, lots et versions
+
+Une **run** devient un lot de travail cohérent : par exemple la reprise réunit son contrat, la sauvegarde et les menus qui l’utilisent. Elle peut contenir plusieurs sessions, tâches déléguées et commits. Regrouper ces étapes évite de rouvrir un chantier pour chaque petite tâche ; chaque comportement conserve ses propres vérifications avant la recette intégrée.
+
+Une **version** décrit un résultat utilisable, pas le nombre de runs effectuées. Les onze premières runs forment le socle validé **0.1.0**. La roadmap réserve trois éventuelles passes visuelles supplémentaires sur la branche actuelle, puis regroupe le reste en quatorze lots jusqu’à **0.5.0 beta**. Le nombre total d’identifiants est donc 28, sans réduire les dix niveaux ni leurs systèmes. Cette modification du planning n’implémente aucun de ces futurs systèmes.
+
+La version actuelle est aussi inscrite dans `project.godot` sous `config/version`. Cette métadonnée ne crée ni tag Git, ni export, ni écran de version. De même, une run DONE peut être validée localement alors que sa branche n’est pas fusionnée : ici, la validation de la réorganisation et des compléments retenus, puis la fusion autorisée, doivent précéder le travail vers 0.2.0.
+
+Chaque lot indique son orchestrateur à l’avance. Le défaut Codex et son profil de travail de code utilisent désormais `gpt-6.1-sol` ; les autres profils et les décisions de délégation restent en place. Jev conseille toujours le routage et la clôture : il ne démarre pas les runs, ne remplace pas les tests et ne fusionne pas les branches.
+
+## RUN-012 — Dessiner un personnage avec du code
+
+Un sprite en pixel art est une grille de couleurs. `tools/art/knight.py` écrit cette grille sous forme de texte : chaque caractère est un pixel (`o` le contour, `1` à `5` l'acier du plus sombre au plus clair, `R` la cape…). Le chevalier est découpé en **calques** — cape, jambe arrière, jambe avant, torse, heaume, bras — superposés dans un ordre fixe. Une course de six images réutilise ainsi le même torse avec des poses de jambes différentes. La jambe arrière est la même grille que la jambe avant, assombrie automatiquement d'un ton : la profondeur coûte une ligne de code.
+
+Toutes les images partagent un **point d'ancrage** : les pieds au bas de la ligne 30 et le corps centré sur la colonne 16. Sans cela, le personnage semblerait glisser d'une image à l'autre. Comme le torse est symétrique autour de cette colonne, retourner le sprite vers la gauche ne le décale pas. Le script écrit aussi le `SpriteFrames` de Godot : chaque image y est une `AtlasTexture` qui découpe une région de la planche.
+
+L'épée n'est pas dans le sprite : sa position vient du gameplay, qui fait tourner la lame autour de la main pendant 0,28 s. Faire pivoter une petite image de pixel art la rend floue ou crénelée. Le script pré-dessine donc l'épée sous 32 angles et le jeu choisit la plus proche de l'angle réel. Le dessin suit ainsi exactement la zone de dégâts. La collision du joueur (10×18) n'a pas changé : un sprite plus grand ne doit pas modifier la façon dont le personnage passe sous un plafond de deux tuiles.
+
+Enfin, un nœud en pause n'anime plus. La mort met tout le jeu en pause : l'animation de chute restait figée sur sa première image. Le sprite passe donc en `PROCESS_MODE_ALWAYS` à la mort, comme le son de mort de RUN-010.
+
+## RUN-013 — Habiller un niveau sans le reconstruire
+
+Le niveau garde une seule source de vérité pour sa forme : la `TileMapLayer` `Terrain`, qui porte les collisions. Le nœud `TerrainSkin` se contente de **redessiner** par-dessus chaque case occupée. Pour choisir l'image, il regarde les quatre voisines et forme un **masque d'exposition** : 1 si le dessus est libre, 2 pour la droite, 4 pour le dessous, 8 pour la gauche. Les seize combinaisons ont chacune leur tuile : une case avec le dessus libre reçoit une margelle claire et de la mousse, une case au bord droit une arête sombre. C'est le principe de l'**autotiling**, appliqué ici en dessin plutôt que dans le `TileSet`. Plus une case est profonde sous la surface, plus elle est assombrie : l'œil lit d'abord le sol praticable.
+
+La **parallaxe** donne de la profondeur avec des images plates. `backdrop.gd` lit le centre de la caméra et décale chaque couche d'une fraction de son mouvement. La citadelle lointaine bouge à 8 % de la vitesse de la caméra, la forêt à 30 %, le niveau à 100 %. Le ciel ne bouge pas du tout. Les couches se répètent horizontalement pour couvrir toute la largeur.
+
+Les accessoires (maisons, charrette, panneau…) restent dessinés aux coordonnées choisies par l'auteur du niveau ; seules leurs images changent. Une palette partagée (`tools/art/palette.py`) garde la cohérence entre plusieurs scripts et plusieurs agents. Les couleurs vives y sont réservées à une fonction : rouge pour le danger et la vie, or pour l'argent, violet pour la corruption.
+
+## RUN-014 — Finir les retours visuels et rééquilibrer le son
+
+Un **feedback** confirme une action au joueur. Ramasser une pièce faisait disparaître le sprite d'un coup : elle joue maintenant une courte animation `collect` avant de se cacher. Pour la mort d'un Slime, l'effet ne peut pas être enfant du Slime, puisque celui-ci est supprimé presque aussitôt. L'éclaboussure est donc créée dans la scène courante, à la position de la mort, puis elle se libère d'elle-même. C'est la même solution que pour ses sons en RUN-010.
+
+Côté son, chaque effet est normalisé à une **crête** cible : sa valeur maximale. Passer de −3 à −8 dBFS baisse tous les effets de 5 dB d'un coup, sans changer leur équilibre entre eux. La musique est réglée en **LUFS**, une mesure du volume perçu sur la durée : −13 LUFS au lieu de −16 la rend audible sous les effets. Une musique bouclée doit se terminer au même niveau qu'elle commence. Le nouveau morceau finissait par un fondu ; il est coupé avant, à la fin d'une mesure, pour que la reprise tombe en rythme. Les mesures prouvent l'absence de saturation, pas le plaisir d'écoute : seule une écoute humaine valide ce choix.
+
+## RUN-029 — Animer un personnage avec un squelette
+
+Dessiner chaque image à la main oblige à tout redessiner pour une nouvelle pose. `tools/art/knight.py` décrit plutôt une **pose** : position de la hanche, inclinaison du torse, position des pieds et des mains, angle de l'épée, forme de la cape. Le script en déduit le reste. Pour une jambe, il connaît la hanche, le pied et la longueur de la cuisse et du tibia ; la **cinématique inverse à deux os** calcule où doit se trouver le genou (deux solutions possibles, on garde celle qui plie vers l'avant). Les membres sont ensuite peints comme des tubes éclairés par une même lumière, puis réduits à quelques tons de la palette : chaque image reste du vrai pixel art, cohérent d'une pose à l'autre.
+
+Le **contour sélectif** évite l'effet « coloriage » : chaque pièce reçoit un contour sombre là où elle touche le vide, mais une ligne plus douce là où elle passe devant une autre pièce. La silhouette reste nette sans écraser les détails intérieurs.
+
+L'attaque montre comment séparer présentation et règle. La règle de `docs/01` reste : un hit par seconde tant que F est maintenu, avec une seule fenêtre de dégâts. Le jeu compte simplement les coups successifs et choisit le mouvement 1, 2 ou 3 ; si plus de 1,25 s passent, il revient au premier. Entre deux hits, au lieu de revenir au repos, le sprite affiche une pose d'enchaînement qui prépare le mouvement suivant. Pendant la fenêtre de contact, la lame est dessinée à l'angle même de la zone de dégâts : ce que le joueur voit correspond à ce qui touche.
+
+Pour attaquer en courant sans « patiner », le personnage est rendu en **deux calques** : un `AnimatedSprite2D` pour les jambes, la jupe du tabard et la cape, et un enfant `Upper` pour le torse, les bras et l'épée. `use_parent_material` partage le shader de flash blanc et la modulation du parent, donc le clignotement d'invulnérabilité s'applique aux deux. En passant de `run` à `base_run`, le script recopie l'image et la progression de l'animation (`set_frame_and_progress`) : la foulée continue sans à-coup.
+
+Côté interface, une information n'apparaît que lorsqu'elle sert (`docs/05`). Le bandeau d'indications a disparu ; l'invite de la porte est dessinée par le HUD mais placée sur la porte : sa position dans le monde est convertie en position d'écran avec la transformation du canevas de la vue. Enfin, tous les PNG du dépôt sont reproduits à l'identique par leurs générateurs : on le vérifie en comparant leurs empreintes MD5 avant et après régénération.
+
+### Clôture 0.1.0 — Vérifier le résultat assemblé
+
+La dernière validation porte sur l’assemblage des passes, pas seulement sur chacune séparément. Les 377 contrôles de jeu passent encore après les changements d’animations, de décor et de HUD ; 49 contrôles avec rendu vérifient ensuite les états du chevalier, l’invite de porte et les effets qui doivent se libérer après lecture. Les tests et l’inspection des captures complètent la validation artistique donnée par l’humain.
+
+La version 0.1.0 comprend les runs 001–014 et 029. Le numéro 029 évite de renuméroter les lots déjà planifiés : il ne signifie pas que 015–028 ont été réalisés. Le plan compte maintenant 29 identifiants, dont 15 réalisés et 14 à venir. L’ouverture de la PR clôt la préparation de la livraison ; sa fusion dans `develop` reste nécessaire avant de commencer RUN-015 vers la 0.2.0.

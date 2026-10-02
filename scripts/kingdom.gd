@@ -1,102 +1,145 @@
 @tool
-# Hand-placed pixel scenery. Pure drawing, no gameplay state or dynamic corruption.
+# Hand-placed scenery of the slice, drawn from generated props (tools/art/world.py).
+# Pure drawing, no gameplay state; positions are those of the authored layout.
 extends Node2D
 const FONT = preload("res://assets/fonts/PixelOperator8.ttf")
-func block(x: float, y: float, w: float, h: float, color: String) -> void:
-	draw_rect(Rect2(x,y,w,h),Color(color))
-func tree(x: int, y: int, ruined: bool = false) -> void:
-	var bark: String = "392e3d" if ruined else "393d36"
-	block(x,y-64,5,64,bark)
-	for i in range(3):
-		var yy: int = y-30-i*13
-		draw_line(Vector2(x+2,yy),Vector2(x-12,yy-14),Color(bark),3)
-		draw_line(Vector2(x+3,yy-4),Vector2(x+19,yy-18),Color(bark),3)
-	if not ruined:
-		block(x-17,y-72,35,12,"354844")
-		block(x-25,y-61,50,16,"3b5148")
-		block(x-19,y-46,38,9,"43584b")
-func house(x: int, y: int, ruined: bool = false) -> void:
-	block(x,y-49,68,49,"5b5a50")
-	block(x+3,y-47,62,46,"827765")
-	block(x+5,y-45,58,41,"9b8b71")
-	for yy in range(y-42,y,12): block(x+4,yy,59,2,"685f50")
-	for xx in [x+4,x+32,x+61]:block(xx,y-46,3,46,"494740")
-	draw_colored_polygon(PackedVector2Array([Vector2(x-8,y-48),Vector2(x+33,y-79),Vector2(x+76,y-48)]),Color("45454a"))
-	for i in range(4):block(x-3+i*8,y-52-i*6,72-i*16,3,"6b6260")
-	block(x+25,y-26,17,26,"292f32")
-	block(x+10,y-32,10,13,"344344")
-	block(x+48,y-32,10,13,"344344")
-	if ruined:
-		draw_line(Vector2(x+24,y-69),Vector2(x+48,y-48),Color("222c31"),6)
-		draw_line(Vector2(x+30,y-46),Vector2(x+20,y-19),Color("393c39"),2)
-	else: block(x+50,y-29,2,7,"c7a16a")
+const TILES = preload("res://assets/sprites/terrain_stone.png")
+const HOUSE = preload("res://assets/sprites/prop_house.png")
+const HOUSE_RUINED = preload("res://assets/sprites/prop_house_ruined.png")
+const TREES = [preload("res://assets/sprites/prop_tree_a.png"), preload("res://assets/sprites/prop_tree_b.png")]
+const DEAD_TREES = [preload("res://assets/sprites/prop_tree_dead_a.png"), preload("res://assets/sprites/prop_tree_dead_b.png")]
+const CART = preload("res://assets/sprites/prop_cart.png")
+const SIGNPOST = preload("res://assets/sprites/prop_signpost.png")
+const BANNER = preload("res://assets/sprites/prop_banner.png")
+const BLIGHT = [preload("res://assets/sprites/prop_blight_a.png"), preload("res://assets/sprites/prop_blight_b.png"), preload("res://assets/sprites/prop_blight_c.png")]
+const FAR_TOWERS = [preload("res://assets/sprites/prop_far_tower_a.png"), preload("res://assets/sprites/prop_far_tower_b.png")]
+const RIBBON_SPEAR = preload("res://assets/sprites/prop_ribbon_spear.png")
+const PILLARS = [preload("res://assets/sprites/prop_pillar_a.png"), preload("res://assets/sprites/prop_pillar_b.png")]
+const LAMP = preload("res://assets/sprites/prop_lantern_post.png")
+const BRAZIER = preload("res://assets/sprites/prop_brazier.png")
+const SCONCE = preload("res://assets/sprites/prop_sconce.png")
+const CHAIN_LANTERN = preload("res://assets/sprites/prop_chain_lantern.png")
+const FLAME = preload("res://assets/sprites/prop_flame.png")
+const GLOW = preload("res://assets/sprites/prop_glow.png")
+const GRAVES = [preload("res://assets/sprites/prop_grave_a.png"), preload("res://assets/sprites/prop_grave_b.png"), preload("res://assets/sprites/prop_grave_c.png")]
+const FENCE = preload("res://assets/sprites/prop_fence.png")
+const BUSH = preload("res://assets/sprites/prop_bush.png")
+const BUSH_CORRUPT = preload("res://assets/sprites/prop_bush_corrupt.png")
+const RUBBLE = preload("res://assets/sprites/prop_rubble.png")
+const BONES = preload("res://assets/sprites/prop_bones.png")
+const RUIN_WALL = preload("res://assets/sprites/prop_ruin_wall.png")
+const SHRINE = preload("res://assets/sprites/prop_shrine.png")
+const GALLOWS = preload("res://assets/sprites/prop_gallows.png")
+const CROW = preload("res://assets/sprites/prop_crow.png")
+const BANNER_HANG = preload("res://assets/sprites/prop_banner_hang.png")
+const ROOTS = preload("res://assets/sprites/prop_roots.png")
+const POD = preload("res://assets/sprites/prop_pod.png")
+
+# Slow flicker of lanterns and braziers: redraw about ten times per second.
+var _time := 0.0
+var _since_draw := 0.0
+func _process(delta: float) -> void:
+	_time += delta
+	_since_draw += delta
+	if _since_draw >= 0.1:
+		_since_draw = 0.0
+		queue_redraw()
+
+# Warm accent: animated flame (3 frames) over a dithered, low-alpha glow.
+func light(point: Vector2, flame: bool, phase: float, strength: float = 1.0) -> void:
+	var flicker := 0.78 + 0.22 * sin(_time * 7.0 + phase) * sin(_time * 3.1 + phase * 2.0)
+	draw_texture(GLOW, (point - Vector2(32, 32)).round(), Color(1, 1, 1, clampf(flicker * strength, 0.0, 1.0)))
+	if flame:
+		var frame := posmod(int(_time * 9.0 + phase * 3.0), 3)
+		draw_texture_rect_region(FLAME, Rect2((point + Vector2(-5, -12)).round(), Vector2(10, 14)), Rect2(frame * 10, 0, 10, 14))
+
+# Draw a prop with its bottom-centre (or given anchor) at a world point.
+func prop(texture: Texture2D, foot: Vector2, anchor_x: float = -1.0, flip: bool = false, tint: Color = Color.WHITE) -> void:
+	var ax: float = texture.get_width() * 0.5 if anchor_x < 0.0 else anchor_x
+	var origin := (foot - Vector2(ax, texture.get_height())).round()
+	if flip:
+		# A negative width mirrors the prop: cheap variety for repeated trees.
+		draw_texture_rect(texture, Rect2(origin + Vector2(texture.get_width(), 0), Vector2(-texture.get_width(), texture.get_height())), false, tint)
+	else:
+		draw_texture(texture, origin, tint)
+
 func _draw() -> void:
-	block(-100,-400,2500,800,"18242c")
-	block(-100,-16,2500,85,"26383f")
-	block(-100,69,2500,210,"304448")
-	# A pale broken moon and long clouds anchor the abandoned village.
-	block(180,3,18,14,"acb6a5")
-	block(176,7,25,7,"acb6a5")
-	block(189,0,15,10,"26383f")
-	for i in range(20):
-		var x: int = i*123-20
-		block(x,18+(i%3)*11,63,3,"34474b")
-		block(x+25,14+(i%3)*11,44,4,"34474b")
-	for i in range(16):
-		var x: int = i*154-60
-		draw_colored_polygon(PackedVector2Array([Vector2(x,126),Vector2(x+62,46+(i%3)*10),Vector2(x+145,126)]),Color("33494a"))
-		block(x+57,68+(i%3)*10,12,58,"33494a")
 	# Distant fortification, growing closer toward the exit.
-	for x in range(1590,2280,72):
-		block(x,34,52,150,"26363d")
-		for xx in range(x,x+52,12):block(xx,27,7,10,"26363d")
-		block(x+22,50,7,17,"172831")
-	block(1570,94,740,120,"2a3a40")
-	for i in range(24): tree(i*99+22,144,i>12)
-	house(36,144)
-	house(212,144,true)
+	for x in range(1590, 2280, 72):
+		prop(FAR_TOWERS[(x / 72) % 2], Vector2(x - 4, 184), 0.0)
+	draw_rect(Rect2(1570, 150, 740, 64), Color("161b25"))
+	_scenery_back()
+	for i in range(24):
+		var x: int = i * 99 + 22
+		if i > 12: prop(DEAD_TREES[i % 2], Vector2(x + 2, 144), -1.0, i % 4 >= 2)
+		else: prop(TREES[i % 2], Vector2(x + 2, 146), -1.0, i % 3 == 1)
+	prop(HOUSE, Vector2(70, 144))
+	prop(HOUSE_RUINED, Vector2(246, 144))
 	# Cart and its spilled cargo.
-	block(407,126,34,9,"695b44")
-	draw_circle(Vector2(413,139),5,Color("282e30"))
-	draw_circle(Vector2(435,139),5,Color("282e30"))
-	draw_circle(Vector2(413,139),2,Color("9a8861"))
-	draw_circle(Vector2(435,139),2,Color("9a8861"))
-	draw_line(Vector2(439,131),Vector2(458,136),Color("8b7757"),2)
-	block(399,139,6,4,"9a8861")
+	prop(CART, Vector2(427, 144))
 	# Two-path sign. Visible before committing to either route.
-	block(481,112,3,31,"806b50")
-	block(463,106,38,8,"685b48")
-	draw_string(FONT,Vector2(467,113),"12 OR >",HORIZONTAL_ALIGNMENT_LEFT,-1,8,Color("e2c989"))
+	prop(SIGNPOST, Vector2(482, 144))
+	draw_string(FONT, Vector2(466, 113), "12 OR >", HORIZONTAL_ALIGNMENT_LEFT, -1, 8, Color("e2c989"))
 	# Bridge pillars distinguish the high route from the lower road.
-	for x in [706,780,986,1050,1130,1210]:
-		block(x,88,9,136,"485454")
-		for yy in range(92,224,12):block(x+1,yy,7,1,"69716a")
+	var pillar_index := 0
+	for x in [706, 780, 986, 1050, 1130, 1210]:
+		prop(PILLARS[1 if pillar_index == 2 or pillar_index == 5 else 0], Vector2(x + 5, 224), -1.0, false, Color(0.88, 0.9, 0.95))
+		pillar_index += 1
 	# Torn royal standard: second environmental clue.
-	block(1048,3,2,43,"817b68")
-	draw_colored_polygon(PackedVector2Array([Vector2(1050,5),Vector2(1070,5),Vector2(1070,18),Vector2(1064,15),Vector2(1061,22),Vector2(1057,18),Vector2(1050,20)]),Color("705365"))
-	block(1055,8,8,2,"bc9d6b")
-	block(1058,7,2,8,"bc9d6b")
+	prop(BANNER, Vector2(1049, 46), 2.0)
 	# Corruption is sparse at first, dense close to the sealed wall.
 	for i in range(22):
-		var x: int = 1390+i*37
-		var height: int = 12+(i*13)%39
-		draw_line(Vector2(x,144),Vector2(x+7,144-height),Color("55435c"),3)
-		draw_line(Vector2(x+3,136),Vector2(x-10,126),Color("69506d"),2)
-		block(x+4,144-height,3,3,"b18bae")
+		prop(BLIGHT[(i * 13) % 3], Vector2(1390 + i * 37, 145))
 	# Final wall and columns frame the actual gate, which draws in front.
-	for x in range(1968,2232,16):
-		if x>2040 and x<2104: continue
-		for y in range(16,144,8):
-			block(x+(8 if y%16 else 0),y,15,7,"4b5154")
-			block(x+(8 if y%16 else 0),y,15,1,"666967")
-	for x in range(1968,2240,24):block(x,8,12,9,"5f6665")
+	for x in range(1968, 2232, 16):
+		if x > 2040 and x < 2104: continue
+		for y in range(16, 144, 16):
+			var mask: int = 1 if y == 16 else 0
+			var shade: float = 0.82 - minf(0.2, (y - 16) / 640.0)
+			draw_texture_rect_region(TILES, Rect2(x, y, 16, 16), Rect2(mask * 16, _wall_row(x, y) * 16, 16, 16), Color(shade, shade, shade))
+	for x in range(1968, 2240, 24):
+		if x > 2040 and x < 2104: continue
+		draw_texture_rect_region(TILES, Rect2(x, 6, 12, 10), Rect2(16 * 15, _wall_row(x, 16) * 16, 12, 10), Color(0.82, 0.82, 0.82))
+	# Two torn standards and two sconces on the sealed wall.
+	prop(BANNER_HANG, Vector2(1996, 30), 10.0, false, Color(0.9, 0.9, 0.9))
+	prop(BANNER_HANG, Vector2(2200, 30), 10.0, false, Color(0.9, 0.9, 0.9))
+	for sx in [2018, 2126]:
+		prop(SCONCE, Vector2(sx, 102))
+		light(Vector2(sx, 92), true, float(sx))
+	_scenery_front()
 	# Princess's ribbon caught on a spear; no dialogue system needed.
-	block(1892,107,2,37,"a39b7b")
-	draw_colored_polygon(PackedVector2Array([Vector2(1889,110),Vector2(1893,101),Vector2(1896,110)]),Color("c1c5af"))
-	draw_line(Vector2(1894,116),Vector2(1908,118),Color("c59ba7"),3)
-	draw_line(Vector2(1908,118),Vector2(1914,124),Color("c59ba7"),2)
-	# Terrain underlay and grass/small stones at safe, common ground.
-	for x in range(4,480,21):
-		block(x,141,3,3,"818458")
-		block(x+3,139,1,5,"818458")
-	for x in range(1415,1930,27):block(x,142,4,2,"807c78")
+	prop(RIBBON_SPEAR, Vector2(1893, 144), 6.0)
+
+func _wall_row(x: int, y: int) -> int:
+	return 18 + posmod(y / 16, 3) * 6 + posmod(x / 16, 6)
+
+# Decor behind the ground line, before narrative props (trees are drawn by the caller).
+func _scenery_back() -> void:
+	prop(RUIN_WALL, Vector2(354, 144), -1.0, false, Color(0.9, 0.9, 0.95))
+	prop(RUIN_WALL, Vector2(830, 224), -1.0, true, Color(0.85, 0.88, 0.95))
+
+# Ground-level decor, drawn over the narrative props but behind the terrain skin and gameplay.
+func _scenery_front() -> void:
+	# Village.
+	prop(LAMP, Vector2(204, 144)); light(Vector2(204 + 5, 144 - 38), false, 1.0, 0.6)
+	prop(GRAVES[0], Vector2(140, 144)); prop(GRAVES[1], Vector2(158, 144)); prop(GRAVES[2], Vector2(172, 144), -1.0, true)
+	prop(CROW, Vector2(161, 124))
+	prop(BUSH, Vector2(304, 144)); prop(RUBBLE, Vector2(292, 144)); prop(BONES, Vector2(396, 144))
+	prop(FENCE, Vector2(522, 160)); prop(BUSH, Vector2(572, 192), -1.0, true)
+	# Lower road.
+	prop(GRAVES[2], Vector2(640, 224)); prop(BONES, Vector2(660, 224), -1.0, true)
+	prop(LAMP, Vector2(745, 224)); light(Vector2(745 + 5, 224 - 38), false, 2.0, 0.6)
+	prop(GRAVES[0], Vector2(765, 224), -1.0, true)
+	prop(SHRINE, Vector2(934, 224)); light(Vector2(934, 224 - 25), false, 3.0, 0.6)
+	prop(BUSH, Vector2(984, 224)); prop(RUBBLE, Vector2(1160, 224)); prop(BONES, Vector2(1186, 224))
+	prop(BRAZIER, Vector2(1255, 224)); light(Vector2(1255, 224 - 15), true, 4.0)
+	for x in [640, 744]:
+		prop(CHAIN_LANTERN, Vector2(x, 64), 4.0)
+		light(Vector2(x, 64 + 30), false, float(x), 0.4)
+	prop(CHAIN_LANTERN, Vector2(1016, 64), 4.0); light(Vector2(1016, 64 + 30), false, 7.0, 0.4)
+	# Corrupted approach.
+	prop(BUSH_CORRUPT, Vector2(1424, 144)); prop(ROOTS, Vector2(1500, 144))
+	prop(GALLOWS, Vector2(1596, 144)); prop(CROW, Vector2(1604, 144 - 68))
+	prop(POD, Vector2(1702, 144)); prop(BONES, Vector2(1724, 144), -1.0, true); prop(POD, Vector2(1764, 144), -1.0, true)
+	prop(GRAVES[1], Vector2(1850, 144), -1.0, false, Color(0.82, 0.86, 1.0)); prop(GRAVES[2], Vector2(1866, 144), -1.0, false, Color(0.82, 0.86, 1.0))
+	prop(ROOTS, Vector2(1962, 144), -1.0, true)

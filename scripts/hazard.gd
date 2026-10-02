@@ -10,9 +10,18 @@ func _physics_process(_delta: float) -> void:
 				var away := signf(body.global_position.x - global_position.x)
 				if is_zero_approx(away): away = -body.facing
 				body.take_damage(1.0, Vector2(away * 90.0, -180), SlicePlayer.DamageSource.SOLID_TRAP)
+const ART = preload("res://assets/sprites/trap_thorns.png")
+var shown_frame: int = -1
+
+func _process(_delta: float) -> void:
+	if lethal: return
+	# The bramble pulses slowly (4-frame strip at about 5 fps).
+	var frame := int(Time.get_ticks_msec() / 200.0 + position.x * 0.05) % 4
+	if frame != shown_frame:
+		shown_frame = frame
+		queue_redraw()
+
 func _draw() -> void:
 	if lethal: return
-	draw_rect(Rect2(-16,-2,32,3),Color("392139"))
-	for x in range(-14, 16, 7):
-		draw_colored_polygon(PackedVector2Array([Vector2(x-3,0),Vector2(x,-12),Vector2(x+4,0)]),Color("d58bb1"))
-		draw_line(Vector2(x,-10),Vector2(x+1,-3),Color("ffe0da"))
+	# Corrupted bramble (tools/art/hazards.py), bottom-centre on the node origin.
+	draw_texture_rect_region(ART, Rect2(-16, -16, 32, 16), Rect2(maxi(shown_frame, 0) * 32, 0, 32, 16))

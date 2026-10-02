@@ -24,7 +24,7 @@ CATALOG = {
         "role": "Bounded inventories, targeted inspection, simple documentation and mechanical checks.",
     },
     "code_worker": {
-        "owner": "codex", "model": "gpt-6-sol", "effort": "medium",
+        "owner": "codex", "model": "gpt-6.1-sol", "effort": "medium",
         "file": ".codex/agents/code_worker.toml",
         "role": "Scoped code implementation, fixes and focused technical verification.",
     },
@@ -45,7 +45,7 @@ CATALOG = {
     },
 }
 DEFAULTS = {
-    "codex": {"main": "gpt-6-sol", "subagent": "gpt-6-luna"},
+    "codex": {"main": "gpt-6.1-sol", "subagent": "gpt-6-luna"},
     "claude": {"main": "claude-opus-5-5", "subagent": "claude-sonnet-5-5"},
 }
 

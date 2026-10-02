@@ -1,4 +1,4 @@
-"""RUN-010: build the normalized game audio from the external source library.
+"""RUN-010/RUN-014: build the normalized game audio from the external source library.
 
 The library is read only. Each derivative is trimmed, converted to mono 44.1 kHz
 16-bit WAV and peak-normalized; the music is loudness-normalized to Ogg Vorbis.
@@ -11,18 +11,21 @@ import sys
 
 DEFAULT_LIBRARY = "/mnt/c/Users/allen/OneDrive/Images/assets_ressources/Mildays-knight"
 HELTON = "SFX/Helton Yan's Pixel Combat - Single Files"
-SFX_PEAK_DB = -3.0
+# RUN-014: SFX lowered by 5 dB after listening ("SFX globalement trop forts").
+SFX_PEAK_DB = -8.0
 # name -> (source file stem, maximum length in seconds or None)
 SFX = {
-	"sfx_player_jump": ("DSGNMisc_MOVEMENT-Retro Jump_HY_PC-001", None),
-	"sfx_player_double_jump": ("DSGNMisc_MOVEMENT-Jump Sparkle_HY_PC-001", None),
+	# RUN-014 replacements: softer physical jump, airy but trimmed double jump.
+	"sfx_player_jump": ("SWSH_MOVEMENT-Bamboo Whip_HY_PC-005", None),
+	"sfx_player_double_jump": ("DSGNMisc_MOVEMENT-Whoosh Sweep_HY_PC-005", 0.3),
 	"sfx_player_wall_jump": ("WHSH_MOVEMENT-Simple Whoosh_HY_PC-001", None),
 	"sfx_melee_swing_light_01": ("DSGNMisc_MELEE-Sword Slash_HY_PC-001", None),
 	"sfx_melee_swing_light_02": ("DSGNMisc_MELEE-Sword Slash_HY_PC-002", None),
 	"sfx_melee_swing_light_03": ("DSGNMisc_MELEE-Sword Slash_HY_PC-003", None),
-	"sfx_melee_hit_01": ("DSGNMisc_HIT-Gore Pierce_HY_PC-001", None),
-	"sfx_melee_hit_02": ("DSGNMisc_HIT-Gore Pierce_HY_PC-002", None),
-	"sfx_melee_hit_03": ("DSGNMisc_HIT-Gore Pierce_HY_PC-003", None),
+	# RUN-014: duller, fleshier impact replaces the harsh Gore Pierce.
+	"sfx_melee_hit_01": ("FGHTImpt_MELEE-Gut Punch_HY_PC-003", None),
+	"sfx_melee_hit_02": ("FGHTImpt_MELEE-Gut Punch_HY_PC-006", None),
+	"sfx_melee_hit_03": ("FGHTImpt_MELEE-Gut Punch_HY_PC-005", None),
 	"sfx_player_hit_01": ("FGHTImpt_HIT-Strong Smack_HY_PC-001", None),
 	"sfx_player_hit_02": ("FGHTImpt_HIT-Strong Smack_HY_PC-002", None),
 	"sfx_player_hit_03": ("FGHTImpt_HIT-Strong Smack_HY_PC-003", None),
@@ -35,9 +38,11 @@ SFX = {
 	"sfx_slime_death_02": ("DSGNMisc_SKILL RELEASE-Wet Splash_HY_PC-002", None),
 	"sfx_slime_death_03": ("DSGNMisc_SKILL RELEASE-Wet Splash_HY_PC-003", None),
 }
+# name -> (source, loop end in seconds or None). RUN-014: new track, louder target.
 MUSIC = {
-	"music_slice_dark_fantasy_lofi": "Music/welc0mei0-bgm006-dark-fantasy-lo-fi-retro-game-148338.mp3",
+	"music_slice_dreamer": ("Music/nojisuma-dreamer-131011.mp3", 156.0),
 }
+MUSIC_LUFS = -13
 
 
 def ffmpeg(*args: str) -> str:
@@ -68,9 +73,11 @@ def main() -> None:
 		target = root / "assets/sounds" / f"{name}.wav"
 		build_sfx(library / HELTON / f"{stem}.wav", target, max_length)
 		print(f"{target.relative_to(root)}  peak {max_volume(target):.1f} dB")
-	for name, relative in MUSIC.items():
+	for name, (relative, loop_end) in MUSIC.items():
 		target = root / "assets/music" / f"{name}.ogg"
-		ffmpeg("-y", "-i", str(library / relative), "-af", "loudnorm=I=-16:TP=-1.5:LRA=11", "-ar", "44100", "-c:a", "libvorbis", "-q:a", "5", "-map_metadata", "-1", str(target))
+		# Cut before the closing fade, on a bar boundary, with tiny fades to avoid clicks.
+		cut = f"atrim=0:{loop_end},afade=t=in:d=0.03,afade=t=out:st={loop_end - 0.03}:d=0.03," if loop_end else ""
+		ffmpeg("-y", "-i", str(library / relative), "-af", f"{cut}loudnorm=I={MUSIC_LUFS}:TP=-1.5:LRA=11", "-ar", "44100", "-c:a", "libvorbis", "-q:a", "5", "-map_metadata", "-1", str(target))
 		print(f"{target.relative_to(root)}  peak {max_volume(target):.1f} dB")
 
 

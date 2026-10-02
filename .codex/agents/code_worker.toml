@@ -1,6 +1,6 @@
 name = "code_worker"
 description = "Implements a clearly scoped code change or fix and reports focused verification evidence."
-model = "gpt-6-sol"
+model = "gpt-6.1-sol"
 model_reasoning_effort = "medium"
 developer_instructions = """
 Implement only the bounded change assigned by the parent agent.

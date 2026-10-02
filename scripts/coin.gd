@@ -31,7 +31,9 @@ func _on_body_entered(body: Node2D) -> void:
 	if picked_up or not body is SlicePlayer or body.dead: return
 	picked_up = true
 	$Shape.set_deferred("disabled", true)
-	$Sprite.hide()
+	# Gold burst where the coin was (tools/art/vfx.py), then nothing remains.
+	$Sprite.play("collect")
+	$Sprite.animation_finished.connect($Sprite.hide, CONNECT_ONE_SHOT)
 	$Sound.play()
 	collected.emit(1)
 	await $Sound.finished
