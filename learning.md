@@ -475,3 +475,11 @@ Toutes les images partagent un **point d'ancrage** : les pieds au bas de la lign
 L'épée n'est pas dans le sprite : sa position vient du gameplay, qui fait tourner la lame autour de la main pendant 0,28 s. Faire pivoter une petite image de pixel art la rend floue ou crénelée. Le script pré-dessine donc l'épée sous 32 angles et le jeu choisit la plus proche de l'angle réel. Le dessin suit ainsi exactement la zone de dégâts. La collision du joueur (10×18) n'a pas changé : un sprite plus grand ne doit pas modifier la façon dont le personnage passe sous un plafond de deux tuiles.
 
 Enfin, un nœud en pause n'anime plus. La mort met tout le jeu en pause : l'animation de chute restait figée sur sa première image. Le sprite passe donc en `PROCESS_MODE_ALWAYS` à la mort, comme le son de mort de RUN-010.
+
+## RUN-013 — Habiller un niveau sans le reconstruire
+
+Le niveau garde une seule source de vérité pour sa forme : la `TileMapLayer` `Terrain`, qui porte les collisions. Le nœud `TerrainSkin` se contente de **redessiner** par-dessus chaque case occupée. Pour choisir l'image, il regarde les quatre voisines et forme un **masque d'exposition** : 1 si le dessus est libre, 2 pour la droite, 4 pour le dessous, 8 pour la gauche. Les seize combinaisons ont chacune leur tuile : une case avec le dessus libre reçoit une margelle claire et de la mousse, une case au bord droit une arête sombre. C'est le principe de l'**autotiling**, appliqué ici en dessin plutôt que dans le `TileSet`. Plus une case est profonde sous la surface, plus elle est assombrie : l'œil lit d'abord le sol praticable.
+
+La **parallaxe** donne de la profondeur avec des images plates. `backdrop.gd` lit le centre de la caméra et décale chaque couche d'une fraction de son mouvement. La citadelle lointaine bouge à 8 % de la vitesse de la caméra, la forêt à 30 %, le niveau à 100 %. Le ciel ne bouge pas du tout. Les couches se répètent horizontalement pour couvrir toute la largeur.
+
+Les accessoires (maisons, charrette, panneau…) restent dessinés aux coordonnées choisies par l'auteur du niveau ; seules leurs images changent. Une palette partagée (`tools/art/palette.py`) garde la cohérence entre plusieurs scripts et plusieurs agents. Les couleurs vives y sont réservées à une fonction : rouge pour le danger et la vie, or pour l'argent, violet pour la corruption.

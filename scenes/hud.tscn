@@ -1,7 +1,11 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=7 format=3]
 [ext_resource type="Script" path="res://scripts/hud.gd" id="1"]
 [ext_resource type="FontFile" path="res://assets/fonts/PixelOperator8.ttf" id="2"]
 [ext_resource type="Script" path="res://scripts/health_hearts.gd" id="3"]
+[ext_resource type="Texture2D" path="res://assets/sprites/hud_icons.png" id="4"]
+[sub_resource type="AtlasTexture" id="coin_icon"]
+atlas = ExtResource("4")
+region = Rect2(36, 0, 12, 12)
 [sub_resource type="Theme" id="theme"]
 default_font = ExtResource("2")
 default_font_size = 12
@@ -11,20 +15,20 @@ script = ExtResource("1")
 [node name="Top" type="ColorRect" parent="."]
 anchor_right = 1.0
 offset_bottom = 32.0
-color = Color(0.047,0.063,0.075,0.94)
+color = Color(0.067,0.059,0.078,0.94)
 mouse_filter = 2
 [node name="Rule" type="ColorRect" parent="."]
 anchor_right = 1.0
 offset_top = 31.0
 offset_bottom = 32.0
-color = Color(0.46,0.38,0.25,1)
+color = Color(0.29,0.09,0.12,1)
 mouse_filter = 2
 [node name="Bottom" type="ColorRect" parent="."]
 anchor_right = 1.0
 anchor_top = 1.0
 anchor_bottom = 1.0
 offset_top = -28.0
-color = Color(0.047,0.063,0.075,0.94)
+color = Color(0.067,0.059,0.078,0.94)
 mouse_filter = 2
 [node name="Health" type="Label" parent="."]
 offset_left = 8.0
@@ -36,13 +40,20 @@ text = "VIE"
 mouse_filter = 2
 [node name="HealthHearts" type="Control" parent="."]
 offset_left = 76.0
-offset_top = 5.0
-offset_right = 132.0
+offset_top = 9.0
+offset_right = 136.0
 offset_bottom = 28.0
 mouse_filter = 2
 script = ExtResource("3")
-[node name="Gold" type="Label" parent="."]
+[node name="GoldIcon" type="TextureRect" parent="."]
 offset_left = 140.0
+offset_top = 10.0
+offset_right = 152.0
+offset_bottom = 22.0
+texture = SubResource("coin_icon")
+mouse_filter = 2
+[node name="Gold" type="Label" parent="."]
+offset_left = 156.0
 offset_top = 7.0
 offset_right = 292.0
 offset_bottom = 27.0

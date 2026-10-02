@@ -20,17 +20,11 @@ func _process(_delta: float) -> void:
 func player_near() -> bool:
 	return $OfferingArea.has_overlapping_bodies()
 func _draw() -> void:
-	var stone = Color("5b6061")
-	for x in [-24, 16]:
-		for y in range(-104, 0, 8):
-			draw_rect(Rect2(x, y, 9, 7), stone)
-			draw_line(Vector2(x, y), Vector2(x+8, y), Color("92918a"))
-	draw_rect(Rect2(-24,-104,49,4), stone)
-	draw_rect(Rect2(-16,-100,32,100), Color("12181e"))
-	# Smooth iron panel matches the actual 16x100 barrier; side masonry is framing.
-	draw_rect(Rect2(-8,-100-lift,16,100), Color("414846"))
-	for x in [-8, -1, 6]: draw_rect(Rect2(x, -100-lift, 2, 100), Color("b9a16d"))
-	for y in [-96, -52, -8]: draw_rect(Rect2(-8,y-lift,16,2), Color("897a5a"))
-	if not opened:
-		draw_circle(Vector2(0,-25-lift),5,Color("e4bd68"))
-		draw_rect(Rect2(-1,-28-lift,2,6),Color("584632"))
+	# Stone frame around the 16x100 opening, then the iron panel that lifts (tools/art/hazards.py).
+	var art: Texture2D = preload("res://assets/sprites/prop_gold_gate.png")
+	draw_texture_rect_region(art, Rect2(-28, -112, 56, 112), Rect2(0, 0, 56, 112))
+	var panel_x: float = 72.0 if opened else 56.0
+	# The lifted part slides into the lintel and is hidden by the wall.
+	var visible_height: float = 100.0 - minf(lift, 100.0)
+	if visible_height > 0.0:
+		draw_texture_rect_region(art, Rect2(-8, -100, 16, visible_height), Rect2(panel_x, 12 + 100.0 - visible_height, 16, visible_height))

@@ -1,6 +1,6 @@
-[gd_scene load_steps=18 format=3]
+[gd_scene load_steps=14 format=3]
 [ext_resource type="Script" path="res://scripts/coin.gd" id="1"]
-[ext_resource type="Texture2D" path="res://assets/sprites/coin.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/sprites/item_gold_coin.png" id="2"]
 [ext_resource type="AudioStream" path="res://assets/sounds/sfx_gold_coin_pickup.tres" id="3"]
 [sub_resource type="AtlasTexture" id="f0"]
 atlas = ExtResource("2")
@@ -26,20 +26,8 @@ region = Rect2(96,0,16,16)
 [sub_resource type="AtlasTexture" id="f7"]
 atlas = ExtResource("2")
 region = Rect2(112,0,16,16)
-[sub_resource type="AtlasTexture" id="f8"]
-atlas = ExtResource("2")
-region = Rect2(128,0,16,16)
-[sub_resource type="AtlasTexture" id="f9"]
-atlas = ExtResource("2")
-region = Rect2(144,0,16,16)
-[sub_resource type="AtlasTexture" id="f10"]
-atlas = ExtResource("2")
-region = Rect2(160,0,16,16)
-[sub_resource type="AtlasTexture" id="f11"]
-atlas = ExtResource("2")
-region = Rect2(176,0,16,16)
 [sub_resource type="SpriteFrames" id="frames"]
-animations = [{"name": &"idle", "speed": 10.0, "loop": true, "frames": [{"duration":1.0,"texture":SubResource("f0")},{"duration":1.0,"texture":SubResource("f1")},{"duration":1.0,"texture":SubResource("f2")},{"duration":1.0,"texture":SubResource("f3")},{"duration":1.0,"texture":SubResource("f4")},{"duration":1.0,"texture":SubResource("f5")},{"duration":1.0,"texture":SubResource("f6")},{"duration":1.0,"texture":SubResource("f7")},{"duration":1.0,"texture":SubResource("f8")},{"duration":1.0,"texture":SubResource("f9")},{"duration":1.0,"texture":SubResource("f10")},{"duration":1.0,"texture":SubResource("f11")}]}]
+animations = [{"name": &"idle", "speed": 10.0, "loop": true, "frames": [{"duration":1.0,"texture":SubResource("f0")},{"duration":1.0,"texture":SubResource("f1")},{"duration":1.0,"texture":SubResource("f2")},{"duration":1.0,"texture":SubResource("f3")},{"duration":1.0,"texture":SubResource("f4")},{"duration":1.0,"texture":SubResource("f5")},{"duration":1.0,"texture":SubResource("f6")},{"duration":1.0,"texture":SubResource("f7")}]}]
 [sub_resource type="CircleShape2D" id="shape"]
 radius = 7.0
 [node name="Coin" type="Area2D"]

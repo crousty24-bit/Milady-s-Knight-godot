@@ -422,10 +422,12 @@ Ces trois réserves sont **BACKLOG, non lancées**. L’humain pourra en retenir
 
 ### RUN-013 — Décor et lisibilité du slice
 
-**Lot B · Main agent : Claude Opus 5.5 · Statut : BACKLOG · Dépendances : RUN-012 si retenue, sinon RUN-011 ; sélection humaine du lot.**
+**Lot B · Main agent : Claude Opus 5.5 · Statut : VERIFY · Dépendances : RUN-012 si retenue, sinon RUN-011 ; sélection humaine du lot.**
 
 - **Résultat / scope :** Harmoniser terrain, décor, Slimes, objets, dangers et HUD existants avec les assets retenus, sans régénération du niveau humain.
 - **Décisions avant implémentation dépendante :** Confirmer le choix des ressources, les zones retouchées et la propriété des scènes.
+- **Lancement (2 octobre 2026) :** selon la consigne d'enchaînement de l'humain, même principe que RUN-012 : ressources générées par `tools/art/` sur une palette commune (`tools/art/palette.py`), faute de packs redistribuables adaptés. Zones retouchées : habillage du terrain (`terrain_skin.gd`, sans modifier `Terrain`, ses tuiles ni ses collisions), arrière-plan en parallaxe et accessoires narratifs existants (`kingdom.gd`, positions conservées), Slimes, pièce, piques, ronces, bac, porte et HUD. Formes, valeurs et placements de gameplay inchangés. Propriété : sprites des créatures/objets/icônes et des dangers/porte/bac délégués à deux subagents (scripts générateurs distincts, aucune scène) ; intégration des scènes par le main agent.
+- **Résultat en VERIFY (2 octobre 2026) :** terrain autotilé sur la `TileMapLayer` intacte (deux thèmes, profondeur), ciel/lune de sang et parallaxe, accessoires narratifs générés aux mêmes positions, Slimes, pièce, piques, ronces, bac, porte et HUD (cœurs, icône de pièce, titre de mort rouge) harmonisés ; gameplay, collisions et textes inchangés. Import et 16 suites / 377 contrôles réussis ; dix cadrages 640×360 capturés et inspectés ; générateurs reproductibles. **Attend la validation visuelle humaine groupée.**
 - **Acceptation, tests et bugtest :** Comparer les branches, retours, mur, bac, pièges et overlays à 640×360 ; vérifier contraste, collisions et parcours ; validation visuelle humaine.
 - **Clôture :** corrections et régressions du périmètre, revue Jev selon le cycle existant, preuves au journal et learning fondé sur le résultat réel ; validation humaine des choix artistiques ou playtests requis.
 

@@ -1,26 +1,36 @@
 @tool
-# Opaque, grid-aligned stonework keeps the playable surfaces visually quiet.
-# Collision and authored layout remain in Terrain (TileMapLayer).
+# Skins the authored Terrain (TileMapLayer) with generated stone tiles.
+# Collision and layout remain in Terrain; this node only draws.
 extends Node2D
+const TILES = preload("res://assets/sprites/terrain_stone.png")
+const TUFTS = preload("res://assets/sprites/terrain_tufts.png")
+# Blight takes over the masonry from here to the sealed gate.
+const CORRUPTION_X = 1392.0
+const DEPTH_SHADE = [1.0, 0.86, 0.74, 0.64, 0.56, 0.5]
 @onready var terrain: TileMapLayer = get_parent().get_node("Terrain")
 func _ready() -> void:
 	terrain.changed.connect(queue_redraw)
 	queue_redraw()
 func _draw() -> void:
 	if not is_instance_valid(terrain): return
-	for cell in terrain.get_used_cells():
-		var p = Vector2(cell * 16)
-		var corrupt: bool = p.x >= 1392
-		var surface: bool = terrain.get_cell_source_id(cell+Vector2i.UP) == -1
-		var shade: int = posmod(cell.x*13+cell.y*7,3)
-		var colors: Array = ["41484a","454c4d","484f50"] if corrupt else ["53534b","58584f","50534b"]
-		draw_rect(Rect2(p,Vector2(16,16)),Color(colors[shade]))
-		draw_line(p+Vector2(0,15),p+Vector2(15,15),Color("30393b"))
-		draw_line(p+Vector2(15,1),p+Vector2(15,7),Color("30393b"))
-		draw_line(p+Vector2(0,7),p+Vector2(16,7),Color("384041"))
-		draw_line(p+Vector2(7,9),p+Vector2(7,15),Color("384041"))
-		if surface:
-			draw_rect(Rect2(p,Vector2(16,2)),Color("93908a" if corrupt else "a3a080"))
-			if not corrupt and p.y >= 144:
-				draw_rect(Rect2(p+Vector2(0,-1),Vector2(16,2)),Color("6e7e59"))
-				draw_rect(Rect2(p+Vector2(shade*4,-3),Vector2(2,3)),Color("89966a"))
+	var used := {}
+	for cell in terrain.get_used_cells(): used[cell] = true
+	var surfaces: Array[Vector2i] = []
+	for cell: Vector2i in used:
+		var p := Vector2(cell * 16)
+		# Exposure mask: 1 open above, 2 right, 4 below, 8 left (tools/art/world.py).
+		var mask := 0
+		if not used.has(cell + Vector2i.UP): mask |= 1
+		if not used.has(cell + Vector2i.RIGHT): mask |= 2
+		if not used.has(cell + Vector2i.DOWN): mask |= 4
+		if not used.has(cell + Vector2i.LEFT): mask |= 8
+		var row := (3 if p.x >= CORRUPTION_X else 0) + posmod(cell.x * 7 + cell.y * 3, 3)
+		var depth := 0
+		while depth < 5 and used.has(cell - Vector2i(0, depth + 1)): depth += 1
+		var shade: float = DEPTH_SHADE[depth]
+		draw_texture_rect_region(TILES, Rect2(p, Vector2(16, 16)), Rect2(mask * 16, row * 16, 16, 16), Color(shade, shade, shade))
+		if mask & 1: surfaces.append(cell)
+	for cell in surfaces:
+		var p := Vector2(cell * 16)
+		var column := (3 if p.x >= CORRUPTION_X else 0) + posmod(cell.x * 5 + cell.y, 3)
+		draw_texture_rect_region(TUFTS, Rect2(p + Vector2(0, -6), Vector2(16, 8)), Rect2(column * 16, 0, 16, 8))

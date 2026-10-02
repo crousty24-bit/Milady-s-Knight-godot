@@ -11,6 +11,5 @@ func _physics_process(delta: float) -> void:
 	elapsed += delta
 	position = origin + travel * (0.5 - 0.5 * cos(elapsed * TAU / period))
 func _draw() -> void:
-	draw_rect(Rect2(-17, -3, 34, 6), Color("584a3d"))
-	draw_rect(Rect2(-17, -3, 34, 2), Color("b29c72"))
-	for x in [-12, -4, 4, 12]: draw_line(Vector2(x, -2), Vector2(x, 2), Color("302c2e"))
+	# Ferry planks (tools/art/hazards.py); the top row is the walkable surface.
+	draw_texture(preload("res://assets/sprites/prop_ferry.png"), Vector2(-18, -3))

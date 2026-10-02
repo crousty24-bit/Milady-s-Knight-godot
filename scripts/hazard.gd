@@ -12,7 +12,5 @@ func _physics_process(_delta: float) -> void:
 				body.take_damage(1.0, Vector2(away * 90.0, -180), SlicePlayer.DamageSource.SOLID_TRAP)
 func _draw() -> void:
 	if lethal: return
-	draw_rect(Rect2(-16,-2,32,3),Color("392139"))
-	for x in range(-14, 16, 7):
-		draw_colored_polygon(PackedVector2Array([Vector2(x-3,0),Vector2(x,-12),Vector2(x+4,0)]),Color("d58bb1"))
-		draw_line(Vector2(x,-10),Vector2(x+1,-3),Color("ffe0da"))
+	# Corrupted bramble (tools/art/hazards.py), bottom-centre on the node origin.
+	draw_texture(preload("res://assets/sprites/trap_thorns.png"), Vector2(-16, -16))

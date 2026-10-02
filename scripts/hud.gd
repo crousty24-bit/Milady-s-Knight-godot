@@ -21,12 +21,15 @@ func set_hint(value: String) -> void:
 	$Hint.text = value
 func set_overlay(title: String, subtitle: String) -> void:
 	$Overlay.show()
+	$Overlay/Title.add_theme_color_override("font_color", Color(0.94, 0.8, 0.5))
 	$Overlay/Title.text = title
 	$Overlay/Subtitle.text = subtitle
 func clear_overlay() -> void:
 	$Overlay.hide()
 func show_death_overlay() -> void:
 	set_overlay("Thou hast perished.", "")
+	# Death speaks in the danger red of the Art Bible.
+	$Overlay/Title.add_theme_color_override("font_color", Color("c8323a"))
 	$Hint.text = ""
 	$PauseHint.hide()
 func set_death_fade(alpha: float) -> void:

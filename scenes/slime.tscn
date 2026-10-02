@@ -1,35 +1,47 @@
-[gd_scene load_steps=17 format=3]
+[gd_scene load_steps=21 format=3]
 [ext_resource type="Script" path="res://scripts/slime.gd" id="1"]
-[ext_resource type="Texture2D" path="res://assets/sprites/slime_green.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemy_slime_green.png" id="2"]
 [ext_resource type="AudioStream" path="res://assets/sounds/sfx_melee_hit.tres" id="3"]
 [ext_resource type="AudioStream" path="res://assets/sounds/sfx_slime_death.tres" id="5"]
-[ext_resource type="Texture2D" path="res://assets/sprites/slime_purple.png" id="4"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemy_slime_purple.png" id="4"]
 [sub_resource type="AtlasTexture" id="green0"]
 atlas = ExtResource("2")
-region = Rect2(0,24,24,24)
+region = Rect2(0,0,24,24)
 [sub_resource type="AtlasTexture" id="green1"]
 atlas = ExtResource("2")
-region = Rect2(24,24,24,24)
+region = Rect2(24,0,24,24)
 [sub_resource type="AtlasTexture" id="green2"]
 atlas = ExtResource("2")
-region = Rect2(48,24,24,24)
+region = Rect2(48,0,24,24)
 [sub_resource type="AtlasTexture" id="green3"]
 atlas = ExtResource("2")
-region = Rect2(72,24,24,24)
+region = Rect2(72,0,24,24)
+[sub_resource type="AtlasTexture" id="green4"]
+atlas = ExtResource("2")
+region = Rect2(96,0,24,24)
+[sub_resource type="AtlasTexture" id="green5"]
+atlas = ExtResource("2")
+region = Rect2(120,0,24,24)
 [sub_resource type="AtlasTexture" id="purple0"]
 atlas = ExtResource("4")
-region = Rect2(0,24,24,24)
+region = Rect2(0,0,24,24)
 [sub_resource type="AtlasTexture" id="purple1"]
 atlas = ExtResource("4")
-region = Rect2(24,24,24,24)
+region = Rect2(24,0,24,24)
 [sub_resource type="AtlasTexture" id="purple2"]
 atlas = ExtResource("4")
-region = Rect2(48,24,24,24)
+region = Rect2(48,0,24,24)
 [sub_resource type="AtlasTexture" id="purple3"]
 atlas = ExtResource("4")
-region = Rect2(72,24,24,24)
+region = Rect2(72,0,24,24)
+[sub_resource type="AtlasTexture" id="purple4"]
+atlas = ExtResource("4")
+region = Rect2(96,0,24,24)
+[sub_resource type="AtlasTexture" id="purple5"]
+atlas = ExtResource("4")
+region = Rect2(120,0,24,24)
 [sub_resource type="SpriteFrames" id="frames"]
-animations = [{"name": &"green", "speed": 6.0, "loop": true, "frames": [{"duration":1.0,"texture":SubResource("green0")},{"duration":1.0,"texture":SubResource("green1")},{"duration":1.0,"texture":SubResource("green2")},{"duration":1.0,"texture":SubResource("green3")}]},{"name": &"purple", "speed": 6.0, "loop": true, "frames": [{"duration":1.0,"texture":SubResource("purple0")},{"duration":1.0,"texture":SubResource("purple1")},{"duration":1.0,"texture":SubResource("purple2")},{"duration":1.0,"texture":SubResource("purple3")}]},]
+animations = [{"name": &"green", "speed": 8.0, "loop": true, "frames": [{"duration":1.0,"texture":SubResource("green0")},{"duration":1.0,"texture":SubResource("green1")},{"duration":1.0,"texture":SubResource("green2")},{"duration":1.0,"texture":SubResource("green3")},{"duration":1.0,"texture":SubResource("green4")},{"duration":1.0,"texture":SubResource("green5")}]},{"name": &"purple", "speed": 8.0, "loop": true, "frames": [{"duration":1.0,"texture":SubResource("purple0")},{"duration":1.0,"texture":SubResource("purple1")},{"duration":1.0,"texture":SubResource("purple2")},{"duration":1.0,"texture":SubResource("purple3")},{"duration":1.0,"texture":SubResource("purple4")},{"duration":1.0,"texture":SubResource("purple5")}]}]
 [sub_resource type="RectangleShape2D" id="body"]
 size = Vector2(14, 12)
 [sub_resource type="RectangleShape2D" id="contact"]

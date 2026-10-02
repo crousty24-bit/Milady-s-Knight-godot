@@ -54,7 +54,7 @@ func run() -> void:
 	for child in level.get_children():
 		if child.get("bonus_feedback") != null and child.bonus_feedback > 0:
 			feedback_count += 1
-			check(child.picked_up and child.get_node("Sprite").sprite_frames.get_frame_texture("idle", 0).atlas.resource_path == "res://assets/sprites/coin.png", "reward feedback reuses coin art and cannot be collected again")
+			check(child.picked_up and child.get_node("Sprite").sprite_frames.get_frame_texture("idle", 0).atlas.resource_path == "res://assets/sprites/item_gold_coin.png", "reward feedback reuses coin art and cannot be collected again")
 	check(feedback_count == 2, "both defeats show existing coin feedback")
 	level._on_collected(11)
 	check(not level.try_offering() and level.gold == 11 and level.bonus == 4, "reserve and enemy bonuses cannot pay missing seal coins")
