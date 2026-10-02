@@ -3,7 +3,7 @@
 ## Statut de cette planification
 
 Audit documentaire et inspection du dépôt effectués le **21 septembre 2026**, à partir de l’état de travail courant, et non du seul commit `0870462`.
-**RUN-001 à RUN-011 DONE ; RUN-012 à RUN-014 en VERIFY (validation humaine groupée attendue).** Les PR #1, #2, #4, #5, [#8](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/8) et [#9](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/9) sont fusionnées dans `develop`. RUN-007 est fusionnée via la PR #11 (`260c8a8`), RUN-008 via la PR #12 (`6c4ee22`), RUN-009 via la [PR #14](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/14) (`a2ac33c`) et RUN-010 via la PR #15 (`24213f2`). RUN-011 clôt le socle 0.1.0 localement après recette technique et validation humaine du saut mural ; aucune livraison distante de cette branche. La validation des onze premières runs et du socle **0.1.0** est confirmée par l’humain le **2 octobre 2026**. La réorganisation ci-dessous reste sur `feature/run-011-production-foundation` ; aucune run suivante n’est lancée.
+**RUN-001 à RUN-014 DONE** (012–014 : passes visuelles et audio Claude, validées le 2 octobre 2026). Les PR #1, #2, #4, #5, [#8](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/8) et [#9](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/9) sont fusionnées dans `develop`. RUN-007 est fusionnée via la PR #11 (`260c8a8`), RUN-008 via la PR #12 (`6c4ee22`), RUN-009 via la [PR #14](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/14) (`a2ac33c`) et RUN-010 via la PR #15 (`24213f2`). RUN-011 clôt le socle 0.1.0 localement après recette technique et validation humaine du saut mural ; aucune livraison distante de cette branche. La validation des onze premières runs et du socle **0.1.0** est confirmée par l’humain le **2 octobre 2026**. La réorganisation ci-dessous reste sur `feature/run-011-production-foundation` ; aucune run suivante n’est lancée.
 
 Plan réorganisé le **2 octobre 2026** : **28 identifiants au total**, dont 11 runs DONE, 3 réserves visuelles conditionnelles et 14 lots de production. La cible finale devient **0.5.0 beta**, toujours une démo de dix niveaux conçus à la main. **0.1.0 est la version actuelle validée localement** ; 0.2.0 est la prochaine cible, soumise au verrou de branche ci-dessous. Les patchs `0.x.1` restent possibles pour des corrections vérifiées, sans créer systématiquement une run ni une version par tâche.
 
@@ -224,7 +224,7 @@ Références de la révision du workflow du **22 septembre 2026** : recommandati
 
 | Cible | Résultat | Runs | Orchestrateur principal |
 | --- | --- | --- | --- |
-| **0.1.0 actuelle** | Socle validé ; éventuels compléments visuels avant fusion | 001–011 DONE ; 012–014 conditionnelles | Historique conservé ; Claude Opus 5.5 pour les compléments |
+| **0.1.0 actuelle** | Socle validé ; compléments visuels et audio réalisés | 001–014 DONE | Historique conservé ; Claude Opus 5.5 pour les compléments |
 | **0.2.0** | N1 complet, menus, tutoriel, tir et reprise | 015–017 : 3 lots | Codex GPT-6.1 Sol Medium |
 | **0.3.0** | Économie et équipement standard, bestiaire et exploration N2–4 | 018–021 : 4 lots | Codex GPT-6.1 Sol Medium ; Claude Opus 5.5 pour 021 |
 | **0.4.0** | Capacités, légendaires, N5–10, Boss et conclusion | 022–026 : 5 lots | Codex GPT-6.1 Sol Medium ; Claude Opus 5.5 pour 025 |
@@ -411,34 +411,37 @@ Ces trois réserves sont **BACKLOG, non lancées**. L’humain pourra en retenir
 
 ### RUN-012 — Personnage et feedbacks visuels du socle
 
-**Lot A · Main agent : Claude Opus 5.5 · Statut : VERIFY · Dépendances : RUN-011 DONE ; sélection humaine du lot.**
+**Lot A · Main agent : Claude Opus 5.5 · Statut : DONE · Dépendances : RUN-011 DONE ; sélection humaine du lot.**
 
 - **Résultat / scope :** Sélection, adaptation et intégration cohérente du chevalier, Sword et animations/feedbacks existants. Conserver sources, licences et contrats gameplay.
 - **Décisions avant implémentation dépendante :** Confirmer les assets et le périmètre artistique avant adaptation.
 - **Lancement (2 octobre 2026) :** l'humain retient les trois lots 012–014, à exécuter dans l'ordre sur `feature/run-011-production-foundation`, avec validation visuelle et d'écoute groupée en fin de lot C. Aucun chevalier compatible dans la bibliothèque locale (Soldier Zerie ≈ 17×21 px, vue RPG, licence sans redistribution) ; les packs d'effets/icônes inspectés interdisent la redistribution dans un dépôt public, sauf les icônes CC0 de Shade et les fichiers PixelLab de l'humain. **Décision humaine :** générer l'Ashen Knight en pixel art d'après l'artwork du projet (plaques acier, cape rouge, tabard à emblème or), corps ≈ 20×28 px, capsule 10×18, épée (dégâts, portée 24 px, cadence, fenêtre) inchangées. Périmètre : spritesheet idle/course/saut/chute/glissade/attaque/dégâts/mort, épée et traînée pré-rendues, VFX existants (double saut, poussière murale, impact) ; scènes `player.tscn`/`player.gd` côté visuel uniquement.
 - **Résultat en VERIFY (2 octobre 2026) :** Ashen Knight généré (`tools/art/knight.py`, 24 frames sur 8 animations), épée en 32 angles avec traînée, étincelle d'impact, anneau de double saut et poussière murale ; animation de mort désormais jouée pendant la pause. Gameplay et collisions inchangés. Import et 16 suites / 377 contrôles réussis ; nouvelle suite `knight_visual` 17/17 et 21 captures inspectées ; suites visuelles existantes réussies. Provenance dans `assets/VISUAL_CREDITS.md`. **Attend la validation visuelle humaine groupée** (choix artistique, ressenti des animations, lisibilité en jeu).
+- **Clôture (2 octobre 2026) :** validation humaine groupée « Je valide les 3 runs » ; revue Jev consultative (couverture / vérifications / blocage 0,86 / 0,75 / 0,35 ; Choice READY_FOR_DONE 0,52) puis inspection directe des preuves. **DONE localement** ; pas de push, PR ni merge.
 - **Acceptation, tests et bugtest :** Rendu, silhouette, ancrages, transitions d’animation et lisibilité des dégâts ; collisions, portée et mobilité non régressées dans Godot ; validation visuelle humaine.
 - **Clôture :** corrections et régressions du périmètre, revue Jev selon le cycle existant, preuves au journal et learning fondé sur le résultat réel ; validation humaine des choix artistiques ou playtests requis.
 
 ### RUN-013 — Décor et lisibilité du slice
 
-**Lot B · Main agent : Claude Opus 5.5 · Statut : VERIFY · Dépendances : RUN-012 si retenue, sinon RUN-011 ; sélection humaine du lot.**
+**Lot B · Main agent : Claude Opus 5.5 · Statut : DONE · Dépendances : RUN-012 si retenue, sinon RUN-011 ; sélection humaine du lot.**
 
 - **Résultat / scope :** Harmoniser terrain, décor, Slimes, objets, dangers et HUD existants avec les assets retenus, sans régénération du niveau humain.
 - **Décisions avant implémentation dépendante :** Confirmer le choix des ressources, les zones retouchées et la propriété des scènes.
 - **Lancement (2 octobre 2026) :** selon la consigne d'enchaînement de l'humain, même principe que RUN-012 : ressources générées par `tools/art/` sur une palette commune (`tools/art/palette.py`), faute de packs redistribuables adaptés. Zones retouchées : habillage du terrain (`terrain_skin.gd`, sans modifier `Terrain`, ses tuiles ni ses collisions), arrière-plan en parallaxe et accessoires narratifs existants (`kingdom.gd`, positions conservées), Slimes, pièce, piques, ronces, bac, porte et HUD. Formes, valeurs et placements de gameplay inchangés. Propriété : sprites des créatures/objets/icônes et des dangers/porte/bac délégués à deux subagents (scripts générateurs distincts, aucune scène) ; intégration des scènes par le main agent.
 - **Résultat en VERIFY (2 octobre 2026) :** terrain autotilé sur la `TileMapLayer` intacte (deux thèmes, profondeur), ciel/lune de sang et parallaxe, accessoires narratifs générés aux mêmes positions, Slimes, pièce, piques, ronces, bac, porte et HUD (cœurs, icône de pièce, titre de mort rouge) harmonisés ; gameplay, collisions et textes inchangés. Import et 16 suites / 377 contrôles réussis ; dix cadrages 640×360 capturés et inspectés ; générateurs reproductibles. **Attend la validation visuelle humaine groupée.**
+- **Clôture (2 octobre 2026) :** validation humaine groupée « Je valide les 3 runs » ; revue Jev consultative (couverture / vérifications / blocage 0,86 / 0,79 / 0,44 ; Choice READY_FOR_DONE 0,45) puis inspection directe des preuves. **DONE localement** ; pas de push, PR ni merge.
 - **Acceptation, tests et bugtest :** Comparer les branches, retours, mur, bac, pièges et overlays à 640×360 ; vérifier contraste, collisions et parcours ; validation visuelle humaine.
 - **Clôture :** corrections et régressions du périmètre, revue Jev selon le cycle existant, preuves au journal et learning fondé sur le résultat réel ; validation humaine des choix artistiques ou playtests requis.
 
 ### RUN-014 — Finition visuelle et raccord sonore du socle
 
-**Lot C · Main agent : Claude Opus 5.5 · Statut : VERIFY · Dépendances : lots A/B retenus validés ; sélection humaine du lot.**
+**Lot C · Main agent : Claude Opus 5.5 · Statut : DONE · Dépendances : lots A/B retenus validés ; sélection humaine du lot.**
 
 - **Résultat / scope :** Troisième passe éventuelle de cohérence visuelle/animation et, si retenu, raccord du mix : musique à remplacer et relever, SFX à baisser, impact Sword et sauts à remplacer selon les retours RUN-010. Les défauts audio non traités ici restent obligatoires en RUN-027.
 - **Décisions avant implémentation dépendante :** Fixer les retouches complémentaires réellement nécessaires après A/B.
 - **Lancement (2 octobre 2026) :** l'humain a demandé d'enchaîner 012–014 avec une validation groupée ; A et B sont en VERIFY, leur validation humaine sera donc obtenue avec C (écart assumé à la dépendance « A/B validés », à confirmer lors de la revue). Retouches retenues après A/B : feedbacks P0 encore absents (éclat de collecte de pièce, éclaboussure de mort des Slimes) et variation des arbres ; audio selon les retours RUN-010 (musique remplacée et relevée, SFX baissés, impact Sword, saut et double saut remplacés), sources CC BY / Pixabay déjà admises, analyse des candidats déléguée à un subagent.
 - **Résultat en VERIFY (2 octobre 2026) :** éclat de collecte de pièce, éclaboussure de mort des Slimes, arbres variés. Audio : impact Sword `Gut Punch`, saut `Bamboo Whip`, double saut `Whoosh Sweep`, musique `nojisuma — Dreamer` bouclée à 156 s ; SFX −5 dB (crête −8 dBFS), musique −13 LUFS. Pack Synthwave AlkaKrab exclu (licence). Import et 16 suites / 377 contrôles réussis ; suite `feedback_visual` 4/4 et suites visuelles relancées ; mix mesuré sans écrêtage (crête −10,5 dBFS, musique seule −33 dB RMS). **Attend la validation humaine groupée 012–014 : rendu en jeu et écoute** (point de boucle, timbres, équilibre).
+- **Clôture (2 octobre 2026) :** validation humaine groupée « Je valide les 3 runs » ; revue Jev consultative (couverture / vérifications / blocage 0,83 / 0,80 / 0,31 ; Choice READY_FOR_DONE 0,61) puis inspection directe des preuves. **DONE localement** ; pas de push, PR ni merge. Sons de saut et double saut encore jugés trop « sci-fi » : reportés à RUN-027. Ancienne musique conservée pour le futur menu.
 - **Acceptation, tests et bugtest :** Inspection intégrée du slice, écoute en jeu si audio modifié, mesure du mix sans écrêtage, provenance et parcours concernés ; validation humaine du rendu et de l’écoute.
 - **Clôture :** corrections et régressions du périmètre, revue Jev selon le cycle existant, preuves au journal et learning fondé sur le résultat réel ; validation humaine des choix artistiques ou playtests requis.
 
@@ -622,7 +625,7 @@ Ces trois réserves sont **BACKLOG, non lancées**. L’humain pourra en retenir
 
 **Lot P · Main agent : Claude Opus 5.5 · Statut : BACKLOG · Dépendances : RUN-026 ; 0.4.0 validée.**
 
-- **Résultat / scope :** Harmoniser dix biomes et variantes avancées retenues, HUD/menus/logo/artwork/dialogues anglais ; compléter animations/VFX et audio requis, résoudre les retours RUN-010 restants, mixer et intégrer volumes/préférences persistantes avec contribution technique cadrée.
+- **Résultat / scope :** Harmoniser dix biomes et variantes avancées retenues, HUD/menus/logo/artwork/dialogues anglais ; compléter animations/VFX et audio requis, résoudre les retours RUN-010 restants (dont sons de saut et double saut encore trop « sci-fi » après RUN-014), mixer et intégrer volumes/préférences persistantes avec contribution technique cadrée.
 - **Décisions avant implémentation dépendante :** D10 : variantes retenues et licences ; validation artistique et sonore humaine.
 - **Acceptation, tests et bugtest :** Toutes exigences docs/08 et docs/13 intégrées/testées ou décision de scope validée, aucun P0 absent ; rendu/clavier à 640×360, transitions d’animation/collisions, écoute humaine et mix, réglages après reprise, sources/dérivés et licences/crédits complets ; effets caméra facultatifs seulement si lisibles.
 - **Clôture :** corrections et régressions du périmètre, revue Jev selon le cycle existant, preuves au journal et learning fondé sur le résultat réel ; validation humaine des choix artistiques ou playtests requis.
