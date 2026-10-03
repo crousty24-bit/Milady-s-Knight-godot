@@ -33,6 +33,23 @@ Même source, auteur, licence (CC BY 4.0) et attribution que la section ci-dessu
 | `sounds/sfx_ui_cancel.wav` | `UIClick_INTERFACE-Strong Click 2_HY_PC-003.wav` | 0,23 s |
 | `sounds/sfx_ui_error.wav` | `UIMisc_INTERFACE-Denied_HY_PC-002.wav` | 0,43 s |
 
+## SFX Arc long, coffre, éclats et potion — RUN-016 (Helton Yan, *Pixel Combat*)
+
+Même source, auteur, licence (CC BY 4.0) et attribution que les sections ci-dessus ; fichiers produits par `python3 tools/prepare_audio.py` suivi des noms `sfx_weapon_bow_shot_01` … `sfx_chest_reward_accept` (voir `tools/prepare_audio.py`). **Transformation :** silence de début/fin retiré (seuil −55 dB), fondu d'entrée de 2 ms, mono 44,1 kHz PCM 16 bits, crête normalisée à **−8 dBFS** par défaut, **−10 dBFS** pour les sons répétitifs (tir d'arc, éclats), **−12 dBFS** pour `sfx_weapon_switch` (type interface) ; durée plafonnée avec fondu de sortie de 0,15 s lorsque la source dépasse la cible (colonne « Coupe »). Sélection faite par analyse objective (durée, enveloppe, spectre) ; l'écoute humaine reste à faire, plusieurs choix étant approximatifs (le pack n'offre ni corde d'arc ni bois de coffre).
+
+| Fichier de jeu | Fichier source | Durée | Coupe |
+| --- | --- | --- | --- |
+| `sounds/sfx_weapon_bow_shot_01–03.wav` | `DSGNMisc_PROJECTILE-High Whoosh_HY_PC-001–003.wav` | 0,38 s | 0,38 s |
+| `sounds/sfx_arrow_impact.wav` | `FEETMisc_STEP-Hard Step_HY_PC-002.wav` | 0,19 s | non |
+| `sounds/sfx_shard_gain_01–03.wav` | `DSGNTonl_SKILL IMPACT-Star Sparkle_HY_PC-001–003.wav` | 0,55–0,58 s | 0,58 s |
+| `sounds/sfx_minor_potion_pickup.wav` | `DSGNTonl_MOVEMENT-Bubble Babbler_HY_PC-001.wav` | 0,50 s | 0,50 s |
+| `sounds/sfx_player_heal.wav` | `MAGAngl_BUFF-Simple Heal_HY_PC-002.wav` | 0,78 s | 0,78 s |
+| `sounds/sfx_weapon_switch.wav` | `UIClick_INTERFACE-Rattling Click_HY_PC-002.wav` | 0,27 s | non |
+| `sounds/sfx_weapon_equip.wav` | `DSGNTonl_USABLE-Metallic Item_HY_PC-002.wav` | 0,60 s | non |
+| `sounds/sfx_chest_open_common.wav` | `UIMisc_INTERFACE-Lock_HY_PC-002.wav` | 0,41 s | non |
+| `sounds/sfx_chest_reward_reveal.wav` | `SWSH_MOVEMENT-Tiny Chime_HY_PC-002.wav` | 0,75 s | 0,75 s |
+| `sounds/sfx_chest_reward_accept.wav` | `DSGNTonl_USABLE-Tonal Item_HY_PC-003.wav` | 0,58 s | 0,58 s |
+
 ## Musique — Pixabay
 
 - **Fichier de jeu (RUN-014) :** `music/music_slice_dreamer.ogg`, musique du slice.

@@ -9,6 +9,31 @@ const COLLISION_MASK = 1 | 4
 var direction: int = 1
 var origin := Vector2.ZERO
 var distance_travelled: float = 0.0
+# RUN-016 presentation (Claude): sprite with its tip on the travelling point, impact effects.
+const ARROW_TEXTURE = preload("res://assets/sprites/proj_arrow.png")
+const IMPACT_FX = preload("res://assets/sprites/vfx_arrow_impact.png")
+const HIT_FX = preload("res://assets/sprites/vfx_arrow_hit.png")
+const IMPACT_SFX = preload("res://assets/sounds/sfx_arrow_impact.wav")
+var _sprite: Sprite2D
+
+func _ready() -> void:
+	_sprite = Sprite2D.new()
+	_sprite.texture = ARROW_TEXTURE
+	_sprite.centered = false
+	add_child(_sprite)
+	_orient_sprite()
+	impacted.connect(_on_impacted_fx)
+
+func _process(_delta: float) -> void:
+	_orient_sprite()
+
+func _orient_sprite() -> void:
+	_sprite.flip_h = direction < 0
+	_sprite.offset = Vector2(0.0 if direction < 0 else -16.0, -2.0)
+
+func _on_impacted_fx(at: Vector2, enemy: bool) -> void:
+	var world: Node = get_tree().current_scene if get_tree().current_scene != null else get_parent()
+	OneShotFx.spawn(world, HIT_FX if enemy else IMPACT_FX, Vector2i(16, 16), 20.0, at, direction < 0, Vector2(0.5, 0.5), IMPACT_SFX, -6.0 if enemy else -2.0)
 
 func setup(aim: int) -> void:
 	direction = -1 if aim < 0 else 1

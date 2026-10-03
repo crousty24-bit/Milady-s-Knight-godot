@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3]
+[gd_scene load_steps=21 format=3]
 [ext_resource type="Script" path="res://scripts/hud.gd" id="1"]
 [ext_resource type="FontFile" path="res://assets/fonts/PixelOperator8.ttf" id="2"]
 [ext_resource type="Script" path="res://scripts/health_hearts.gd" id="3"]
@@ -8,6 +8,17 @@
 [ext_resource type="Texture2D" path="res://assets/sprites/ui_keycap.png" id="7"]
 [ext_resource type="Texture2D" path="res://assets/sprites/ui_avatar_frame.png" id="8"]
 [ext_resource type="Texture2D" path="res://assets/sprites/ui_portrait_knight.png" id="9"]
+[ext_resource type="Texture2D" path="res://assets/sprites/ui_shard_icon.png" id="20"]
+[ext_resource type="Texture2D" path="res://assets/sprites/ui_slot_icons.png" id="21"]
+[ext_resource type="Texture2D" path="res://assets/sprites/ui_menu_focus.png" id="22"]
+[ext_resource type="Script" path="res://scripts/equipment_slots.gd" id="23"]
+[ext_resource type="Script" path="res://scripts/shard_counter_fx.gd" id="24"]
+[sub_resource type="AtlasTexture" id="slot_melee"]
+atlas = ExtResource("21")
+region = Rect2(0, 0, 12, 12)
+[sub_resource type="AtlasTexture" id="slot_ranged"]
+atlas = ExtResource("21")
+region = Rect2(24, 0, 12, 12)
 [sub_resource type="AtlasTexture" id="coin_icon"]
 atlas = ExtResource("4")
 region = Rect2(36, 0, 12, 12)
@@ -91,17 +102,25 @@ patch_margin_left = 8
 patch_margin_top = 8
 patch_margin_right = 8
 patch_margin_bottom = 8
+[node name="ShardIcon" type="TextureRect" parent="."]
+offset_left = 433.0
+offset_top = 10.0
+offset_right = 445.0
+offset_bottom = 22.0
+texture = ExtResource("20")
+mouse_filter = 2
+script = ExtResource("24")
 [node name="Bonus" type="Label" parent="."]
-offset_left = 434.0
+offset_left = 449.0
 offset_top = 12.0
 offset_right = 568.0
 offset_bottom = 22.0
 theme = SubResource("theme")
 text = "SHARDS 0"
 mouse_filter = 2
-theme_override_colors/font_color = Color(0.941, 0.824, 0.478, 1)
+theme_override_colors/font_color = Color(0.753, 0.541, 0.831, 1)
 [node name="BonusPending" type="Label" parent="."]
-offset_left = 434.0
+offset_left = 449.0
 offset_top = 24.0
 offset_right = 568.0
 offset_bottom = 34.0
@@ -313,21 +332,58 @@ color = Color(0, 0, 0, 0)
 mouse_filter = 2
 
 [node name="Equipment" type="Control" parent="."]
-offset_left = 48.0
+offset_left = 8.0
 offset_top = 44.0
-offset_right = 184.0
-offset_bottom = 72.0
+offset_right = 116.0
+offset_bottom = 76.0
+mouse_filter = 2
+script = ExtResource("23")
+[node name="MeleePlate" type="NinePatchRect" parent="Equipment"]
+offset_right = 92.0
+offset_bottom = 15.0
+mouse_filter = 2
+texture = ExtResource("6")
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 4
+patch_margin_bottom = 4
+[node name="RangedPlate" type="NinePatchRect" parent="Equipment"]
+offset_top = 17.0
+offset_right = 92.0
+offset_bottom = 32.0
+mouse_filter = 2
+texture = ExtResource("6")
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 4
+patch_margin_bottom = 4
+[node name="MeleeIcon" type="TextureRect" parent="Equipment"]
+offset_left = 3.0
+offset_top = 2.0
+offset_right = 15.0
+offset_bottom = 14.0
+texture = SubResource("slot_melee")
+mouse_filter = 2
+[node name="RangedIcon" type="TextureRect" parent="Equipment"]
+offset_left = 3.0
+offset_top = 19.0
+offset_right = 15.0
+offset_bottom = 31.0
+texture = SubResource("slot_ranged")
 mouse_filter = 2
 [node name="Melee" type="Label" parent="Equipment"]
-offset_right = 136.0
-offset_bottom = 12.0
+offset_left = 17.0
+offset_top = 3.0
+offset_right = 92.0
+offset_bottom = 13.0
 theme = SubResource("theme")
 text = "> Sword 0"
 mouse_filter = 2
 [node name="Ranged" type="Label" parent="Equipment"]
-offset_top = 14.0
-offset_right = 136.0
-offset_bottom = 26.0
+offset_left = 17.0
+offset_top = 20.0
+offset_right = 92.0
+offset_bottom = 30.0
 theme = SubResource("theme")
 text = "  Empty"
 mouse_filter = 2

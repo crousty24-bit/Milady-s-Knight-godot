@@ -92,6 +92,46 @@ var was_on_floor: bool = true
 @onready var upper: AnimatedSprite2D = $Sprite/Upper
 @onready var sword: Area2D = $AttackArea
 @onready var hurt_material: ShaderMaterial = sprite.material
+# RUN-016 presentation (Claude): Longbow animations, release puff and equipment sounds.
+const SHOT_RELEASE_TIME = 4.0 / 12.0
+const SHOT_DRAW_WINDOW = 0.45
+const RELEASE_FX = preload("res://assets/sprites/vfx_arrow_release.png")
+const BOW_SHOT_SFX = preload("res://assets/sounds/sfx_weapon_bow_shot.tres")
+const WEAPON_SWITCH_SFX = preload("res://assets/sounds/sfx_weapon_switch.wav")
+const WEAPON_EQUIP_SFX = preload("res://assets/sounds/sfx_weapon_equip.wav")
+var _fx_slot: int = 0
+var _fx_owned: bool = false
+var _equipment_sound: AudioStreamPlayer
+var _fx_armed: bool = false  # level setup (configure_equipment on spawn) stays silent
+
+func _ready() -> void:
+	_equipment_sound = AudioStreamPlayer.new()
+	_equipment_sound.bus = &"SFX"
+	_equipment_sound.volume_db = -6.0
+	add_child(_equipment_sound)
+	projectile_fired.connect(_on_projectile_fired_fx)
+	equipment_changed.connect(_on_equipment_changed_fx)
+	set_deferred("_fx_armed", true)
+
+func _on_projectile_fired_fx(arrow: Node2D) -> void:
+	var world := get_parent()
+	var at := arrow.global_position - Vector2(4.0 * facing, 0.0)
+	OneShotFx.spawn(world, RELEASE_FX, Vector2i(16, 12), 24.0, at, facing < 0, Vector2(0.0, 0.5), BOW_SHOT_SFX, -8.0)
+
+# Acquisition plays the equip cue; a slot change by the player plays the switch cue.
+func _on_equipment_changed_fx(slot: int) -> void:
+	var cue: AudioStream = null
+	if not _fx_armed:
+		pass
+	elif has_longbow and not _fx_owned:
+		cue = WEAPON_EQUIP_SFX
+	elif slot != _fx_slot:
+		cue = WEAPON_SWITCH_SFX
+	_fx_slot = slot
+	_fx_owned = has_longbow
+	if cue != null and _equipment_sound != null and is_inside_tree():
+		_equipment_sound.stream = cue
+		_equipment_sound.play()
 
 func _physics_process(delta: float) -> void:
 	attack_cooldown = maxf(0.0, attack_cooldown - delta)
@@ -336,7 +376,10 @@ func _update_animation() -> void:
 	upper.position = Vector2.ZERO
 	sprite.flip_h = facing < 0
 	if knockback_time > 0.0 or hit_stun_time > 0.0:
-		sprite.play("hurt")
+		sprite.play("bow_hurt" if active_slot == 1 and has_longbow else "hurt")
+		return
+	if active_slot == 1 and has_longbow:
+		_update_bow_animation()
 		return
 	var chain_time := _chain_time()
 	if chain_time >= 0.0:
@@ -351,6 +394,46 @@ func _update_animation() -> void:
 		sprite.play("land")
 	else:
 		_play_synced("run" if absf(velocity.x) > 5.0 else "idle")
+
+# Longbow active: release/draw frames from the bow cooldown, otherwise bow locomotion.
+func _update_bow_animation() -> void:
+	var shot := _shot_frame()
+	if shot >= 0:
+		sprite.flip_h = facing < 0
+		if is_on_floor() and absf(velocity.x) <= 5.0 and motion_state != MotionState.WALL_SLIDE:
+			sprite.animation = "shoot"
+			sprite.frame = shot
+			return
+		upper.show()
+		upper.flip_h = sprite.flip_h
+		upper.animation = "up_shoot"
+		upper.frame = shot
+		if is_on_floor():
+			_play_synced("base_run")
+			upper.position.y = RUN_HIP_OFFSET[sprite.frame % RUN_HIP_OFFSET.size()]
+		else:
+			sprite.play("base_rise" if velocity.y < 0.0 else "base_fall")
+	elif motion_state == MotionState.WALL_SLIDE:
+		sprite.flip_h = wall_normal > 0.0
+		sprite.play("bow_wall")
+	elif not is_on_floor():
+		sprite.play("bow_rise" if velocity.y < 0.0 else "bow_fall")
+	elif land_time > 0.0:
+		sprite.play("bow_land")
+	else:
+		_play_synced("bow_run" if absf(velocity.x) > 5.0 else "bow_idle")
+
+# 0-3: release just after a shot; 4-6: nock and draw while F is held before the next one.
+func _shot_frame() -> int:
+	if dead:
+		return -1
+	var since := BOW_INTERVAL - bow_cooldown
+	if bow_cooldown > 0.0 and since < SHOT_RELEASE_TIME:
+		return mini(3, int(since * 12.0))
+	var holding: bool = controls_enabled and hit_stun_time <= 0.0 and Input.is_action_pressed("attack")
+	if holding and bow_cooldown > 0.0 and bow_cooldown < SHOT_DRAW_WINDOW:
+		return 4 + mini(2, int((SHOT_DRAW_WINDOW - bow_cooldown) / (SHOT_DRAW_WINDOW / 3.0)))
+	return -1
 
 # Seconds since the current swing started while its gesture plays or F keeps the chain going.
 func _chain_time() -> float:
@@ -400,7 +483,8 @@ func _play_synced(animation_name: StringName) -> void:
 	if sprite.animation == animation_name:
 		sprite.play(animation_name)
 		return
-	var keep: bool = (sprite.animation == &"run" or sprite.animation == &"base_run") and (animation_name == &"run" or animation_name == &"base_run")
+	var strides := [&"run", &"base_run", &"bow_run"]
+	var keep: bool = sprite.animation in strides and animation_name in strides
 	var frame := sprite.frame
 	var progress := sprite.frame_progress
 	sprite.play(animation_name)

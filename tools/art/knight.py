@@ -43,6 +43,8 @@ GOLD = [hexc(c) for c in ("4a3418", "8c6b2e", "c9a24a", "f0d27a", "fff4c4")]
 LEATHER = [hexc(c) for c in ("2a1f1a", "3f2e24", "5a4030", "7a5a3c")]
 VISOR = hexc("0a080c")
 BLADE = [hexc(c) for c in ("5d6676", "8d96a6", "c4cbd6", "eef1f5", "ffffff")]
+BOW = [hexc(c) for c in ("2e1d14", "4e331f", "75502d", "a07444")]  # RUN-016 Longbow 0: plain yew
+STRING = hexc("cfc6ae")
 
 LIGHT = (0.5, -0.65, 0.57)
 _n = math.sqrt(sum(c * c for c in LIGHT))
@@ -241,6 +243,8 @@ class Pose:
 		self.lying = False
 		self.far_arm_front = False
 		self.sword_far = False  # sword held by the far hand, behind the body
+		self.bow = None  # RUN-016: (cant, draw 0..1 or <0 vibrating, nocked arrow, held by far hand)
+		self.sheathed = False  # sword hanging at the hip while the Longbow is active
 		self.__dict__.update(kw)
 
 	def copy(self, **kw):
@@ -629,6 +633,76 @@ def draw_dropped_sword(f, spec):
 
 
 # ---------------------------------------------------------------- full render
+BOW_HALF = 11.5  # half length of the limbs; the longbow is about as tall as the knight's torso + legs
+
+
+def bow_geometry(grip, cant, draw):
+	"""Limb points, tips and nock for a bow held vertically (top leaning forward by `cant`)."""
+	u = rot((0.0, -1.0), cant)
+	fwd = rot((1.0, 0.0), cant)
+	back = 3.0 + 1.6 * max(0.0, draw)
+
+	def at(s):
+		return add(add(grip, u, s), fwd, -back * (s / BOW_HALF) ** 2)
+
+	nock = add(grip, fwd, -back - 6.5 * max(0.0, draw))
+	return at, at(BOW_HALF), at(-BOW_HALF), nock, fwd
+
+
+def draw_bow(f, grip, spec):
+	cant, draw, nocked = spec[0], spec[1], spec[2]
+	at, top, bottom, nock, fwd = bow_geometry(grip, cant, draw)
+	limbs = {}
+	steps = 90
+	for i in range(steps + 1):
+		sv = -BOW_HALF + 2 * BOW_HALF * i / steps
+		x, y = at(sv)
+		col = RED[1] if abs(sv) < 1.6 else BOW[3] if sv > 0 else BOW[2]
+		q = (int(math.floor(x + OX)), int(math.floor(y + OY)))
+		limbs[q] = col
+		if abs(sv) < BOW_HALF - 2.5:  # thicker belly, lighter on the lit (upper/back) edge
+			q2 = (int(math.floor(x - fwd[0] * 0.9 + OX)), int(math.floor(y - fwd[1] * 0.9 + OY)))
+			limbs.setdefault(q2, RED[0] if abs(sv) < 1.6 else BOW[1])
+	f.add(limbs, BOW[0])
+	string = {}
+	mid = nock if draw >= 0 else add(nock, fwd, 0.9 * -draw)  # string still snapping forward
+	for a, b in ((top, mid), (mid, bottom)):
+		n = int(max(abs(b[0] - a[0]), abs(b[1] - a[1])) * 2) + 1
+		for i in range(n + 1):
+			t = i / n
+			q = (int(math.floor(a[0] + (b[0] - a[0]) * t + OX)), int(math.floor(a[1] + (b[1] - a[1]) * t + OY)))
+			if q not in limbs:
+				string[q] = STRING
+	f.add(string, outline=False)
+	if nocked:
+		shaft = {}
+		tail = add(nock, fwd, -1.0)
+		head = add(grip, fwd, 5.0)
+		n = int(math.hypot(head[0] - tail[0], head[1] - tail[1]) * 2) + 1
+		for i in range(n + 1):
+			t = i / n
+			x, y = tail[0] + (head[0] - tail[0]) * t, tail[1] + (head[1] - tail[1]) * t
+			col = STEEL[3] if t > 0.85 else RED[2] if t < 0.12 else BOW[3]
+			shaft[(int(math.floor(x + OX)), int(math.floor(y + OY)))] = col
+		f.add(shaft, outline=False)
+
+
+def draw_sheath(f, p):
+	"""Sword at rest on the far hip: scabbard pointing down and back, hilt up and forward."""
+	up, fwd = torso_frame(p)
+	belt = add(add(p.hip, up, 1.5), fwd, -1.5)
+	d = rot((-0.55, 0.84), 0.0)
+	out = {}
+	for i in range(0, 27):
+		t = -4.5 + i * 0.5
+		x, y = belt[0] + d[0] * t, belt[1] + d[1] * t
+		col = GOLD[2] if t < -3.5 else LEATHER[3] if t < -1.2 else GOLD[1] if t < -0.4 else LEATHER[1] if t < 7.5 else GOLD[1]
+		out[(int(math.floor(x + OX)), int(math.floor(y + OY)))] = col
+		if -0.4 <= t < 7.5:
+			out[(int(math.floor(x + 0.9 + OX)), int(math.floor(y + OY)))] = LEATHER[2]
+	f.add(out, STEEL_DEEP)
+
+
 def render(p, layer="full"):
 	"""layer: full | base (legs, skirt, cape) | upper (torso, head, arms, sword)."""
 	f = Frame()
@@ -642,6 +716,10 @@ def render(p, layer="full"):
 	far_hand = p.far_hand
 	if p.two_hands and p.sword is not None:
 		far_hand = add(p.near_hand, (math.cos(p.sword), math.sin(p.sword)), -2.6)
+	if upper and p.sheathed:
+		draw_sheath(f, p)
+	if upper and p.bow is not None and len(p.bow) > 3 and p.bow[3]:
+		draw_bow(f, far_hand, p.bow)  # held by the far hand (wall slide), behind the body
 	if upper and not p.far_arm_front:
 		draw_arm(f, far_sh, far_hand, True)
 		if p.sword_far and p.sword is not None:
@@ -669,6 +747,8 @@ def render(p, layer="full"):
 			draw_smear(f, p.near_hand, a0, a1, heavy)
 		draw_arm(f, near_sh, p.near_hand, False)
 		draw_pauldron(f, p, True)
+		if p.bow is not None and not (len(p.bow) > 3 and p.bow[3]):
+			draw_bow(f, p.near_hand, p.bow)
 		if p.sword is not None and not p.sword_behind and not p.sword_far:
 			draw_sword(f, p.near_hand, p.sword)
 		draw_hand(f, p.near_hand, False)
@@ -777,6 +857,78 @@ def dead_frames():
 		cape=[(-2.6, 0.8), (-4.8, 2.0), (-6.2, 3.2)])
 	d5 = d4.copy(cape=[(-2.8, 1.0), (-5.0, 2.4), (-6.0, 3.6)])
 	return [h, d1, d2, d3, d4, d5]
+
+
+# ---------------------------------------------------------------- Longbow 0 (RUN-016)
+# Same skeleton, sword sheathed at the hip, bow in the near hand. The shot leaves the
+# gameplay muzzle (+4, -10): the release/draw poses keep the grip at (+5.5, -11.5)
+# so the nocked arrow sits on the row the projectile starts from.
+BOW_REST = (0.42, 0.0, False)
+SHOT_GRIP = (5.5, -11.5)
+
+
+def bowed(p, cant=0.42, hand=None):
+	q = p.copy(sword=None, two_hands=False, sword_far=False, sword_behind=False, sheathed=True, bow=(cant, 0.0, False))
+	if hand is not None:
+		q.near_hand = hand
+	return q
+
+
+def bow_idle_frames():
+	return [bowed(p, 0.4, (5.0, -11.5 + (p.hip[1] + 13))).copy(far_hand=(-1.0, -11.5 + (p.hip[1] + 13)), lean=0.1) for p in idle_frames()]
+
+
+def bow_run_frames():
+	out = []
+	for i, p in enumerate(run_frames()):
+		ph = RUN_CYCLE[i][5]
+		hy = RUN_CYCLE[i][4]
+		out.append(bowed(p, 0.75 + ph * 0.05, (4.5 - ph * 1.0, -12.5 + hy + 13)))
+	return out
+
+
+def bow_rise_frames():
+	return [bowed(p, 0.15, (5.5, -16.5)) for p in rise_frames()]
+
+
+def bow_fall_frames():
+	return [bowed(p, 0.3, (5.5, -15.0)) for p in fall_frames()]
+
+
+def bow_land_frames():
+	a, b = land_frames()
+	return [bowed(a, 0.9, (5.5, -9.5)), bowed(b, 0.6, (5.5, -11.0))]
+
+
+def bow_wall_frames():
+	return [p.copy(sword=None, sword_far=False, sheathed=True, bow=(-0.15, 0.0, False, True)) for p in wall_frames()]
+
+
+def bow_hurt_frames():
+	return [bowed(p, -0.7, add(p.near_hand, (1.0, 2.0))) for p in hurt_frames()]
+
+
+def shot_pose(near, far, cant, draw, nocked, lean=0.16, cape_sway=0.0):
+	return Pose(hip=(0.5, -13), lean=lean, near_foot=(5.0, -2), far_foot=(-5.0, -2), near_hand=near, far_hand=far,
+		far_arm_front=True, sword=None, sheathed=True, bow=(cant, draw, nocked),
+		cape=[(-2.4 + cape_sway * 0.3, 5), (-4.2 + cape_sway, 10.5), (-5.4 + cape_sway, 15.5)])
+
+
+def shoot_frames():
+	"""0-3 release then recovery (played from the shot instant), 4-6 nock and draw while F is
+	held before the next shot (the bow cooldown is 1.5 s)."""
+	g = SHOT_GRIP
+	cant = 0.12
+	frames = [
+		shot_pose((g[0] + 0.5, g[1]), (-4.5, -13.0), cant, -1.0, False, lean=0.1, cape_sway=-0.6),
+		shot_pose((g[0] + 0.5, g[1]), (-3.0, -12.0), cant, -0.4, False, lean=0.12, cape_sway=-0.3),
+		shot_pose(g, (-1.0, -11.5), cant + 0.08, 0.0, False),
+		shot_pose((g[0] - 0.5, g[1] + 0.5), (0.5, -12.0), cant + 0.2, 0.0, False),
+	]
+	for draw in (0.15, 0.55, 1.0):
+		_, _, _, nock, _ = bow_geometry(g, cant, draw)
+		frames.append(shot_pose(g, nock, cant, draw, True, lean=0.16 + 0.04 * draw))
+	return frames
 
 
 # ---------------------------------------------------------------- attack chain
@@ -995,6 +1147,16 @@ def build():
 	anims.append(("base_run", 14.0, True, [render(p, "base") for p in run_frames()]))
 	anims.append(("base_rise", 8.0, True, [render(p, "base") for p in rise_frames()]))
 	anims.append(("base_fall", 8.0, True, [render(p, "base") for p in fall_frames()]))
+	# RUN-016: Longbow 0 active (A); legs/cape of base_run/rise/fall are shared with up_shoot.
+	anims.append(("bow_idle", 6.0, True, [render(p) for p in bow_idle_frames()]))
+	anims.append(("bow_run", 14.0, True, [render(p) for p in bow_run_frames()]))
+	anims.append(("bow_rise", 8.0, True, [render(p) for p in bow_rise_frames()]))
+	anims.append(("bow_fall", 8.0, True, [render(p) for p in bow_fall_frames()]))
+	anims.append(("bow_land", 20.0, False, [render(p) for p in bow_land_frames()]))
+	anims.append(("bow_wall", 7.0, True, [render(p) for p in bow_wall_frames()]))
+	anims.append(("bow_hurt", 10.0, False, [render(p) for p in bow_hurt_frames()]))
+	anims.append(("shoot", 1.0, False, [render(p) for p in shoot_frames()]))
+	anims.append(("up_shoot", 1.0, False, [render(shifted_upper(p), "upper") for p in shoot_frames()]))
 	return anims
 
 

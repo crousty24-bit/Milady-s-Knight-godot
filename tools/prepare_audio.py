@@ -17,6 +17,8 @@ HELTON = "SFX/Helton Yan's Pixel Combat - Single Files"
 SFX_PEAK_DB = -8.0
 # RUN-015: generic UI sounds sit below gameplay SFX (per-entry peak override).
 UI_PEAK_DB = -12.0
+# RUN-016: repetitive gameplay SFX (bow shot, shard gain) sit 2 dB under the default.
+REPEAT_PEAK_DB = -10.0
 # name -> (source file stem, maximum length in seconds or None[, peak in dBFS])
 SFX = {
 	# RUN-014 replacements: softer physical jump, airy but trimmed double jump.
@@ -46,6 +48,22 @@ SFX = {
 	"sfx_ui_confirm": ("DSGNTonl_INTERFACE-Tonal Click_HY_PC-005", None, UI_PEAK_DB),
 	"sfx_ui_cancel": ("UIClick_INTERFACE-Strong Click 2_HY_PC-003", None, UI_PEAK_DB),
 	"sfx_ui_error": ("UIMisc_INTERFACE-Denied_HY_PC-002", None, UI_PEAK_DB),
+	# RUN-016: Longbow, chest, shards and potion sounds from the same CC BY 4.0 pack.
+	# Repetitive sounds (bow shot, shard gain) sit 2 dB lower; the weapon swap is UI-like.
+	"sfx_weapon_bow_shot_01": ("DSGNMisc_PROJECTILE-High Whoosh_HY_PC-001", 0.38, REPEAT_PEAK_DB),
+	"sfx_weapon_bow_shot_02": ("DSGNMisc_PROJECTILE-High Whoosh_HY_PC-002", 0.38, REPEAT_PEAK_DB),
+	"sfx_weapon_bow_shot_03": ("DSGNMisc_PROJECTILE-High Whoosh_HY_PC-003", 0.38, REPEAT_PEAK_DB),
+	"sfx_arrow_impact": ("FEETMisc_STEP-Hard Step_HY_PC-002", None),
+	"sfx_shard_gain_01": ("DSGNTonl_SKILL IMPACT-Star Sparkle_HY_PC-001", 0.58, REPEAT_PEAK_DB),
+	"sfx_shard_gain_02": ("DSGNTonl_SKILL IMPACT-Star Sparkle_HY_PC-002", 0.58, REPEAT_PEAK_DB),
+	"sfx_shard_gain_03": ("DSGNTonl_SKILL IMPACT-Star Sparkle_HY_PC-003", 0.58, REPEAT_PEAK_DB),
+	"sfx_minor_potion_pickup": ("DSGNTonl_MOVEMENT-Bubble Babbler_HY_PC-001", 0.5),
+	"sfx_player_heal": ("MAGAngl_BUFF-Simple Heal_HY_PC-002", 0.78),
+	"sfx_weapon_switch": ("UIClick_INTERFACE-Rattling Click_HY_PC-002", None, UI_PEAK_DB),
+	"sfx_weapon_equip": ("DSGNTonl_USABLE-Metallic Item_HY_PC-002", None),
+	"sfx_chest_open_common": ("UIMisc_INTERFACE-Lock_HY_PC-002", None),
+	"sfx_chest_reward_reveal": ("SWSH_MOVEMENT-Tiny Chime_HY_PC-002", 0.75),
+	"sfx_chest_reward_accept": ("DSGNTonl_USABLE-Tonal Item_HY_PC-003", 0.58),
 }
 # name -> (source, loop end in seconds or None). RUN-014: new track, louder target.
 MUSIC = {
