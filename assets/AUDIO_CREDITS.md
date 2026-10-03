@@ -39,7 +39,7 @@ Même source, auteur, licence (CC BY 4.0) et attribution que la section ci-dessu
 - **Source :** `Music/nojisuma-dreamer-131011.mp3` ; auteur Pixabay `nojisuma`, identifiant 131011. La page exacte du morceau reste à relier au fichier.
 - **Licence :** [Pixabay Content License](https://pixabay.com/service/license-summary/) — usage gratuit, modification permise, attribution non requise ; vente ou distribution du contenu seul, sous une forme substantiellement identique, interdite.
 - **Transformation :** coupé à 156,0 s, avant le fondu final et sur une fin de mesure de 4 s, fondus de 30 ms aux bords, loudness normalisée à −13 LUFS (true peak −1,5 dBFS), Ogg Vorbis q5 44,1 kHz, boucle activée à l'import.
-- **Remplacé :** `music/music_slice_dark_fantasy_lofi.ogg` (Pixabay `welc0mei0`, identifiant 148338, −16 LUFS) n'est plus référencé ; le fichier reste dans le dépôt en attendant la décision humaine.
+- **Remplacé :** `music/music_slice_dark_fantasy_lofi.ogg` (Pixabay `welc0mei0`, identifiant 148338, −16 LUFS) réutilisé comme thème du menu principal en RUN-015 le 3 octobre 2026, à la demande humaine. Sa source est `Music/welc0mei0-bgm006-dark-fantasy-lo-fi-retro-game-148338.mp3` ; le dérivé existant stéréo 44,1 kHz (~132 s), à −16 LUFS, est conservé avec boucle d'import activée. Le lecteur de menu est routé vers Music et supprimé à l'entrée en jeu.
 
 ## Retour d'écoute (30 septembre 2026)
 

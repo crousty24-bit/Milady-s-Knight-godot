@@ -2,11 +2,19 @@ extends Node
 const MENU = preload("res://scripts/keyboard_menu.gd")
 var menu: CanvasLayer
 var screen: String = "main"
+const MENU_MUSIC = preload("res://assets/music/music_slice_dark_fantasy_lofi.ogg")
+var music: AudioStreamPlayer
 @onready var progression = get_node("/root/Progression")
 
 func _ready() -> void:
 	get_tree().paused = false
 	get_tree().auto_accept_quit = false
+	music = AudioStreamPlayer.new()
+	music.name = "MenuMusic"
+	music.stream = MENU_MUSIC
+	music.bus = &"Music"
+	add_child(music)
+	music.play()
 	menu = MENU.new()
 	add_child(menu)
 	menu.selected.connect(_select)
@@ -69,3 +77,6 @@ func _cancel() -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_CLOSE_REQUEST: get_tree().quit()
+
+func _exit_tree() -> void:
+	if is_instance_valid(music): music.stop()

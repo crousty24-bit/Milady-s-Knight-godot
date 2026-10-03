@@ -33,6 +33,12 @@ func run() -> void:
 	root.add_child(game)
 	current_scene = game
 	await frames()
+	check(game.music.playing and game.music.bus == &"Music" and game.music.stream.loop, "menu plays chosen music loop on Music bus")
+	game.music.seek(game.music.stream.get_length() - 0.05)
+	OS.delay_msec(350)
+	await frames(3)
+	check(game.music.playing and game.music.get_playback_position() < 1.0, "menu music passes end of track and restarts its loop")
+	var menu_music_ref: WeakRef = weakref(game.music)
 	await capture("main")
 	check(game.screen == "main" and game.menu.opened and 1 in game.menu.unavailable, "cold boot opens main menu with Continue unavailable without save")
 	await tap("move_down")
@@ -40,11 +46,13 @@ func run() -> void:
 	await tap("interact")
 	await capture("controls")
 	check(game.screen == "controls", "E opens Controls")
+	check(game.music.playing and menu_music_ref.get_ref() == game.music, "Controls keeps the same menu music player")
 	await tap("pause")
 	check(game.screen == "main", "Escape returns from Controls")
 	await tap("interact")
 	await frames(8)
 	var level = current_scene
+	check(menu_music_ref.get_ref() == null and level.get_node("Music").playing, "entering gameplay removes menu music and starts level music")
 	check(level != game and progress.has_save and level.gold == 0 and level.bonus == 0, "New Game writes initial save and spawns fresh attempt")
 	level.gold = 15
 	level.bonus = 8
@@ -93,6 +101,7 @@ func run() -> void:
 	await tap("interact")
 	await frames(8)
 	game = current_scene
+	check(game.music.playing and game.music.stream.loop, "returning to menu restarts chosen looping theme")
 	check(game.scene_file_path == "res://scenes/game.tscn" and not paused, "Quit to menu returns to main menu")
 	await tap("interact")
 	await capture("confirm")

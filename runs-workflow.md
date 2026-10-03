@@ -458,7 +458,7 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 ## Version 0.2.0 — Premier niveau et boucle de reprise
 
-**Statut : en cours, RUN-015 technique vérifiée ; contribution Claude et validations de clôture en attente.** **Prérequis :** fusion dans `develop` vérifiée ; D03–D05 avant leur code. Les critères ci-dessous sont ceux du jalon complet RUN-015–017, pas de RUN-015 seule.
+**Statut : en cours, RUN-015 DONE, RUN-016 ACTIVE.** **Prérequis :** fusion dans `develop` vérifiée ; D03–D05 avant leur code. Les critères ci-dessous sont ceux du jalon complet RUN-015–017, pas de RUN-015 seule.
 
 **Repères documentaires :** 01, 03, 04, 05, 07, 08, 09, 10, 13 dans `docs/`.
 
@@ -471,11 +471,13 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 ### RUN-015 — Reprise, progression et interface clavier
 
-**Lot D · Main agent : Codex GPT-6.1 Sol Medium · Statut : BLOCKED · Dépendances : RUN-011 DONE et verrou de branche levé.**
+**Lot D · Main agent : Codex GPT-6.1 Sol Medium · Statut : DONE · Dépendances : RUN-011 DONE et verrou de branche levé.**
 
 - **Préparation (3 octobre 2026) :** lancement autorisé, dépôt initial propre sur `develop` (`f997bcb`), branche commune `feature/v0.2.0-reprise-equipment` créée. D03 (persistance et ordre de dépense) et D05 (interface) sont validés par l’humain le 3 octobre ; le contrat intégral, migration v1 comprise, est ensuite validé le 3 octobre ; passage READY puis ACTIVE ; propositions concrètes dans [RUN-015_CONTRACT_REVIEW.md](docs/RUN-015_CONTRACT_REVIEW.md). Partie technique implémentée et vérifiée ; état BLOCKED sur la contribution artistique/audio Claude requise. Le réglage exact Sol Medium de la session ne peut pas être confirmé avec les informations exposées. Contribution artistique/audio des menus réservée à Claude ; handoff et propriété dans [RUN-015_CLAUDE_HANDOFF.md](docs/RUN-015_CLAUDE_HANDOFF.md).
 
 - **Checkpoint technique (3 octobre 2026) :** sauvegarde v2 et migration explicite avec copie originale, transactions durables, séparation coins/shards, menu principal/pause/contextes clavier. Import + 18 suites / **445 contrôles de jeu + 1 isolation** réussis ; pilote menus non headless **26/26**, sept captures inspectées à 640×360. Corrections/retests : Escape ouvrait/fermait dans la même frame, chargement après victoire héritant de pause, sauvegardes de remplacement successives, mort pendant E tenu. **Pas de DONE ni de VERIFY complet** : habillage/logo/fond et sons UI P0 par Claude, validation artistique/playtest humain et revue Jev de clôture restent dus.
+
+- **Reprise après Claude (3 octobre 2026) :** passe artistique/audio `1a6ffea` inspectée et validée par l’humain. Logo accepté avec retouche de détail reportée à la prochaine passe Claude (RUN-027). Thème de menu demandé : dérivé existant de `welc0mei0 …148338.mp3`, bouclé et routé Music ; tests menus avec rendu **31/31**, dont passage effectif de fin de piste, Controls, entrée niveau et retour menu. Revue Jev READY_FOR_DONE (couverture 0,81, vérification 0,72, blocage 0,37 ; Choice 0,38, distribution 0,59/0,38/0,03), puis inspection des preuves et validation humaine : DONE localement.
 
 - **Résultat / scope :** Regrouper contrats d’état, séparation coins/shards, tentative/état durable, sauvegarde versionnée, exclusivité des modales, New Game/Continue/Controls/Quit et pause Reprendre/Recommencer/Quitter.
 - **Décisions avant implémentation dépendante :** D03–D05 : événements de sauvegarde, ancien bonus, banque/gains, uniques/dialogues, priorité et annulation des modales, slots ; décisions humaines avant schéma/code.
@@ -484,9 +486,10 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 ### RUN-016 — Équipement N1, Longbow et récompenses
 
-**Lot E · Main agent : Codex GPT-6.1 Sol Medium · Statut : BACKLOG · Dépendances : RUN-015.**
+**Lot E · Main agent : Codex GPT-6.1 Sol Medium · Statut : ACTIVE · Dépendances : RUN-015 DONE.**
 
 - **Résultat / scope :** HUD vie/coins/shards, deux slots et touche A, Sword conservée, Longbow 0 effectif, coffre tuto gratuit à récompense fixe et potion mineure.
+- **Lancement (3 octobre 2026) :** autorisé par la demande initiale d’enchaînement après RUN-015 revue/validée, conditions satisfaites. Même branche ; ownership gameplay/persistance à Codex, assets/feedbacks à Claude.
 - **Décisions avant implémentation dépendante :** Appliquer les contrats RUN-015, y compris persistance et disposition des slots.
 - **Acceptation, tests et bugtest :** HUD exact après collecte/dépense/mort/reprise à 640×360 ; F maintenu tire toutes les 1,5 s, 1 DMG, portée 20 blocs, disparition cible/terrain/portée ; gauche/droite, pause, changement d’arme, occlusion et impact unique ; coffre accepter/refuser/fermer sans doublon/upgrade ; potion 0,5 HP conservée si vie pleine.
 - **Clôture :** corrections et régressions du périmètre, revue Jev selon le cycle existant, preuves au journal et learning fondé sur le résultat réel ; validation humaine des choix artistiques ou playtests requis.
@@ -640,7 +643,7 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 **Lot P · Main agent : Claude Opus 5.5 · Statut : BACKLOG · Dépendances : RUN-026 ; 0.4.0 validée.**
 
-- **Résultat / scope :** Harmoniser dix biomes et variantes avancées retenues, HUD/menus/logo/artwork/dialogues anglais ; compléter animations/VFX et audio requis, résoudre les retours RUN-010 restants (dont sons de saut et double saut encore trop « sci-fi » après RUN-014), mixer et intégrer volumes/préférences persistantes avec contribution technique cadrée.
+- **Résultat / scope :** Harmoniser dix biomes et variantes avancées retenues, HUD/menus/logo/artwork/dialogues anglais ; compléter animations/VFX et audio requis, résoudre les retours RUN-010 restants (dont sons de saut et double saut encore trop « sci-fi » après RUN-014), mixer et intégrer volumes/préférences persistantes avec contribution technique cadrée. Améliorer le détail du logo de menu selon le retour humain du 3 octobre 2026, en conservant sa référence.
 - **Décisions avant implémentation dépendante :** D10 : variantes retenues et licences ; validation artistique et sonore humaine.
 - **Acceptation, tests et bugtest :** Toutes exigences docs/08 et docs/13 intégrées/testées ou décision de scope validée, aucun P0 absent ; rendu/clavier à 640×360, transitions d’animation/collisions, écoute humaine et mix, réglages après reprise, sources/dérivés et licences/crédits complets ; effets caméra facultatifs seulement si lisibles.
 - **Clôture :** corrections et régressions du périmètre, revue Jev selon le cycle existant, preuves au journal et learning fondé sur le résultat réel ; validation humaine des choix artistiques ou playtests requis.
@@ -656,6 +659,6 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 ## Point d’arrêt
 
-**3 octobre 2026 : début de préparation de la phase 0.2.0 autorisé.** La PR #16 est fusionnée dans `develop` (`f997bcb`) ; le verrou de branche est levé. RUN-015 est **BLOCKED sur la contribution Claude artistique/audio**, après validation intégrale du contrat et checkpoint technique vérifié (445 contrôles, 26 contrôles avec rendu). Les preuves et le handoff sont consignés au journal. Validation humaine de la run et revue Jev restent dues avant DONE.
+**3 octobre 2026 : RUN-015 DONE localement**, contribution Claude validée humainement, thème de menu choisi intégré et testé, revue Jev et inspection des preuves satisfaisantes. Le logo plus détaillé reste une retouche Claude de RUN-027, sans remettre en cause la passe validée.
 
-**Suite autorisée :** RUN-015 sur `feature/v0.2.0-reprise-equipment`, puis RUN-016 sur cette même branche après revue et validation humaine de RUN-015. RUN-016 et RUN-017 restent BACKLOG. Les contributions artistiques reviennent à Claude, avec fichiers attribués avant toute édition concurrente.
+**RUN-016 ACTIVE sur `feature/v0.2.0-reprise-equipment`**, conformément à l’enchaînement demandé après revue et validation humaine. Contributions Claude requises pour Longbow/flèche, shards, coffre/potion, slots et feedbacks. RUN-017 reste BACKLOG ; 0.2.0 n’est pas encore validée. Pas de push/PR/merge autorisé par cet enchaînement.
