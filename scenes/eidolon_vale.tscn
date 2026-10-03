@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/vertical_slice.tscn" id="1"]
 [ext_resource type="Script" path="res://scripts/spirit_art.gd" id="2"]
+[ext_resource type="AudioStream" path="res://assets/sounds/sfx_spirit_appear.wav" id="3"]
 
 [node name="EidolonVale" instance=ExtResource("1")]
 n1_intro_enabled = true
@@ -13,3 +14,4 @@ position = Vector2(76, 144)
 
 [node name="Art" type="Node2D" parent="AncientSpirit"]
 script = ExtResource("2")
+appearance_sound = ExtResource("3")

@@ -8,6 +8,16 @@ Outputs (assets/sprites/):
                                  brighter eyes and staff light
   ui_portrait_spirit.png  24x24  hooded face for the dialogue banner (same frame as the knight portrait)
   vfx_spirit_aura.png     48x56  dithered cool halo drawn behind the spirit (alpha only)
+  npc_spirit_appear.png  256x48  RUN-017/2, 8 frames of 32x48: pale silhouette gathers bottom-up, then
+                                 takes colour; last frame = idle frame 0
+  npc_spirit_disappear.png 256x48 RUN-017/2, 8 frames: idle frame 0 pales, dissolves bottom-up into
+                                 rising motes; last frame empty
+  vfx_spirit_manifest.png 384x128 RUN-017/2, 8 columns of 48x64, row 0 appear / row 1 disappear: column
+                                 of cold light and motes, translucent only, same anchor as the aura
+
+Appear/disappear are sampled by the level's phase progress (scripts/spirit_art.gd), not played at a
+frame rate. The manifest light is drawn outside the pass-through fade so the apparition stays readable
+while the knight stands inside the spirit at the 32 px trigger.
 
 Frames face right; the game mirrors them toward the knight. The bottom row of a frame is the ground
 line (origin of the AncientSpirit node); the figure floats about 5 px above it. Body about 16x34 px
@@ -279,6 +289,155 @@ def portrait():
 	return out
 
 
+# 4x4 ordered dither, normalised to [0, 1): shared by the reveal / dissolve thresholds.
+BAYER = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]]
+
+
+def bayer(x, y):
+	return (BAYER[y % 4][x % 4] + 0.5) / 16.0
+
+
+def figure_pixels(c):
+	"""Opaque or translucent pixels of a frame with their bottom-up height in [0, 1]."""
+	pts = [(x, y) for y in range(H) for x in range(W) if c.get(x, y) is not None]
+	y0 = min(y for _, y in pts)
+	y1 = max(y for _, y in pts)
+	return [(x, y, (y1 - y) / float(y1 - y0)) for x, y in pts]
+
+
+def ghost(c, x, y):
+	"""Flat pale version of a pixel: the spirit before it takes form. Edges one step darker."""
+	edge = any(c.get(x + dx, y + dy) is None for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))
+	alpha = c.get(x, y)[3]
+	return (SPIRIT[4] if edge else SPIRIT[5])[:3] + (min(alpha, 235),)
+
+
+def threshold(x, y, h):
+	return 0.55 * h + 0.45 * bayer(x, y)
+
+
+def appear_frame(stage):
+	"""Stages 0-7: nothing, nothing (the light column gathers), silhouette 30 %, 65 %, 100 % pale,
+	half coloured, coloured with a pale rim, idle frame 0."""
+	base = frame(0, False)
+	if stage == 7:
+		return base
+	out = Canvas(W, H)
+	if stage < 2:
+		return out
+	cover = {2: 0.3, 3: 0.65}.get(stage, 1.01)
+	for x, y, h in figure_pixels(base):
+		if threshold(x, y, h) >= cover:
+			continue
+		color = ghost(base, x, y)
+		if stage == 5 and bayer(x, y) < 0.5:
+			color = base.get(x, y)
+		elif stage == 6:
+			color = base.get(x, y) if base.get(x, y) != OUTLINE else SPIRIT[3]
+		out.put(x, y, color)
+	return out
+
+
+def disappear_frame(stage):
+	"""Stages 0-7: idle frame 0, half pale, pale silhouette, then it erodes from the hem upward while
+	the lost pixels rise as motes; last frame empty."""
+	base = frame(0, False)
+	if stage == 0:
+		return base
+	out = Canvas(W, H)
+	if stage == 7:
+		return out
+	erode = {3: 0.25, 4: 0.5, 5: 0.75, 6: 1.01}.get(stage, 0.0)
+	for x, y, h in figure_pixels(base):
+		t = threshold(x, y, h)
+		if t < erode:
+			# A few of the lost pixels drift up and fade: the spirit leaves as light, not as a cut.
+			if bayer(x, y) < 0.13:
+				lift = int((erode - t) * 18) + 2
+				sway = int(round(math.sin(y * 0.7 + stage) * 1.2))
+				out.put(x + sway, y - lift, SPIRIT[5][:3] + (max(70, 220 - lift * 9),))
+			continue
+		color = ghost(base, x, y)
+		if stage == 1 and bayer(x, y) < 0.5:
+			color = base.get(x, y)
+		out.put(x, y, color)
+	return out
+
+
+MW, MH = 48, 64  # manifest cell: the spirit cell (32x48) sits at (8, 12), ground on the bottom row - 4
+MCX, MGROUND = 24, 59  # column centre and ground row inside the cell
+
+
+def light_column(c, height, half, alpha, phase=0):
+	"""Dithered vertical light from the ground up; brighter core, softer edges and top."""
+	for y in range(MGROUND - height, MGROUND + 1):
+		k = (MGROUND - y) / float(max(1, height))
+		for x in range(MCX - half - 1, MCX + half + 1):
+			d = abs(x + 0.5 - MCX) / float(half + 0.5)
+			if d > 1.0:
+				continue
+			a = alpha * (1.0 - d * 0.6) * (1.0 - k ** 3)
+			if d > 0.5 and bayer(x, y + phase) > 0.5:
+				continue
+			if k > 0.75 and bayer(x, y + phase) > 1.0 - k:
+				continue
+			color = (255, 255, 240) if d < 0.25 and k < 0.8 else SPIRIT[5] if d < 0.6 else SPIRIT[4]
+			c.put(x, y, color[:3] + (int(max(30, a)),))
+
+
+def ground_ring(c, radius, alpha):
+	for x in range(MCX - radius - 1, MCX + radius + 2):
+		dx = (x + 0.5 - MCX) / float(radius)
+		if abs(dx) > 1.0:
+			continue
+		dy = int(round(math.sqrt(1.0 - dx * dx) * 1.5))
+		for y in (MGROUND - dy, MGROUND + 1 - (1 if dy else 0)):
+			if bayer(x, y) < 0.75:
+				c.put(x, y, SPIRIT[4][:3] + (alpha,))
+
+
+def motes_at(c, points, alpha):
+	for i, (x, y) in enumerate(points):
+		c.put(int(round(x)), int(round(y)), (SPIRIT[5] if i % 2 else (255, 255, 240, 255))[:3] + (alpha,))
+
+
+def manifest_appear(stage):
+	c = Canvas(MW, MH)
+	# Motes drawn in from both sides toward the column, then thrown out when the figure forms.
+	seeds = [(-1, 6, 0.0), (1, 14, 0.8), (-1, 22, 1.6), (1, 30, 2.4), (-1, 38, 0.4), (1, 46, 1.2)]
+	if stage <= 3:
+		pull = stage / 3.0
+		pts = [(MCX + side * (20 - 17 * pull) + math.sin(ph + stage) * 1.5, MGROUND - h * (0.4 + 0.6 * pull)) for side, h, ph in seeds]
+		motes_at(c, pts, 150 + 30 * stage)
+	elif stage <= 6:
+		push = (stage - 3) / 3.0
+		pts = [(MCX + side * (4 + 16 * push), MGROUND - h - push * 8) for side, h, _ in seeds[::2 if stage == 6 else 1]]
+		motes_at(c, pts, int(200 - 110 * push))
+	if stage == 0:
+		for x, y, a in ((MCX - 1, MGROUND, 200), (MCX, MGROUND, 255), (MCX, MGROUND - 1, 160), (MCX + 1, MGROUND, 200)):
+			c.put(x, y, SPIRIT[5][:3] + (a,))
+	column = {1: (20, 0, 120), 2: (38, 1, 140), 3: (46, 2, 150), 4: (46, 2, 120), 5: (44, 1, 70), 6: (40, 1, 35)}
+	if stage in column:
+		light_column(c, *column[stage], phase=stage)
+	if stage in (3, 4, 5):
+		ground_ring(c, {3: 6, 4: 9, 5: 12}[stage], {3: 190, 4: 150, 5: 80}[stage])
+	return c
+
+
+def manifest_disappear(stage):
+	c = Canvas(MW, MH)
+	column = {1: (44, 1, 50), 2: (46, 2, 100), 3: (46, 2, 110), 4: (46, 1, 85), 5: (44, 1, 50), 6: (40, 0, 25)}
+	if stage in column:
+		light_column(c, *column[stage], phase=stage)
+	if 2 <= stage <= 7:
+		rise = (stage - 2) / 5.0
+		pts = [(MCX + dx + math.sin(rise * 4 + i) * 1.5, 40 - rise * 34 + dy) for i, (dx, dy) in enumerate(((-6, 6), (5, 2), (-3, -4), (7, -8), (-8, -12), (2, -16)))]
+		motes_at(c, [p for p in pts if p[1] >= 1], int(210 - 150 * rise))
+	if stage == 2:
+		ground_ring(c, 8, 110)
+	return c
+
+
 def main():
 	preview = None
 	if "--preview" in sys.argv:
@@ -290,6 +449,9 @@ def main():
 		"npc_spirit_talk.png": sheet([frame(i, True) for i in range(FRAMES)], FRAMES),
 		"ui_portrait_spirit.png": portrait(),
 		"vfx_spirit_aura.png": aura(),
+		"npc_spirit_appear.png": sheet([appear_frame(i) for i in range(FRAMES)], FRAMES),
+		"npc_spirit_disappear.png": sheet([disappear_frame(i) for i in range(FRAMES)], FRAMES),
+		"vfx_spirit_manifest.png": sheet([manifest_appear(i) for i in range(FRAMES)] + [manifest_disappear(i) for i in range(FRAMES)], FRAMES),
 	}
 	for name, canvas in outputs.items():
 		save_png(canvas, os.path.join(OUT, name))

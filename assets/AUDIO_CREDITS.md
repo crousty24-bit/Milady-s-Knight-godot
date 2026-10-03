@@ -54,9 +54,12 @@ Même source, auteur, licence (CC BY 4.0) et attribution que les sections ci-des
 
 Même source, auteur, licence (CC BY 4.0) et attribution que les sections ci-dessus ; produit par `python3 tools/prepare_audio.py sfx_dialogue_open`. Même transformation, crête **−12 dBFS** (niveau UI), coupe à 1,2 s avec fondu de sortie de 0,15 s ; joué sur le bus UI à l'ouverture du bandeau. Sélection par analyse objective (attaque douce, ton chatoyant, sans voix), l'écoute humaine reste à faire.
 
+`sfx_spirit_appear.wav` (RUN-017/2, matérialisation du Spirit, bus SFX) : produit par `python3 tools/prepare_audio.py sfx_spirit_appear`, crête **−10 dBFS**, coupe à 1,3 s avec fondu de sortie ; gonflement grave-médium doux (crête vers 0,8 s), sans attaque percussive. Sélection par analyse objective uniquement, l'écoute humaine reste à faire.
+
 | Fichier de jeu | Fichier source | Durée | Coupe |
 | --- | --- | --- | --- |
 | `sounds/sfx_dialogue_open.wav` | `MAGAngl_BUFF-Shimmer Tone_HY_PC-001.wav` | 1,2 s | 1,2 s |
+| `sounds/sfx_spirit_appear.wav` | `MAGSpel_CAST-Growing Strength_HY_PC-005.wav` | 2,98 s | 1,3 s |
 
 ## Limites acceptées et suivi RUN-016 (3 octobre 2026)
 

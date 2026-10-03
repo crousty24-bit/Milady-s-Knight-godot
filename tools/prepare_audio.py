@@ -66,6 +66,8 @@ SFX = {
 	"sfx_chest_reward_accept": ("DSGNTonl_USABLE-Tonal Item_HY_PC-003", 0.58),
 	# RUN-017: soft shimmer when the Ancient Spirit's banner opens (P1), at the UI level.
 	"sfx_dialogue_open": ("MAGAngl_BUFF-Shimmer Tone_HY_PC-001", 1.2, UI_PEAK_DB),
+	# RUN-017/2: soft low-mid swell as the Ancient Spirit materializes (0.8 s), one-shot narrative cue just under gameplay SFX.
+	"sfx_spirit_appear": ("MAGSpel_CAST-Growing Strength_HY_PC-005", 1.3, REPEAT_PEAK_DB),
 }
 # name -> (source, loop end in seconds or None). RUN-014: new track, louder target.
 MUSIC = {
