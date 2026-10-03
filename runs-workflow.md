@@ -2,6 +2,8 @@
 
 ## Statut de cette planification
 
+**Clôture du 3 octobre 2026 : RUN-015–017 DONE, jalon 0.2.0 validé localement.** Deux passes Claude et playtest humain N1 validés ; correctif idle, recette finale et revue Jev/inspection terminés. [PR #18](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/18) ouverte de `feature/run-017-eidolon-vale` vers `develop`, sans fusion. Aucune autre run lancée. Les checkpoints antérieurs ci-dessous conservent leur contexte historique.
+
 **Mise à jour du 3 octobre 2026 :** PR #16 fusionnée dans `develop` (`f997bcb`), verrou 0.2.0 levé. RUN-015–016 DONE ; passe Claude RUN-016 validée par l’humain, revue globale terminée sur `feature/v0.2.0-reprise-equipment`. Push et PR vers develop autorisés par la demande humaine de revue puis livraison ; pas de merge autorisé. Les paragraphes datés du 2 octobre conservent le contexte historique.
 
 Audit documentaire et inspection du dépôt effectués le **21 septembre 2026**, à partir de l’état de travail courant, et non du seul commit `0870462`.
@@ -458,16 +460,16 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 ## Version 0.2.0 — Premier niveau et boucle de reprise
 
-**Statut : en cours, RUN-015–016 DONE ; RUN-017 VERIFY : passes Claude et playtest humain validés, revue finale et livraison PR en cours.** **Prérequis :** fusion dans `develop` vérifiée ; D03–D05 avant leur code. Les critères ci-dessous sont ceux du jalon complet RUN-015–017, pas de RUN-015 seule.
+**Statut : validée localement, RUN-015–017 DONE ; PR #18 ouverte vers develop, non fusionnée.** **Prérequis :** fusion dans `develop` vérifiée ; D03–D05 avant leur code. Les critères ci-dessous sont ceux du jalon complet RUN-015–017, pas de RUN-015 seule.
 
 **Repères documentaires :** 01, 03, 04, 05, 07, 08, 09, 10, 13 dans `docs/`.
 
 **Critères de validation du jalon (conservés lors du regroupement) :**
 
-- [ ] N1 jouable du menu à la sortie : Spirit, explications, Green/Purple, piques/vide, une potion et coffre gratuit Longbow 0.
-- [ ] Coins et shards distincts ; équipement acquis persistant selon contrat validé, aucune sauvegarde joueur perdue silencieusement.
-- [ ] New Game/Continue/Controls/Quit, pause et dialogues entièrement clavier, textes anglais, aucune superposition de modales.
-- [ ] N1 court et facile, spawn sûr, sortie à 12 coins ; transition testée vers fixture, aucun N2 final revendiqué.
+- [x] N1 jouable du menu à la sortie : Spirit, explications, Green/Purple, piques/vide, une potion et coffre gratuit Longbow 0.
+- [x] Coins et shards distincts ; équipement acquis persistant selon contrat validé, aucune sauvegarde joueur perdue silencieusement.
+- [x] New Game/Continue/Controls/Quit, pause et dialogues entièrement clavier, textes anglais, aucune superposition de modales.
+- [x] N1 court et facile, spawn sûr, sortie à 12 coins ; transition testée vers fixture, aucun N2 final revendiqué.
 
 ### RUN-015 — Reprise, progression et interface clavier
 
@@ -498,13 +500,14 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 ### RUN-017 — The Eidolon Vale et recette 0.2.0
 
-**Lot F · Main agent : Codex GPT-6.1 Sol Medium · Statut : VERIFY · Dépendances : RUN-015–016 DONE.**
+**Lot F · Main agent : Codex GPT-6.1 Sol Medium · Statut : DONE · Dépendances : RUN-015–016 DONE.**
 
 - **Lancement (3 octobre 2026) :** demande humaine « Lancer la run 017 ». Baseline propre `develop` (`420f88b`, PR #17 fusionnée), branche `feature/run-017-eidolon-vale`. Codex possède dialogues/tutoriels fonctionnels, intégration N1 et recette ; contribution artistique Spirit/panneau/feedbacks réservée à Claude avec handoff avant édition. Réglage exact du main agent Sol Medium non exposé. Aucun push/PR/merge autorisé pour ce lot.
 - **Checkpoint technique (3 octobre 2026) :** N1 hérité du slice, neuf phrases Spirit animées/skippables, quatre tutoriels contextuels persistants, erreur disque/retry, anciens saves vers N1, coffre/potion séparés des pièces ; terrain humain conservé. Import + 22 suites / **567 contrôles de jeu**, deux processus fermeture/Continue **7 contrôles**, isolation **1** ; total **575**, code 0 sans erreur/fuite. Rendu **11/11**, six captures inspectées ; fermeture graphique après acquisition **4/4**. Bug audio de fermeture corrigé/retesté (arrêt des voix et garde du reveal retardé). **BLOCKED sur contribution artistique Claude** : Spirit/portrait/repos/dialogue et contrôle des feedbacks P0 de N1 ; [handoff](docs/RUN-017_CLAUDE_HANDOFF.md). Après cette passe : recette/rendu, playtest humain N1 et validation artistique, puis Jev avant DONE. 0.2.0 non validée ; aucun push/PR/merge.
 - **Seconde passe (3 octobre 2026) :** contribution Claude `1fbb730` validée humainement ; nouvelle passe autorisée sur la même branche, retour ACTIVE puis checkpoint technique terminé. Space avance une phrase sans son ; délai +2 s par phrase ; résurrection New Game uniquement, claim durable avant lecture ; Spirit caché puis apparition après 32 px vers l'avant, dialogue, disparition à 96 px (réglable). Hooks dédiés et fallbacks vérifiés : import + 24 suites **625 contrôles de jeu**, deux processus froids **8**, isolation **1**, total **634 PASS** ; cinématiques rendues **29/29**, N1 rendu **11/11**, sept captures de séquence inspectées. **BLOCKED sur les nouveaux assets/animations et cue Claude**, [contrat de seconde passe](docs/RUN-017_CLAUDE_HANDOFF_02.md). Mort/restart/Continue ne rejouent pas la résurrection. Aucun son skip ; cue final d'apparition encore absent. Revue ciblée indépendante sans défaut concret. Validation de la première contribution ne vaut pas validation de cette nouvelle passe, ni clôture du playtest N1.
 - **Reprise finale (3 octobre 2026) :** passes Claude `36a6251` et `b825d11` validées humainement, ainsi que le playtest N1 (difficulté/rythme, deux chemins jusqu’à sortie). Pose de course figée corrigée : idle animé pendant apparition/dialogue, gameplay bloqué ; mode de mort indépendant conservé. Import + 24 suites **631 contrôles de jeu**, deux processus froids **8**, isolation **1**, total **640 PASS**, code 0 sans erreur/fuite ; rendu cinématiques **35/35**, N1 **11/11**, captures inspectées. Revues indépendantes sans défaut résiduel ; ancien code reproduit trois échecs de pose. Revue Jev de clôture puis PR vers `develop` autorisées ; aucune fusion ni autre run autorisée.
 - **Revue de clôture (3 octobre 2026) :** Jev READY_FOR_DONE (couverture 0,81 ; vérifications 0,68 ; blocage 0,37 ; Choice READY 0,47 /BLOCKED 0,31 /VERIFY 0,22, confiance 0,20). Probabilités consultatives ; inspection des preuves originales et validation humaine reçue : aucun défaut bloquant, dossier complet. VERIFY pendant livraison PR, puis DONE après sa création.
+- **Livraison et clôture (3 octobre 2026) :** correctif/revue `49fa11f`, branche poussée et [PR #18](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/18) ouverte vers develop ; PR OPEN, non draft, mergeable lors du contrôle. Passes Claude, playtest humain, recette, régressions, Jev/inspection, journal et learning complets : DONE ; jalon 0.2.0 validé localement. Aucune fusion ni RUN-018 lancée.
 - **Résultat / scope :** Spirit, dialogue anglais animé et avance phrase par phrase via Space, tutoriel contextuel ; adaptation du slice en N1 court et facile avec coffre/potion éloignés des pièces, Slimes, dangers, tir et sortie ; résurrection initiale et apparition/disparition scénarisée ; art/audio P0 et recette complète.
 - **Décisions avant implémentation dépendante :** Contrats RUN-015 ; ne pas présenter la fixture comme N2 final.
 - **Acceptation, tests et bugtest :** New Game jusqu’à sortie à 12 coins puis fixture ; branches/retours, spawn sûr après mort, dialogue immobilisant sans danger puis reprise, états vus conformes au contrat ; coffre accepté/refusé, potion pleine/blessée, tir, pause, Controls, fermeture/Continue à froid ; aucune perte d’équipement ni modale superposée ; playtest humain N1.
@@ -668,4 +671,4 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 **3 octobre 2026 : RUN-015 DONE localement**, contribution Claude validée humainement, thème de menu choisi intégré et testé, revue Jev et inspection des preuves satisfaisantes. Le logo plus détaillé reste une retouche Claude de RUN-027, sans remettre en cause la passe validée.
 
-**RUN-016 DONE**, passe Claude validée, revue globale sans défaut bloquant, suite complète (499 + 1 isolation), rendu et revue Jev suivie de l’inspection des preuves terminés. PR vers develop autorisée par la demande humaine du 3 octobre 2026. PR #17 présente fusionnée dans develop (`420f88b`). RUN-017 VERIFY : deux passes Claude et leurs correctifs validés humainement, playtest N1 confirmé ; correctif idle testé, revue globale sans défaut bloquant, 640 contrôles et rendu 35/35 + 11/11, Jev READY_FOR_DONE suivi de l’inspection des preuves. Livraison PR vers develop autorisée et en cours ; DONE après création. Aucune nouvelle run ni fusion autorisée. Aucune fusion autorisée.
+**RUN-016 DONE**, passe Claude validée, revue globale sans défaut bloquant, suite complète (499 + 1 isolation), rendu et revue Jev suivie de l’inspection des preuves terminés. PR vers develop autorisée par la demande humaine du 3 octobre 2026. PR #17 présente fusionnée dans develop (`420f88b`). RUN-017 DONE : deux passes Claude/correctifs et playtest N1 validés humainement ; idle testé, revue globale sans défaut bloquant, 640 contrôles et rendu 35/35 + 11/11, Jev READY_FOR_DONE suivi de l’inspection. [PR #18](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/18) ouverte vers develop ; jalon 0.2.0 validé localement. Aucune autre run ni fusion autorisée. Aucune fusion autorisée.
