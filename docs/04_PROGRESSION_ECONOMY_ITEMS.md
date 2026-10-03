@@ -120,7 +120,7 @@
 	- il existe de 2 type d'item : équipements et consommables
 	- le joueur ne dispose pas d'un système d'inventaire à proprement parler
 	- à la place le joueur dispose de 2 slots d'équipement qui ne peuvent contenir chacun qu'une seul arme (item) équipée à la fois : 1 slot d'arme de mêlée et 1 slot d'arme de tir
-	- ces 2 slots sont affichés dans le UI joueur : arme de mêlée à gauche, arme de ti à droite
+	- ces 2 slots sont affichés dans le UI joueur : slots verticaux : mêlée en haut, tir en bas (contrat RUN-015 validé le 3 octobre 2026)
 	- les consommables sont des items utilisés instantanément lors du ramassage (collecte) sur le terrain ou gagné lors d'un kill de mob (comme les shards)
 	- il n'y a aucun consommable dans le niveau 1 ; sauf une seule potion de soin mineur (tuto)
 	- **ITEM ARMES (équipements)** :
@@ -188,3 +188,12 @@
 			- cas unique : l'Enchant Juice permet d'outre-passer la règle générale qui cap les item au niveau 3 max : il permet d'améliorer un item niveau 3 à +2niveaux = devient un item niveau 5 ; il permet d'améliorer un item niveau 2 à +2niveaux = devient un item niveau 4 => le système d'amélioration intervient et augmente les stats de l'item de manière proportionnel
 			- il ne permet pas d'améliorer un item Légendaire
 			- si le joueur annule l'amélioration, rien ne se passe et l'item disparaît à jamais
+
+
+## Banque et migration — contrat RUN-015
+
+Tous les coins ramassés restent des coins, même au-delà de la sortie ou après paiement ; aucun surplus ne devient shard. Les dépenses de shards consomment les gains courants avant la banque. Un débit de banque est sauvegardé immédiatement : banque 50 + gains 8, achat 12 → banque 46 + gains 0 ; une mort conserve 46. Une acquisition persistante et son paiement sont une seule écriture, confirmée uniquement après succès disque.
+
+Le format v2 garde banque, niveau, deux équipements et flags permanents/dialogues. Une v1 n'est convertie qu'après accord explicite au menu : tout le bonus devient shards, l'original est conservé byte pour byte. Corruption/version inconnue désactivent Continue et empêchent les transactions ordinaires d'écraser le fichier. New Game est la seule remise à zéro explicitement confirmée et conserve une copie du fichier précédent.
+
+Les bases de rétention des offrandes restent à trancher avant RUN-023 ; ce contrat ne les implémente pas.

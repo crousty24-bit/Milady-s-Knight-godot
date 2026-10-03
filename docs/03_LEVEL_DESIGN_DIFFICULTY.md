@@ -197,3 +197,10 @@
 Le contact inflige 0,5 HP avec protection 1,20 s et recul 0,16 s, sans hit-stun ni interruption de Sword. L’impulsion est tournée avec le piège et dirigée hors de sa surface. Le slice conserve ses ronces à 1 HP et ajoute deux placements de piques : sol `(1120,224)` et limite droite `(2240,80)`. Le terrain existant reste inchangé.
 
 Le niveau exporte `void_y`, exprimé dans ses coordonnées locales. Lorsque les pieds du joueur passent sous ce seuil, le profil VOID provoque une mort unique même pendant l’invulnérabilité ; la pause suspend le contrôle. Le slice règle ce seuil à 304 px, ancien bord supérieur de Pit. La zone Pit redondante et la limite globale `y > 340` du joueur sont retirées. La reprise reste manuelle jusqu’à RUN-009.
+
+
+## Contrat de persistance validé — RUN-015 (3 octobre 2026)
+
+Le [contrat RUN-015](RUN-015_CONTRACT_REVIEW.md) précise la table précédente : seul le **point de reprise du niveau** attend la sortie ; équipement, améliorations, uniques, dialogues terminés/skippés et débits de banque sont écrits immédiatement. Après mort, restart ou fermeture, reprise au début du niveau avec coins/gains courants remis à zéro ; la banque après dépenses reste acquise. Les flags de systèmes futurs sont un contrat de stockage, pas une implémentation de ces systèmes.
+
+Les dialogues ne se rejouent pas dans la même partie après mort ou reprise ; New Game les réinitialise. Le coffre tuto refusé/fermé disparaît pour la tentative et revient après reset tant que Longbow n'a pas été acquis ; acquisition persistante sans doublon. Ces comportements seront intégrés avec les objets/dialogues en RUN-016/017.

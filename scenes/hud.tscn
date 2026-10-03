@@ -62,7 +62,7 @@ offset_top = 14.0
 offset_right = 192.0
 offset_bottom = 24.0
 theme = SubResource("theme")
-text = "VIE"
+text = "HP"
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.941, 0.478, 0.353, 1)
 [node name="GoldIcon" type="TextureRect" parent="."]
@@ -78,7 +78,7 @@ offset_top = 28.0
 offset_right = 192.0
 offset_bottom = 38.0
 theme = SubResource("theme")
-text = "SCEAU 00/12"
+text = "COINS 00/12"
 mouse_filter = 2
 [node name="PanelBonus" type="NinePatchRect" parent="."]
 offset_left = 424.0
@@ -97,7 +97,7 @@ offset_top = 12.0
 offset_right = 568.0
 offset_bottom = 22.0
 theme = SubResource("theme")
-text = "BONUS 0"
+text = "SHARDS 0"
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.941, 0.824, 0.478, 1)
 [node name="BonusPending" type="Label" parent="."]
@@ -126,7 +126,7 @@ offset_top = 12.0
 offset_right = 628.0
 offset_bottom = 22.0
 theme = SubResource("theme")
-text = "ECHAP"
+text = "ESC"
 mouse_filter = 2
 horizontal_alignment = 1
 theme_override_colors/font_color = Color(0.09, 0.075, 0.106, 1)

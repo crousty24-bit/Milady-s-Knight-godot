@@ -1,11 +1,11 @@
 extends CanvasLayer
 func set_gold(value: int, paid: bool) -> void:
-	$Gold.text = "SCEAU OUVERT" if paid else "SCEAU %02d/12" % value
+	$Gold.text = "COINS %02d  |  OPEN" % value if paid else "COINS %02d/12" % value
 	$Gold.modulate = Color("f4d384") if value >= 12 or paid else Color("dac38f")
 func set_bonus(banked: int, pending: int) -> void:
-	$Bonus.text = "BONUS " + _compact(banked + pending)
-	$BonusPending.text = "+%s a valider" % _compact(pending) if pending > 0 else "reserve " + _compact(banked)
-	$Bonus.tooltip_text = "%d bonus : %d valides, %d dans ce niveau" % [banked + pending, banked, pending]
+	$Bonus.text = "SHARDS " + _compact(banked + pending)
+	$BonusPending.text = "+%s current" % _compact(pending) if pending > 0 else "bank " + _compact(banked)
+	$Bonus.tooltip_text = "%d shards: %d banked, %d current" % [banked + pending, banked, pending]
 	$Bonus.mouse_filter = Control.MOUSE_FILTER_STOP
 func _compact(value: int) -> String:
 	if value < 100000: return str(value)
@@ -15,7 +15,7 @@ func _compact(value: int) -> String:
 func set_health(value: float, maximum: float = 3.0) -> void:
 	var current_units := HealthUnits.from_hp(value)
 	var maximum_units := HealthUnits.from_hp(maximum)
-	$Health.text = "VIE " + HealthUnits.format_hp(current_units)
+	$Health.text = "HP " + HealthUnits.format_hp(current_units)
 	$HealthHearts.set_values(current_units, maximum_units)
 	# The exact value sits right after the hearts, whatever their count (one row holds five).
 	var hearts_in_row: int = mini(ceili(float(maximum_units) / HealthUnits.PER_HP), $HealthHearts.HEARTS_PER_ROW)

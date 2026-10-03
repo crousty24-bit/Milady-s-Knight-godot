@@ -9,6 +9,11 @@ var transitioning: bool = false
 var finished: bool = false
 var paused: bool = false
 var closing: bool = false
+const MENU = preload("res://scripts/keyboard_menu.gd")
+var modal: String = ""
+var pause_menu: CanvasLayer
+var resume_pending: bool = false
+var context_result: Callable
 const GATE_PROMPT_OFFSET := Vector2(0, -132)
 const DEATH_MESSAGE_DURATION: float = 3.0
 const DEATH_FADE_DURATION: float = 0.4
@@ -20,7 +25,12 @@ var death_reloading: bool = false
 @onready var gate = $GoldGate
 @onready var progression = get_node("/root/Progression")
 func _ready() -> void:
+	get_tree().paused = false
 	get_tree().auto_accept_quit = false
+	pause_menu = MENU.new()
+	add_child(pause_menu)
+	pause_menu.selected.connect(_pause_choice)
+	pause_menu.cancelled.connect(_close_pause)
 	# The authored slice owns its camera bounds and framing.
 	camera.position = Vector2(32, -38)
 	camera.limit_left = 0
@@ -45,6 +55,11 @@ func _physics_process(_delta: float) -> void:
 		player.take_damage(0.0, Vector2.ZERO, SlicePlayer.DamageSource.VOID)
 
 func _process(delta: float) -> void:
+	if resume_pending:
+		if not Input.is_action_pressed("interact") and not Input.is_action_pressed("attack") and not Input.is_action_pressed("jump") and not Input.is_action_pressed("pause"):
+			resume_pending = false
+			player.controls_enabled = true
+		return
 	if death_elapsed >= 0.0:
 		death_elapsed += delta
 		if death_elapsed >= DEATH_MESSAGE_DURATION:
@@ -61,10 +76,9 @@ func _process(delta: float) -> void:
 		elif not transitioning:
 			_restart_attempt()
 		return
-	if Input.is_action_just_pressed("pause") and not finished and not player.dead:
-		paused = not paused
-		get_tree().paused = paused
-		hud.set_overlay("PAUSE", "ECHAP pour reprendre") if paused else hud.clear_overlay()
+	if Input.is_action_just_pressed("pause") and not finished and not player.dead and modal.is_empty():
+		_open_pause()
+		return
 	if finished or player.dead or paused:
 		hud.hide_prompt()
 		return
@@ -74,9 +88,7 @@ func _process(delta: float) -> void:
 		hud.hide_prompt()
 func _on_collected(value: int) -> void:
 	if finished or player.dead or value <= 0: return
-	var for_seal: int = 0 if gate.opened else mini(value, maxi(0, gate.COST - gold))
-	gold += for_seal
-	bonus += value - for_seal
+	gold += value
 	_update_gold_hud()
 
 func _on_enemy_defeated(value: int, at: Vector2) -> void:
@@ -97,7 +109,7 @@ func _update_gold_hud() -> void:
 	hud.set_gold(gold, gate.opened)
 	hud.set_bonus(progression.banked_bonus, 0 if reward_settled else bonus)
 func try_offering() -> bool:
-	if finished or player.dead or gate.opened: return false
+	if finished or player.dead or gate.opened or not modal.is_empty() or resume_pending: return false
 	if gold < gate.COST:
 		hud.flash_prompt_failure()
 		return false
@@ -107,8 +119,11 @@ func try_offering() -> bool:
 	hud.flash_prompt_success()
 	return true
 func _on_exit(body: Node2D) -> void:
-	if body != player or player.dead or not gate.opened or finished: return
+	if body != player or player.dead or not gate.opened or finished or not modal.is_empty() or resume_pending: return
 	finished = true
+	modal = "victory"
+	paused = true
+	get_tree().paused = true
 	player.controls_enabled = false
 	_settle_reward()
 
@@ -117,22 +132,27 @@ func _settle_reward() -> void:
 	var destination: String = scene_file_path if next_level_scene.is_empty() else next_level_scene
 	var error: Error = progression.settle_level(bonus, destination)
 	if error != OK:
-		hud.set_overlay("NIVEAU TERMINE", "Bonus non sauvegardes.\nE  Reessayer la sauvegarde")
+		hud.set_overlay("Level complete", "Shards not saved.\nE: retry saving")
 		return
 	reward_settled = true
 	_update_gold_hud()
-	var action: String = "E  Niveau suivant" if not next_level_scene.is_empty() else "E  Rejouer"
-	hud.set_overlay("LA POTERNE EST FRANCHIE", "Sa trace continue au-dela des murs.\n+%d bonus valides  |  Reserve %d\n%s" % [bonus, progression.banked_bonus, action])
+	var action: String = "E: next level" if not next_level_scene.is_empty() else "E: replay"
+	hud.set_overlay("Level complete", "+%d shards saved  |  Bank %d\n%s" % [bonus, progression.banked_bonus, action])
 
 func _next_level() -> void:
+	get_tree().paused = false
 	var error: Error = progression.change_level(next_level_scene)
 	if error != OK:
 		transitioning = false
-		hud.set_overlay("NIVEAU SUIVANT INDISPONIBLE", "Vos bonus sont sauvegardes.\nE  Reessayer")
+		get_tree().paused = true
+		hud.set_overlay("Next level unavailable", "Your shards are saved.\nE: retry")
 
 func _on_died() -> void:
 	if death_elapsed >= 0.0: return
 	bonus = 0
+	modal = "death"
+	resume_pending = false
+	pause_menu.close()
 	_update_gold_hud()
 	hud.show_death_overlay()
 	death_elapsed = 0.0
@@ -152,3 +172,53 @@ func _notification(what: int) -> void:
 		$Music.stop()
 		await get_tree().create_timer(0.3, true).timeout
 		get_tree().quit()
+
+func _open_pause() -> void:
+	modal = "pause"
+	paused = true
+	player.controls_enabled = false
+	get_tree().paused = true
+	hud.hide_prompt()
+	pause_menu.show_menu("Paused", "Arrows: select   E: confirm   Escape: resume", ["Resume", "Restart", "Quit to menu"])
+
+func _close_pause() -> void:
+	if modal not in ["pause", "context"]: return
+	context_result = Callable()
+	pause_menu.close()
+	modal = ""
+	paused = false
+	resume_pending = true
+	get_tree().paused = false
+
+func _pause_choice(index: int) -> void:
+	if modal == "context":
+		var result := context_result
+		_close_pause()
+		if result.is_valid(): result.call(index)
+		return
+	if modal != "pause": return
+	match index:
+		0: _close_pause()
+		1:
+			_release_menu_inputs()
+			_restart_attempt()
+		2:
+			_release_menu_inputs()
+			get_tree().paused = false
+			progression.change_level("res://scenes/game.tscn")
+
+func _release_menu_inputs() -> void:
+	for action in ["interact", "attack", "jump", "pause", "move_left", "move_right"]:
+		Input.action_release(action)
+
+# Rewards/tutorials share this exclusive modal owner; their gameplay comes in later runs.
+func request_context(title: String, detail: String, options: Array, result: Callable = Callable()) -> bool:
+	if not modal.is_empty() or resume_pending or player.dead or finished: return false
+	modal = "context"
+	context_result = result
+	paused = true
+	player.controls_enabled = false
+	get_tree().paused = true
+	hud.hide_prompt()
+	pause_menu.show_menu(title, detail, options)
+	return true

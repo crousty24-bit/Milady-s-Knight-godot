@@ -2,6 +2,8 @@
 
 ## Statut de cette planification
 
+**Mise à jour du 3 octobre 2026 :** PR #16 fusionnée dans `develop` (`f997bcb`), verrou 0.2.0 levé. RUN-015 autorisée sur `feature/v0.2.0-reprise-equipment`, contrat D03–D05 validé intégralement. Partie technique vérifiée ; contribution artistique/audio Claude encore requise. Les paragraphes datés du 2 octobre ci-dessous conservent le contexte de la clôture 0.1.0 avant fusion ; l'état courant est précisé dans la fiche RUN-015 et le point d'arrêt.
+
 Audit documentaire et inspection du dépôt effectués le **21 septembre 2026**, à partir de l’état de travail courant, et non du seul commit `0870462`.
 **RUN-001 à RUN-014 et RUN-029 DONE. Version 0.1.0 clôturée et validée localement le 2 octobre 2026**, après validation humaine de toutes les passes et audit final. La PR vers `develop` est autorisée ; fusion encore à effectuer. Les PR #1, #2, #4, #5, [#8](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/8) et [#9](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/9) sont fusionnées dans `develop`. RUN-007 est fusionnée via la PR #11 (`260c8a8`), RUN-008 via la PR #12 (`6c4ee22`), RUN-009 via la [PR #14](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/14) (`a2ac33c`) et RUN-010 via la PR #15 (`24213f2`). RUN-011 clôt le socle 0.1.0 localement après recette technique et validation humaine du saut mural ; livraison de cette branche préparée pour la PR autorisée. La validation des onze premières runs et du socle **0.1.0** est confirmée par l’humain le **2 octobre 2026**. La réorganisation ci-dessous reste sur `feature/run-011-production-foundation` ; aucune run 0.2.0 n’est lancée.
 
@@ -249,7 +251,7 @@ Cette table sert uniquement à relire les anciennes références du journal. Les
 
 Les conditions locales sont satisfaites le **2 octobre 2026** : réorganisation et modèles alignés, passes Claude 012–014 et 029 réalisées, recette intégrée réussie, validation humaine finale reçue. L’humain demande l’ouverture de la PR ; le push nécessaire et la PR vers `develop` sont autorisés.
 
-**Condition restante : la fusion effective de `feature/run-011-production-foundation` dans `develop`.** La version 0.1.0 est DONE localement ; cette clôture ouvre la PR sans effectuer la fusion. **RUN-015 et toute implémentation 0.2.0 attendent cette fusion**, puis reprennent sur une feature issue du nouveau `develop`. L’autorisation d’ouvrir la PR ne vaut pas ordre de fusion.
+**Verrou levé, vérifié le 3 octobre 2026 :** la [PR #16](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/16) a été fusionnée le 2 octobre dans `develop` (`f997bcb`). La branche `feature/v0.2.0-reprise-equipment` part de ce commit et couvre RUN-015 puis RUN-016, cette dernière uniquement après revue et validation humaine de RUN-015. Aucun push, PR ni merge de ce nouveau lot n’est autorisé par le lancement.
 
 ## Version 0.1.0 — Socle de production vérifié
 
@@ -456,7 +458,7 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 ## Version 0.2.0 — Premier niveau et boucle de reprise
 
-**Statut : BACKLOG, non lancée.** **Prérequis :** Verrou de branche levé et fusion effective dans develop ; D03–D05 avant leur code.
+**Statut : en cours, RUN-015 technique vérifiée ; contribution Claude et validations de clôture en attente.** **Prérequis :** fusion dans `develop` vérifiée ; D03–D05 avant leur code. Les critères ci-dessous sont ceux du jalon complet RUN-015–017, pas de RUN-015 seule.
 
 **Repères documentaires :** 01, 03, 04, 05, 07, 08, 09, 10, 13 dans `docs/`.
 
@@ -469,7 +471,11 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 ### RUN-015 — Reprise, progression et interface clavier
 
-**Lot D · Main agent : Codex GPT-6.1 Sol Medium · Statut : BACKLOG · Dépendances : RUN-011 et verrou de branche levé.**
+**Lot D · Main agent : Codex GPT-6.1 Sol Medium · Statut : BLOCKED · Dépendances : RUN-011 DONE et verrou de branche levé.**
+
+- **Préparation (3 octobre 2026) :** lancement autorisé, dépôt initial propre sur `develop` (`f997bcb`), branche commune `feature/v0.2.0-reprise-equipment` créée. D03 (persistance et ordre de dépense) et D05 (interface) sont validés par l’humain le 3 octobre ; le contrat intégral, migration v1 comprise, est ensuite validé le 3 octobre ; passage READY puis ACTIVE ; propositions concrètes dans [RUN-015_CONTRACT_REVIEW.md](docs/RUN-015_CONTRACT_REVIEW.md). Partie technique implémentée et vérifiée ; état BLOCKED sur la contribution artistique/audio Claude requise. Le réglage exact Sol Medium de la session ne peut pas être confirmé avec les informations exposées. Contribution artistique/audio des menus réservée à Claude ; handoff et propriété dans [RUN-015_CLAUDE_HANDOFF.md](docs/RUN-015_CLAUDE_HANDOFF.md).
+
+- **Checkpoint technique (3 octobre 2026) :** sauvegarde v2 et migration explicite avec copie originale, transactions durables, séparation coins/shards, menu principal/pause/contextes clavier. Import + 18 suites / **445 contrôles de jeu + 1 isolation** réussis ; pilote menus non headless **26/26**, sept captures inspectées à 640×360. Corrections/retests : Escape ouvrait/fermait dans la même frame, chargement après victoire héritant de pause, sauvegardes de remplacement successives, mort pendant E tenu. **Pas de DONE ni de VERIFY complet** : habillage/logo/fond et sons UI P0 par Claude, validation artistique/playtest humain et revue Jev de clôture restent dus.
 
 - **Résultat / scope :** Regrouper contrats d’état, séparation coins/shards, tentative/état durable, sauvegarde versionnée, exclusivité des modales, New Game/Continue/Controls/Quit et pause Reprendre/Recommencer/Quitter.
 - **Décisions avant implémentation dépendante :** D03–D05 : événements de sauvegarde, ancien bonus, banque/gains, uniques/dialogues, priorité et annulation des modales, slots ; décisions humaines avant schéma/code.
@@ -650,6 +656,6 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 ## Point d’arrêt
 
-**2 octobre 2026 : version 0.1.0 clôturée ; RUN-001–014 et RUN-029 DONE.** Réorganisation et toutes les passes réalisées validées par l’humain ; audit technique final réussi. Ouverture de PR vers `develop` autorisée sur `feature/run-011-production-foundation` ; aucune fusion effectuée dans cette clôture.
+**3 octobre 2026 : début de préparation de la phase 0.2.0 autorisé.** La PR #16 est fusionnée dans `develop` (`f997bcb`) ; le verrou de branche est levé. RUN-015 est **BLOCKED sur la contribution Claude artistique/audio**, après validation intégrale du contrat et checkpoint technique vérifié (445 contrôles, 26 contrôles avec rendu). Les preuves et le handoff sont consignés au journal. Validation humaine de la run et revue Jev restent dues avant DONE.
 
-**Prochaine phase : RUN-015 vers 0.2.0, après fusion effective de la PR uniquement.** RUN-015–028 restent BACKLOG, aucune run ACTIVE. Les sons de saut/double saut restent à reprendre en RUN-027, sans rouvrir le socle accepté.
+**Suite autorisée :** RUN-015 sur `feature/v0.2.0-reprise-equipment`, puis RUN-016 sur cette même branche après revue et validation humaine de RUN-015. RUN-016 et RUN-017 restent BACKLOG. Les contributions artistiques reviennent à Claude, avec fichiers attribués avant toute édition concurrente.

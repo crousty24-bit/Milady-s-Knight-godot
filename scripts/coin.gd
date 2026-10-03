@@ -14,7 +14,7 @@ func _ready() -> void:
 		$Shape.set_deferred("disabled", true)
 		$Sound.play()
 		var label := Label.new()
-		label.text = "+%d BONUS" % bonus_feedback
+		label.text = "+%d SHARDS" % bonus_feedback
 		label.add_theme_font_override("font", preload("res://assets/fonts/PixelOperator8.ttf"))
 		label.add_theme_font_size_override("font_size", 8)
 		label.position = Vector2(-20, -18)
