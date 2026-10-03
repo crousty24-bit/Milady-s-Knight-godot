@@ -1,11 +1,11 @@
 extends CanvasLayer
 func set_gold(value: int, paid: bool) -> void:
-	$Gold.text = "SCEAU OUVERT" if paid else "SCEAU %02d/12" % value
+	$Gold.text = "COINS %02d  |  OPEN" % value if paid else "COINS %02d/12" % value
 	$Gold.modulate = Color("f4d384") if value >= 12 or paid else Color("dac38f")
 func set_bonus(banked: int, pending: int) -> void:
-	$Bonus.text = "BONUS " + _compact(banked + pending)
-	$BonusPending.text = "+%s a valider" % _compact(pending) if pending > 0 else "reserve " + _compact(banked)
-	$Bonus.tooltip_text = "%d bonus : %d valides, %d dans ce niveau" % [banked + pending, banked, pending]
+	$Bonus.text = "SHARDS " + _compact(banked + pending)
+	$BonusPending.text = "+%s current" % _compact(pending) if pending > 0 else "bank " + _compact(banked)
+	$Bonus.tooltip_text = "%d shards: %d banked, %d current" % [banked + pending, banked, pending]
 	$Bonus.mouse_filter = Control.MOUSE_FILTER_STOP
 func _compact(value: int) -> String:
 	if value < 100000: return str(value)
@@ -15,7 +15,7 @@ func _compact(value: int) -> String:
 func set_health(value: float, maximum: float = 3.0) -> void:
 	var current_units := HealthUnits.from_hp(value)
 	var maximum_units := HealthUnits.from_hp(maximum)
-	$Health.text = "VIE " + HealthUnits.format_hp(current_units)
+	$Health.text = "HP " + HealthUnits.format_hp(current_units)
 	$HealthHearts.set_values(current_units, maximum_units)
 	# The exact value sits right after the hearts, whatever their count (one row holds five).
 	var hearts_in_row: int = mini(ceili(float(maximum_units) / HealthUnits.PER_HP), $HealthHearts.HEARTS_PER_ROW)
@@ -156,6 +156,7 @@ func _text_width(label: Label, text: String) -> float:
 	return label.get_theme_font("font").get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, 8).x
 
 func _layout_prompt(enough: bool, cost: int, have: int) -> void:
+	$Prompt/Coin.show()
 	var text: String = str(cost) if enough else "%02d/%d" % [have, cost]
 	var amount: Label = $Prompt/Amount
 	amount.text = text
@@ -185,3 +186,26 @@ func show_dialogue(speaker: String, text: String, avatar_texture: Texture2D = nu
 
 func hide_dialogue() -> void:
 	$DialogueBanner.hide()
+
+
+# Functional slot labels; Claude supplies the equipment/shard artwork and focus assets.
+func set_equipment(active: int, ranged_owned: bool) -> void:
+	$Equipment/Melee.text = ("> " if active == 0 else "  ") + "Sword 0"
+	$Equipment/Ranged.text = ("> " if active == 1 else "  ") + ("Longbow 0" if ranged_owned else "Empty")
+
+func show_item_prompt(world_position: Vector2, text: String) -> void:
+	_prompt_world = world_position
+	_prompt_key = ""
+	_prompt_active = true
+	_prompt_leaving = false
+	$Prompt.show()
+	$Prompt/Cap.hide()
+	$Prompt/CapLabel.hide()
+	$Prompt/Coin.hide()
+	$Prompt/Amount.text = text
+	$Prompt/Amount.modulate = Color.WHITE
+	$Prompt/Amount.position.x = 5
+	var width := ceilf(_text_width($Prompt/Amount, text)) + 10.0
+	$Prompt.size = Vector2(width, 24)
+	$Prompt/Bg.size = Vector2(width, 24)
+	_place_prompt()

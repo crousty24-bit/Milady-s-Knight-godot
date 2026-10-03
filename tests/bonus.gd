@@ -36,7 +36,7 @@ func run() -> void:
 	check(not progress.persistence_enabled, "test drivers cannot change the player's real save")
 	progress.banked_bonus = 20
 	await spawn()
-	check(level.hud.get_node("Bonus").text == "BONUS 20", "HUD displays existing reserve on entering level")
+	check(level.hud.get_node("Bonus").text == "SHARDS 20", "HUD displays existing shard bank on entering level")
 	var enemy = level.get_node("Enemies/Slime1")
 	level.register_enemy(enemy)
 	level.register_enemy(enemy)
@@ -54,45 +54,55 @@ func run() -> void:
 	for child in level.get_children():
 		if child.get("bonus_feedback") != null and child.bonus_feedback > 0:
 			feedback_count += 1
-			check(child.picked_up and child.get_node("Sprite").sprite_frames.get_frame_texture("idle", 0).atlas.resource_path == "res://assets/sprites/item_gold_coin.png", "reward feedback reuses coin art and cannot be collected again")
-	check(feedback_count == 2, "both defeats show existing coin feedback")
+			var shard_visible := false
+			for visual in child.get_children():
+				if visual is AnimatedSprite2D and visual.is_visible_in_tree():
+					var texture = visual.sprite_frames.get_frame_texture(visual.animation, visual.frame)
+					shard_visible = texture is AtlasTexture and texture.atlas.resource_path == "res://assets/sprites/item_shard.png" and visual.is_playing()
+			check(shard_visible and not child.get_node("Sprite").is_visible_in_tree(), "defeat displays an animated shard and hides the coin art")
+			var coins_before: int = level.gold
+			var shards_before: int = level.bonus
+			child._on_body_entered(level.player)
+			check(child.picked_up and not child.monitoring and level.gold == coins_before and level.bonus == shards_before, "shard feedback cannot be collected for extra coins or shards")
+	check(feedback_count == 2, "both defeats show shard feedback")
 	level._on_collected(11)
-	check(not level.try_offering() and level.gold == 11 and level.bonus == 4, "reserve and enemy bonuses cannot pay missing seal coins")
+	check(not level.try_offering() and level.gold == 11 and level.bonus == 4, "shards and enemy gains cannot pay missing seal coins")
 	level._on_collected(3)
-	check(level.gold == 12 and level.bonus == 6, "pickup crossing threshold splits seal coins and surplus")
-	check(level.hud.get_node("Gold").text == "SCEAU 12/12" and level.hud.get_node("Bonus").text == "BONUS 26" and level.hud.get_node("BonusPending").text == "+6 a valider", "HUD distinguishes seal, total bonus and pending gains")
-	check(level.try_offering() and level.gold == 0 and level.bonus == 6, "payment spends only the twelve seal coins")
+	check(level.gold == 14 and level.bonus == 4, "all picked-up coins remain coins, including surplus over the seal cost")
+	check(level.hud.get_node("Gold").text == "COINS 14/12" and level.hud.get_node("Bonus").text == "SHARDS 24" and level.hud.get_node("BonusPending").text == "+4 current", "HUD separates seal coins from current and banked shards")
+	check(level.try_offering() and level.gold == 2 and level.bonus == 4, "payment spends twelve coins and preserves the surplus")
 	level._on_collected(2)
-	check(level.gold == 0 and level.bonus == 8, "all pickups after opening the seal become bonuses")
+	check(level.gold == 4 and level.bonus == 4 and level.hud.get_node("Gold").text == "COINS 04  |  OPEN", "coins collected after opening the seal remain visible")
 	level._on_exit(level.player)
-	check(progress.banked_bonus == 28 and level.reward_settled, "finishing banks the current attempt exactly once")
+	check(progress.banked_bonus == 24 and level.reward_settled, "finishing banks only shards earned from enemy defeats exactly once")
 	level._on_exit(level.player)
 	level._settle_reward()
 	level._on_collected(9)
-	check(progress.banked_bonus == 28 and level.bonus == 8, "duplicate finish and late pickups cannot duplicate rewards")
-	check(level.hud.get_node("BonusPending").text == "reserve 28", "settled HUD no longer counts bonus as pending")
+	check(progress.banked_bonus == 24 and level.bonus == 4, "duplicate finish and late pickups cannot duplicate shard rewards")
+	check(level.hud.get_node("BonusPending").text == "bank 24", "settled HUD shows the bank")
 	await spawn()
 	level._on_collected(14)
 	level.get_node("Enemies/Slime1").take_damage(3, Vector2.ZERO)
 	level.player.die()
-	check(level.bonus == 0 and progress.banked_bonus == 28, "death discards only current-attempt bonuses")
+	check(level.bonus == 0 and progress.banked_bonus == 24, "death discards current shards and leaves the bank intact")
 	await frames(210)
 	level = current_scene
-	check(level.bonus == 0 and level.gold == 0 and progress.banked_bonus == 28, "automatic death restart retains bank and clears level currencies")
+	check(level.bonus == 0 and level.gold == 0 and progress.banked_bonus == 24, "automatic death restart retains bank and clears attempt currencies")
 	level._on_collected(15)
+	level.get_node("Enemies/Slime1").take_damage(3, Vector2.ZERO)
 	await tap("special_attack")
-	check(current_scene == level and level.bonus == 3 and progress.banked_bonus == 28, "R cannot discard pending rewards by restarting")
+	check(current_scene == level and level.gold == 15 and level.bonus == 1 and progress.banked_bonus == 24, "R cannot discard current shards by restarting")
 	level.player.die()
 	await frames(210)
 	level = current_scene
-	check(level.bonus == 0 and progress.banked_bonus == 28, "repeated automatic death restart discards pending surplus")
+	check(level.bonus == 0 and progress.banked_bonus == 24, "repeated automatic death restart discards current shards")
 	level.next_level_scene = NEXT
 	level._on_collected(13)
 	level.try_offering()
 	level._on_exit(level.player)
 	await tap("interact")
 	level = current_scene
-	check(level.scene_file_path == NEXT and progress.resume_scene == NEXT and progress.banked_bonus == 29, "E changes to the configured next level with bank intact")
+	check(level.scene_file_path == NEXT and progress.resume_scene == NEXT and progress.banked_bonus == 24, "E changes to the configured next level with bank intact")
 	check(level.gold == 0 and level.bonus == 0 and level.player.health == 3 and not level.gate.opened and level.get_node("Coins").get_child_count() == 18, "next level starts with a fresh attempt and fresh seal")
 	check(not level.try_offering(), "carried bonus reserve cannot open next level's seal")
 	# Isolated file on the actual save filesystem (NTFS on Windows), never progress.json.
@@ -115,30 +125,37 @@ func run() -> void:
 	write_fixture(path, '{"version":1,"bonus_bank":-2,"resume_scene":"res://scenes/vertical_slice.tscn"}')
 	check(third.load_progress() != OK and third.settle_level(1, NEXT) != OK and FileAccess.get_file_as_string(path).contains('"bonus_bank":-2'), "corrupt save is rejected and never overwritten")
 	write_fixture(path, JSON.stringify({"version": 1, "bonus_bank": 9, "resume_scene": NEXT}))
-	check(third.settle_level(1, NEXT) == OK and third.banked_bonus == 10, "save retry recovers without double credit after file repair")
+	check(third.load_progress() != OK and third.legacy_pending and third.settle_level(1, NEXT) != OK, "legacy save requires an explicit migration decision")
+	check(third.migrate_v1(true) == OK and third.banked_bonus == 9 and third.resume_scene == NEXT, "accepted legacy migration preserves bank and destination")
+	check(third.settle_level(1, NEXT) == OK and third.banked_bonus == 10, "save retry credits once after migration")
 	write_fixture(path, JSON.stringify({"version": 99, "bonus_bank": 10, "resume_scene": NEXT}))
 	check(third.load_progress() != OK and third.settle_level(1, NEXT) != OK, "unknown future save version is protected")
-	write_fixture(path, JSON.stringify({"version": 1, "bonus_bank": 10, "resume_scene": "res://removed-level.tscn"}))
+	write_fixture(path, JSON.stringify({"version": 2, "shards_bank": 10, "resume_scene": "res://removed-level.tscn", "equipment": {"melee": "Sword0", "ranged": ""}, "permanent_flags": {}, "completed_dialogues": {}}))
 	check(third.load_progress() == OK and third.banked_bonus == 10 and third.resume_scene == Store.DEFAULT_LEVEL, "removed scene falls back without losing saved bank")
 	# Boot scene resumes a saved destination instead of always loading level one.
 	progress.resume_scene = NEXT
+	progress.has_save = true
 	change_scene_to_file("res://scenes/game.tscn")
+	await frames(4)
+	var game = current_scene
+	game._select(1)
 	await frames(10)
 	level = current_scene
-	check(level.scene_file_path == NEXT and progress.banked_bonus == 29, "game bootstrap resumes the stored level")
+	check(level.scene_file_path == NEXT and progress.banked_bonus == 24, "Continue from the main menu resumes the stored level")
+	write_fixture(path, JSON.stringify({"version": 2, "shards_bank": 24, "resume_scene": NEXT, "equipment": {"melee": "Sword0", "ranged": ""}, "permanent_flags": {}, "completed_dialogues": {}}))
 	progress.persistence_enabled = true
 	progress.storage_path = "res://work/missing-save-dir-%d/progress.json" % OS.get_process_id()
 	level._on_collected(14)
 	level.try_offering()
 	level._on_exit(level.player)
-	check(level.finished and not level.reward_settled and level.bonus == 2 and progress.banked_bonus == 29, "failed victory save retains pending bonus and offers retry")
+	check(level.finished and not level.reward_settled and level.bonus == 0 and progress.banked_bonus == 24, "failed victory save retains current shards and offers retry")
 	await tap("special_attack")
-	check(current_scene == level and level.bonus == 2, "R cannot discard rewards while victory save is awaiting retry")
+	check(current_scene == level and level.bonus == 0, "R cannot discard rewards while victory save is awaiting retry")
 	progress.storage_path = path
 	await tap("interact")
-	check(level.reward_settled and progress.banked_bonus == 31, "E retries the victory save and credits once")
+	check(level.reward_settled and progress.banked_bonus == 24, "E retries the victory save and credits once")
 	await tap("interact")
-	check(progress.banked_bonus == 31, "repeated E after settlement cannot award again")
+	check(progress.banked_bonus == 24, "repeated E after settlement cannot award again")
 	level = current_scene
 	progress.persistence_enabled = false
 	level.hud.set_bonus(1234567, 23)
@@ -149,6 +166,7 @@ func run() -> void:
 	reopened.free()
 	third.free()
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(path + ".v1.bak"))
 	level.queue_free()
 	await frames(3)
 	OS.delay_msec(300)

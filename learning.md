@@ -507,3 +507,42 @@ Côté interface, une information n'apparaît que lorsqu'elle sert (`docs/05`). 
 La dernière validation porte sur l’assemblage des passes, pas seulement sur chacune séparément. Les 377 contrôles de jeu passent encore après les changements d’animations, de décor et de HUD ; 49 contrôles avec rendu vérifient ensuite les états du chevalier, l’invite de porte et les effets qui doivent se libérer après lecture. Les tests et l’inspection des captures complètent la validation artistique donnée par l’humain.
 
 La version 0.1.0 comprend les runs 001–014 et 029. Le numéro 029 évite de renuméroter les lots déjà planifiés : il ne signifie pas que 015–028 ont été réalisés. Le plan compte maintenant 29 identifiants, dont 15 réalisés et 14 à venir. L’ouverture de la PR clôt la préparation de la livraison ; sa fusion dans `develop` reste nécessaire avant de commencer RUN-015 vers la 0.2.0.
+
+## RUN-015 — Partie technique : tentative, fichier durable et menus clavier
+
+Une tentative contient ce que le joueur peut perdre : coins, shards gagnés dans le niveau, position et état des ennemis. `level.gd` garde ces valeurs en mémoire. Les coins excédentaires restent des coins ; tuer un ennemi crédite séparément les shards. Une mort, Restart ou fermeture abandonne la tentative ; seule la sortie ajoute ses shards restants à la banque.
+
+`Progression` garde ce qui doit survivre : banque, niveau de reprise, équipement et flags permanents/dialogues. Le JSON v2 est écrit dans un fichier temporaire puis renommé ; la mémoire n'est modifiée qu'après succès. Une dépense utilise les gains courants puis la banque. L'acquisition d'un équipement et son paiement passent par la même écriture : il est impossible de confirmer l'objet en oubliant son débit. Les tests lisent ces valeurs depuis une nouvelle instance après écriture. Cela prépare les données de RUN-016 ; aucun Longbow ni objet de récompense n'est encore implémenté.
+
+Une v1 contient un bonus dont on ne connaît plus la part issue des coins. Le menu demande donc explicitement sa conversion en shards et conserve les octets originaux dans une copie. Une sauvegarde corrompue ou future ne devient pas une partie vide silencieusement : Continue est désactivé, les opérations ordinaires protègent le fichier. New Game demande confirmation et conserve la partie remplacée, y compris lorsqu'une copie plus ancienne existe déjà.
+
+`game.gd` affiche désormais le menu au démarrage. `keyboard_menu.gd` affiche et sélectionne les choix avec haut/bas, E et Escape. Le niveau utilise le même panneau pour pause et contexte. Une variable `modal` désigne la fenêtre propriétaire des entrées ; une seconde demande est refusée. La frame d'ouverture est ignorée par le panneau pour qu'Escape ne puisse pas ouvrir puis fermer pause immédiatement. Après Resume, le contrôle attend le relâchement de E/F/Space/Escape ; la confirmation ne devient donc pas une action de gameplay. La mort annule cette attente afin que son reset automatique reste possible même si E est tenu.
+
+Les tests ont reproduit le défaut d'ouverture/fermeture dans une frame, puis vérifié sa correction, et exercent des fichiers isolés plutôt que la sauvegarde du joueur. La présentation des panneaux est fonctionnelle et provisoire ; habillage, assets et sons UI doivent encore passer par Claude puis par la validation humaine. Cette entrée explique l'ingénierie réalisée, sans déclarer RUN-015 clôturée.
+
+
+### Complément RUN-015 — présentation validée et musique du menu
+
+Claude a habillé le panneau, ajouté le logo/fond et les sons de navigation, confirmation, annulation et erreur. L'humain valide cette passe le 3 octobre 2026, avec une retouche future du détail du logo. La musique choisie existe déjà en Ogg dans le projet : `game.gd` la joue sur le bus Music et l'import active la boucle. Controls et les confirmations gardent le même lecteur ; entrer dans le niveau détruit ce lecteur et laisse place à sa musique propre. Le retour au menu recrée le thème. Les tests vérifient ces transitions ainsi que le passage de fin de piste, sans prétendre qu'une analyse automatique remplace l'écoute humaine.
+
+
+## RUN-016 — Partie technique : Longbow, coffre et potion
+
+Le joueur garde Sword 0 dans le slot de mêlée. Le coffre gratuit propose une seule récompense fixe, Longbow 0 ; A alterne ensuite les deux slots. Chaque arme conserve son propre temps d’attente : changer de slot ne permet pas de raccourcir son cooldown. Le Longbow inflige 1 HP, part toutes les 1,5 secondes si F reste tenu et disparaît après 20 tuiles de 16 pixels (320 pixels). La vitesse de déplacement retenue est 320 pixels/seconde ; cette valeur technique n’était pas fixée dans la spec.
+
+Une flèche interroge tout le segment parcouru pendant chaque tick physique. Elle ne peut donc pas traverser un mur mince en passant d’un côté à l’autre entre deux frames. Le premier terrain ou ennemi touché termine son trajet ; un ennemi reçoit les dégâts une seule fois. La flèche reste en coordonnées du monde même si le joueur bouge. Elle appartient au joueur pour disparaître à sa mort ou au reset ; la pause fige le projectile et les cooldowns.
+
+Le coffre devient consommé pour la tentative dès que sa fenêtre exclusive s’ouvre. Refuse ou Escape ne donnent rien ; le reset le restaure tant que l’arc n’est pas acquis. Pour Accept, la sauvegarde reçoit `Longbow0` avant que le joueur obtienne l’arme. Si le disque refuse l’écriture, le coffre revient pour réessayer ; le test recharge aussi le fichier après acquisition pour vérifier que l’arc survive et que le coffre ne donne pas de doublon. Le slot actif repart sur Sword au spawn, mais les deux armes acquises restent disponibles.
+
+La potion utilise une zone de contact. Elle demande au joueur de soigner 0,5 HP et ne disparaît que si le soin réel est positif. À vie pleine, elle reste donc présente et peut soigner si le joueur se blesse tout en restant dessus. À 2,8 HP, elle remonte à 3 HP sans dépasser le maximum. Une nouvelle tentative recrée la potion.
+
+Les tests ont exercé la physique, les entrées, les dégâts, la pause, les changements d’arme, les refus et la persistance. Le HUD indique les deux slots verticalement avec le texte de l’arme active. Ces labels et les repères CHEST/POTION servent à l’intégration technique ; flèche, chevalier à l’arc, icônes, coffres/potion et sons/VFX attendent la contribution Claude. Les trois captures rendues ne valent pas validation artistique, et RUN-016 n’est pas clôturée.
+
+
+### Complément RUN-016 — présentation livrée et contrôle du shard
+
+Claude a ajouté les animations avec arc, la flèche et ses effets, le coffre animé, la potion et le soin, les icônes des deux slots et le feedback violet des shards, avec les sons associés. Ces ajouts utilisent les signaux du gameplay ; ils ne changent ni dégâts ni cadence ni collisions. L’humain valide la passe le 3 octobre 2026.
+
+Le gain de shard est déjà crédité par la mort de l’ennemi. Son animation n’est donc pas un nouvel objet à collecter. Le sprite historique de pièce reste dans la scène mais est masqué : vérifier sa texture ne démontre plus ce que le joueur voit. Le test cherche désormais le shard animé visible, vérifie que la pièce est cachée, puis simule un contact et vérifie que ni coins ni shards ne sont ajoutés.
+
+Les positions du coffre et de la potion seront finalisées en RUN-017. RUN-027 reprendra les sons approximatifs et le mix d’acquisition, le détail du logo et la mort en mode arc, qui utilise encore l’épée. Ces limites acceptées ne changent pas les règles d’équipement validées.

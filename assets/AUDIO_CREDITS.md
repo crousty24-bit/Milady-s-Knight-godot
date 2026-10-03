@@ -22,13 +22,47 @@ Médias audio intégrés par RUN-010 (30 septembre 2026), révisés par RUN-014 
 | `sounds/sfx_gold_coin_pickup_01–03.wav` | `DSGNTonl_USABLE-Magic Coin_HY_PC-001, -002, -004.wav` |
 | `sounds/sfx_slime_death_01–03.wav` | `DSGNMisc_SKILL RELEASE-Wet Splash_HY_PC-001–003.wav` |
 
+## SFX d'interface — RUN-015 (Helton Yan, *Pixel Combat*)
+
+Même source, auteur, licence (CC BY 4.0) et attribution que la section ci-dessus ; fichiers produits par `python3 tools/prepare_audio.py sfx_ui_navigate sfx_ui_confirm sfx_ui_cancel sfx_ui_error`. **Transformation :** silence de début/fin retiré (seuil −55 dB), fondu d'entrée de 2 ms, mono 44,1 kHz PCM 16 bits, crête normalisée à **−12 dBFS** (sous les SFX de gameplay à −8 dBFS), sans troncature supplémentaire. Sélection faite par analyse objective (durée, spectre, tendance de hauteur) ; l'écoute humaine reste à faire.
+
+| Fichier de jeu | Fichier source | Durée |
+| --- | --- | --- |
+| `sounds/sfx_ui_navigate.wav` | `UIClick_INTERFACE-Metallic Click_HY_PC-003.wav` | 0,12 s |
+| `sounds/sfx_ui_confirm.wav` | `DSGNTonl_INTERFACE-Tonal Click_HY_PC-005.wav` | 0,22 s |
+| `sounds/sfx_ui_cancel.wav` | `UIClick_INTERFACE-Strong Click 2_HY_PC-003.wav` | 0,23 s |
+| `sounds/sfx_ui_error.wav` | `UIMisc_INTERFACE-Denied_HY_PC-002.wav` | 0,43 s |
+
+## SFX Arc long, coffre, éclats et potion — RUN-016 (Helton Yan, *Pixel Combat*)
+
+Même source, auteur, licence (CC BY 4.0) et attribution que les sections ci-dessus ; fichiers produits par `python3 tools/prepare_audio.py` suivi des noms `sfx_weapon_bow_shot_01` … `sfx_chest_reward_accept` (voir `tools/prepare_audio.py`). **Transformation :** silence de début/fin retiré (seuil −55 dB), fondu d'entrée de 2 ms, mono 44,1 kHz PCM 16 bits, crête normalisée à **−8 dBFS** par défaut, **−10 dBFS** pour les sons répétitifs (tir d'arc, éclats), **−12 dBFS** pour `sfx_weapon_switch` (type interface) ; durée plafonnée avec fondu de sortie de 0,15 s lorsque la source dépasse la cible (colonne « Coupe »). Sélection faite par analyse objective (durée, enveloppe, spectre) ; l'écoute humaine reste à faire, plusieurs choix étant approximatifs (le pack n'offre ni corde d'arc ni bois de coffre).
+
+| Fichier de jeu | Fichier source | Durée | Coupe |
+| --- | --- | --- | --- |
+| `sounds/sfx_weapon_bow_shot_01–03.wav` | `DSGNMisc_PROJECTILE-High Whoosh_HY_PC-001–003.wav` | 0,38 s | 0,38 s |
+| `sounds/sfx_arrow_impact.wav` | `FEETMisc_STEP-Hard Step_HY_PC-002.wav` | 0,19 s | non |
+| `sounds/sfx_shard_gain_01–03.wav` | `DSGNTonl_SKILL IMPACT-Star Sparkle_HY_PC-001–003.wav` | 0,55–0,58 s | 0,58 s |
+| `sounds/sfx_minor_potion_pickup.wav` | `DSGNTonl_MOVEMENT-Bubble Babbler_HY_PC-001.wav` | 0,50 s | 0,50 s |
+| `sounds/sfx_player_heal.wav` | `MAGAngl_BUFF-Simple Heal_HY_PC-002.wav` | 0,78 s | 0,78 s |
+| `sounds/sfx_weapon_switch.wav` | `UIClick_INTERFACE-Rattling Click_HY_PC-002.wav` | 0,27 s | non |
+| `sounds/sfx_weapon_equip.wav` | `DSGNTonl_USABLE-Metallic Item_HY_PC-002.wav` | 0,60 s | non |
+| `sounds/sfx_chest_open_common.wav` | `UIMisc_INTERFACE-Lock_HY_PC-002.wav` | 0,41 s | non |
+| `sounds/sfx_chest_reward_reveal.wav` | `SWSH_MOVEMENT-Tiny Chime_HY_PC-002.wav` | 0,75 s | 0,75 s |
+| `sounds/sfx_chest_reward_accept.wav` | `DSGNTonl_USABLE-Tonal Item_HY_PC-003.wav` | 0,58 s | 0,58 s |
+
+## Limites acceptées et suivi RUN-016 (3 octobre 2026)
+
+La passe Claude est validée par l’humain, avec ces réserves pour RUN-027 : le tir utilise un whoosh, l’impact un pas dur et l’ouverture un verrou, faute de corde d’arc, d’impact de bois et de grincement de coffre dans le pack. Le tableau ci-dessus trace ces substituts actuels ; il ne liste pas encore de nouveaux fichiers de remplacement sélectionnés. Claude devra sélectionner et faire écouter les remplaçants avant leur intégration.
+
+À l’acquisition de Longbow0, confirmation UI, acceptation du coffre et nouvelle arme se superposent. Le mix reste à juger à l’écoute lors de cette passe ; la validation actuelle ne constitue pas une mesure de qualité du mix.
+
 ## Musique — Pixabay
 
 - **Fichier de jeu (RUN-014) :** `music/music_slice_dreamer.ogg`, musique du slice.
 - **Source :** `Music/nojisuma-dreamer-131011.mp3` ; auteur Pixabay `nojisuma`, identifiant 131011. La page exacte du morceau reste à relier au fichier.
 - **Licence :** [Pixabay Content License](https://pixabay.com/service/license-summary/) — usage gratuit, modification permise, attribution non requise ; vente ou distribution du contenu seul, sous une forme substantiellement identique, interdite.
 - **Transformation :** coupé à 156,0 s, avant le fondu final et sur une fin de mesure de 4 s, fondus de 30 ms aux bords, loudness normalisée à −13 LUFS (true peak −1,5 dBFS), Ogg Vorbis q5 44,1 kHz, boucle activée à l'import.
-- **Remplacé :** `music/music_slice_dark_fantasy_lofi.ogg` (Pixabay `welc0mei0`, identifiant 148338, −16 LUFS) n'est plus référencé ; le fichier reste dans le dépôt en attendant la décision humaine.
+- **Remplacé :** `music/music_slice_dark_fantasy_lofi.ogg` (Pixabay `welc0mei0`, identifiant 148338, −16 LUFS) réutilisé comme thème du menu principal en RUN-015 le 3 octobre 2026, à la demande humaine. Sa source est `Music/welc0mei0-bgm006-dark-fantasy-lo-fi-retro-game-148338.mp3` ; le dérivé existant stéréo 44,1 kHz (~132 s), à −16 LUFS, est conservé avec boucle d'import activée. Le lecteur de menu est routé vers Music et supprimé à l'entrée en jeu.
 
 ## Retour d'écoute (30 septembre 2026)
 

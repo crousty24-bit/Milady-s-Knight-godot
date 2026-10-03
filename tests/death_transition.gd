@@ -27,7 +27,7 @@ func run() -> void:
 	player = level.get_node("Player")
 	await frames(8)
 	level._on_collected(15)
-	check(level.gold == 12 and level.bonus == 3, "attempt has seal coins and pending surplus")
+	check(level.gold == 15 and level.bonus == 0, "attempt retains all picked-up coins without awarding shard surplus")
 	player.die()
 	player.die()
 	check(player.dead and player.health == 0 and level.bonus == 0 and progress.banked_bonus == 37, "duplicate death discards pending gains once and retains bank")

@@ -2,6 +2,8 @@
 
 ## Statut de cette planification
 
+**Mise à jour du 3 octobre 2026 :** PR #16 fusionnée dans `develop` (`f997bcb`), verrou 0.2.0 levé. RUN-015–016 DONE ; passe Claude RUN-016 validée par l’humain, revue globale terminée sur `feature/v0.2.0-reprise-equipment`. Push et PR vers develop autorisés par la demande humaine de revue puis livraison ; pas de merge autorisé. Les paragraphes datés du 2 octobre conservent le contexte historique.
+
 Audit documentaire et inspection du dépôt effectués le **21 septembre 2026**, à partir de l’état de travail courant, et non du seul commit `0870462`.
 **RUN-001 à RUN-014 et RUN-029 DONE. Version 0.1.0 clôturée et validée localement le 2 octobre 2026**, après validation humaine de toutes les passes et audit final. La PR vers `develop` est autorisée ; fusion encore à effectuer. Les PR #1, #2, #4, #5, [#8](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/8) et [#9](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/9) sont fusionnées dans `develop`. RUN-007 est fusionnée via la PR #11 (`260c8a8`), RUN-008 via la PR #12 (`6c4ee22`), RUN-009 via la [PR #14](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/14) (`a2ac33c`) et RUN-010 via la PR #15 (`24213f2`). RUN-011 clôt le socle 0.1.0 localement après recette technique et validation humaine du saut mural ; livraison de cette branche préparée pour la PR autorisée. La validation des onze premières runs et du socle **0.1.0** est confirmée par l’humain le **2 octobre 2026**. La réorganisation ci-dessous reste sur `feature/run-011-production-foundation` ; aucune run 0.2.0 n’est lancée.
 
@@ -249,7 +251,7 @@ Cette table sert uniquement à relire les anciennes références du journal. Les
 
 Les conditions locales sont satisfaites le **2 octobre 2026** : réorganisation et modèles alignés, passes Claude 012–014 et 029 réalisées, recette intégrée réussie, validation humaine finale reçue. L’humain demande l’ouverture de la PR ; le push nécessaire et la PR vers `develop` sont autorisés.
 
-**Condition restante : la fusion effective de `feature/run-011-production-foundation` dans `develop`.** La version 0.1.0 est DONE localement ; cette clôture ouvre la PR sans effectuer la fusion. **RUN-015 et toute implémentation 0.2.0 attendent cette fusion**, puis reprennent sur une feature issue du nouveau `develop`. L’autorisation d’ouvrir la PR ne vaut pas ordre de fusion.
+**Verrou levé, vérifié le 3 octobre 2026 :** la [PR #16](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/16) a été fusionnée le 2 octobre dans `develop` (`f997bcb`). La branche `feature/v0.2.0-reprise-equipment` part de ce commit et couvre RUN-015 puis RUN-016, cette dernière uniquement après revue et validation humaine de RUN-015. Le lancement seul n’autorisait aucun push/PR/merge ; la demande humaine ultérieure du 3 octobre autorise désormais push et PR après revue, sans fusion.
 
 ## Version 0.1.0 — Socle de production vérifié
 
@@ -456,7 +458,7 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 ## Version 0.2.0 — Premier niveau et boucle de reprise
 
-**Statut : BACKLOG, non lancée.** **Prérequis :** Verrou de branche levé et fusion effective dans develop ; D03–D05 avant leur code.
+**Statut : en cours, RUN-015–016 DONE ; RUN-017 BACKLOG.** **Prérequis :** fusion dans `develop` vérifiée ; D03–D05 avant leur code. Les critères ci-dessous sont ceux du jalon complet RUN-015–017, pas de RUN-015 seule.
 
 **Repères documentaires :** 01, 03, 04, 05, 07, 08, 09, 10, 13 dans `docs/`.
 
@@ -469,7 +471,13 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 ### RUN-015 — Reprise, progression et interface clavier
 
-**Lot D · Main agent : Codex GPT-6.1 Sol Medium · Statut : BACKLOG · Dépendances : RUN-011 et verrou de branche levé.**
+**Lot D · Main agent : Codex GPT-6.1 Sol Medium · Statut : DONE · Dépendances : RUN-011 DONE et verrou de branche levé.**
+
+- **Préparation (3 octobre 2026) :** lancement autorisé, dépôt initial propre sur `develop` (`f997bcb`), branche commune `feature/v0.2.0-reprise-equipment` créée. D03 (persistance et ordre de dépense) et D05 (interface) sont validés par l’humain le 3 octobre ; le contrat intégral, migration v1 comprise, est ensuite validé le 3 octobre ; passage READY puis ACTIVE ; propositions concrètes dans [RUN-015_CONTRACT_REVIEW.md](docs/RUN-015_CONTRACT_REVIEW.md). Partie technique implémentée et vérifiée ; état BLOCKED sur la contribution artistique/audio Claude requise. Le réglage exact Sol Medium de la session ne peut pas être confirmé avec les informations exposées. Contribution artistique/audio des menus réservée à Claude ; handoff et propriété dans [RUN-015_CLAUDE_HANDOFF.md](docs/RUN-015_CLAUDE_HANDOFF.md).
+
+- **Checkpoint technique (3 octobre 2026) :** sauvegarde v2 et migration explicite avec copie originale, transactions durables, séparation coins/shards, menu principal/pause/contextes clavier. Import + 18 suites / **445 contrôles de jeu + 1 isolation** réussis ; pilote menus non headless **26/26**, sept captures inspectées à 640×360. Corrections/retests : Escape ouvrait/fermait dans la même frame, chargement après victoire héritant de pause, sauvegardes de remplacement successives, mort pendant E tenu. **Pas de DONE ni de VERIFY complet** : habillage/logo/fond et sons UI P0 par Claude, validation artistique/playtest humain et revue Jev de clôture restent dus.
+
+- **Reprise après Claude (3 octobre 2026) :** passe artistique/audio `1a6ffea` inspectée et validée par l’humain. Logo accepté avec retouche de détail reportée à la prochaine passe Claude (RUN-027). Thème de menu demandé : dérivé existant de `welc0mei0 …148338.mp3`, bouclé et routé Music ; tests menus avec rendu **31/31**, dont passage effectif de fin de piste, Controls, entrée niveau et retour menu. Revue Jev READY_FOR_DONE (couverture 0,81, vérification 0,72, blocage 0,37 ; Choice 0,38, distribution 0,59/0,38/0,03), puis inspection des preuves et validation humaine : DONE localement.
 
 - **Résultat / scope :** Regrouper contrats d’état, séparation coins/shards, tentative/état durable, sauvegarde versionnée, exclusivité des modales, New Game/Continue/Controls/Quit et pause Reprendre/Recommencer/Quitter.
 - **Décisions avant implémentation dépendante :** D03–D05 : événements de sauvegarde, ancien bonus, banque/gains, uniques/dialogues, priorité et annulation des modales, slots ; décisions humaines avant schéma/code.
@@ -478,9 +486,12 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 ### RUN-016 — Équipement N1, Longbow et récompenses
 
-**Lot E · Main agent : Codex GPT-6.1 Sol Medium · Statut : BACKLOG · Dépendances : RUN-015.**
+**Lot E · Main agent : Codex GPT-6.1 Sol Medium · Statut : DONE · Dépendances : RUN-015 DONE.**
 
+- **Checkpoint technique (3 octobre 2026) :** Longbow0 (1 DMG / 1,5 s / 320 px), A/deux slots, projectile balayé, coffre fixe gratuit, refus/fermeture/reset/retry disque, potion 0,5 HP conservée à vie pleine et reprise durable de l’arc implémentés. Import + **20 suites / 495 contrôles + 1 isolation** réussis, puis Longbow final **26/26** avec deux contrôles supplémentaires de glissade murale ; récompenses avec rendu **21/21** et trois captures inspectées. Revue indépendante sans défaut concret. **À ce checkpoint, BLOCKED sur les assets/feedbacks P0 Claude** ; [handoff et propriété](docs/RUN-016_CLAUDE_HANDOFF.md). Labels/repères de test et flèche sans rendu ne valent pas assets livrés ni validation artistique ; pas de DONE/VERIFY complet.
+- **Reprise finale (3 octobre 2026) :** passe Claude `2953b37` livrée et validée par l’humain. Revue globale RUN-015–016 et deux revues indépendantes sans défaut bloquant ; assertion shard corrigée ; **20 suites / 499 contrôles + 1 isolation** réussis. Limites acceptées : sons approximatifs et mix acquisition / mort arc à reprendre en RUN-027 ; placement coffre/potion en RUN-017. Rendu : 129 contrôles + pilote visuel 11 PASS, captures inspectées. Revue Jev READY_FOR_DONE (couverture 0,80 ; vérification 0,74 ; blocage 0,27 ; Choice 0,55), inspection des preuves et validation humaine : DONE. Livraison PR autorisée ; fusion séparée.
 - **Résultat / scope :** HUD vie/coins/shards, deux slots et touche A, Sword conservée, Longbow 0 effectif, coffre tuto gratuit à récompense fixe et potion mineure.
+- **Lancement (3 octobre 2026) :** autorisé par la demande initiale d’enchaînement après RUN-015 revue/validée, conditions satisfaites. Même branche ; ownership gameplay/persistance à Codex, assets/feedbacks à Claude.
 - **Décisions avant implémentation dépendante :** Appliquer les contrats RUN-015, y compris persistance et disposition des slots.
 - **Acceptation, tests et bugtest :** HUD exact après collecte/dépense/mort/reprise à 640×360 ; F maintenu tire toutes les 1,5 s, 1 DMG, portée 20 blocs, disparition cible/terrain/portée ; gauche/droite, pause, changement d’arme, occlusion et impact unique ; coffre accepter/refuser/fermer sans doublon/upgrade ; potion 0,5 HP conservée si vie pleine.
 - **Clôture :** corrections et régressions du périmètre, revue Jev selon le cycle existant, preuves au journal et learning fondé sur le résultat réel ; validation humaine des choix artistiques ou playtests requis.
@@ -489,7 +500,7 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 **Lot F · Main agent : Codex GPT-6.1 Sol Medium · Statut : BACKLOG · Dépendances : RUN-015–016.**
 
-- **Résultat / scope :** Spirit, dialogue anglais animé et saut par Espace, tutoriel contextuel ; adaptation du slice en N1 court et facile avec coffre, potion, Slimes, dangers, tir et sortie ; art/audio P0 et recette complète.
+- **Résultat / scope :** Spirit, dialogue anglais animé et saut par Espace, tutoriel contextuel ; adaptation du slice en N1 court et facile avec coffre, potion, Slimes, dangers, tir et sortie ; art/audio P0 et recette complète. Finaliser le placement provisoire coffre/potion, actuellement près des pièces avec superposition des éclats.
 - **Décisions avant implémentation dépendante :** Contrats RUN-015 ; ne pas présenter la fixture comme N2 final.
 - **Acceptation, tests et bugtest :** New Game jusqu’à sortie à 12 coins puis fixture ; branches/retours, spawn sûr après mort, dialogue immobilisant sans danger puis reprise, états vus conformes au contrat ; coffre accepté/refusé, potion pleine/blessée, tir, pause, Controls, fermeture/Continue à froid ; aucune perte d’équipement ni modale superposée ; playtest humain N1.
 - **Clôture :** corrections et régressions du périmètre, revue Jev selon le cycle existant, preuves au journal et learning fondé sur le résultat réel ; validation humaine des choix artistiques ou playtests requis.
@@ -634,7 +645,7 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 **Lot P · Main agent : Claude Opus 5.5 · Statut : BACKLOG · Dépendances : RUN-026 ; 0.4.0 validée.**
 
-- **Résultat / scope :** Harmoniser dix biomes et variantes avancées retenues, HUD/menus/logo/artwork/dialogues anglais ; compléter animations/VFX et audio requis, résoudre les retours RUN-010 restants (dont sons de saut et double saut encore trop « sci-fi » après RUN-014), mixer et intégrer volumes/préférences persistantes avec contribution technique cadrée.
+- **Résultat / scope :** Harmoniser dix biomes et variantes avancées retenues, HUD/menus/logo/artwork/dialogues anglais ; compléter animations/VFX et audio requis, résoudre les retours RUN-010 restants (dont sons de saut et double saut encore trop « sci-fi » après RUN-014), mixer et intégrer volumes/préférences persistantes avec contribution technique cadrée. Améliorer le détail du logo de menu selon le retour humain du 3 octobre 2026, en conservant sa référence. Reprendre les approximations tir/impact/ouverture de RUN-016, juger le mix des trois sons d’acquisition à l’écoute et ajouter une variante de mort avec arc (l’animation actuelle lâche l’épée).
 - **Décisions avant implémentation dépendante :** D10 : variantes retenues et licences ; validation artistique et sonore humaine.
 - **Acceptation, tests et bugtest :** Toutes exigences docs/08 et docs/13 intégrées/testées ou décision de scope validée, aucun P0 absent ; rendu/clavier à 640×360, transitions d’animation/collisions, écoute humaine et mix, réglages après reprise, sources/dérivés et licences/crédits complets ; effets caméra facultatifs seulement si lisibles.
 - **Clôture :** corrections et régressions du périmètre, revue Jev selon le cycle existant, preuves au journal et learning fondé sur le résultat réel ; validation humaine des choix artistiques ou playtests requis.
@@ -650,6 +661,6 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 ## Point d’arrêt
 
-**2 octobre 2026 : version 0.1.0 clôturée ; RUN-001–014 et RUN-029 DONE.** Réorganisation et toutes les passes réalisées validées par l’humain ; audit technique final réussi. Ouverture de PR vers `develop` autorisée sur `feature/run-011-production-foundation` ; aucune fusion effectuée dans cette clôture.
+**3 octobre 2026 : RUN-015 DONE localement**, contribution Claude validée humainement, thème de menu choisi intégré et testé, revue Jev et inspection des preuves satisfaisantes. Le logo plus détaillé reste une retouche Claude de RUN-027, sans remettre en cause la passe validée.
 
-**Prochaine phase : RUN-015 vers 0.2.0, après fusion effective de la PR uniquement.** RUN-015–028 restent BACKLOG, aucune run ACTIVE. Les sons de saut/double saut restent à reprendre en RUN-027, sans rouvrir le socle accepté.
+**RUN-016 DONE**, passe Claude validée, revue globale sans défaut bloquant, suite complète (499 + 1 isolation), rendu et revue Jev suivie de l’inspection des preuves terminés. PR vers develop autorisée par la demande humaine du 3 octobre 2026. RUN-017 reste BACKLOG ; 0.2.0 n’est pas encore validée. Aucune fusion autorisée.

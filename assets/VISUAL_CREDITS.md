@@ -48,6 +48,25 @@ Seconde passe, même méthode : pixel art produit par code sur la palette commun
 
 `hud_icons.png` (RUN-013) reste généré à l'identique par `creatures.py` mais n'est plus utilisé par le HUD. Blueprint Studio était connecté : aucune génération n'a été lancée (0 crédit), les couches de fond procédurales suffisant à l'échelle 1× ; aucun fichier de cette source n'est donc à déclarer. Le pack CC0 *16x16 Assorted RPG Icons* (Shade) a été examiné pour le HUD mais ne contenait pas d'icône cœur, pièce ou touche adaptée : rien n'en a été copié.
 
+## Générés pour le projet (RUN-015, 3 octobre 2026)
+
+Même méthode : pixel art produit par code sur la palette commune, **sans asset tiers ni génération par IA**, régénéré à l'identique (MD5 vérifié).
+
+| Générateur | Fichiers de jeu | Contenu |
+| --- | --- | --- |
+| `tools/art/menu_art.py` (main agent) | `ui_logo.png` 300×112, `ui_menu_ledge.png` 220×70, `ui_menu_focus.png` 12×12, `ui_menu_cursor.png` 7×9, `ui_menu_lock.png` 7×8 | Logo « Milady's / Knight » en textura dorée tracée par simulation de plume large, épée couronnée et bannière rouge déchirée ; rempart du premier plan ; plaque de focus 9-slice ; curseur ; cadenas d'option indisponible. |
+
+Le logo reprend la **composition** de la référence de marque locale `artwork & logo/MK logo 1.png` (lettrage or sur bannière rouge, épée couronnée), sans en copier un pixel : la référence est une image haute résolution non native, d'origine non documentée, et porte la coquille « Milaay's ». L'artwork de fond du menu réutilise à l'exécution les couches acceptées de RUN-029 (`scripts/backdrop.gd`), le chevalier `ashen_knight_frames.tres` (idle) et `prop_brazier/flame/glow.png` ; aucun nouveau fond n'est produit.
+
+## Générés pour le projet (RUN-016, 3 octobre 2026)
+
+Même méthode : pixel art produit par code sur la palette commune, **sans asset tiers ni génération par IA** ; régénération identique vérifiée (MD5 de `sprites/*.png`).
+
+| Générateur | Fichiers de jeu | Contenu |
+| --- | --- | --- |
+| `tools/art/knight.py` (main agent) | `ashen_knight.png` + `ashen_knight_frames.tres` (lignes ajoutées, 17 animations existantes identiques au pixel) | Longbow 0 sur le rig, épée au fourreau : `bow_idle` 6, `bow_run` 8, `bow_rise`/`bow_fall`/`bow_land` 2, `bow_wall` 3, `bow_hurt` 2 ; `shoot` 7 (relâche 4 + encoche/armement 3) et `up_shoot` (haut du corps sur `base_run/rise/fall`). Flèche encochée sur la ligne de la bouche (+4, −10). |
+| `tools/art/items.py` (subagent, retouche de l'aura de soin par le main agent) | `proj_arrow.png`, `vfx_arrow_release.png`, `vfx_arrow_impact.png`, `vfx_arrow_hit.png`, `item_shard.png`, `vfx_shard_burst.png`, `ui_shard_icon.png`, `ui_slot_icons.png`, `item_chest.png`, `vfx_chest_vanish.png`, `item_potion_minor.png`, `vfx_heal.png` | Flèche, départ, impacts terrain/ennemi, shard et éclat violets, icônes HUD shard et slots, coffre tuto fermé→ouvert et dissolution, potion mineure verte et soin. Rampe verte locale `POTION` (soin, distincte du Slime vert). |
+
 ## Bibliothèque locale examinée et non retenue (RUN-012)
 
 Le dépôt est public : un pack dont la licence interdit la redistribution des fichiers, même modifiés, ne peut pas y être intégré. Les pages itch.io n'ont pas pu être lues automatiquement (protection Cloudflare) ; ces verdicts proviennent de résumés de recherche et doivent être confirmés par l'humain avant toute réutilisation.
