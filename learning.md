@@ -537,3 +537,12 @@ Le coffre devient consommé pour la tentative dès que sa fenêtre exclusive s�
 La potion utilise une zone de contact. Elle demande au joueur de soigner 0,5 HP et ne disparaît que si le soin réel est positif. À vie pleine, elle reste donc présente et peut soigner si le joueur se blesse tout en restant dessus. À 2,8 HP, elle remonte à 3 HP sans dépasser le maximum. Une nouvelle tentative recrée la potion.
 
 Les tests ont exercé la physique, les entrées, les dégâts, la pause, les changements d’arme, les refus et la persistance. Le HUD indique les deux slots verticalement avec le texte de l’arme active. Ces labels et les repères CHEST/POTION servent à l’intégration technique ; flèche, chevalier à l’arc, icônes, coffres/potion et sons/VFX attendent la contribution Claude. Les trois captures rendues ne valent pas validation artistique, et RUN-016 n’est pas clôturée.
+
+
+### Complément RUN-016 — présentation livrée et contrôle du shard
+
+Claude a ajouté les animations avec arc, la flèche et ses effets, le coffre animé, la potion et le soin, les icônes des deux slots et le feedback violet des shards, avec les sons associés. Ces ajouts utilisent les signaux du gameplay ; ils ne changent ni dégâts ni cadence ni collisions. L’humain valide la passe le 3 octobre 2026.
+
+Le gain de shard est déjà crédité par la mort de l’ennemi. Son animation n’est donc pas un nouvel objet à collecter. Le sprite historique de pièce reste dans la scène mais est masqué : vérifier sa texture ne démontre plus ce que le joueur voit. Le test cherche désormais le shard animé visible, vérifie que la pièce est cachée, puis simule un contact et vérifie que ni coins ni shards ne sont ajoutés.
+
+Les positions du coffre et de la potion seront finalisées en RUN-017. RUN-027 reprendra les sons approximatifs et le mix d’acquisition, le détail du logo et la mort en mode arc, qui utilise encore l’épée. Ces limites acceptées ne changent pas les règles d’équipement validées.

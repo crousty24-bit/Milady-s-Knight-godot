@@ -54,8 +54,17 @@ func run() -> void:
 	for child in level.get_children():
 		if child.get("bonus_feedback") != null and child.bonus_feedback > 0:
 			feedback_count += 1
-			check(child.picked_up and child.get_node("Sprite").sprite_frames.get_frame_texture("idle", 0).atlas.resource_path == "res://assets/sprites/item_gold_coin.png", "reward feedback reuses coin art and cannot be collected again")
-	check(feedback_count == 2, "both defeats show existing coin feedback")
+			var shard_visible := false
+			for visual in child.get_children():
+				if visual is AnimatedSprite2D and visual.is_visible_in_tree():
+					var texture = visual.sprite_frames.get_frame_texture(visual.animation, visual.frame)
+					shard_visible = texture is AtlasTexture and texture.atlas.resource_path == "res://assets/sprites/item_shard.png" and visual.is_playing()
+			check(shard_visible and not child.get_node("Sprite").is_visible_in_tree(), "defeat displays an animated shard and hides the coin art")
+			var coins_before: int = level.gold
+			var shards_before: int = level.bonus
+			child._on_body_entered(level.player)
+			check(child.picked_up and not child.monitoring and level.gold == coins_before and level.bonus == shards_before, "shard feedback cannot be collected for extra coins or shards")
+	check(feedback_count == 2, "both defeats show shard feedback")
 	level._on_collected(11)
 	check(not level.try_offering() and level.gold == 11 and level.bonus == 4, "shards and enemy gains cannot pay missing seal coins")
 	level._on_collected(3)

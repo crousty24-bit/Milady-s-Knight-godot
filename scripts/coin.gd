@@ -1,7 +1,7 @@
 extends Area2D
 signal collected(value: int)
 @export_enum("Common", "Upper", "Lower") var route: int = 0
-# A defeat reward is already credited by the level. This reuses the coin art as feedback.
+# A defeat reward is already credited by the level. The shard presentation is noncollectible feedback.
 var bonus_feedback: int = 0
 var picked_up: bool = false
 var elapsed: float = 0.0

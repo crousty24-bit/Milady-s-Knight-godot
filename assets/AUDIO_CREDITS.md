@@ -50,6 +50,12 @@ Même source, auteur, licence (CC BY 4.0) et attribution que les sections ci-des
 | `sounds/sfx_chest_reward_reveal.wav` | `SWSH_MOVEMENT-Tiny Chime_HY_PC-002.wav` | 0,75 s | 0,75 s |
 | `sounds/sfx_chest_reward_accept.wav` | `DSGNTonl_USABLE-Tonal Item_HY_PC-003.wav` | 0,58 s | 0,58 s |
 
+## Limites acceptées et suivi RUN-016 (3 octobre 2026)
+
+La passe Claude est validée par l’humain, avec ces réserves pour RUN-027 : le tir utilise un whoosh, l’impact un pas dur et l’ouverture un verrou, faute de corde d’arc, d’impact de bois et de grincement de coffre dans le pack. Le tableau ci-dessus trace ces substituts actuels ; il ne liste pas encore de nouveaux fichiers de remplacement sélectionnés. Claude devra sélectionner et faire écouter les remplaçants avant leur intégration.
+
+À l’acquisition de Longbow0, confirmation UI, acceptation du coffre et nouvelle arme se superposent. Le mix reste à juger à l’écoute lors de cette passe ; la validation actuelle ne constitue pas une mesure de qualité du mix.
+
 ## Musique — Pixabay
 
 - **Fichier de jeu (RUN-014) :** `music/music_slice_dreamer.ogg`, musique du slice.
