@@ -70,8 +70,7 @@ func run() -> void:
 	check(level.spirit_phase == "hidden" and level.modal.is_empty(), "31 pixels forward leave Spirit hidden and gameplay free")
 	level.player.position = spawn
 	await frames()
-	# Assign an existing cue as an audio-hook fixture; the final apparition cue belongs to Claude.
-	art.appearance_sound = load("res://assets/sounds/sfx_dialogue_open.wav")
+	check(art.appearance_sound == load("res://assets/sounds/sfx_spirit_appear.wav"), "real N1 assigns the delivered Spirit appearance cue")
 	Input.action_press("move_right")
 	for i in range(90):
 		await frames(1)
@@ -79,11 +78,14 @@ func run() -> void:
 	Input.action_release("move_right")
 	check(level.player.position.x >= spawn.x + 32.0 and level.player.position.x < spawn.x + 36.0, "real walking triggers apparition at two forward blocks")
 	check(level.spirit_phase == "appearing" and paused and not level.player.controls_enabled and not level.dialogue_panel.active, "apparition owns pause before opening dialogue")
+	check(level.player.sprite.animation == &"idle" and level.player.velocity == Vector2.ZERO and not level.player.upper.visible, "walking enters apparition in idle rather than a frozen run pose")
+	var idle_frame: int = level.player.sprite.frame
 	check(art.appearance_audio.playing and art.appearance_audio.bus == &"SFX", "appearance hook plays its assigned cue on SFX during cinematic pause")
 	var apparition_position: Vector2 = level.player.position
 	Input.action_press("attack")
 	Input.action_press("move_right")
 	await frames(18)
+	check(level.player.sprite.animation == &"idle" and level.player.sprite.frame != idle_frame, "knight idle animates during apparition while physics stays paused")
 	check(level.player.position == apparition_position and level.player.attack_time == 0.0 and art.visible and (art.body.animation == &"appear" or (art.modulate.a > 0.0 and art.modulate.a < 1.0)), "apparition (authored frames, else fallback fade) is visible while movement and attacks remain frozen")
 	await capture("spirit-appearing")
 	Input.action_release("attack")
@@ -94,11 +96,15 @@ func run() -> void:
 		if level.modal == "dialogue": break
 		await frames(1)
 	check(level.modal == "dialogue" and level.spirit_phase == "present" and paused and not level.player.controls_enabled, "apparition hands pause directly to the dialogue")
+	idle_frame = level.player.sprite.frame
+	await frames(18)
+	check(level.player.sprite.animation == &"idle" and level.player.sprite.frame != idle_frame and level.player.position == apparition_position, "dialogue keeps idle animated and knight motionless")
 	await capture("spirit-dialogue")
 	for i in range(level.dialogue_panel.lines.size()): await tap("jump")
 	await frames(8)
 	check(progress.completed_dialogues.has(level.INTRO_ID) and level.spirit_phase == "present", "Spirit stays present after the final phrase is saved")
 	if level.modal == "context": await tap("interact")
+	check(level.player.sprite.process_mode == Node.PROCESS_MODE_INHERIT, "dialogue completion restores normal sprite pause ownership")
 	# Walk away to the actual six-block default radius, without teleporting the route.
 	Input.action_press("move_right")
 	for i in range(120):
@@ -131,7 +137,10 @@ func run() -> void:
 	level = current_scene
 	check(not level.player.resurrection_active and level.modal.is_empty() and level.spirit_phase == "hidden", "restart before dialogue does not replay resurrection")
 	level.player.die()
-	await frames(220)
+	var death_frame: int = level.player.sprite.frame
+	await frames(18)
+	check(level.player.sprite.animation == &"dead" and level.player.sprite.frame != death_frame and level.player.sprite.process_mode == Node.PROCESS_MODE_ALWAYS, "N1 death animation keeps its own pause mode after dialogue pose changes")
+	await frames(202)
 	level = current_scene
 	check(not level.player.resurrection_active and not level.player.dead and level.modal.is_empty() and level.spirit_phase == "hidden", "death before dialogue respawns safely without resurrection")
 	# Existing/migrated saves without New Game intent must not gain the new cinematic.

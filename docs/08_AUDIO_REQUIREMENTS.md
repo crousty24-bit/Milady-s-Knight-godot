@@ -355,7 +355,7 @@ Une même famille de sons peut être pitchée/modifiée pour différencier Green
 | ------------------------ | ------------------------------- | --------- | -------- | -------------- | ------ | ------ | --------- |
 | `sfx_dialogue_open`      | Bandeau dialogue apparaît       | Dialogue  | P1       | ☑              | Helton Yan CC BY 4.0 | WAV | ☑ RUN-017 |
 | `sfx_dialogue_text_tick` | Animation texte progressive     | Dialogue  | P2       | ☐              | —      | WAV    | ☐         |
-| `sfx_spirit_appear`      | Spirit apparaît après deux blocs vers l'avant | Narration | P1 | ☑ | Helton Yan CC BY 4.0 | WAV | ☐ écoute humaine en attente (sélection objective RUN-017/2) |
+| `sfx_spirit_appear`      | Spirit apparaît après deux blocs vers l'avant | Narration | P1 | ☑ | Helton Yan CC BY 4.0 | WAV | ☑ contribution RUN-017/2 validée humainement le 3 octobre 2026 |
 | `sfx_dialogue_close`     | Fin du dialogue                 | Dialogue  | P2       | ☐              | —      | WAV    | ☐         |
 
 Amendement humain RUN-017 (3 octobre 2026) : l'avance de phrase par Space est silencieuse. Ne pas produire ni intégrer de son `skip`/`next` pour cette interaction. Le son d'ouverture du bandeau est conservé ; le nouveau son d'apparition du Spirit doit être joué une fois au début de son apparition, pas à chaque phrase. Aucun son de résurrection ou de disparition supplémentaire n'est imposé par cette passe.

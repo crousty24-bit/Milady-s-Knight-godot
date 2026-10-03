@@ -1,5 +1,7 @@
 # RUN-017 — Seconde passe Claude : résurrection et apparition du Spirit
 
+**Contrat historique livré dans `36a6251`, correctifs dans `b825d11`, validés humainement le 3 octobre 2026.** À la demande humaine, le Spirit est désormais à `(140,144)` sur la tombe, sans offset Art ; le chevalier est posé au sol et la caméra stabilisée avant résurrection. Ces décisions remplacent les positions initiales ci-dessous. Codex reprend le dernier correctif de pose idle pendant apparition/dialogue, la revue finale et la PR autorisée vers `develop` ; la présente délégation n'est plus en attente.
+
 Demande humaine du 3 octobre 2026, sur **`feature/run-017-eidolon-vale`**. La première contribution Claude (`1fbb730`) est validée humainement. La nouvelle passe technique Codex est livrée sur cette même branche ; les règles ci-dessous remplacent les comportements concernés du premier handoff. Ce document est le contrat à transmettre à Claude Code ; aucun chat Claude n'a été créé ni contacté depuis Codex.
 
 ## Résultat demandé

@@ -316,7 +316,7 @@ func _start_intro() -> void:
 	if not modal.is_empty() or player.dead or finished: return
 	modal = "dialogue"
 	paused = true
-	player.controls_enabled = false
+	player.prepare_dialogue_pose()
 	get_tree().paused = true
 	hud.hide_prompt()
 	dialogue_panel.show_dialogue(N1_DIALOGUE.SPEAKER, N1_DIALOGUE.LINES)
@@ -327,6 +327,7 @@ func _complete_intro() -> void:
 		dialogue_panel.show_save_error("Dialogue not saved. Your previous progress is protected.")
 		return
 	dialogue_panel.close()
+	player.finish_dialogue_pose()
 	_set_spirit_phase("present")
 	modal = ""
 	paused = false
@@ -409,7 +410,7 @@ func _process_n1_cinematic(delta: float) -> void:
 func _process_spirit_story(delta: float) -> void:
 	if spirit_phase == "hidden" and not progression.completed_dialogues.has(INTRO_ID):
 		if player.position.x < intro_spawn_x + SPIRIT_TRIGGER_DISTANCE: return
-		player.controls_enabled = false
+		player.prepare_dialogue_pose()
 		paused = true
 		get_tree().paused = true
 		modal = "spirit_appearance"

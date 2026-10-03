@@ -279,6 +279,20 @@ func _update_resurrection_visuals() -> void:
 	sprite.pause()
 	sprite.set_frame_and_progress(sampled if dedicated else frame_count - 1 - sampled, 0.0)
 
+func prepare_dialogue_pose() -> void:
+	controls_enabled = false
+	velocity = Vector2.ZERO
+	attack_time = 0.0
+	attack_cancelled = true
+	upper.hide()
+	sprite.play("idle")
+	# Only presentation advances while the level pauses gameplay physics.
+	sprite.process_mode = Node.PROCESS_MODE_ALWAYS
+
+func finish_dialogue_pose() -> void:
+	# Restore the authored inherited mode; subsequent menu pauses freeze the knight again.
+	sprite.process_mode = Node.PROCESS_MODE_INHERIT
+
 func configure_equipment(ranged_owned: bool) -> void:
 	has_longbow = ranged_owned
 	if not has_longbow and active_slot != 0:
