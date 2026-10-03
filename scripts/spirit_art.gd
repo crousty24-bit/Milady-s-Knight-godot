@@ -1,0 +1,73 @@
+extends Node2D
+# RUN-017 presentation (Claude) for the AncientSpirit node of scenes/eidolon_vale.tscn: floating sage
+# at rest, speaking pose while the level's dialogue modal is open, cool aura and facing toward the
+# knight. Purely visual: no collision, input or progression state (tools/art/spirit.py).
+const IDLE = preload("res://assets/sprites/npc_spirit_idle.png")
+const TALK = preload("res://assets/sprites/npc_spirit_talk.png")
+const AURA = preload("res://assets/sprites/vfx_spirit_aura.png")
+const FRAME := Vector2i(32, 48)
+# The figure is drawn 8 px right of the node: at (76,144) the open hand otherwise crossed the
+# knight's resting sword at spawn. Visual only; the node and its contract position are unchanged.
+const ART_OFFSET := Vector2(8, 0)
+const FACE_MARGIN := 4.0  # avoid flipping back and forth when the knight stands right above the spirit
+# The spirit is drawn after the knight; it turns translucent while he walks through it so the player
+# keeps visual priority (docs/06).
+const PASS_THROUGH_DISTANCE := 20.0
+const PASS_THROUGH_ALPHA := 0.3
+var level: Node
+var body: AnimatedSprite2D
+var aura: Sprite2D
+var _time := 0.0
+
+func _ready() -> void:
+	# The dialogue pauses the tree; the spirit must keep moving while it speaks.
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	level = owner if owner != null else get_parent().get_parent()
+	position = ART_OFFSET
+	aura = Sprite2D.new()
+	aura.texture = AURA
+	aura.centered = false
+	aura.offset = Vector2(-24, -52)
+	add_child(aura)
+	body = AnimatedSprite2D.new()
+	body.sprite_frames = _frames()
+	body.centered = false
+	body.offset = Vector2(-FRAME.x / 2, -FRAME.y)  # bottom row of the frame on the ground line
+	body.flip_h = true  # the knight spawns to the left
+	add_child(body)
+	body.play("idle")
+
+func _frames() -> SpriteFrames:
+	var frames := SpriteFrames.new()
+	frames.remove_animation("default")
+	for item in [["idle", IDLE, 6.0], ["talk", TALK, 8.0]]:
+		frames.add_animation(item[0])
+		frames.set_animation_speed(item[0], item[2])
+		frames.set_animation_loop(item[0], true)
+		for i in range(item[1].get_width() / FRAME.x):
+			var region := AtlasTexture.new()
+			region.atlas = item[1]
+			region.region = Rect2(i * FRAME.x, 0, FRAME.x, FRAME.y)
+			frames.add_frame(item[0], region)
+	return frames
+
+func _process(delta: float) -> void:
+	var speaking: bool = level != null and level.get("modal") == "dialogue"
+	# Other pauses (menu, context, death) freeze the spirit with the rest of the world.
+	if get_tree().paused and not speaking:
+		body.pause()
+		return
+	_time += delta
+	var animation := "talk" if speaking else "idle"
+	if body.animation != animation or not body.is_playing(): body.play(animation)
+	var player: Node2D = get_tree().get_first_node_in_group("player")
+	var target_alpha := 1.0
+	if player != null:
+		var dx: float = player.global_position.x - global_position.x
+		if absf(dx) > FACE_MARGIN: body.flip_h = dx < 0.0
+		if absf(dx) < PASS_THROUGH_DISTANCE and absf(player.global_position.y - global_position.y) < 48.0:
+			target_alpha = PASS_THROUGH_ALPHA
+	modulate.a = move_toward(modulate.a, target_alpha, delta * 4.0)
+	aura.flip_h = body.flip_h
+	var pulse := 0.5 + 0.5 * sin(_time * (3.2 if speaking else 1.6))
+	aura.modulate.a = (0.75 + 0.25 * pulse) if speaking else (0.4 + 0.15 * pulse)

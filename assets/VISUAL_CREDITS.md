@@ -67,6 +67,14 @@ Même méthode : pixel art produit par code sur la palette commune, **sans asset
 | `tools/art/knight.py` (main agent) | `ashen_knight.png` + `ashen_knight_frames.tres` (lignes ajoutées, 17 animations existantes identiques au pixel) | Longbow 0 sur le rig, épée au fourreau : `bow_idle` 6, `bow_run` 8, `bow_rise`/`bow_fall`/`bow_land` 2, `bow_wall` 3, `bow_hurt` 2 ; `shoot` 7 (relâche 4 + encoche/armement 3) et `up_shoot` (haut du corps sur `base_run/rise/fall`). Flèche encochée sur la ligne de la bouche (+4, −10). |
 | `tools/art/items.py` (subagent, retouche de l'aura de soin par le main agent) | `proj_arrow.png`, `vfx_arrow_release.png`, `vfx_arrow_impact.png`, `vfx_arrow_hit.png`, `item_shard.png`, `vfx_shard_burst.png`, `ui_shard_icon.png`, `ui_slot_icons.png`, `item_chest.png`, `vfx_chest_vanish.png`, `item_potion_minor.png`, `vfx_heal.png` | Flèche, départ, impacts terrain/ennemi, shard et éclat violets, icônes HUD shard et slots, coffre tuto fermé→ouvert et dissolution, potion mineure verte et soin. Rampe verte locale `POTION` (soin, distincte du Slime vert). |
 
+## Générés pour le projet (RUN-017, 3 octobre 2026)
+
+Même méthode : pixel art produit par code sur la palette commune, **sans asset tiers ni génération par IA** ; régénération identique vérifiée (MD5). Silhouette encapuchonnée inspirée de la statue en robe du concept art du projet (`artwork & logo/concept art 1.png`), sans en reprendre un pixel.
+
+| Générateur | Fichiers de jeu | Contenu |
+| --- | --- | --- |
+| `tools/art/spirit.py` (main agent) | `npc_spirit_idle.png`, `npc_spirit_talk.png` (8 × 32×48 chacun), `ui_portrait_spirit.png` 24×24, `vfx_spirit_aura.png` 48×56 | The Ancient Spirit : sage spectral encapuchonné à barbe, bâton de lumière, robe se dissolvant en traîne ; repos (flottement, particules) et dialogue (main ouverte vers l'interlocuteur, yeux et bâton plus vifs) ; portrait du bandeau ; halo froid tramé. Rampe pâle froide locale `SPIRIT`, yeux et cœur du bâton en jaune pâle (interaction neutre). |
+
 ## Bibliothèque locale examinée et non retenue (RUN-012)
 
 Le dépôt est public : un pack dont la licence interdit la redistribution des fichiers, même modifiés, ne peut pas y être intégré. Les pages itch.io n'ont pas pu être lues automatiquement (protection Cloudflare) ; ces verdicts proviennent de résumés de recherche et doivent être confirmés par l'humain avant toute réutilisation.

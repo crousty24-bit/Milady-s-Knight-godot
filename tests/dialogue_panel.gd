@@ -82,5 +82,7 @@ func run() -> void:
 	paused = false
 	dialogue.queue_free()
 	await frames()
+	# Fixed-FPS headless simulation outruns the real-time audio mixer; let the stopped opening cue drain.
+	OS.delay_msec(300)
 	print("RESULT %d dialogue panel checks; %d failures" % [checks, failures])
 	quit(1 if failures else 0)

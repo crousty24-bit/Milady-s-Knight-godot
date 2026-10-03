@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/vertical_slice.tscn" id="1"]
+[ext_resource type="Script" path="res://scripts/spirit_art.gd" id="2"]
 
 [node name="EidolonVale" instance=ExtResource("1")]
 n1_intro_enabled = true
@@ -10,10 +11,5 @@ potion_position = Vector2(1968, 134)
 [node name="AncientSpirit" type="Node2D" parent="."]
 position = Vector2(76, 144)
 
-[node name="Placeholder" type="Label" parent="AncientSpirit"]
-offset_left = -24.0
-offset_top = -40.0
-offset_right = 38.0
-offset_bottom = -24.0
-text = "SPIRIT"
-mouse_filter = 2
+[node name="Art" type="Node2D" parent="AncientSpirit"]
+script = ExtResource("2")

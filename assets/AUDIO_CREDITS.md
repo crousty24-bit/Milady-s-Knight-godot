@@ -50,6 +50,14 @@ Même source, auteur, licence (CC BY 4.0) et attribution que les sections ci-des
 | `sounds/sfx_chest_reward_reveal.wav` | `SWSH_MOVEMENT-Tiny Chime_HY_PC-002.wav` | 0,75 s | 0,75 s |
 | `sounds/sfx_chest_reward_accept.wav` | `DSGNTonl_USABLE-Tonal Item_HY_PC-003.wav` | 0,58 s | 0,58 s |
 
+## SFX dialogue — RUN-017 (Helton Yan, *Pixel Combat*)
+
+Même source, auteur, licence (CC BY 4.0) et attribution que les sections ci-dessus ; produit par `python3 tools/prepare_audio.py sfx_dialogue_open`. Même transformation, crête **−12 dBFS** (niveau UI), coupe à 1,2 s avec fondu de sortie de 0,15 s ; joué sur le bus UI à l'ouverture du bandeau. Sélection par analyse objective (attaque douce, ton chatoyant, sans voix), l'écoute humaine reste à faire.
+
+| Fichier de jeu | Fichier source | Durée | Coupe |
+| --- | --- | --- | --- |
+| `sounds/sfx_dialogue_open.wav` | `MAGAngl_BUFF-Shimmer Tone_HY_PC-001.wav` | 1,2 s | 1,2 s |
+
 ## Limites acceptées et suivi RUN-016 (3 octobre 2026)
 
 La passe Claude est validée par l’humain, avec ces réserves pour RUN-027 : le tir utilise un whoosh, l’impact un pas dur et l’ouverture un verrou, faute de corde d’arc, d’impact de bois et de grincement de coffre dans le pack. Le tableau ci-dessus trace ces substituts actuels ; il ne liste pas encore de nouveaux fichiers de remplacement sélectionnés. Claude devra sélectionner et faire écouter les remplaçants avant leur intégration.

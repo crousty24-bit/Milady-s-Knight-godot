@@ -4,6 +4,9 @@ signal completed
 signal retry_requested
 
 const HUD = preload("res://scenes/hud.tscn")
+# Presentation (Claude, RUN-017): speaker portrait in the banner frame and an opening cue.
+const PORTRAITS = {"The Ancient Spirit": preload("res://assets/sprites/ui_portrait_spirit.png")}
+const OPEN_SFX = preload("res://assets/sounds/sfx_dialogue_open.wav")
 @export var characters_per_second: float = 35.0
 @export var minimum_read_seconds: float = 2.0
 @export var read_seconds_per_character: float = 0.035
@@ -13,6 +16,8 @@ var panel: Control
 var heading: Label
 var body: Label
 var hint: Label
+var portrait: TextureRect
+var open_sound: AudioStreamPlayer
 var lines: Array[String] = []
 var line_index: int = 0
 var opened_frame: int = -1
@@ -36,11 +41,17 @@ func _ready() -> void:
 	heading = panel.get_node("Speaker")
 	body = panel.get_node("Text")
 	hint = panel.get_node("Skip")
+	portrait = panel.get_node("Portrait")
+	open_sound = AudioStreamPlayer.new()
+	open_sound.stream = OPEN_SFX
+	open_sound.bus = &"UI"
+	add_child(open_sound)
 	panel.hide()
 
 func show_dialogue(speaker: String, dialogue_lines: Array) -> void:
 	lines.assign(dialogue_lines)
 	heading.text = speaker
+	portrait.texture = PORTRAITS.get(speaker)
 	hint.text = "Space: Skip"
 	line_index = 0
 	active = true
@@ -48,6 +59,7 @@ func show_dialogue(speaker: String, dialogue_lines: Array) -> void:
 	_save_error = false
 	opened_frame = Engine.get_process_frames()
 	panel.show()
+	open_sound.play()
 	_show_line()
 
 func _show_line() -> void:
@@ -58,6 +70,7 @@ func _show_line() -> void:
 func close() -> void:
 	active = false
 	panel.hide()
+	open_sound.stop()
 
 func show_save_error(detail: String) -> void:
 	_save_error = true
@@ -91,6 +104,9 @@ func _process(delta: float) -> void:
 	line_index += 1
 	if line_index >= lines.size(): _complete()
 	else: _show_line()
+
+func _exit_tree() -> void:
+	open_sound.stop()
 
 func _input(_event: InputEvent) -> void:
 	if active: get_viewport().set_input_as_handled()
