@@ -11,14 +11,11 @@ const DISAPPEAR = preload("res://assets/sprites/npc_spirit_disappear.png")
 const AURA = preload("res://assets/sprites/vfx_spirit_aura.png")
 const MANIFEST = preload("res://assets/sprites/vfx_spirit_manifest.png")  # 8x2 cells of 48x64: appear, disappear
 const FRAME := Vector2i(32, 48)
-# The figure is drawn 8 px right of the node: at (76,144) the open hand otherwise crossed the
-# knight's resting sword at spawn. Visual only; the node and its contract position are unchanged.
-const ART_OFFSET := Vector2(8, 0)
 const FACE_MARGIN := 4.0  # avoid flipping back and forth when the knight stands right above the spirit
-# The spirit is drawn after the knight; it turns translucent while he walks through it so the player
-# keeps visual priority (docs/06). Only the opaque figure fades: the halo and the column of light live
-# on the sibling Glow node, so the spirit stays readable when the knight stands inside it (the 32 px
-# trigger puts him there for the apparition and the whole dialogue).
+# The spirit stands on the first grave, in front of the knight at the 32 px trigger. It is drawn after
+# him and turns translucent while he walks through it (leaving the scene), so the player keeps visual
+# priority (docs/06). Only the opaque figure fades: the halo and the column of light live on the
+# sibling Glow node.
 const PASS_THROUGH_DISTANCE := 20.0
 const PASS_THROUGH_ALPHA := 0.3
 var level: Node
@@ -36,10 +33,8 @@ func _ready() -> void:
 	# The dialogue pauses the tree; the spirit must keep moving while it speaks.
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	level = owner if owner != null else get_parent().get_parent()
-	position = ART_OFFSET
 	glow = Node2D.new()
 	glow.name = "Glow"
-	glow.position = ART_OFFSET
 	glow.visible = false
 	aura = Sprite2D.new()
 	aura.texture = AURA

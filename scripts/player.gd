@@ -239,6 +239,8 @@ func _physics_process(delta: float) -> void:
 	queue_redraw()
 
 func set_resurrection_progress(value: float) -> void:
+	if not resurrection_active:
+		_rest_on_floor()
 	resurrection_active = true
 	resurrection_progress = clampf(value, 0.0, 1.0)
 	controls_enabled = false
@@ -246,6 +248,15 @@ func set_resurrection_progress(value: float) -> void:
 	attack_cancelled = true
 	velocity = Vector2.ZERO
 	_update_resurrection_visuals()
+
+# The authored spawn sits 4 px above the ground and gravity is suspended during the presentation:
+# settle the body first so the lying pose, the rise and idle share the floor line (no drop or
+# camera jump when controls return). Only within a short probe, never through a void.
+func _rest_on_floor() -> void:
+	var hit := move_and_collide(Vector2(0, 8), true)
+	if hit != null: position += hit.get_travel()
+	velocity = Vector2.ZERO
+	move_and_slide()  # refresh the floor contact: idle, not one fall frame, when physics resumes
 
 func finish_resurrection() -> void:
 	resurrection_active = false

@@ -10,7 +10,7 @@ chest_position = Vector2(220, 144)
 potion_position = Vector2(1968, 134)
 
 [node name="AncientSpirit" type="Node2D" parent="."]
-position = Vector2(76, 144)
+position = Vector2(140, 144)
 
 [node name="Art" type="Node2D" parent="AncientSpirit"]
 script = ExtResource("2")

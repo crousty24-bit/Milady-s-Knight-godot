@@ -369,6 +369,10 @@ func _begin_resurrection() -> void:
 	if player.dead or finished or closing: return
 	player.controls_enabled = false
 	player.set_resurrection_progress(0.0)
+	# The tree pauses from the first frame, before the camera ever smooths toward the framing set in
+	# _ready: settle it on the grounded knight now, or it jumps when the presentation ends.
+	camera.reset_smoothing()
+	camera.force_update_scroll()
 	paused = true
 	get_tree().paused = true
 	hud.hide_prompt()

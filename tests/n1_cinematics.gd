@@ -84,7 +84,7 @@ func run() -> void:
 	Input.action_press("attack")
 	Input.action_press("move_right")
 	await frames(18)
-	check(level.player.position == apparition_position and level.player.attack_time == 0.0 and art.visible and art.modulate.a > 0.0 and art.modulate.a < 1.0, "fallback fade is visible while movement and attacks remain frozen")
+	check(level.player.position == apparition_position and level.player.attack_time == 0.0 and art.visible and (art.body.animation == &"appear" or (art.modulate.a > 0.0 and art.modulate.a < 1.0)), "apparition (authored frames, else fallback fade) is visible while movement and attacks remain frozen")
 	await capture("spirit-appearing")
 	Input.action_release("attack")
 	Input.action_release("move_right")
