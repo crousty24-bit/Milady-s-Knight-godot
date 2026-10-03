@@ -1,5 +1,7 @@
 # RUN-017 — Contribution Claude : Spirit, dialogue et lisibilité N1
 
+**Historique de la première passe, livrée dans `1fbb730` et validée humainement le 3 octobre 2026.** Les instructions ci-dessous décrivent son contrat initial. La nouvelle demande (Space phrase par phrase, +2 s, résurrection et apparition/disparition du Spirit) est définie dans [le contrat de seconde passe](RUN-017_CLAUDE_HANDOFF_02.md), qui remplace les comportements concernés.
+
 RUN-017 ACTIVE, autorisée le 3 octobre 2026. Codex réalise l'ingénierie et la recette ; la contribution artistique ci-dessous reste à réaliser avant VERIFY complet. Aucun chat Claude créé ou sollicité par ce document.
 
 ## Propriété

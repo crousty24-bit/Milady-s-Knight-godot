@@ -161,7 +161,10 @@ func new_game() -> Error:
 		if error != OK:
 			storage_error = error
 			return error
-	return _commit(_initial_state())
+	var initial := _initial_state()
+	# Only an explicit New Game requests the first-spawn resurrection (not old saves/migration).
+	initial.permanent_flags["n1_new_game"] = true
+	return _commit(initial)
 
 func settle_level(earned_bonus: int, destination: String) -> Error:
 	if earned_bonus < 0 or not _valid_level(destination): return ERR_INVALID_PARAMETER

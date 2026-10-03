@@ -26,10 +26,14 @@ func capture(label: String) -> void:
 # This suite isolates menu behavior; the complete introduction/tutorial flow is n1_flow.
 func settle_intro() -> void:
 	if current_scene.scene_file_path != root.get_node("Progression").DEFAULT_LEVEL: return
+	# Cinematic ownership must finish before isolating the menu-only fixture.
+	for i in range(240):
+		if current_scene.modal != "resurrection" and not current_scene.resume_pending: break
+		await frames(1)
+	root.get_node("Progression").complete_dialogue(current_scene.INTRO_ID)
 	for item in current_scene.TUTORIALS:
 		root.get_node("Progression").complete_dialogue(item[0])
 	current_scene.n1_intro_enabled = false
-	if current_scene.modal == "dialogue": await tap("jump")
 
 func run() -> void:
 	var progress = root.get_node("Progression")

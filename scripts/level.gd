@@ -5,6 +5,18 @@ extends Node2D
 const DIALOGUE = preload("res://scripts/dialogue_panel.gd")
 const N1_DIALOGUE = preload("res://scripts/n1_dialogue.gd")
 const INTRO_ID = "eidolon_vale_spirit"
+const RESURRECTION_ID = "n1_resurrection_started"
+signal spirit_phase_changed(phase: String)
+@export var n1_resurrection_duration: float = 2.0
+@export var n1_dead_hold_duration: float = 0.5
+@export var spirit_appearance_duration: float = 0.8
+@export var spirit_disappearance_duration: float = 0.8
+@export var spirit_departure_distance: float = 96.0
+const SPIRIT_TRIGGER_DISTANCE: float = 32.0 # Two authored 16px terrain blocks forward.
+var intro_spawn_x: float = 0.0
+var spirit_phase: String = "hidden"
+var spirit_phase_progress: float = 0.0
+var n1_sequence_elapsed: float = 0.0
 var dialogue_panel: CanvasLayer
 var tutorial_id: String = ""
 var dismissed_tutorials: Dictionary = {}
@@ -84,12 +96,17 @@ func _ready() -> void:
 		add_child(dialogue_panel)
 		dialogue_panel.completed.connect(_complete_intro)
 		dialogue_panel.retry_requested.connect(_complete_intro)
-		call_deferred("_start_intro")
+		intro_spawn_x = player.position.x
+		call_deferred("_prepare_n1_intro")
 func _physics_process(_delta: float) -> void:
 	if not paused and not finished and player.position.y > void_y:
 		player.take_damage(0.0, Vector2.ZERO, SlicePlayer.DamageSource.VOID)
 
 func _process(delta: float) -> void:
+	if closing: return
+	if n1_intro_enabled and modal in ["resurrection", "resurrection_save", "spirit_appearance"]:
+		_process_n1_cinematic(delta)
+		return
 	if resume_pending:
 		if not Input.is_action_pressed("interact") and not Input.is_action_pressed("attack") and not Input.is_action_pressed("jump") and not Input.is_action_pressed("pause"):
 			resume_pending = false
@@ -115,7 +132,8 @@ func _process(delta: float) -> void:
 		_open_pause()
 		return
 	if n1_intro_enabled and not finished and not player.dead and not paused and modal.is_empty():
-		if _show_n1_tutorial(): return
+		_process_spirit_story(delta)
+		if not modal.is_empty() or _show_n1_tutorial(): return
 	if finished or player.dead or paused:
 		hud.hide_prompt()
 		return
@@ -197,6 +215,9 @@ func _on_died() -> void:
 	resume_pending = false
 	pause_menu.close()
 	if is_instance_valid(dialogue_panel): dialogue_panel.close()
+	if n1_intro_enabled:
+		if player.resurrection_active: player.finish_resurrection()
+		_set_spirit_phase("gone")
 	_update_gold_hud()
 	hud.show_death_overlay()
 	death_elapsed = 0.0
@@ -241,6 +262,9 @@ func _close_pause() -> void:
 	get_tree().paused = false
 
 func _pause_choice(index: int) -> void:
+	if modal == "resurrection_save":
+		_begin_resurrection()
+		return
 	if modal == "context":
 		var result := context_result
 		_close_pause()
@@ -303,12 +327,14 @@ func _complete_intro() -> void:
 		dialogue_panel.show_save_error("Dialogue not saved. Your previous progress is protected.")
 		return
 	dialogue_panel.close()
+	_set_spirit_phase("present")
 	modal = ""
 	paused = false
 	resume_pending = true
 	get_tree().paused = false
 
 func _show_n1_tutorial() -> bool:
+	if not progression.completed_dialogues.has(INTRO_ID): return false
 	for item in TUTORIALS:
 		var id: String = item[0]
 		if player.position.x < item[1] or progression.completed_dialogues.has(id) or dismissed_tutorials.has(id): continue
@@ -329,3 +355,74 @@ func _tutorial_save_error(id: String) -> void:
 	resume_pending = false
 	if request_context("Tutorial not saved", "Your previous progress is protected.\nE: retry saving   Escape: return", ["Retry"], _complete_tutorial.bind(id)):
 		tutorial_id = id
+
+# The level owns sequence timing/persistence; the art scripts only render these states.
+func _prepare_n1_intro() -> void:
+	if progression.completed_dialogues.has(INTRO_ID):
+		_set_spirit_phase("gone")
+		return
+	_set_spirit_phase("hidden")
+	if progression.permanent_flags.has("n1_new_game") and not progression.permanent_flags.has(RESURRECTION_ID):
+		_begin_resurrection()
+
+func _begin_resurrection() -> void:
+	if player.dead or finished or closing: return
+	player.controls_enabled = false
+	player.set_resurrection_progress(0.0)
+	paused = true
+	get_tree().paused = true
+	hud.hide_prompt()
+	# Claim this first spawn before playback; death, restart and cold Continue cannot replay it.
+	if progression.set_permanent_flag(RESURRECTION_ID) != OK:
+		modal = "resurrection_save"
+		pause_menu.show_menu("Unable to start the introduction", "Progress not saved. Your previous save is protected.\nE: retry saving", ["Retry"])
+		return
+	pause_menu.close()
+	modal = "resurrection"
+	n1_sequence_elapsed = 0.0
+
+func _process_n1_cinematic(delta: float) -> void:
+	if modal == "resurrection_save": return
+	n1_sequence_elapsed += delta
+	if modal == "resurrection":
+		var duration := maxf(n1_resurrection_duration, 0.01)
+		var hold := clampf(n1_dead_hold_duration, 0.0, duration - 0.001)
+		player.set_resurrection_progress(clampf((n1_sequence_elapsed - hold) / (duration - hold), 0.0, 1.0))
+		if n1_sequence_elapsed < duration: return
+		player.finish_resurrection()
+		modal = ""
+		paused = false
+		resume_pending = true
+		get_tree().paused = false
+	elif modal == "spirit_appearance":
+		spirit_phase_progress = minf(n1_sequence_elapsed / maxf(spirit_appearance_duration, 0.01), 1.0)
+		if spirit_phase_progress < 1.0: return
+		_set_spirit_phase("present")
+		modal = ""
+		# The dialogue takes over in this callback, before any gameplay frame can run.
+		_start_intro()
+
+func _process_spirit_story(delta: float) -> void:
+	if spirit_phase == "hidden" and not progression.completed_dialogues.has(INTRO_ID):
+		if player.position.x < intro_spawn_x + SPIRIT_TRIGGER_DISTANCE: return
+		player.controls_enabled = false
+		paused = true
+		get_tree().paused = true
+		modal = "spirit_appearance"
+		n1_sequence_elapsed = 0.0
+		hud.hide_prompt()
+		_set_spirit_phase("appearing")
+	elif spirit_phase == "present" and progression.completed_dialogues.has(INTRO_ID):
+		var spirit := get_node_or_null("AncientSpirit") as Node2D
+		if spirit != null and player.global_position.distance_to(spirit.global_position) >= spirit_departure_distance:
+			n1_sequence_elapsed = 0.0
+			_set_spirit_phase("disappearing")
+	elif spirit_phase == "disappearing":
+		n1_sequence_elapsed += delta
+		spirit_phase_progress = minf(n1_sequence_elapsed / maxf(spirit_disappearance_duration, 0.01), 1.0)
+		if spirit_phase_progress >= 1.0: _set_spirit_phase("gone")
+
+func _set_spirit_phase(phase: String) -> void:
+	spirit_phase = phase
+	spirit_phase_progress = 1.0 if phase in ["present", "gone"] else 0.0
+	spirit_phase_changed.emit(phase)

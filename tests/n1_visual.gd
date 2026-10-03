@@ -31,6 +31,18 @@ func run() -> void:
 	level = load(progress.DEFAULT_LEVEL).instantiate()
 	root.add_child(level)
 	current_scene = level
+	await frames(3) # Let the level's deferred introduction acquire cinematic ownership.
+	for i in range(240):
+		if level.modal != "resurrection" and not level.resume_pending: break
+		await frames(1)
+	Input.action_press("move_right")
+	for i in range(180):
+		await frames(1)
+		if level.modal in ["spirit_appearance", "dialogue"]: break
+	Input.action_release("move_right")
+	for i in range(120):
+		if level.modal == "dialogue": break
+		await frames(1)
 	await frames(60)
 	check(level.modal == "dialogue" and paused and not level.player.controls_enabled, "rendered introduction freezes gameplay at safe spawn")
 	var banner: Control = level.dialogue_panel.panel
@@ -43,7 +55,7 @@ func run() -> void:
 	progress.persistence_enabled = true
 	var original_path: String = progress.storage_path
 	progress.storage_path = "res://work/run017-absent-visual-directory/save.json"
-	await tap("jump")
+	for i in range(level.dialogue_panel.lines.size()): await tap("jump")
 	check(level.modal == "dialogue" and level.dialogue_panel.hint.text == "E: Retry saving", "dialogue save error has a visible keyboard retry")
 	await capture("intro-save-error")
 	progress.persistence_enabled = false

@@ -23,12 +23,34 @@ func start(scene_path: String = "res://scenes/vertical_slice.tscn", existing_lev
 	for i in range(3):
 		await tree.physics_frame
 		await tree.process_frame
-	if level.modal == "dialogue":
-		Input.action_press("jump")
-		for i in range(3):
+	if level.n1_intro_enabled and not tree.root.get_node("Progression").completed_dialogues.has(level.INTRO_ID):
+		# Wait for the one-shot resurrection, then actually walk two blocks forward.
+		for i in range(240):
+			if level.modal != "resurrection" and not level.resume_pending: break
 			await tree.physics_frame
 			await tree.process_frame
-		Input.action_release("jump")
+		Input.action_press("move_right")
+		for i in range(180):
+			await tree.physics_frame
+			await tree.process_frame
+			if level.modal in ["spirit_appearance", "dialogue"]: break
+		Input.action_release("move_right")
+		for i in range(120):
+			if level.modal == "dialogue": break
+			await tree.physics_frame
+			await tree.process_frame
+		if level.modal != "dialogue":
+			fail("introduction after walking two blocks")
+			return
+		for phrase in range(level.dialogue_panel.lines.size()):
+			Input.action_press("jump")
+			for i in range(3):
+				await tree.physics_frame
+				await tree.process_frame
+			Input.action_release("jump")
+			for i in range(3):
+				await tree.physics_frame
+				await tree.process_frame
 	for i in range(10): await step(0)
 func release_inputs() -> void:
 	for action in ["move_left", "move_right", "jump", "attack", "interact"]: Input.action_release(action)

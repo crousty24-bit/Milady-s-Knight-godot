@@ -18,6 +18,10 @@ var level: Node
 var body: AnimatedSprite2D
 var aura: Sprite2D
 var _time := 0.0
+var _pass_through_alpha := 1.0
+# Technical contract: Claude assigns this cue and may replace the fade with authored frames.
+@export var appearance_sound: AudioStream
+var appearance_audio: AudioStreamPlayer2D
 
 func _ready() -> void:
 	# The dialogue pauses the tree; the spirit must keep moving while it speaks.
@@ -36,6 +40,13 @@ func _ready() -> void:
 	body.flip_h = true  # the knight spawns to the left
 	add_child(body)
 	body.play("idle")
+	appearance_audio = AudioStreamPlayer2D.new()
+	appearance_audio.bus = &"SFX"
+	appearance_audio.stream = appearance_sound
+	add_child(appearance_audio)
+	if level != null and level.has_signal("spirit_phase_changed"):
+		level.spirit_phase_changed.connect(_on_story_phase_changed)
+		_on_story_phase_changed(level.spirit_phase)
 
 func _frames() -> SpriteFrames:
 	var frames := SpriteFrames.new()
@@ -51,15 +62,38 @@ func _frames() -> SpriteFrames:
 			frames.add_frame(item[0], region)
 	return frames
 
+func _on_story_phase_changed(phase: String) -> void:
+	visible = phase not in ["hidden", "gone"]
+	if phase == "appearing" and appearance_sound != null:
+		appearance_audio.stream = appearance_sound
+		appearance_audio.play()
+	elif phase in ["hidden", "gone"]:
+		appearance_audio.stop()
+
 func _process(delta: float) -> void:
+	var phase: String = level.spirit_phase if level != null else "present"
+	if phase in ["hidden", "gone"]:
+		hide()
+		body.pause()
+		return
+	show()
+	var appearing: bool = phase == "appearing"
+	var disappearing: bool = phase == "disappearing"
 	var speaking: bool = level != null and level.get("modal") == "dialogue"
 	# Other pauses (menu, context, death) freeze the spirit with the rest of the world.
-	if get_tree().paused and not speaking:
+	if get_tree().paused and not speaking and not appearing:
 		body.pause()
 		return
 	_time += delta
 	var animation := "talk" if speaking else "idle"
-	if body.animation != animation or not body.is_playing(): body.play(animation)
+	var authored_phase: StringName = &"appear" if appearing else &"disappear"
+	if (appearing or disappearing) and body.sprite_frames.has_animation(authored_phase):
+		body.animation = authored_phase
+		body.pause()
+		var frames := body.sprite_frames.get_frame_count(authored_phase)
+		body.frame = mini(int(level.spirit_phase_progress * frames), frames - 1)
+	elif body.animation != animation or not body.is_playing():
+		body.play(animation)
 	var player: Node2D = get_tree().get_first_node_in_group("player")
 	var target_alpha := 1.0
 	if player != null:
@@ -67,7 +101,12 @@ func _process(delta: float) -> void:
 		if absf(dx) > FACE_MARGIN: body.flip_h = dx < 0.0
 		if absf(dx) < PASS_THROUGH_DISTANCE and absf(player.global_position.y - global_position.y) < 48.0:
 			target_alpha = PASS_THROUGH_ALPHA
-	modulate.a = move_toward(modulate.a, target_alpha, delta * 4.0)
+	var story_alpha: float = level.spirit_phase_progress if appearing else (1.0 - level.spirit_phase_progress if disappearing else 1.0)
+	_pass_through_alpha = move_toward(_pass_through_alpha, target_alpha, delta * 4.0)
+	modulate.a = _pass_through_alpha * story_alpha
 	aura.flip_h = body.flip_h
 	var pulse := 0.5 + 0.5 * sin(_time * (3.2 if speaking else 1.6))
 	aura.modulate.a = (0.75 + 0.25 * pulse) if speaking else (0.4 + 0.15 * pulse)
+
+func _exit_tree() -> void:
+	if appearance_audio != null: appearance_audio.stop()

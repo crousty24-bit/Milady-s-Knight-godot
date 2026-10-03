@@ -58,6 +58,9 @@ var facing: int = 1
 var attack_facing: int = 1
 var dead: bool = false
 var controls_enabled: bool = true
+# Presentation only: the level owns timing and the one-time new-game policy.
+var resurrection_active: bool = false
+var resurrection_progress: float = 0.0
 var coyote: float = 0.0
 var jump_buffer: float = 0.0
 var invulnerability: float = 0.0
@@ -134,6 +137,9 @@ func _on_equipment_changed_fx(slot: int) -> void:
 		_equipment_sound.play()
 
 func _physics_process(delta: float) -> void:
+	if resurrection_active:
+		_update_resurrection_visuals()
+		return
 	attack_cooldown = maxf(0.0, attack_cooldown - delta)
 	bow_cooldown = maxf(0.0, bow_cooldown - delta)
 	invulnerability = maxf(0.0, invulnerability - delta)
@@ -232,6 +238,36 @@ func _physics_process(delta: float) -> void:
 	_update_sword()
 	queue_redraw()
 
+func set_resurrection_progress(value: float) -> void:
+	resurrection_active = true
+	resurrection_progress = clampf(value, 0.0, 1.0)
+	controls_enabled = false
+	attack_time = 0.0
+	attack_cancelled = true
+	velocity = Vector2.ZERO
+	_update_resurrection_visuals()
+
+func finish_resurrection() -> void:
+	resurrection_active = false
+	resurrection_progress = 1.0
+	upper.hide()
+	sprite.play("idle")
+	# The level restores controls after its cinematic/modal locks have finished.
+
+func _update_resurrection_visuals() -> void:
+	upper.hide()
+	var animation_name: StringName = &"resurrect"
+	var frames := sprite.sprite_frames
+	var dedicated := frames.has_animation(animation_name)
+	if not dedicated:
+		# Technical placeholder until Claude supplies a dedicated resurrection strip.
+		animation_name = &"dead"
+	var frame_count := frames.get_frame_count(animation_name)
+	var sampled := mini(frame_count - 1, int(resurrection_progress * frame_count))
+	sprite.animation = animation_name
+	sprite.pause()
+	sprite.set_frame_and_progress(sampled if dedicated else frame_count - 1 - sampled, 0.0)
+
 func configure_equipment(ranged_owned: bool) -> void:
 	has_longbow = ranged_owned
 	if not has_longbow and active_slot != 0:
@@ -241,6 +277,8 @@ func configure_equipment(ranged_owned: bool) -> void:
 	equipment_changed.emit(active_slot)
 
 func _fire_arrow() -> void:
+	if resurrection_active:
+		return
 	bow_cooldown = BOW_INTERVAL
 	var arrow: Node2D = ARROW_SCRIPT.new()
 	# Keep ownership under the player for scene restart, but flight in world space.
@@ -278,7 +316,7 @@ func _update_wall_state(direction: float) -> void:
 		motion_state = MotionState.AIR
 
 func take_damage(amount: float, impulse: Vector2 = Vector2.ZERO, source: int = DamageSource.CONTACT_MELEE) -> void:
-	if dead:
+	if dead or resurrection_active:
 		return
 	if source == DamageSource.VOID:
 		die()
@@ -324,7 +362,7 @@ func heal(amount: float) -> float:
 	return HealthUnits.to_hp(health_units - before)
 
 func die() -> void:
-	if dead:
+	if dead or resurrection_active:
 		return
 	dead = true
 	for child in get_children():
@@ -349,6 +387,8 @@ func die() -> void:
 	queue_redraw()
 
 func _update_sword() -> void:
+	if resurrection_active:
+		return
 	var angle: float = lerpf(-1.5, 1.2, 1.0 - attack_time / ATTACK_DURATION)
 	var blade_direction := Vector2(cos(angle) * attack_facing, sin(angle))
 	var hand := Vector2(4.0 * attack_facing, -10.0)
@@ -372,6 +412,9 @@ func _update_sword() -> void:
 		hit_sparks.append([body.global_position + Vector2(-attack_facing * 4.0, -7.0), 0.0])
 
 func _update_animation() -> void:
+	if resurrection_active:
+		_update_resurrection_visuals()
+		return
 	upper.hide()
 	upper.position = Vector2.ZERO
 	sprite.flip_h = facing < 0

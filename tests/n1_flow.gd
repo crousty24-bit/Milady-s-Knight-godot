@@ -37,6 +37,20 @@ func new_game_from_menu() -> void:
 		await tap("move_down")
 		await tap("interact")
 	await frames(8)
+func enter_spirit_dialogue() -> void:
+	for i in range(240):
+		if current_scene.modal != "resurrection" and not current_scene.resume_pending: break
+		await frames(1)
+	Input.action_press("move_right")
+	for i in range(180):
+		await frames(1)
+		if current_scene.modal in ["spirit_appearance", "dialogue"]: break
+	Input.action_release("move_right")
+	for i in range(120):
+		if current_scene.modal == "dialogue": break
+		await frames(1)
+func advance_dialogue() -> void:
+	for i in range(current_scene.dialogue_panel.lines.size()): await tap("jump")
 func run() -> void:
 	progress = root.get_node("Progression")
 	save_path = "user://run017-n1-%d.json" % OS.get_process_id()
@@ -46,28 +60,37 @@ func run() -> void:
 	await menu()
 	await tap("move_down")
 	await tap("interact")
-	check(current_scene.screen == "controls" and current_scene.menu.description.text.contains("skip dialogue"), "Controls exposes N1 Space contract through keyboard")
+	check(current_scene.screen == "controls" and current_scene.menu.description.text.contains("next dialogue phrase"), "Controls exposes N1 Space contract through keyboard")
 	await tap("pause")
 	await tap("interact")
 	await frames(8)
 	var level = current_scene
 	check(level.scene_file_path == N1 and progress.resume_scene == N1, "New Game enters The Eidolon Vale and writes its resume scene")
-	check(level.modal == "dialogue" and paused and not level.player.controls_enabled, "intro takes exclusive ownership and immobilizes gameplay")
+	check(level.modal == "resurrection" and paused and not level.player.controls_enabled, "new-game resurrection takes exclusive ownership and immobilizes gameplay")
 	var spawn: Vector2 = level.player.position
 	var health: float = level.player.health
 	for action in ["move_right", "attack", "interact", "pause"]: Input.action_press(action)
 	await frames(12)
 	check(level.player.position == spawn and level.player.health == health and not level.player.dead, "spawn stays safe under movement and combat inputs during intro")
-	check(level.modal == "dialogue" and not level.pause_menu.opened and not level.request_context("Overlap", "", ["Continue"]), "Escape and context cannot overlap intro")
+	check(level.modal == "resurrection" and not level.pause_menu.opened and not level.request_context("Overlap", "", ["Continue"]), "Escape and context cannot overlap resurrection")
 	# Fixture edge probe: even an already-open gate cannot finish through an active dialogue.
 	level.gate.opened = true
 	level._on_exit(level.player)
-	check(not level.finished and level.modal == "dialogue", "exit refuses to replace dialogue (injected open-gate probe)")
+	check(not level.finished and level.modal == "resurrection", "exit refuses to replace resurrection (injected open-gate probe)")
 	level.gate.opened = false
 	for action in ["move_right", "attack", "interact", "pause"]: Input.action_release(action)
+	await enter_spirit_dialogue()
+	check(level.modal == "dialogue" and level.player.position.x >= spawn.x + 32 and paused, "walking two blocks triggers Spirit appearance followed by exclusive dialogue")
 	Input.action_press("jump")
 	await frames(10)
-	check(progress.completed_dialogues.has(level.INTRO_ID) and level.resume_pending and not level.player.controls_enabled, "held skip saves intro once and blocks gameplay until release")
+	check(level.dialogue_panel.line_index == 1 and not progress.completed_dialogues.has(level.INTRO_ID), "held Next advances one phrase without saving the intro")
+	Input.action_release("jump")
+	await frames()
+	for i in range(7): await tap("jump")
+	check(level.dialogue_panel.line_index == 8 and not progress.completed_dialogues.has(level.INTRO_ID), "intro remains unsaved while its final phrase is visible")
+	Input.action_press("jump")
+	await frames(10)
+	check(progress.completed_dialogues.has(level.INTRO_ID) and level.resume_pending and not level.player.controls_enabled, "final held Next saves intro once and blocks gameplay until release")
 	Input.action_release("jump")
 	await frames(8)
 	check(level.modal == "context" and level.tutorial_id == "n1_movement", "first contextual explanation follows intro")
@@ -128,10 +151,11 @@ func run() -> void:
 	check(level.modal.is_empty() and not paused, "E resumes gameplay pause")
 	await new_game_from_menu()
 	level = current_scene
-	check(level.modal == "dialogue" and progress.completed_dialogues.is_empty() and not level.player.has_longbow, "confirmed New Game resets intro, tutorial flags and equipment")
+	check(level.modal == "resurrection" and progress.completed_dialogues.is_empty() and not level.player.has_longbow, "confirmed New Game resets resurrection, intro, tutorial flags and equipment")
+	await enter_spirit_dialogue()
 	var original := FileAccess.get_file_as_string(save_path)
 	progress.storage_path = "res://work/run017/absent-%d/save.json" % OS.get_process_id()
-	await tap("jump")
+	await advance_dialogue()
 	check(level.modal == "dialogue" and level.dialogue_panel.body.text.contains("Unable to save") and not progress.completed_dialogues.has(level.INTRO_ID), "failed intro save remains paused and does not set seen flag")
 	check(FileAccess.get_file_as_string(save_path) == original, "failed intro save preserves previous durable file")
 	progress.storage_path = save_path

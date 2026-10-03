@@ -10,6 +10,7 @@ const OPEN_SFX = preload("res://assets/sounds/sfx_dialogue_open.wav")
 @export var characters_per_second: float = 35.0
 @export var minimum_read_seconds: float = 2.0
 @export var read_seconds_per_character: float = 0.035
+@export var extra_read_seconds: float = 2.0
 
 var active: bool = false
 var panel: Control
@@ -52,7 +53,7 @@ func show_dialogue(speaker: String, dialogue_lines: Array) -> void:
 	lines.assign(dialogue_lines)
 	heading.text = speaker
 	portrait.texture = PORTRAITS.get(speaker)
-	hint.text = "Space: Skip"
+	hint.text = "Space: Next"
 	line_index = 0
 	active = true
 	_finished = false
@@ -86,24 +87,30 @@ func _complete() -> void:
 	hint.text = "Saving..."
 	completed.emit()
 
+func _advance_line() -> void:
+	line_index += 1
+	if line_index >= lines.size(): _complete()
+	else: _show_line()
+
 func _process(delta: float) -> void:
 	if not active or Engine.get_process_frames() <= opened_frame: return
 	if _save_error:
 		if Input.is_action_just_pressed("interact"): retry_requested.emit()
 		return
 	if _finished: return
-	if Input.is_action_just_pressed("jump") or lines.is_empty():
+	if lines.is_empty():
 		_complete()
+		return
+	if Input.is_action_just_pressed("jump"):
+		_advance_line()
 		return
 	_elapsed += delta
 	var speed := maxf(characters_per_second, 1.0)
 	body.visible_characters = mini(int(_elapsed * speed), body.text.length())
 	var reveal_seconds := body.text.length() / speed
 	var read_seconds := maxf(minimum_read_seconds, body.text.length() * read_seconds_per_character)
-	if _elapsed < reveal_seconds + read_seconds: return
-	line_index += 1
-	if line_index >= lines.size(): _complete()
-	else: _show_line()
+	if _elapsed < reveal_seconds + read_seconds + extra_read_seconds: return
+	_advance_line()
 
 func _exit_tree() -> void:
 	open_sound.stop()

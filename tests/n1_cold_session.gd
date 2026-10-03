@@ -34,14 +34,26 @@ func run() -> void:
 	await frames(10)
 	var level = current_scene
 	if prepare:
-		await tap("jump")
+		for i in range(240):
+			if level.modal != "resurrection" and not level.resume_pending: break
+			await frames(1)
+		Input.action_press("move_right")
+		for i in range(180):
+			await frames(1)
+			if level.modal in ["spirit_appearance", "dialogue"]: break
+		Input.action_release("move_right")
+		for i in range(120):
+			if level.modal == "dialogue": break
+			await frames(1)
+		check(level.modal == "dialogue" and level.player.position.x >= level.intro_spawn_x + 32, "cold preparation waits resurrection and walks two blocks to Spirit dialogue")
+		for i in range(level.dialogue_panel.lines.size()): await tap("jump")
 		await tap("interact")
 		level.player.position = level.tutorial_chest.position
 		level.player.velocity = Vector2.ZERO
 		await frames(10)
 		await tap("interact")
 		await tap("interact")
-		check(level.player.has_longbow and progress.completed_dialogues.has(level.INTRO_ID), "physical chest and skipped intro commit before closure")
+		check(level.player.has_longbow and progress.completed_dialogues.has(level.INTRO_ID), "physical chest and phrase-by-phrase intro commit before closure")
 		# Inject attempt counters only to distinguish them from the durable bank on reopen.
 		level._on_collected(7)
 		level.bonus = 3
@@ -57,7 +69,7 @@ func run() -> void:
 		if failures: quit(1)
 		# Normal engine exit is performed by level's close handler, not this driver.
 		return
-	check(level.scene_file_path == progress.DEFAULT_LEVEL and level.modal.is_empty() and level.player.has_longbow and level.tutorial_chest.consumed, "keyboard Continue in new process keeps bow and does not replay intro")
+	check(level.scene_file_path == progress.DEFAULT_LEVEL and level.modal.is_empty() and level.player.has_longbow and level.tutorial_chest.consumed and progress.permanent_flags.has(level.RESURRECTION_ID), "keyboard Continue in new process keeps bow and does not replay resurrection or intro")
 	check(level.gold == 0 and level.bonus == 0 and progress.banked_shards == 20 and level.player.health == 3.0 and level.player.position.distance_to(Vector2(48, 144)) < 1, "cold Continue restores safe spawn and bank while discarding attempt gains")
 	level.queue_free()
 	var ui_audio := root.get_node_or_null("UiSfx") as AudioStreamPlayer

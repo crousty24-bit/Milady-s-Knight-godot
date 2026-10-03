@@ -42,9 +42,28 @@ func run() -> void:
 	check(dialogue.line_index == 0 and dialogue.body.visible_characters == dialogue.body.text.length(), "fully revealed sentence remains visible for its reading delay")
 	Input.action_press("jump")
 	await frames()
-	check(completions == 1 and dialogue.active and dialogue.line_index == 0, "Space completes the entire conversation and retains modal ownership for save")
+	check(completions == 0 and dialogue.active and dialogue.line_index == 1 and not dialogue._finished, "Space advances exactly one phrase without completing or saving")
+	check(dialogue.hint.text == "Space: Next", "hint describes phrase advancement")
 	await frames(8)
-	check(completions == 1, "held Space emits completion only once")
+	check(completions == 0 and dialogue.line_index == 1, "held Space does not advance another phrase")
+	Input.action_release("jump")
+	await frames()
+	dialogue.open_sound.stop()
+	Input.action_press("jump")
+	await frames()
+	Input.action_release("jump")
+	check(dialogue.line_index == 2 and completions == 0, "Space advances one phrase even during text reveal")
+	check(not dialogue.open_sound.playing, "Next neither retriggers opening cue nor plays a skip sound")
+	for i in range(N1.LINES.size() - 3):
+		await frames()
+		Input.action_press("jump")
+		await frames()
+		Input.action_release("jump")
+	check(dialogue.line_index == N1.LINES.size() - 1 and completions == 0, "last phrase remains active until its own advance")
+	await frames()
+	Input.action_press("jump")
+	await frames(8)
+	check(completions == 1 and dialogue.active and dialogue._finished, "advancing final phrase completes once and retains modal ownership for save")
 	Input.action_release("jump")
 	dialogue.show_save_error("Please try again.")
 	await frames()
@@ -64,9 +83,23 @@ func run() -> void:
 	check(retries == 2, "a later E press permits another retry")
 	dialogue.close()
 	check(not dialogue.active and not dialogue.panel.visible, "owner closes panel after successful save")
+	# Exercise exact simulated durations independently of render-frame timing.
+	dialogue.set_process(false)
+	check(dialogue.extra_read_seconds == 2.0, "default extra phrase delay is two seconds")
+	for phrase in ["Short.", "A sufficiently long phrase makes the character-based reading time longer than the minimum."]:
+		dialogue.show_dialogue(N1.SPEAKER, [phrase, "Next phrase."])
+		await frames()
+		var previous_duration: float = phrase.length() / dialogue.characters_per_second + maxf(dialogue.minimum_read_seconds, phrase.length() * dialogue.read_seconds_per_character)
+		dialogue._process(previous_duration + 1.99)
+		check(dialogue.line_index == 0 and completions == 1, "short/long phrase remains for its previous duration plus almost two seconds")
+		dialogue._process(0.02)
+		check(dialogue.line_index == 1 and not dialogue._finished, "short/long phrase advances after the added two seconds")
+		dialogue.close()
+	dialogue.set_process(true)
 	dialogue.characters_per_second = 600.0
 	dialogue.minimum_read_seconds = 0.05
 	dialogue.read_seconds_per_character = 0.0
+	dialogue.extra_read_seconds = 0.0
 	dialogue.show_dialogue(N1.SPEAKER, N1.LINES)
 	var visited: Array[int] = []
 	for i in range(240):
