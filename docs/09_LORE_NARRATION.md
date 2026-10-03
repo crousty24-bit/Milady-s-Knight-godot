@@ -238,3 +238,10 @@ _"Yet I know not what awaiteth us there."_
 
 **Phrase 11 :**  
 _"Come, Ashen Knight. Thy task is not yet ended."_
+
+
+### Implémentation fonctionnelle RUN-017 (3 octobre 2026)
+
+N1 (`scenes/eidolon_vale.tscn`) déclenche automatiquement les neuf phrases du Spirit au spawn. Le bandeau reprend le layout du HUD ; texte révélé à 35 caractères/s, puis délai de lecture (minimum 2 s, 0,035 s/caractère) avant la phrase suivante. Space termine toute la conversation ; Escape ne la ferme pas et n'ouvre pas pause. La simulation est suspendue pendant le dialogue.
+
+Le flag `eidolon_vale_spirit` est écrit à la fin naturelle ou au skip, avant restitution du contrôle. Un échec disque garde le bandeau ouvert avec E pour réessayer. Mort/restart/Continue ne rejouent pas une introduction enregistrée ; New Game la réinitialise. Les quatre explications contextuelles sont enregistrées après Continue ; Escape les écarte pour la tentative, sans les enregistrer. Art Spirit et portrait restent à fournir par Claude ; ce checkpoint ne valide pas leur rendu final.

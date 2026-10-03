@@ -38,7 +38,7 @@ La boucle cible est : exploration → Gold Coins → combat → Shards → coffr
 | 0.4.0 | Capacités, légendaires, N5–10, Boss et conclusion | 022–026 |
 | 0.5.0 beta | Présentation finale, équilibrage, recette et exports | 027–028 |
 
-**29 identifiants au total : 15 runs DONE et 14 lots BACKLOG.** Chaque lot comprend intégration, tests et corrections, avec son orchestrateur désigné à l’avance dans [runs-workflow.md](runs-workflow.md) : Codex GPT-6.1 Sol Medium ou Claude Opus 5.5 selon le travail. La délégation et Jev restent inchangés hors remplacement ciblé du modèle Codex et de `code_worker`.
+**29 identifiants au total : 17 runs DONE, RUN-017 BLOCKED sur contribution Claude et 11 lots BACKLOG.** Chaque lot comprend intégration, tests et corrections, avec son orchestrateur désigné à l’avance dans [runs-workflow.md](runs-workflow.md) : Codex GPT-6.1 Sol Medium ou Claude Opus 5.5 selon le travail. La délégation et Jev restent inchangés hors remplacement ciblé du modèle Codex et de `code_worker`.
 
 **Avant 0.2.0 :** audit final et validation de toutes les passes terminés ; PR vers `develop` autorisée. RUN-015 ne démarre qu’après la fusion effective de `feature/run-011-production-foundation`. Cette clôture n’effectue pas la fusion.
 

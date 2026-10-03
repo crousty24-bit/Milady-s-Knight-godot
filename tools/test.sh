@@ -69,7 +69,10 @@ run_check() {
 
 run_check import 180 --headless --editor --import --quit
 run_check user-data-path 30 --headless --script res://tests/user_data_path.gd
-for suite in movement physics mobility combat platform boundaries keyboard integration bonus routes backtracking damage_profiles damage_protection spikes_void death_transition audio progression_v2 menus longbow rewards; do
+for suite in movement physics mobility combat platform boundaries keyboard integration bonus routes backtracking damage_profiles damage_protection spikes_void death_transition audio progression_v2 menus longbow rewards dialogue_panel n1_flow; do
   run_check "$suite" 90 --headless --fixed-fps 60 --script "res://tests/$suite.gd"
 done
-printf '20 suites terminées ; isolation user:// vérifiée. Logs : %s\n' "$results_dir"
+# Cold closure uses the real clock so gameplay and audio shutdown share the same timing.
+run_check n1-cold-prepare 90 --headless --script res://tests/n1_cold_session.gd -- prepare
+run_check n1-cold-reopen 90 --headless --script res://tests/n1_cold_session.gd -- reopen
+printf '22 suites et deux sessions N1 à froid terminées ; isolation user:// vérifiée. Logs : %s\n' "$results_dir"

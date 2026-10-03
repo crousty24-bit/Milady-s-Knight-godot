@@ -1,4 +1,19 @@
 extends Node2D
+@export var n1_intro_enabled: bool = false
+@export var chest_position := Vector2(120, 144)
+@export var potion_position := Vector2(176, 134)
+const DIALOGUE = preload("res://scripts/dialogue_panel.gd")
+const N1_DIALOGUE = preload("res://scripts/n1_dialogue.gd")
+const INTRO_ID = "eidolon_vale_spirit"
+var dialogue_panel: CanvasLayer
+var tutorial_id: String = ""
+var dismissed_tutorials: Dictionary = {}
+const TUTORIALS = [
+	["n1_movement", 0.0, "The Eidolon Vale", "Arrows: move   Space: jump / double jump\nCollect coins for the exit. Slime kills give shards."],
+	["n1_combat", 280.0, "Weapons and health", "F (hold): attack / shoot   A: switch equipment\nSlimes hurt on contact. Watch your hearts."],
+	["n1_traversal", 450.0, "Two paths", "Explore above or below. Jump away from rough walls.\nAvoid spikes and falls. Escape: pause / restart."],
+	["n1_exit", 1940.0, "Healing and the exit", "The potion restores 0.5 HP and stays if health is full.\nPay 12 coins with E at the gate. Shards save at the exit."],
+]
 @export var void_y: float = 304.0
 @export_file("*.tscn") var next_level_scene: String = ""
 const COIN_SCENE = preload("res://scenes/coin.tscn")
@@ -50,11 +65,11 @@ func _ready() -> void:
 	player.configure_equipment(progression.equipment.ranged == "Longbow0")
 	player.equipment_changed.connect(_update_equipment_hud)
 	tutorial_chest = CHEST.instantiate()
-	tutorial_chest.position = Vector2(120, 144)
+	tutorial_chest.position = chest_position
 	add_child(tutorial_chest)
 	if player.has_longbow: tutorial_chest.consume()
 	minor_potion = POTION.instantiate()
-	minor_potion.position = Vector2(176, 134)
+	minor_potion.position = potion_position
 	add_child(minor_potion)
 	player.health_changed.connect(hud.set_health)
 	player.died.connect(_on_died)
@@ -64,6 +79,12 @@ func _ready() -> void:
 	hud.set_health(player.health, player.max_health)
 	_update_equipment_hud(player.active_slot)
 	$Music.play()
+	if n1_intro_enabled:
+		dialogue_panel = DIALOGUE.new()
+		add_child(dialogue_panel)
+		dialogue_panel.completed.connect(_complete_intro)
+		dialogue_panel.retry_requested.connect(_complete_intro)
+		call_deferred("_start_intro")
 func _physics_process(_delta: float) -> void:
 	if not paused and not finished and player.position.y > void_y:
 		player.take_damage(0.0, Vector2.ZERO, SlicePlayer.DamageSource.VOID)
@@ -93,13 +114,15 @@ func _process(delta: float) -> void:
 	if Input.is_action_just_pressed("pause") and not finished and not player.dead and modal.is_empty():
 		_open_pause()
 		return
+	if n1_intro_enabled and not finished and not player.dead and not paused and modal.is_empty():
+		if _show_n1_tutorial(): return
 	if finished or player.dead or paused:
 		hud.hide_prompt()
 		return
 	if tutorial_chest.player_near() and not tutorial_chest.consumed:
 		hud.show_item_prompt(tutorial_chest.global_position + Vector2(0, -44), "E: retry save" if tutorial_chest.save_failed else "E: free Longbow 0")
 		if Input.is_action_just_pressed("interact"):
-			if request_context("Free tutorial chest", "Longbow 0: 1 DMG / 1.5 s / 20 blocks", ["Accept Longbow 0", "Refuse"], _choose_tutorial_reward):
+			if request_context("Free tutorial chest", "Longbow 0: 1 DMG / 1.5 s / 20 blocks\nA: select weapon   F (hold): attack / shoot", ["Accept Longbow 0", "Refuse"], _choose_tutorial_reward):
 				tutorial_chest.consume()
 		return
 	if gate.player_near() and not gate.opened:
@@ -173,6 +196,7 @@ func _on_died() -> void:
 	modal = "death"
 	resume_pending = false
 	pause_menu.close()
+	if is_instance_valid(dialogue_panel): dialogue_panel.close()
 	_update_gold_hud()
 	hud.show_death_overlay()
 	death_elapsed = 0.0
@@ -189,7 +213,10 @@ func _exit_tree() -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_CLOSE_REQUEST and not closing:
 		closing = true
-		$Music.stop()
+		# Release active reward/equip voices before the engine tears down their streams.
+		for audio_type in ["AudioStreamPlayer", "AudioStreamPlayer2D"]:
+			for emitter in get_tree().root.find_children("*", audio_type, true, false):
+				emitter.stop()
 		await get_tree().create_timer(0.3, true).timeout
 		get_tree().quit()
 
@@ -204,6 +231,9 @@ func _open_pause() -> void:
 func _close_pause() -> void:
 	if modal not in ["pause", "context"]: return
 	context_result = Callable()
+	if not tutorial_id.is_empty():
+		dismissed_tutorials[tutorial_id] = true
+		tutorial_id = ""
 	pause_menu.close()
 	modal = ""
 	paused = false
@@ -231,7 +261,7 @@ func _release_menu_inputs() -> void:
 	for action in ["interact", "attack", "jump", "pause", "move_left", "move_right"]:
 		Input.action_release(action)
 
-# Rewards/tutorials share this exclusive modal owner; their gameplay comes in later runs.
+# Rewards and tutorials share the exclusive modal owner.
 func request_context(title: String, detail: String, options: Array, result: Callable = Callable()) -> bool:
 	if not modal.is_empty() or resume_pending or player.dead or finished: return false
 	modal = "context"
@@ -256,3 +286,46 @@ func _choose_tutorial_reward(index: int) -> void:
 
 func _update_equipment_hud(slot: int) -> void:
 	hud.set_equipment(slot, player.has_longbow)
+
+func _start_intro() -> void:
+	if progression.completed_dialogues.has(INTRO_ID): return
+	if not modal.is_empty() or player.dead or finished: return
+	modal = "dialogue"
+	paused = true
+	player.controls_enabled = false
+	get_tree().paused = true
+	hud.hide_prompt()
+	dialogue_panel.show_dialogue(N1_DIALOGUE.SPEAKER, N1_DIALOGUE.LINES)
+
+func _complete_intro() -> void:
+	if modal != "dialogue": return
+	if progression.complete_dialogue(INTRO_ID) != OK:
+		dialogue_panel.show_save_error("Dialogue not saved. Your previous progress is protected.")
+		return
+	dialogue_panel.close()
+	modal = ""
+	paused = false
+	resume_pending = true
+	get_tree().paused = false
+
+func _show_n1_tutorial() -> bool:
+	for item in TUTORIALS:
+		var id: String = item[0]
+		if player.position.x < item[1] or progression.completed_dialogues.has(id) or dismissed_tutorials.has(id): continue
+		if request_context(item[2], item[3], ["Continue"], _complete_tutorial.bind(id)):
+			tutorial_id = id
+			return true
+	return false
+
+func _complete_tutorial(_index: int, id: String) -> void:
+	if progression.complete_dialogue(id) == OK: return
+	# Failed acknowledgements do not become seen flags. Release inputs, then retry.
+	dismissed_tutorials.erase(id)
+	call_deferred("_tutorial_save_error", id)
+
+func _tutorial_save_error(id: String) -> void:
+	if player.dead or finished or not modal.is_empty(): return
+	# This is the continuation of the context, so it can reacquire before resume.
+	resume_pending = false
+	if request_context("Tutorial not saved", "Your previous progress is protected.\nE: retry saving   Escape: return", ["Retry"], _complete_tutorial.bind(id)):
+		tutorial_id = id

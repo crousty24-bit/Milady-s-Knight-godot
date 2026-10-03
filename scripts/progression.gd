@@ -1,7 +1,8 @@
 extends Node
 # Durable state only. Attempt gains, position and health belong to level.gd.
 const SAVE_VERSION = 2
-const DEFAULT_LEVEL = "res://scenes/vertical_slice.tscn"
+const DEFAULT_LEVEL = "res://scenes/eidolon_vale.tscn"
+const LEGACY_SLICE = "res://scenes/vertical_slice.tscn"
 const SAVE_PATH = "user://progress.json"
 const MAX_BONUS = 9007199254740991 # JSON's exact integer range.
 var banked_shards: int = 0
@@ -82,6 +83,8 @@ func _initial_state() -> Dictionary:
 func _apply(data: Dictionary) -> void:
 	banked_shards = int(data.shards_bank)
 	resume_scene = data.resume_scene if _valid_level(data.resume_scene) else DEFAULT_LEVEL
+	# Existing prototype saves enter N1 with all equipment, bank and flags intact.
+	if resume_scene == LEGACY_SLICE: resume_scene = DEFAULT_LEVEL
 	equipment = data.equipment.duplicate(true)
 	permanent_flags = data.permanent_flags.duplicate(true)
 	completed_dialogues = data.completed_dialogues.duplicate(true)

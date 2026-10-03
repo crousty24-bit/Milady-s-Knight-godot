@@ -204,3 +204,10 @@ Le niveau exporte `void_y`, exprimé dans ses coordonnées locales. Lorsque les 
 Le [contrat RUN-015](RUN-015_CONTRACT_REVIEW.md) précise la table précédente : seul le **point de reprise du niveau** attend la sortie ; équipement, améliorations, uniques, dialogues terminés/skippés et débits de banque sont écrits immédiatement. Après mort, restart ou fermeture, reprise au début du niveau avec coins/gains courants remis à zéro ; la banque après dépenses reste acquise. Les flags de systèmes futurs sont un contrat de stockage, pas une implémentation de ces systèmes.
 
 Les dialogues ne se rejouent pas dans la même partie après mort ou reprise ; New Game les réinitialise. Le coffre tuto refusé/fermé disparaît pour la tentative et revient après reset tant que Longbow n'a pas été acquis ; acquisition persistante sans doublon. Ces comportements seront intégrés avec les objets/dialogues en RUN-016/017.
+
+
+### Adaptation N1 RUN-017 (3 octobre 2026)
+
+`scenes/eidolon_vale.tscn` hérite du terrain du slice, conservé avec ses collisions, deux branches, retours, 18 coins, 8 Slimes et porte à 12 coins. Cette scène active l'introduction et quatre explications contextuelles (déplacement/monnaies, combat/équipement, deux chemins/dangers, potion/sortie). Le coffre est placé à `(220,144)`, loin des pièces initiales, et la potion à `(1968,134)`, sur l'approche finale. Le Spirit est prévu à `(76,144)` avec un repère fonctionnel provisoire.
+
+New Game et le repli de reprise utilisent N1 ; les sauvegardes v2 qui pointaient vers `vertical_slice.tscn` sont redirigées en mémoire vers N1 avec banque, armes et flags préservés. Pas de nouveau schéma ni de conversion d'économie. Le slice reste une scène de régression. N1 n'a pas de destination de production N2 : les tests injectent `tests/fixtures/next_level.tscn`, tandis que la sortie ordinaire propose replay. Difficulté/rythme « très court et facile » et art Spirit restent à valider avant clôture de RUN-017.

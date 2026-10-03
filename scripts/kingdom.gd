@@ -79,7 +79,7 @@ func _draw() -> void:
 	prop(CART, Vector2(427, 144))
 	# Two-path sign. Visible before committing to either route.
 	prop(SIGNPOST, Vector2(482, 144))
-	draw_string(FONT, Vector2(466, 113), "12 OR >", HORIZONTAL_ALIGNMENT_LEFT, -1, 8, Color("e2c989"))
+	draw_string(FONT, Vector2(466, 113), "12 COINS >", HORIZONTAL_ALIGNMENT_LEFT, -1, 8, Color("e2c989"))
 	# Bridge pillars distinguish the high route from the lower road.
 	var pillar_index := 0
 	for x in [706, 780, 986, 1050, 1130, 1210]:

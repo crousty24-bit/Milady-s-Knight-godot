@@ -546,3 +546,16 @@ Claude a ajouté les animations avec arc, la flèche et ses effets, le coffre an
 Le gain de shard est déjà crédité par la mort de l’ennemi. Son animation n’est donc pas un nouvel objet à collecter. Le sprite historique de pièce reste dans la scène mais est masqué : vérifier sa texture ne démontre plus ce que le joueur voit. Le test cherche désormais le shard animé visible, vérifie que la pièce est cachée, puis simule un contact et vérifie que ni coins ni shards ne sont ajoutés.
 
 Les positions du coffre et de la potion seront finalisées en RUN-017. RUN-027 reprendra les sons approximatifs et le mix d’acquisition, le détail du logo et la mort en mode arc, qui utilise encore l’épée. Ces limites acceptées ne changent pas les règles d’équipement validées.
+
+
+## 3 octobre 2026 — RUN-017 : introduction et tutoriels N1, checkpoint technique
+
+Une scène héritée permet de construire N1 à partir du terrain existant sans le régénérer. `eidolon_vale.tscn` reprend le slice et active l'introduction, avec des positions propres pour le coffre et la potion. Le slice demeure utilisable par les tests de physique. New Game charge N1 ; une sauvegarde qui pointait vers l'ancien slice arrive aussi dans N1 en conservant ses armes, sa banque et ses flags.
+
+Le panneau de dialogue reprend le bandeau déjà présent dans le HUD. Il dévoile le texte progressivement, laisse un délai pour lire, puis passe automatiquement à la phrase suivante. Space termine toute la conversation. Le panneau fonctionne pendant la pause, alors que joueur et ennemis restent figés. À la fin, le niveau écrit le flag du dialogue avant de rendre le contrôle ; si le disque échoue, le panneau reste ouvert et E retente l'écriture. Il faut relâcher les touches de confirmation/attaque/saut/pause avant de reprendre le jeu.
+
+Les tutoriels réutilisent la fenêtre contextuelle existante et son propriétaire de modale exclusif. Ils expliquent déplacement et monnaies, armes/santé, les deux chemins et la potion/sortie. Continue enregistre leur validation ; Escape les écarte pour cette tentative. Une mort ne rejoue donc pas une explication validée, mais peut reproposer celle qui a été fermée sans validation. New Game réinitialise ces flags.
+
+Les parcours automatisés de N1 utilisent les vraies entrées et la physique jusqu'au paiement de 12 coins et à la sortie. Leurs tests de bord, distincts, placent parfois le joueur près d'un objet pour isoler un refus ou un soin. La destination suivante est injectée uniquement dans les tests : cette fixture n'est pas N2. Les captures ont vérifié le bandeau, l'erreur de sauvegarde, le tutoriel, le coffre et la potion ; elles montrent encore un repère SPIRIT provisoire. Le rendu artistique du Spirit et le playtest humain restent à réaliser : ce checkpoint ne clôture pas RUN-017.
+
+La recette de fermeture immédiatement après acquisition a révélé un autre détail : arrêter la musique ne suffit pas si des sons d'équipement/récompense sont actifs. Le niveau arrête désormais les lecteurs audio avant de quitter, et le coffre vérifie l'état de fermeture avant de jouer un son retardé. Sans ce garde, son timer relançait le son de révélation après l'arrêt initial ; le journal détaillé Godot identifiait la ressource audio encore retenue.
