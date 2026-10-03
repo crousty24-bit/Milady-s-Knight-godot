@@ -4,6 +4,10 @@ enum MotionState { GROUND, AIR, WALL_SLIDE, DEAD }
 
 signal health_changed(value: float, maximum: float)
 signal died
+signal equipment_changed(slot: int)
+signal projectile_fired(arrow: Node2D)
+const ARROW_SCRIPT = preload("res://scripts/arrow.gd")
+const BOW_INTERVAL = 1.5
 enum DamageSource { CONTACT_MELEE, PROJECTILE, SOLID_TRAP, FLAME, SWARM, VOID }
 const SPEED = 105.0
 const GRAVITY = 760.0
@@ -62,6 +66,9 @@ var knockback_time: float = 0.0
 var hit_stun_time: float = 0.0
 var attack_time: float = 0.0
 var attack_cooldown: float = 0.0
+var bow_cooldown: float = 0.0
+var has_longbow: bool = false
+var active_slot: int = 0
 var hit_targets: Array[int] = []
 var can_double_jump: bool = false
 var wall_jump_lockout: bool = false
@@ -88,6 +95,7 @@ var was_on_floor: bool = true
 
 func _physics_process(delta: float) -> void:
 	attack_cooldown = maxf(0.0, attack_cooldown - delta)
+	bow_cooldown = maxf(0.0, bow_cooldown - delta)
 	invulnerability = maxf(0.0, invulnerability - delta)
 	hurt_flash_time = maxf(0.0, hurt_flash_time - delta)
 	# Remove countdown roundoff at the exact expiration tick.
@@ -155,7 +163,14 @@ func _physics_process(delta: float) -> void:
 			attack_facing = facing
 	if knockback_time <= 0.0 and wall_control_time <= 0.0:
 		velocity.x = move_toward(velocity.x, direction * SPEED, 2100.0 * delta)
-	if controls_enabled and hit_stun_time <= 0.0 and Input.is_action_pressed("attack") and attack_time <= 0.0 and attack_cooldown <= 0.000001 and motion_state != MotionState.WALL_SLIDE:
+	if controls_enabled and hit_stun_time <= 0.0 and has_longbow and Input.is_action_just_pressed("switch_equipment"):
+		active_slot = 1 - active_slot
+		attack_time = 0.0
+		attack_cancelled = true
+		equipment_changed.emit(active_slot)
+	if active_slot == 1 and controls_enabled and hit_stun_time <= 0.0 and Input.is_action_pressed("attack") and bow_cooldown <= 0.000001:
+		_fire_arrow()
+	if active_slot == 0 and controls_enabled and hit_stun_time <= 0.0 and Input.is_action_pressed("attack") and attack_time <= 0.0 and attack_cooldown <= 0.000001 and motion_state != MotionState.WALL_SLIDE:
 		attack_time = ATTACK_DURATION
 		attack_cooldown = ATTACK_INTERVAL
 		attack_facing = facing
@@ -176,6 +191,25 @@ func _physics_process(delta: float) -> void:
 	_update_landing(fall_speed)
 	_update_sword()
 	queue_redraw()
+
+func configure_equipment(ranged_owned: bool) -> void:
+	has_longbow = ranged_owned
+	if not has_longbow and active_slot != 0:
+		active_slot = 0
+		attack_time = 0.0
+		attack_cancelled = true
+	equipment_changed.emit(active_slot)
+
+func _fire_arrow() -> void:
+	bow_cooldown = BOW_INTERVAL
+	var arrow: Node2D = ARROW_SCRIPT.new()
+	# Keep ownership under the player for scene restart, but flight in world space.
+	arrow.process_mode = Node.PROCESS_MODE_PAUSABLE
+	add_child(arrow)
+	arrow.top_level = true
+	arrow.global_position = global_position + Vector2(4.0 * facing, -10.0)
+	arrow.setup(facing)
+	projectile_fired.emit(arrow)
 
 func _update_wall_state(direction: float) -> void:
 	wall_normal = 0.0
@@ -253,6 +287,9 @@ func die() -> void:
 	if dead:
 		return
 	dead = true
+	for child in get_children():
+		if child.get_script() == ARROW_SCRIPT:
+			child.queue_free()
 	motion_state = MotionState.DEAD
 	health_units = 0
 	attack_time = 0.0
@@ -317,7 +354,7 @@ func _update_animation() -> void:
 
 # Seconds since the current swing started while its gesture plays or F keeps the chain going.
 func _chain_time() -> float:
-	if attack_cancelled or dead:
+	if attack_cancelled or dead or active_slot != 0:
 		return -1.0
 	if attack_time > 0.0:
 		return ATTACK_DURATION - attack_time

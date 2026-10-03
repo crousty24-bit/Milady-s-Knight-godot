@@ -311,3 +311,23 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(0, 0, 0, 0)
 mouse_filter = 2
+
+[node name="Equipment" type="Control" parent="."]
+offset_left = 48.0
+offset_top = 44.0
+offset_right = 184.0
+offset_bottom = 72.0
+mouse_filter = 2
+[node name="Melee" type="Label" parent="Equipment"]
+offset_right = 136.0
+offset_bottom = 12.0
+theme = SubResource("theme")
+text = "> Sword 0"
+mouse_filter = 2
+[node name="Ranged" type="Label" parent="Equipment"]
+offset_top = 14.0
+offset_right = 136.0
+offset_bottom = 26.0
+theme = SubResource("theme")
+text = "  Empty"
+mouse_filter = 2

@@ -197,3 +197,10 @@ Tous les coins ramassés restent des coins, même au-delà de la sortie ou aprè
 Le format v2 garde banque, niveau, deux équipements et flags permanents/dialogues. Une v1 n'est convertie qu'après accord explicite au menu : tout le bonus devient shards, l'original est conservé byte pour byte. Corruption/version inconnue désactivent Continue et empêchent les transactions ordinaires d'écraser le fichier. New Game est la seule remise à zéro explicitement confirmée et conserve une copie du fichier précédent.
 
 Les bases de rétention des offrandes restent à trancher avant RUN-023 ; ce contrat ne les implémente pas.
+
+
+## RUN-016 — Intégration technique N1 (3 octobre 2026)
+
+Sword0 et Longbow0 sont stockés dans les deux slots durables ; A alterne les slots acquis, le spawn sélectionne Sword. Longbow0 : 1 DMG, 1,5 s, 320 px depuis sa bouche de tir ; vitesse technique 320 px/s. Projectile horizontal balayé contre terrain/ennemis, impact unique et suppression à portée ; pause suspend son trajet et son cooldown. Les deux cooldowns restent séparés lors du changement de slot. Le tir reste disponible en glissade murale ; la restriction de docs/01 est celle de la mêlée.
+
+Le coffre fixe gratuit et la potion mineure respectent le contrat de persistance ; leurs positions de test `(120,144)` et `(176,134)` restent temporaires avant l’adaptation N1 de RUN-017. La présentation et les feedbacks sont réservés à Claude ; voir [handoff RUN-016](RUN-016_CLAUDE_HANDOFF.md).

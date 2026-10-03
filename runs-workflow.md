@@ -2,7 +2,7 @@
 
 ## Statut de cette planification
 
-**Mise à jour du 3 octobre 2026 :** PR #16 fusionnée dans `develop` (`f997bcb`), verrou 0.2.0 levé. RUN-015 autorisée sur `feature/v0.2.0-reprise-equipment`, contrat D03–D05 validé intégralement. Partie technique vérifiée ; contribution artistique/audio Claude encore requise. Les paragraphes datés du 2 octobre ci-dessous conservent le contexte de la clôture 0.1.0 avant fusion ; l'état courant est précisé dans la fiche RUN-015 et le point d'arrêt.
+**Mise à jour du 3 octobre 2026 :** PR #16 fusionnée dans `develop` (`f997bcb`), verrou 0.2.0 levé. RUN-015 autorisée sur `feature/v0.2.0-reprise-equipment`, contrat D03–D05 validé intégralement. RUN-015 DONE après validation Claude et thème de menu choisi ; RUN-016 technique vérifiée, contribution Claude encore requise. Les paragraphes datés du 2 octobre ci-dessous conservent le contexte de la clôture 0.1.0 avant fusion ; l'état courant est précisé dans la fiche RUN-015 et le point d'arrêt.
 
 Audit documentaire et inspection du dépôt effectués le **21 septembre 2026**, à partir de l’état de travail courant, et non du seul commit `0870462`.
 **RUN-001 à RUN-014 et RUN-029 DONE. Version 0.1.0 clôturée et validée localement le 2 octobre 2026**, après validation humaine de toutes les passes et audit final. La PR vers `develop` est autorisée ; fusion encore à effectuer. Les PR #1, #2, #4, #5, [#8](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/8) et [#9](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/9) sont fusionnées dans `develop`. RUN-007 est fusionnée via la PR #11 (`260c8a8`), RUN-008 via la PR #12 (`6c4ee22`), RUN-009 via la [PR #14](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/14) (`a2ac33c`) et RUN-010 via la PR #15 (`24213f2`). RUN-011 clôt le socle 0.1.0 localement après recette technique et validation humaine du saut mural ; livraison de cette branche préparée pour la PR autorisée. La validation des onze premières runs et du socle **0.1.0** est confirmée par l’humain le **2 octobre 2026**. La réorganisation ci-dessous reste sur `feature/run-011-production-foundation` ; aucune run 0.2.0 n’est lancée.
@@ -486,8 +486,9 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 ### RUN-016 — Équipement N1, Longbow et récompenses
 
-**Lot E · Main agent : Codex GPT-6.1 Sol Medium · Statut : ACTIVE · Dépendances : RUN-015 DONE.**
+**Lot E · Main agent : Codex GPT-6.1 Sol Medium · Statut : BLOCKED · Dépendances : RUN-015 DONE.**
 
+- **Checkpoint technique (3 octobre 2026) :** Longbow0 (1 DMG / 1,5 s / 320 px), A/deux slots, projectile balayé, coffre fixe gratuit, refus/fermeture/reset/retry disque, potion 0,5 HP conservée à vie pleine et reprise durable de l’arc implémentés. Import + **20 suites / 495 contrôles + 1 isolation** réussis, puis Longbow final **26/26** avec deux contrôles supplémentaires de glissade murale ; récompenses avec rendu **21/21** et trois captures inspectées. Revue indépendante sans défaut concret. **BLOCKED sur les assets/feedbacks P0 Claude** ; [handoff et propriété](docs/RUN-016_CLAUDE_HANDOFF.md). Labels/repères de test et flèche sans rendu ne valent pas assets livrés ni validation artistique ; pas de DONE/VERIFY complet.
 - **Résultat / scope :** HUD vie/coins/shards, deux slots et touche A, Sword conservée, Longbow 0 effectif, coffre tuto gratuit à récompense fixe et potion mineure.
 - **Lancement (3 octobre 2026) :** autorisé par la demande initiale d’enchaînement après RUN-015 revue/validée, conditions satisfaites. Même branche ; ownership gameplay/persistance à Codex, assets/feedbacks à Claude.
 - **Décisions avant implémentation dépendante :** Appliquer les contrats RUN-015, y compris persistance et disposition des slots.
@@ -661,4 +662,4 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 **3 octobre 2026 : RUN-015 DONE localement**, contribution Claude validée humainement, thème de menu choisi intégré et testé, revue Jev et inspection des preuves satisfaisantes. Le logo plus détaillé reste une retouche Claude de RUN-027, sans remettre en cause la passe validée.
 
-**RUN-016 ACTIVE sur `feature/v0.2.0-reprise-equipment`**, conformément à l’enchaînement demandé après revue et validation humaine. Contributions Claude requises pour Longbow/flèche, shards, coffre/potion, slots et feedbacks. RUN-017 reste BACKLOG ; 0.2.0 n’est pas encore validée. Pas de push/PR/merge autorisé par cet enchaînement.
+**RUN-016 BLOCKED sur la contribution Claude après checkpoint technique vérifié**, sur `feature/v0.2.0-reprise-equipment`. Longbow, projectile, coffre, potion et slots sont fonctionnels et testés ; assets/feedbacks P0 Claude, validation humaine et revue Jev de clôture restent dus. RUN-017 reste BACKLOG ; 0.2.0 n’est pas encore validée. Pas de push/PR/merge autorisé par cet enchaînement.

@@ -524,3 +524,16 @@ Les tests ont reproduit le défaut d'ouverture/fermeture dans une frame, puis v�
 ### Complément RUN-015 — présentation validée et musique du menu
 
 Claude a habillé le panneau, ajouté le logo/fond et les sons de navigation, confirmation, annulation et erreur. L'humain valide cette passe le 3 octobre 2026, avec une retouche future du détail du logo. La musique choisie existe déjà en Ogg dans le projet : `game.gd` la joue sur le bus Music et l'import active la boucle. Controls et les confirmations gardent le même lecteur ; entrer dans le niveau détruit ce lecteur et laisse place à sa musique propre. Le retour au menu recrée le thème. Les tests vérifient ces transitions ainsi que le passage de fin de piste, sans prétendre qu'une analyse automatique remplace l'écoute humaine.
+
+
+## RUN-016 — Partie technique : Longbow, coffre et potion
+
+Le joueur garde Sword 0 dans le slot de mêlée. Le coffre gratuit propose une seule récompense fixe, Longbow 0 ; A alterne ensuite les deux slots. Chaque arme conserve son propre temps d’attente : changer de slot ne permet pas de raccourcir son cooldown. Le Longbow inflige 1 HP, part toutes les 1,5 secondes si F reste tenu et disparaît après 20 tuiles de 16 pixels (320 pixels). La vitesse de déplacement retenue est 320 pixels/seconde ; cette valeur technique n’était pas fixée dans la spec.
+
+Une flèche interroge tout le segment parcouru pendant chaque tick physique. Elle ne peut donc pas traverser un mur mince en passant d’un côté à l’autre entre deux frames. Le premier terrain ou ennemi touché termine son trajet ; un ennemi reçoit les dégâts une seule fois. La flèche reste en coordonnées du monde même si le joueur bouge. Elle appartient au joueur pour disparaître à sa mort ou au reset ; la pause fige le projectile et les cooldowns.
+
+Le coffre devient consommé pour la tentative dès que sa fenêtre exclusive s’ouvre. Refuse ou Escape ne donnent rien ; le reset le restaure tant que l’arc n’est pas acquis. Pour Accept, la sauvegarde reçoit `Longbow0` avant que le joueur obtienne l’arme. Si le disque refuse l’écriture, le coffre revient pour réessayer ; le test recharge aussi le fichier après acquisition pour vérifier que l’arc survive et que le coffre ne donne pas de doublon. Le slot actif repart sur Sword au spawn, mais les deux armes acquises restent disponibles.
+
+La potion utilise une zone de contact. Elle demande au joueur de soigner 0,5 HP et ne disparaît que si le soin réel est positif. À vie pleine, elle reste donc présente et peut soigner si le joueur se blesse tout en restant dessus. À 2,8 HP, elle remonte à 3 HP sans dépasser le maximum. Une nouvelle tentative recrée la potion.
+
+Les tests ont exercé la physique, les entrées, les dégâts, la pause, les changements d’arme, les refus et la persistance. Le HUD indique les deux slots verticalement avec le texte de l’arme active. Ces labels et les repères CHEST/POTION servent à l’intégration technique ; flèche, chevalier à l’arc, icônes, coffres/potion et sons/VFX attendent la contribution Claude. Les trois captures rendues ne valent pas validation artistique, et RUN-016 n’est pas clôturée.

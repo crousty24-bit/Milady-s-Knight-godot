@@ -14,6 +14,10 @@ var modal: String = ""
 var pause_menu: CanvasLayer
 var resume_pending: bool = false
 var context_result: Callable
+const CHEST = preload("res://scenes/tutorial_chest.tscn")
+const POTION = preload("res://scenes/minor_potion.tscn")
+var tutorial_chest: Area2D
+var minor_potion: Area2D
 const GATE_PROMPT_OFFSET := Vector2(0, -132)
 const DEATH_MESSAGE_DURATION: float = 3.0
 const DEATH_FADE_DURATION: float = 0.4
@@ -43,12 +47,22 @@ func _ready() -> void:
 	for coin in $Coins.get_children(): coin.collected.connect(_on_collected)
 	for enemy in $Enemies.get_children():
 		register_enemy(enemy)
+	player.configure_equipment(progression.equipment.ranged == "Longbow0")
+	player.equipment_changed.connect(_update_equipment_hud)
+	tutorial_chest = CHEST.instantiate()
+	tutorial_chest.position = Vector2(120, 144)
+	add_child(tutorial_chest)
+	if player.has_longbow: tutorial_chest.consume()
+	minor_potion = POTION.instantiate()
+	minor_potion.position = Vector2(176, 134)
+	add_child(minor_potion)
 	player.health_changed.connect(hud.set_health)
 	player.died.connect(_on_died)
 	gate.offering_requested.connect(try_offering)
 	$ExitArea.body_entered.connect(_on_exit)
 	_update_gold_hud()
 	hud.set_health(player.health, player.max_health)
+	_update_equipment_hud(player.active_slot)
 	$Music.play()
 func _physics_process(_delta: float) -> void:
 	if not paused and not finished and player.position.y > void_y:
@@ -81,6 +95,12 @@ func _process(delta: float) -> void:
 		return
 	if finished or player.dead or paused:
 		hud.hide_prompt()
+		return
+	if tutorial_chest.player_near() and not tutorial_chest.consumed:
+		hud.show_item_prompt(tutorial_chest.global_position + Vector2(0, -44), "E: retry save" if tutorial_chest.save_failed else "E: free Longbow 0")
+		if Input.is_action_just_pressed("interact"):
+			if request_context("Free tutorial chest", "Longbow 0: 1 DMG / 1.5 s / 20 blocks", ["Accept Longbow 0", "Refuse"], _choose_tutorial_reward):
+				tutorial_chest.consume()
 		return
 	if gate.player_near() and not gate.opened:
 		hud.show_prompt(gate.global_position + GATE_PROMPT_OFFSET, gate.COST, gold)
@@ -222,3 +242,17 @@ func request_context(title: String, detail: String, options: Array, result: Call
 	hud.hide_prompt()
 	pause_menu.show_menu(title, detail, options)
 	return true
+
+func _choose_tutorial_reward(index: int) -> void:
+	if index != 0: return
+	var remaining: int = progression.acquire_equipment("ranged", "Longbow0", 0, bonus)
+	if remaining < 0:
+		tutorial_chest.retry_after_failure()
+		return
+	bonus = remaining
+	player.configure_equipment(true)
+	_update_equipment_hud(player.active_slot)
+	_update_gold_hud()
+
+func _update_equipment_hud(slot: int) -> void:
+	hud.set_equipment(slot, player.has_longbow)

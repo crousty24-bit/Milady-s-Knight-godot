@@ -156,6 +156,7 @@ func _text_width(label: Label, text: String) -> float:
 	return label.get_theme_font("font").get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, 8).x
 
 func _layout_prompt(enough: bool, cost: int, have: int) -> void:
+	$Prompt/Coin.show()
 	var text: String = str(cost) if enough else "%02d/%d" % [have, cost]
 	var amount: Label = $Prompt/Amount
 	amount.text = text
@@ -185,3 +186,26 @@ func show_dialogue(speaker: String, text: String, avatar_texture: Texture2D = nu
 
 func hide_dialogue() -> void:
 	$DialogueBanner.hide()
+
+
+# Functional slot labels; Claude supplies the equipment/shard artwork and focus assets.
+func set_equipment(active: int, ranged_owned: bool) -> void:
+	$Equipment/Melee.text = ("> " if active == 0 else "  ") + "Sword 0"
+	$Equipment/Ranged.text = ("> " if active == 1 else "  ") + ("Longbow 0" if ranged_owned else "Empty")
+
+func show_item_prompt(world_position: Vector2, text: String) -> void:
+	_prompt_world = world_position
+	_prompt_key = ""
+	_prompt_active = true
+	_prompt_leaving = false
+	$Prompt.show()
+	$Prompt/Cap.hide()
+	$Prompt/CapLabel.hide()
+	$Prompt/Coin.hide()
+	$Prompt/Amount.text = text
+	$Prompt/Amount.modulate = Color.WHITE
+	$Prompt/Amount.position.x = 5
+	var width := ceilf(_text_width($Prompt/Amount, text)) + 10.0
+	$Prompt.size = Vector2(width, 24)
+	$Prompt/Bg.size = Vector2(width, 24)
+	_place_prompt()
