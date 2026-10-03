@@ -15,7 +15,8 @@ move draws the blade at the exact gameplay angle lerp(-1.5, 1.2, progress).
 
 Animations written to ashen_knight_frames.tres:
   full body: idle (combat guard), run, rise, fall, land, wall, hurt, dead,
-             atk1/atk2/atk3 (10 frames: 6 gesture + 4 chain while F is held)
+             atk1/atk2/atk3 (10 frames: 6 gesture + 4 chain while F is held),
+             resurrect (RUN-017/2, appended last: lying corpse -> idle_0 guard)
   layered:   up1/up2/up3 (upper body of the same attack frames) drawn over
              base_run / base_rise / base_fall (legs, tabard skirt and cape)
              when the knight attacks while running or airborne.
@@ -245,6 +246,7 @@ class Pose:
 		self.sword_far = False  # sword held by the far hand, behind the body
 		self.bow = None  # RUN-016: (cant, draw 0..1 or <0 vibrating, nocked arrow, held by far hand)
 		self.sheathed = False  # sword hanging at the hip while the Longbow is active
+		self.ash = None  # RUN-017/2: stage of the cold motes rising off the body while he is raised
 		self.__dict__.update(kw)
 
 	def copy(self, **kw):
@@ -627,6 +629,27 @@ def draw_dust(f, at, stage):
 	f.add(out, outline=False)
 
 
+# Pale cold ramp of the Ancient Spirit (tools/art/spirit.py SPIRIT[3:]): his light raising the knight.
+ASH = [hexc(c) for c in ("7193a2", "a8c6cc", "e0f0ee")]
+# Seeds around the lying body: (x, y, rise per stage), game coordinates.
+ASH_SEEDS = [(-9.0, -2.0, 2.2), (-3.0, -4.0, 2.8), (2.0, -3.0, 2.4), (6.0, -2.0, 3.0), (-6.0, -6.0, 2.0)]
+
+
+def draw_ash(f, stage):
+	"""Cold motes drifting up off the body, staggered, dimming as they rise (no outline)."""
+	out = {}
+	for i, (x0, y0, v) in enumerate(ASH_SEEDS):
+		age = stage - (i % 3) * 0.5
+		if age <= 0 or age > 6:
+			continue
+		x = int(math.floor(x0 + math.sin(age * 1.3 + i) * 1.2 + OX))
+		y = int(math.floor(y0 - age * v + OY))
+		out[(x, y)] = ASH[2] if age < 2.5 else ASH[1] if age < 4.5 else ASH[0]
+		if age < 2.0:
+			out[(x, y + 1)] = ASH[0]  # short trail while the mote is still low
+	f.add(out, outline=False)
+
+
 def draw_dropped_sword(f, spec):
 	hand, angle = spec
 	draw_sword(f, hand, angle)
@@ -754,6 +777,8 @@ def render(p, layer="full"):
 		draw_hand(f, p.near_hand, False)
 	if p.dust is not None and (layer == "full" or layer == "upper"):
 		draw_dust(f, p.dust[0], p.dust[1])
+	if p.ash is not None and layer == "full":
+		draw_ash(f, p.ash)
 	return f.canvas()
 
 
@@ -857,6 +882,34 @@ def dead_frames():
 		cape=[(-2.6, 0.8), (-4.8, 2.0), (-6.2, 3.2)])
 	d5 = d4.copy(cape=[(-2.8, 1.0), (-5.0, 2.4), (-6.0, 3.6)])
 	return [h, d1, d2, d3, d4, d5]
+
+
+def resurrect_frames():
+	"""RUN-017/2 opening: the corpse of `dead` is raised. Sampled in order by the level's progress
+	(player.gd), not played at a frame rate. Frame 0 is the last `dead` frame; the last frame is
+	idle frame 0, so the hand-over to idle does not jump. Same feet line and body column."""
+	lying = dead_frames()[-1]
+	return [
+		lying,
+		lying.copy(head_off=(0, 0), near_hand=(4.6, -1.8), cape=[(-2.6, 0.6), (-5.0, 1.8), (-6.6, 2.6)], ash=1),
+		# Pushes up on the far hand, the near hand closes on the hilt of the sword where it fell.
+		Pose(hip=(-3.0, -4.2), lean=1.18, head="down", near_foot=(-11.0, -1.5), far_foot=(-12.0, -1.0), near_toe=1.2,
+			far_toe=1.3, near_hand=(4.4, -1.8), far_hand=(1.5, -1.6), sword=0.0, cape=[(-2.4, 1.6), (-4.6, 3.2), (-6.4, 4.2)], ash=2),
+		Pose(hip=(-3.0, -6.2), lean=0.72, head="down", near_foot=(-8.5, -1.4), far_foot=(-9.5, -1.0), near_toe=1.3, far_toe=1.3,
+			near_hand=(4.6, -2.4), far_hand=(1.0, -2.6), sword=0.05, cape=[(-2.4, 3.0), (-4.4, 5.6), (-6.0, 7.6)], ash=3),
+		# One knee: the blade drags off the ground, then both hands take it.
+		Pose(hip=(-1.8, -7.6), lean=0.42, head="down", near_foot=(4.0, -2), far_foot=(-7.5, -1.2), far_toe=1.35,
+			near_hand=(5.6, -5.6), far_hand=(1.0, -8.0), sword=0.18, cape=[(-2.4, 4.0), (-4.2, 7.6), (-5.6, 10.6)], ash=4),
+		Pose(hip=(-1.2, -8.8), lean=0.3, near_foot=(4.0, -2), far_foot=(-7.0, -1.2), far_toe=1.35,
+			near_hand=(6.0, -8.5), two_hands=True, sword=-0.15, cape=[(-2.3, 4.4), (-4.1, 8.6), (-5.4, 12.2)], ash=5),
+		Pose(hip=(-0.4, -10.6), lean=0.26, near_foot=(4.6, -2), far_foot=(-5.5, -2.4), far_toe=0.7,
+			near_hand=(6.2, -11.0), two_hands=True, sword=-0.5, cape=[(-2.2, 4.8), (-4.0, 9.6), (-5.2, 14.0)], ash=6),
+		Pose(hip=(0.3, -12.4), lean=0.18, near_foot=(5.0, -2), far_foot=(-4.8, -2), far_toe=0.2,
+			near_hand=(6.0, -13.6), two_hands=True, sword=-0.74, cape=[(-2.2, 5.0), (-4.0, 10.4), (-5.4, 15.2)]),
+		# Stands slightly tall, then settles into the guard.
+		guard(-1, 1, -0.04),
+		guard(0, 0, 0.0),
+	]
 
 
 # ---------------------------------------------------------------- Longbow 0 (RUN-016)
@@ -1157,6 +1210,8 @@ def build():
 	anims.append(("bow_hurt", 10.0, False, [render(p) for p in bow_hurt_frames()]))
 	anims.append(("shoot", 1.0, False, [render(p) for p in shoot_frames()]))
 	anims.append(("up_shoot", 1.0, False, [render(shifted_upper(p), "upper") for p in shoot_frames()]))
+	# RUN-017/2: last row so every earlier region keeps its coordinates; 10 frames keep the sheet 10 wide.
+	anims.append(("resurrect", 6.0, False, [render(p) for p in resurrect_frames()]))
 	return anims
 
 

@@ -18,7 +18,8 @@ func spawn() -> void:
 	if is_instance_valid(level):
 		level.queue_free()
 		await frames(3)
-	level = load(Store.DEFAULT_LEVEL).instantiate()
+	# Economy fixtures keep the authored slice; N1 story is covered by n1_flow.
+	level = load("res://scenes/vertical_slice.tscn").instantiate()
 	root.add_child(level)
 	current_scene = level
 	await frames(6)

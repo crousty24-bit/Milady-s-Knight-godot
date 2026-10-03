@@ -46,7 +46,7 @@ func _select(index: int) -> void:
 					elif progression.has_save: _continue()
 				2:
 					screen = "controls"
-					menu.show_menu("Controls", "Arrows: move / menu selection\nSpace: jump / double jump / skip dialogue\nF (hold): attack / shoot   E: interact / confirm\nA: equipment   G: landing attack\nR (hold): Dragon Slayer special\nEscape: close / back / pause", ["Back"])
+					menu.show_menu("Controls", "Arrows: move / menu selection\nSpace: jump / double jump / next dialogue phrase\nF (hold): attack / shoot   E: interact / confirm\nA: equipment   G: landing attack\nR (hold): Dragon Slayer special\nEscape: close / back / pause", ["Back"])
 				3: get_tree().quit()
 		"new":
 			if index == 1: _new_game()

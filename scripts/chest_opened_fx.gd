@@ -36,6 +36,9 @@ func _ready() -> void:
 	_had_bow = player != null and player.get("has_longbow") == true
 
 func _play(cue: AudioStream) -> void:
+	# A delayed reveal must not restart audio during the level close grace period.
+	var level := get_tree().current_scene
+	if level != null and level.get("closing") == true: return
 	_audio.stream = cue
 	_audio.play()
 

@@ -23,6 +23,18 @@ func capture(label: String) -> void:
 	root.get_texture().get_image().save_png("res://work/run015/" + label + ".png")
 	await process_frame
 
+# This suite isolates menu behavior; the complete introduction/tutorial flow is n1_flow.
+func settle_intro() -> void:
+	if current_scene.scene_file_path != root.get_node("Progression").DEFAULT_LEVEL: return
+	# Cinematic ownership must finish before isolating the menu-only fixture.
+	for i in range(240):
+		if current_scene.modal != "resurrection" and not current_scene.resume_pending: break
+		await frames(1)
+	root.get_node("Progression").complete_dialogue(current_scene.INTRO_ID)
+	for item in current_scene.TUTORIALS:
+		root.get_node("Progression").complete_dialogue(item[0])
+	current_scene.n1_intro_enabled = false
+
 func run() -> void:
 	var progress = root.get_node("Progression")
 	progress.storage_path = "user://run015-menu-%d.json" % OS.get_process_id()
@@ -51,6 +63,7 @@ func run() -> void:
 	check(game.screen == "main", "Escape returns from Controls")
 	await tap("interact")
 	await frames(8)
+	await settle_intro()
 	var level = current_scene
 	check(menu_music_ref.get_ref() == null and level.get_node("Music").playing, "entering gameplay removes menu music and starts level music")
 	check(level != game and progress.has_save and level.gold == 0 and level.bonus == 0, "New Game writes initial save and spawns fresh attempt")
@@ -94,6 +107,7 @@ func run() -> void:
 	await tap("interact")
 	await frames(8)
 	level = current_scene
+	level.n1_intro_enabled = false
 	check(level.gold == 0 and level.bonus == 0 and not paused, "Restart clears attempt and unpauses")
 	await tap("pause")
 	await tap("move_down")
@@ -113,6 +127,7 @@ func run() -> void:
 	await frames(8)
 	check(current_scene.scene_file_path == progress.resume_scene and current_scene.gold == 0, "Continue resumes saved level at fresh spawn")
 	level = current_scene
+	level.n1_intro_enabled = false
 	await tap("pause")
 	Input.action_press("interact")
 	await frames()
@@ -142,6 +157,7 @@ func run() -> void:
 	await tap("move_down")
 	await tap("interact")
 	await frames(8)
+	await settle_intro()
 	check(current_scene.scene_file_path == progress.DEFAULT_LEVEL and progress.banked_shards == 17 and FileAccess.get_file_as_string(progress.storage_path + ".v1.bak") == original, "accepted migration enters saved level and preserves original")
 	current_scene.queue_free()
 	await frames()

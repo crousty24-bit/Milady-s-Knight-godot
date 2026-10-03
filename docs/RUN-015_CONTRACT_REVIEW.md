@@ -28,7 +28,7 @@ Sources : docs/03 (table de persistance), docs/04 (économie et coffres), docs/0
 - Deux slots d'équipement verticaux (mêlée/tir). Les choix de récompense dans une fenêtre de coffre restent horizontaux.
 - Une seule modale importante à la fois ; une demande concurrente ne remplace pas une décision en cours. Mort et transition interdisent les nouvelles interactions.
 - Escape ferme la fenêtre active ; la même pression ne déclenche pas pause. Depuis le jeu libre, Escape ouvre pause.
-- Le dialogue immobilise le joueur ; Space termine/skip le dialogue. Escape n'ouvre pas pause pendant le dialogue. Mémoriser durablement le dialogue seulement lorsqu'il est terminé ou skippé.
+- Le dialogue immobilise le joueur. **Amendement humain RUN-017, 3 octobre 2026 :** Space passe une phrase par pression, sans son, au lieu de terminer toute la conversation ; délai de chaque phrase augmenté de 2 s. Escape n'ouvre pas pause pendant le dialogue. Mémoriser durablement seulement après la dernière phrase (fin naturelle ou Space).
 - Coffre tuto gratuit : refus ou fermeture consomme le coffre pour la tentative ; après reset il redevient disponible tant que Longbow n'a pas été acquis. L'acquisition durable empêche un doublon et ne donne aucune amélioration.
 - Confirmer New Game lorsqu'il remplace une partie ; restart et sortie ordinaires ne nécessitent pas de confirmation supplémentaire.
 
