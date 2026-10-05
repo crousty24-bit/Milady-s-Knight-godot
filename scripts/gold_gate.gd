@@ -1,7 +1,7 @@
 @tool
 extends Node2D
 signal offering_requested
-const COST: int = 12
+@export_range(1, 1000, 1) var COST: int = 12
 var opened: bool = false
 const DUST = preload("res://assets/sprites/vfx_gate_dust.png")
 const TORCHES = [Vector2(-18, -70), Vector2(17, -70)]

@@ -109,3 +109,7 @@ Tailles, frames, ancrages et limites détaillés dans [RUN-018_ASSET_MANIFEST.md
 Les 37 PNG de `assets/run019/**` sont des visuels originaux du projet générés par `tools/art/run019/enemies_undead.py`, `enemies_blobs.py` et `world_run019.py`. Ces générateurs sont les sources conservées ; palette et outils pixel communs sont réutilisés. Le mur secret reprend l’atlas de pierre existant du projet en lecture seule. Aucun nouvel asset visuel tiers annoncé, aucune génération d’image par IA.
 
 Ennemis, Skulls, projectiles, pièges, mécanismes, pickups et effets : tables, frames et ancrages dans [RUN-019_ASSET_MANIFEST.md](../docs/RUN-019_ASSET_MANIFEST.md). Contribution Claude `d42804d`, passe validée en l’état par l’humain. Assets externes éventuels à adapter lors des prochaines passes autorisées.
+
+## Générés pour le projet — RUN-020 (5 octobre 2026)
+
+Les 24 PNG de `assets/run020/` sont originaux, générés par `tools/art/run020/biomes_run020.py`, `terrain_run020.py`, `backdrop_run020.py`, `props_run020.py` et `palette_run020.py`. Générateurs conservés, palette et accessoires du projet réutilisés en lecture seule ; aucun pixel tiers nouveau ni génération d’image par IA. Contribution Claude Code Opus5.5 ; intégration Codex. [Manifeste RUN-020](../docs/RUN-020_ASSET_MANIFEST.md). Validation artistique humaine attendue.

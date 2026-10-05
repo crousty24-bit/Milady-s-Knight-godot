@@ -33,8 +33,14 @@ func solid(at: Vector2, size: Vector2) -> StaticBody2D:
 	return body
 func fixture(at: Vector2 = Vector2(150, 200), floor_width: float = 600.0) -> void:
 	if is_instance_valid(room):
+		paused = true
+		for audio_type in ["AudioStreamPlayer", "AudioStreamPlayer2D"]:
+			for emitter in room.find_children("*", audio_type, true, false): emitter.stop()
+		# --fixed-fps advances timers faster than the independent audio thread.
+		OS.delay_msec(300)
 		room.queue_free()
 		await frames(2)
+	paused = false
 	room = RegisteredRoom.new()
 	root.add_child(room)
 	current_scene = room
@@ -137,6 +143,15 @@ func run() -> void:
 	archer = mob("skeleton_archer")
 	await frames(65)
 	check(player.health_units == 25 and player.knockback_time == 0 and player.hit_stun_time == 0, "enemy projectile hits half HP without recoil/hit-stun")
+	# A real impact frees the source-owned projectile, leaving a stale typed array
+	# entry until the next release. Exercise that lifecycle without queue_free or
+	# calling the release method: the same living archer must fire again naturally.
+	var spent_arrow = archer.active_attacks[0]
+	check(not is_instance_valid(spent_arrow), "first physical impact leaves freed projectile reference for pruning")
+	await frames(55)
+	check(archer.active_attacks.size() == 1 and is_instance_valid(archer.active_attacks[0]), "subsequent real archer release prunes freed reference and owns new projectile")
+	await frames(30)
+	check(player.health_units == 20, "second real projectile still reaches player after stale reference pruning")
 
 	await fixture(Vector2(180, 200))
 	archer = mob("skeleton_archer")
@@ -244,8 +259,15 @@ func run() -> void:
 	await frames(3)
 	check(zone.get_child_count() == 0 and not zone.occupied, "player death clears swarm immediately")
 
+	# Keep emitters alive while the audio server drains stopped random streams;
+	# sleeping only after queue_free cannot protect their playback teardown.
+	paused = true
+	for audio_type in ["AudioStreamPlayer", "AudioStreamPlayer2D"]:
+		for emitter in root.find_children("*", audio_type, true, false): emitter.stop()
+	OS.delay_msec(300)
 	room.queue_free()
 	await frames(3)
+	paused = false
 	OS.delay_msec(300)
 	print("RESULT ", checks, " RUN019 enemy checks; ", failures, " failures")
 	quit(failures)

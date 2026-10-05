@@ -70,7 +70,7 @@ Prévoir principalement :
 
 - **Eidolon Vale / Intro Theme ;**
 
-- **Early Kingdom Theme (Blight Town / Dark Forest);**
+- **Early Kingdom Theme (Blight Town / Black Forrest);**
 
 - **Graveyard / Haunted Caves Theme ;**
 

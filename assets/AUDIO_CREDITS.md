@@ -163,3 +163,7 @@ Mesures relues par Claude sur les 37 WAV. Les `.tres` sont des `AudioStreamRando
 - Le pack n'a pas de vrai équivalent pour : le tir d'archer (fouet, pas de corde), la trappe, la porte (grondement mécanique), la plante, les piques, la plaque, le bouton (clic d'interface).
 - Mort des Skulls (aigu, risque de sifflement si plusieurs meurent ensemble), incantation (très grave), activation du Shield (caractère « cyan » non vérifié).
 - **Sélection Claude sans écoute** : sélection par analyse objective (durée, enveloppe, centroïde, noms de fichier). Notes : `work/run019/claude/audio/selection.md`.
+
+## Ambiances originales — RUN-020 (5 octobre 2026)
+
+`assets/sounds/run020/amb_{blight_town,black_forrest,forbidden_graveyard}.ogg` : synthèse originale déterministe par `tools/art/run020/ambience_run020.py`, contribution Claude/Sonnet5.5. PCM source mono22,05kHz/16bits/28s conservé dans `assets/source/run020/`; dérivés Vorbis qualité4 produits avec ffmpeg par Codex, boucle au début. Aucun son tiers dans ces trois ambiances. N2–4 réutilisent provisoirement la piste Pixabay *Dreamer* déjà créditée plus haut. [Manifeste RUN-020](../docs/RUN-020_ASSET_MANIFEST.md). Écoute humaine attendue.

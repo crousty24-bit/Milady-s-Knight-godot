@@ -1,6 +1,8 @@
 extends Node2D
 @export var n1_intro_enabled: bool = false
 @export_range(1, 10) var world_level: int = 1
+@export var camera_bounds := Rect2(0, -224, 2240, 528)
+@export var tutorial_rewards_enabled: bool = true
 var chest_economy := ChestEconomy.new()
 var active_reward: Area2D
 var reward_choices: Array[String] = []
@@ -71,10 +73,10 @@ func _ready() -> void:
 	pause_menu.cancelled.connect(_close_pause)
 	# The authored slice owns its camera bounds and framing.
 	camera.position = Vector2(32, -38)
-	camera.limit_left = 0
-	camera.limit_top = -224
-	camera.limit_right = 2240
-	camera.limit_bottom = 304
+	camera.limit_left = int(camera_bounds.position.x)
+	camera.limit_top = int(camera_bounds.position.y)
+	camera.limit_right = int(camera_bounds.end.x)
+	camera.limit_bottom = int(camera_bounds.end.y)
 	camera.process_callback = Camera2D.CAMERA2D_PROCESS_PHYSICS
 	camera.position_smoothing_enabled = true
 	camera.position_smoothing_speed = 7.0
@@ -84,13 +86,14 @@ func _ready() -> void:
 	player.configure_bonus_health(progression.hp_bonus_count())
 	player.configure_loadout(progression.equipment)
 	player.equipment_changed.connect(_update_equipment_hud)
-	tutorial_chest = CHEST.instantiate()
-	tutorial_chest.position = chest_position
-	add_child(tutorial_chest)
-	if player.has_longbow: tutorial_chest.consume()
-	minor_potion = POTION.instantiate()
-	minor_potion.position = potion_position
-	add_child(minor_potion)
+	if tutorial_rewards_enabled:
+		tutorial_chest = CHEST.instantiate()
+		tutorial_chest.position = chest_position
+		add_child(tutorial_chest)
+		if player.has_longbow: tutorial_chest.consume()
+		minor_potion = POTION.instantiate()
+		minor_potion.position = potion_position
+		add_child(minor_potion)
 	player.health_changed.connect(hud.set_health)
 	player.died.connect(_on_died)
 	gate.offering_requested.connect(try_offering)
@@ -102,6 +105,8 @@ func _ready() -> void:
 	hud.set_health(player.health, player.max_health)
 	_update_equipment_hud(player.active_slot)
 	$Music.play()
+	var ambience := get_node_or_null("Ambient") as AudioStreamPlayer
+	if ambience != null: ambience.play()
 	if n1_intro_enabled:
 		dialogue_panel = DIALOGUE.new()
 		add_child(dialogue_panel)
@@ -157,7 +162,7 @@ func _process(delta: float) -> void:
 		if Input.is_action_just_pressed("interact"):
 			if not open_reward_chest(chest): hud.flash_prompt_failure()
 		return
-	if tutorial_chest.player_near() and not tutorial_chest.consumed:
+	if is_instance_valid(tutorial_chest) and tutorial_chest.player_near() and not tutorial_chest.consumed:
 		hud.show_item_prompt(tutorial_chest.global_position + Vector2(0, -44), "E: retry save" if tutorial_chest.save_failed else "E: free Longbow 0")
 		if Input.is_action_just_pressed("interact"):
 			if request_context("Free tutorial chest", "Longbow 0: 1 DMG / 1.5 s / 20 blocks\nA: select weapon   F (hold): attack / shoot", ["Accept Longbow 0", "Refuse"], _choose_tutorial_reward):
@@ -212,7 +217,7 @@ func _enemy_reward(value: int, at: Vector2, enemy: Node) -> void:
 	if healed > 0.0: kill_healed.emit(healed)
 
 func _update_gold_hud() -> void:
-	hud.set_gold(gold, gate.opened)
+	hud.set_gold(gold, gate.opened, gate.COST)
 	hud.set_bonus(progression.banked_bonus, 0 if reward_settled else bonus)
 func try_secondary_door(door: Node) -> bool:
 	if finished or player.dead or paused or not modal.is_empty() or resume_pending: return false
@@ -291,6 +296,8 @@ func _restart_attempt() -> void:
 
 func _exit_tree() -> void:
 	$Music.stop()
+	var ambience := get_node_or_null("Ambient") as AudioStreamPlayer
+	if ambience != null: ambience.stop()
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_CLOSE_REQUEST and not closing:

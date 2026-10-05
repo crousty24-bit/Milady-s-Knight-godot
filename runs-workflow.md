@@ -2,7 +2,7 @@
 
 ## Statut de cette planification
 
-**5 octobre 2026 — Version actuelle : 0.2.0 ; cible 0.3.0 autorisée.** RUN-001–019 et RUN-029 DONE (20 runs). RUN-018 intégrée dans `develop` par PR #21 (`288b518`). Préparation RUN-019 autorisée, branche `feature/run-019-threats-exploration` issue de develop propre ; neuf lots restent BACKLOG. RUN-019 DONE après recette Claude, validation humaine avec limite explicite sur les nouveaux mobs, revue Jev/inspection et livraison [PR #22](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/22) vers develop ; PR non fusionnée. Contrat D01/D06/D07 et budget Skull validés. Les checkpoints datés ci-dessous décrivent leur état historique.
+**5 octobre 2026 — Version actuelle : 0.2.0 ; cible 0.3.0 autorisée.** RUN-001–019 et RUN-029 DONE (20 runs). RUN-019 intégrée dans `develop` par PR #22 (`6a1b279`). RUN-020 VERIFY sur `feature/run-020-021-campaign`, issue de cette baseline propre ; RUN-021 autorisée ensuite sur la même branche avec délégation Claude. Huit lots restent BACKLOG. Contrat D01/D06/D07 et budget Skull validés. Les checkpoints datés ci-dessous décrivent leur état historique.
 
 **Clôture du 3 octobre 2026 : RUN-015–017 DONE, jalon 0.2.0 validé localement.** Deux passes Claude et playtest humain N1 validés ; correctif idle, recette finale et revue Jev/inspection terminés. [PR #18](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/18) ouverte de `feature/run-017-eidolon-vale` vers `develop`, sans fusion. Aucune autre run lancée. Les checkpoints antérieurs ci-dessous conservent leur contexte historique.
 
@@ -573,7 +573,12 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 ### RUN-020 — Construction et recette de Blight Town à Forbidden Graveyard
 
-**Lot I · Main agent : Codex GPT-6.1 Sol Medium · Statut : BACKLOG · Dépendances : RUN-018–019.**
+**Lot I · Main agent : Codex GPT-6.1 Sol Medium · Statut : VERIFY · Dépendances : RUN-018–019 DONE.**
+
+- **Lancement (5 octobre 2026) :** demande humaine d’exécuter RUN-020 puis RUN-021 sur la même feature avec délégation Claude. Baseline propre `develop` `6a1b279`, PR #22 fusionnée ; branche `feature/run-020-021-campaign`. Inspection mécanique et préanalyse Claude Code Opus5.5 en lecture seule réellement exécutées. Noms de docs/03 retenus (Blight Town, Black Forrest, Forbidden Graveyard), Ancient Spirit conservé conformément au lore et au N1 existant. Construction scènes N2–4 déléguée ; root possède raccordement, HUD/coût/caméra, tests et docs ; Claude reçoit des fichiers de présentation distincts. Réglage exact Sol Medium du root non exposé : Je ne sais pas. RUN-021 autorisée après clôture020, pas encore active. Aucun push/PR/merge autorisé.
+
+- **Résultat vérifié (5 octobre 2026) :** N2–4 fixes éditables et raccord N1→N4, coins24/32/40, sorties18/25/32 ; exploration N4 et budgets optionnels conformes. Présentation/ambiances livrées réellement par Claude Opus5.5 et sous-agent Sonnet5.5 puis intégrées par root. Recette Godot4.7.2 : **2207 PASS/45 RESULT**, 33 suites +11 sessions froides +isolation, code0 sans erreur/fuite ; transactions rendues178/178 et pilote visuel/audio33/33. Parcours physique complet19/19 inclus dans la recette, sans téléportation ni suppression d’ennemis. Revue Claude des12 captures et audit statique sans défaut bloquant concret. Preuves/corrections au journal, [manifeste](docs/RUN-020_ASSET_MANIFEST.md) et [guide de playtest](docs/RUN-020_PLAYTEST.md).
+- **Validation attendue :** playtest humain difficulté/rythme N1–4 et jugement rendu/écoute. Jev puis inspection de clôture après cette validation ; aucun DONE anticipé. RUN-021 reste autorisée après clôture020 sur cette même branche ; aucun push/PR/merge autorisé.
 
 - **Résultat / scope :** Construire et peupler N2 Blight Town, N3 Black Forrest et N4 Forbidden Graveyard ; raccorder N1–4 et toutes les récompenses/ambiances requises.
 - **Décisions avant implémentation dépendante :** Harmoniser les noms avant contenu (D10) ; suivre la répartition docs/03–04.

@@ -69,10 +69,10 @@ run_check() {
 
 run_check import 180 --headless --editor --import --quit
 run_check user-data-path 30 --headless --script res://tests/user_data_path.gd
-for suite in movement physics mobility combat platform boundaries keyboard integration bonus routes backtracking damage_profiles damage_protection spikes_void death_transition audio progression_v2 menus longbow rewards dialogue_panel resurrection_player n1_cinematics n1_flow chest_economy standard_weapons reward_transactions run019_enemies run019_traps run019_exploration run019_integration; do
+for suite in movement physics mobility combat platform boundaries keyboard integration bonus routes backtracking damage_profiles damage_protection spikes_void death_transition audio progression_v2 menus longbow rewards dialogue_panel resurrection_player n1_cinematics n1_flow chest_economy standard_weapons reward_transactions run019_enemies run019_traps run019_exploration run019_integration run020_campaign run020_routes; do
   suite_timeout=90
-  if [[ "$suite" == standard_weapons ]]; then suite_timeout=180; fi
-  if [[ "$suite" == run019_exploration || "$suite" == run019_integration ]]; then
+  if [[ "$suite" == standard_weapons || "$suite" == run020_campaign || "$suite" == run020_routes ]]; then suite_timeout=180; fi
+  if [[ "$suite" == run019_exploration || "$suite" == run019_integration || "$suite" == run020_campaign ]]; then
     run_check "$suite" "$suite_timeout" --headless --script "res://tests/$suite.gd"
   else
     run_check "$suite" "$suite_timeout" --headless --fixed-fps 60 --script "res://tests/$suite.gd"
@@ -87,4 +87,7 @@ run_check equipment-cold-finish 90 --headless --script res://tests/equipment_col
 run_check run019-cold-prepare 90 --headless --script res://tests/run019_cold_session.gd -- prepare
 run_check run019-cold-reopen 90 --headless --script res://tests/run019_cold_session.gd -- reopen
 run_check run019-cold-reset 90 --headless --script res://tests/run019_cold_session.gd -- reset
-printf '31 suites et huit sessions à froid terminées ; isolation user:// vérifiée. Logs : %s\n' "$results_dir"
+run_check run020-cold-prepare 90 --headless --script res://tests/run020_cold_session.gd -- prepare
+run_check run020-cold-reopen 90 --headless --script res://tests/run020_cold_session.gd -- reopen
+run_check run020-cold-reset 90 --headless --script res://tests/run020_cold_session.gd -- reset
+printf '33 suites et onze sessions à froid terminées ; isolation user:// vérifiée. Logs : %s\n' "$results_dir"

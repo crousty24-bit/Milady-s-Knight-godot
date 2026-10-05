@@ -15,7 +15,7 @@
 	- ordre des niveaux :
 		- **niveau 1** - *The Eidolon Vale*  : Intro (prologue narrative + tuto minimal basique) ; très court et facile
 			- ennemis : Green et Purple Slime
-			- PNJ :  The Ancien Spirit
+			- PNJ :  The Ancient Spirit
 			- introduction au gameplay et fonctionnalités grâce à des fenêtres de texte pour expliquer (tuto)
 			- le niveau doit contenir un common chest à ouvrir, exceptionnellement gratuit uniquement pour présenter son fonctionnement ; donne une récompense fixe prédéterminée : une arme de tir =  *Longbow* niveau 0 ; mais pas d'amélioration
 			- le niveau doit contenir une potion de soin mineure à ramasser
@@ -224,3 +224,14 @@ Scènes disponibles pour piques rétractables, trappes, tourelles et plantes, av
 Secrets par mêlée ou tir du joueur, sans traverser d'autre obstacle, flag durable avant ouverture/fondu ; sauvegarde échouée visible au HUD et retry possible. Bonus HP unique durable. Plaques/boutons/portes restent des états de tentative : plaque par contact supérieur ou tir joueur, bouton par E ; `secondary_door.coin_locked=false` réserve l'accès au mécanisme, `true` au paiement de coins géré une seule fois par le niveau. Ni tirs ennemis ni mêlée n'activent une plaque.
 
 `tests/fixtures/run019_systems.tscn` est une fixture de recette, pas Forbidden Graveyard. N2–4, leurs sorties18/25/32 et leurs budgets optionnels réels restent RUN-020. Art/SFX requis et validation humaine encore attendus ; aucun niveau humain régénéré.
+
+
+### Campagne N2–4 RUN-020 (5 octobre 2026)
+
+N1 mène à `scenes/blight_town.tscn`, puis `black_forrest.tscn` et `forbidden_graveyard.tscn`. Scènes fixes éditables, outil d’auteur `tools/build_run020.py` limité à N2–4. Largeurs2800/3200/3600, coins24/32/40 et portes finales18/25/32. Aucun coffre gratuit/potion tutorielle N1 ajouté dans ces scènes. N4 finit ce segment et propose le replay, sans N5.
+
+N2 introduit Red/Bloated, piques rétractables et trappe. N3 ajoute Warrior/Archer, plante et tourelle. N4 ajoute Sorcerer/Chud et swarm4. Les profils/rewards RUN-018–019 restent inchangés. Les sorties ont une cloison haute et le passage N4 lié au bouton traverse une cloison : les portes font partie du chemin, sans saut au-dessus prévu.
+
+N4 : salle secrète x560–784 (mur id`n4_secret_01`, potion majeure et rare chest) ; branche optionnelle x1296–1520 (porte4 coins et bonus HP id`n4_hp_01`). Les40 coins couvrent32 de sortie +4 de branche avec4 de marge. Bouton x2640 et porte x2808 obligatoires, sans paiement. Les acquisitions durables survivent aux tentatives ; les mécanismes et portes reviennent fermés.
+
+Le parcours réel N1–4 et les transactions sur ces scènes sont exercés séparément. Difficulté/rythme restent à valider humainement ; [guide de playtest](RUN-020_PLAYTEST.md), preuves exactes au journal. Fonds/accessoires et ambiances livrés via Claude, [manifeste](RUN-020_ASSET_MANIFEST.md) ; la passe globale RUN-021 reste à venir.

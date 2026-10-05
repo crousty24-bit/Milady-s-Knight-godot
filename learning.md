@@ -658,3 +658,16 @@ Le test des piques a révélé une différence entre charger un état et passer 
 La run est validée humainement le 5 octobre 2026 avec une limite explicite : les nouveaux mobs n’ont pas été essayés directement en debug, faute de scène de test accessible. Les fixtures automatisées et le pilote de rendu les exercent ; cela ne devient pas un essai humain. L’ouverture de PR vers develop est autorisée séparément, sans fusion ni lancement de RUN-020.
 
 La revue Jev et l’inspection des preuves sont terminées ; [PR #22](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/22) est ouverte vers develop. RUN-019 est DONE avec la limite humaine consignée ; les placements N2–4 restent à construire dans RUN-020.
+
+
+## RUN-020 — Une campagne de quatre niveaux
+
+N2, N3 et N4 sont maintenant des scènes fixes éditables. Leur générateur est un outil d’auteur : le jeu charge les fichiers `.tscn`, sans fabriquer de niveau aléatoire. N1 conserve son terrain humain ; seule sa sortie mène désormais à N2. Chaque scène indique son numéro, son cadrage, sa population et son coût de sortie. Le HUD affiche ce coût au lieu de supposer12 pour tous les niveaux. Le coffre gratuit et la potion tutorielle de N1 ne sont pas recréés ailleurs.
+
+Les coins appartiennent à la tentative et financent les sorties18/25/32. Les40 coins de N4 permettent de payer la porte optionnelle4 puis la sortie32. Les coffres utilisent la banque de shards ; leur dépense ne réduit pas ce budget de coins. Le secret et le bonus HP de N4 utilisent les flags durables déjà construits en RUN-019. Une mort réinitialise les portes et mécanismes, mais conserve leurs acquisitions durables.
+
+Un parcours automatique traverse réellement N1–4 au clavier, obtient le Longbow en N1, ramasse les coins par contact et paie les sorties. Il ne téléporte pas le joueur et ne supprime pas les ennemis. D’autres tests déplacent explicitement des fixtures pour isoler achats, refus, secret, HP et reprise ; ils servent à vérifier les transactions, pas la difficulté naturelle. Trois processus distincts contrôlent la persistance après fermeture du jeu. Le jugement humain sur rythme et difficulté reste nécessaire.
+
+Deux erreurs de construction ont été détectées : les données TileMap doivent commencer par leur en-tête de version ; sans lui, le terrain était illisible et le joueur tombait. Un paramètre nommé `kind` dans le générateur capturait aussi le type du coffre : le rare chest restait common. Les contrôles physiques et économiques ont révélé ces défauts puis vérifié les corrections. Le parcours a également révélé un accès typé à un projectile déjà libéré lors du tir suivant ; supprimer les références invalides avant le nouveau tir corrige ce cas sans changer les dégâts.
+
+Claude Opus5.5 et son sous-agent Sonnet5.5 ont produit les fonds, terrains, accessoires et ambiances sur des fichiers distincts. Les scripts de présentation dessinent autour du terrain existant sans créer de collision. Les générateurs Python restent les sources des images ; les WAV sources sont conservés séparément des OGG bouclés utilisés en jeu. Une capture rendue vérifie la lisibilité et le raccord ; elle ne permet pas de prétendre à une écoute humaine ni de valider un choix artistique. Les preuves chiffrées finales sont au journal, et le parcours humain est décrit dans `docs/RUN-020_PLAYTEST.md`.

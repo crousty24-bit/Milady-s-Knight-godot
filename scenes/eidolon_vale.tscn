@@ -6,6 +6,7 @@
 
 [node name="EidolonVale" instance=ExtResource("1")]
 n1_intro_enabled = true
+next_level_scene = "res://scenes/blight_town.tscn"
 chest_position = Vector2(220, 144)
 potion_position = Vector2(1968, 134)
 

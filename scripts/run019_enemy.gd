@@ -152,7 +152,10 @@ func _release_attack() -> void:
 		var holder := get_parent().get_parent() if get_parent().name == &"Enemies" else get_parent()
 		holder.add_child(attack)
 		attack.global_position = attack_target if released == &"blast" else global_position + Vector2(0, -12)
-		active_attacks = active_attacks.filter(func(item: Node2D) -> bool: return is_instance_valid(item))
+		# A projectile may already be freed when the next shot starts. Avoid
+		# passing that stale object through a typed callable argument.
+		for index in range(active_attacks.size() - 1, -1, -1):
+			if not is_instance_valid(active_attacks[index]): active_attacks.remove_at(index)
 		active_attacks.append(attack)
 		attack_released.emit(attack)
 

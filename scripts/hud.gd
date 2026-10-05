@@ -12,9 +12,9 @@ func show_save_error() -> void:
 	save_error_label.text = "Save failed. Try again."
 	save_error_label.show()
 	save_error_time = 2.0
-func set_gold(value: int, paid: bool) -> void:
-	$Gold.text = "COINS %02d  |  OPEN" % value if paid else "COINS %02d/12" % value
-	$Gold.modulate = Color("f4d384") if value >= 12 or paid else Color("dac38f")
+func set_gold(value: int, paid: bool, cost: int = 12) -> void:
+	$Gold.text = "COINS %02d  |  OPEN" % value if paid else "COINS %02d/%d" % [value, cost]
+	$Gold.modulate = Color("f4d384") if value >= cost or paid else Color("dac38f")
 func set_bonus(banked: int, pending: int) -> void:
 	$Bonus.text = "SHARDS " + _compact(banked + pending)
 	$BonusPending.text = "+%s current" % _compact(pending) if pending > 0 else "bank " + _compact(banked)
