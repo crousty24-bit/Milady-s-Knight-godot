@@ -1,0 +1,14 @@
+[gd_scene load_steps=4 format=3]
+[ext_resource type="PackedScene" path="res://scenes/vertical_slice.tscn" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/reward_chest.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/major_potion.tscn" id="3"]
+[node name="EconomyFixture" instance=ExtResource("1")]
+world_level = 2
+chest_position = Vector2(1800, 144)
+[node name="CommonChest" parent="." instance=ExtResource("2")]
+position = Vector2(120, 144)
+[node name="RareChest" parent="." instance=ExtResource("2")]
+position = Vector2(240, 144)
+kind = "rare"
+[node name="MajorPotion" parent="." instance=ExtResource("3")]
+position = Vector2(320, 134)

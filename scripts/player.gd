@@ -70,6 +70,8 @@ var hit_stun_time: float = 0.0
 var attack_time: float = 0.0
 var attack_cooldown: float = 0.0
 var bow_cooldown: float = 0.0
+var shot_age: float = 99.0
+var equipment: Dictionary = {"melee": "Sword0", "ranged": ""}
 var has_longbow: bool = false
 var active_slot: int = 0
 var hit_targets: Array[int] = []
@@ -108,6 +110,9 @@ var _equipment_sound: AudioStreamPlayer
 var _fx_armed: bool = false  # level setup (configure_equipment on spawn) stays silent
 
 func _ready() -> void:
+	# Each player owns its blade resource: upgrades must not alter other instances.
+	$AttackArea/Shape.shape = $AttackArea/Shape.shape.duplicate()
+	_update_melee_shape()
 	_equipment_sound = AudioStreamPlayer.new()
 	_equipment_sound.bus = &"SFX"
 	_equipment_sound.volume_db = -6.0
@@ -153,6 +158,7 @@ func _physics_process(delta: float) -> void:
 	wall_detach_time = maxf(0.0, wall_detach_time - delta)
 	wall_control_time = maxf(0.0, wall_control_time - delta)
 	since_swing += delta
+	shot_age += delta
 	land_time = maxf(0.0, land_time - delta)
 	velocity.y = minf(velocity.y + GRAVITY * delta, 420.0)
 	if dead:
@@ -218,11 +224,11 @@ func _physics_process(delta: float) -> void:
 		_fire_arrow()
 	if active_slot == 0 and controls_enabled and hit_stun_time <= 0.0 and Input.is_action_pressed("attack") and attack_time <= 0.0 and attack_cooldown <= 0.000001 and motion_state != MotionState.WALL_SLIDE:
 		attack_time = ATTACK_DURATION
-		attack_cooldown = ATTACK_INTERVAL
+		attack_cooldown = WeaponCatalog.stats(equipment.melee).interval
 		attack_facing = facing
 		attack_cancelled = false
 		hit_targets.clear()
-		chain_move = (chain_move + 1) % CHAIN_MOVES if since_swing <= ATTACK_INTERVAL + CHAIN_GRACE else 0
+		chain_move = (chain_move + 1) % CHAIN_MOVES if since_swing <= WeaponCatalog.stats(equipment.melee).interval + CHAIN_GRACE else 0
 		since_swing = 0.0
 		$SwingSound.play()
 	attack_time = maxf(0.0, attack_time - delta)
@@ -294,24 +300,47 @@ func finish_dialogue_pose() -> void:
 	sprite.process_mode = Node.PROCESS_MODE_INHERIT
 
 func configure_equipment(ranged_owned: bool) -> void:
-	has_longbow = ranged_owned
-	if not has_longbow and active_slot != 0:
+	configure_loadout({"melee": "Sword0", "ranged": "Longbow0" if ranged_owned else ""})
+
+func active_item() -> String:
+	return str(equipment.ranged if active_slot == 1 else equipment.melee)
+
+func configure_loadout(slots: Dictionary) -> void:
+	var melee := str(slots.get("melee", "Sword0"))
+	var ranged := str(slots.get("ranged", ""))
+	if not WeaponCatalog.valid(melee, "melee") or (not ranged.is_empty() and not WeaponCatalog.valid(ranged, "ranged")):
+		return
+	var replaced: bool = equipment.melee != melee or equipment.ranged != ranged
+	equipment = {"melee": melee, "ranged": ranged}
+	has_longbow = not ranged.is_empty()
+	if not has_longbow:
 		active_slot = 0
+	if replaced:
+		shot_age = 99.0
+		# Slot timers survive acquisition/replacement; cancel any previous weapon's swing.
 		attack_time = 0.0
 		attack_cancelled = true
+	if is_node_ready():
+		_update_melee_shape()
 	equipment_changed.emit(active_slot)
+
+func _update_melee_shape() -> void:
+	var shape: RectangleShape2D = $AttackArea/Shape.shape
+	shape.size = Vector2(WeaponCatalog.stats(equipment.melee).reach, 4.0)
 
 func _fire_arrow() -> void:
 	if resurrection_active:
 		return
-	bow_cooldown = BOW_INTERVAL
+	var stats := WeaponCatalog.stats(equipment.ranged if has_longbow else "Longbow0")
+	bow_cooldown = stats.interval
+	shot_age = 0.0
 	var arrow: Node2D = ARROW_SCRIPT.new()
 	# Keep ownership under the player for scene restart, but flight in world space.
 	arrow.process_mode = Node.PROCESS_MODE_PAUSABLE
 	add_child(arrow)
 	arrow.top_level = true
 	arrow.global_position = global_position + Vector2(4.0 * facing, -10.0)
-	arrow.setup(facing)
+	arrow.setup(facing, stats.damage, stats.reach)
 	projectile_fired.emit(arrow)
 
 func _update_wall_state(direction: float) -> void:
@@ -417,7 +446,7 @@ func _update_sword() -> void:
 	var angle: float = lerpf(-1.5, 1.2, 1.0 - attack_time / ATTACK_DURATION)
 	var blade_direction := Vector2(cos(angle) * attack_facing, sin(angle))
 	var hand := Vector2(4.0 * attack_facing, -10.0)
-	sword.position = hand + blade_direction * (SWORD_RANGE * 0.5)
+	sword.position = hand + blade_direction * (WeaponCatalog.stats(equipment.melee).reach * 0.5)
 	sword.rotation = blade_direction.angle()
 	if attack_cancelled or dead or attack_time >= ATTACK_HIT_START_TIME or attack_time <= ATTACK_HIT_END_TIME:
 		return
@@ -433,7 +462,7 @@ func _update_sword() -> void:
 		if not get_world_2d().direct_space_state.intersect_ray(ray).is_empty():
 			continue
 		hit_targets.append(body.get_instance_id())
-		body.take_damage(SWORD_DAMAGE, Vector2(attack_facing * 60.0, -55.0))
+		body.take_damage(WeaponCatalog.stats(equipment.melee).damage, Vector2(attack_facing * 60.0, -55.0))
 		hit_sparks.append([body.global_position + Vector2(-attack_facing * 4.0, -7.0), 0.0])
 
 func _update_animation() -> void:
@@ -495,9 +524,9 @@ func _update_bow_animation() -> void:
 func _shot_frame() -> int:
 	if dead:
 		return -1
-	var since := BOW_INTERVAL - bow_cooldown
-	if bow_cooldown > 0.0 and since < SHOT_RELEASE_TIME:
-		return mini(3, int(since * 12.0))
+	# Presentation tracks the actual shot; a changed interval cannot replay an old release.
+	if bow_cooldown > 0.0 and shot_age < SHOT_RELEASE_TIME:
+		return mini(3, int(shot_age * 12.0))
 	var holding: bool = controls_enabled and hit_stun_time <= 0.0 and Input.is_action_pressed("attack")
 	if holding and bow_cooldown > 0.0 and bow_cooldown < SHOT_DRAW_WINDOW:
 		return 4 + mini(2, int((SHOT_DRAW_WINDOW - bow_cooldown) / (SHOT_DRAW_WINDOW / 3.0)))
@@ -510,7 +539,7 @@ func _chain_time() -> float:
 	if attack_time > 0.0:
 		return ATTACK_DURATION - attack_time
 	var holding: bool = controls_enabled and Input.is_action_pressed("attack") and hit_stun_time <= 0.0
-	if holding and since_swing < ATTACK_INTERVAL + CHAIN_GRACE and motion_state != MotionState.WALL_SLIDE:
+	if holding and since_swing < WeaponCatalog.stats(equipment.melee).interval + CHAIN_GRACE and motion_state != MotionState.WALL_SLIDE:
 		return since_swing
 	return -1.0
 

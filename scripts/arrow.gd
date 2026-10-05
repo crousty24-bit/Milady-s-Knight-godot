@@ -6,6 +6,8 @@ const RANGE = 20.0 * 16.0
 # Technical travel speed: 320 px/s; the full range takes one active second.
 const SPEED = 320.0
 const COLLISION_MASK = 1 | 4
+var damage: float = DAMAGE
+var reach: float = RANGE
 var direction: int = 1
 var origin := Vector2.ZERO
 var distance_travelled: float = 0.0
@@ -35,14 +37,16 @@ func _on_impacted_fx(at: Vector2, enemy: bool) -> void:
 	var world: Node = get_tree().current_scene if get_tree().current_scene != null else get_parent()
 	OneShotFx.spawn(world, HIT_FX if enemy else IMPACT_FX, Vector2i(16, 16), 20.0, at, direction < 0, Vector2(0.5, 0.5), IMPACT_SFX, -6.0 if enemy else -2.0)
 
-func setup(aim: int) -> void:
+func setup(aim: int, hit_damage: float = DAMAGE, max_range: float = RANGE) -> void:
+	damage = hit_damage
+	reach = max_range
 	direction = -1 if aim < 0 else 1
 	origin = global_position
 
 func _physics_process(delta: float) -> void:
 	if is_queued_for_deletion():
 		return
-	var step := minf(SPEED * delta, RANGE - distance_travelled)
+	var step := minf(SPEED * delta, reach - distance_travelled)
 	var next := global_position + Vector2(direction * step, 0.0)
 	var query := PhysicsRayQueryParameters2D.create(global_position, next, COLLISION_MASK)
 	query.hit_from_inside = true
@@ -51,11 +55,11 @@ func _physics_process(delta: float) -> void:
 		global_position = hit.position
 		var body: Object = hit.collider
 		if body.has_method("take_damage"):
-			body.take_damage(DAMAGE, Vector2(direction * 60.0, -55.0), SlicePlayer.DamageSource.PROJECTILE)
+			body.take_damage(damage, Vector2(direction * 60.0, -55.0), SlicePlayer.DamageSource.PROJECTILE)
 		impacted.emit(global_position, body.has_method("take_damage"))
 		queue_free()
 		return
 	global_position = next
 	distance_travelled += step
-	if distance_travelled >= RANGE - 0.000001:
+	if distance_travelled >= reach - 0.000001:
 		queue_free()

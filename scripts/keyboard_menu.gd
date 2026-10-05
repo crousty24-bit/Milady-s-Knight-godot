@@ -10,7 +10,8 @@ var opened_frame: int = -1
 var panel: PanelContainer
 var heading: Label
 var description: Label
-var rows: VBoxContainer
+var rows: BoxContainer
+var horizontal_choices: bool = false
 
 # Presentation (RUN-015 art pass): title-screen artwork and logo in the front end, a veil over the
 # level for pause/context, gold-trim panel shared with the HUD, focus plate + cursors, lock for
@@ -167,7 +168,15 @@ func _style_label(label: Label, size: int, color: Color) -> void:
 	label.add_theme_constant_override("shadow_offset_y", 1)
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 
-func show_menu(title: String, detail: String, options: Array, disabled: Array = []) -> void:
+func show_menu(title: String, detail: String, options: Array, disabled: Array = [], horizontal: bool = false) -> void:
+	if horizontal_choices != horizontal:
+		var parent := rows.get_parent()
+		parent.remove_child(rows)
+		rows.queue_free()
+		rows = HBoxContainer.new() if horizontal else VBoxContainer.new()
+		rows.add_theme_constant_override("separation", 6 if horizontal else 1)
+		parent.add_child(rows)
+	horizontal_choices = horizontal
 	choices.assign(options)
 	unavailable.assign(disabled)
 	selection = 0
@@ -280,7 +289,7 @@ func _process(_delta: float) -> void:
 	if Input.is_action_just_pressed("pause"):
 		cancelled.emit()
 		return
-	var direction: int = int(Input.is_action_just_pressed("move_down")) - int(Input.is_action_just_pressed("move_up"))
+	var direction: int = int(Input.is_action_just_pressed("move_right" if horizontal_choices else "move_down")) - int(Input.is_action_just_pressed("move_left" if horizontal_choices else "move_up"))
 	if direction != 0 and choices.size() > 0:
 		for i in range(choices.size()):
 			selection = posmod(selection + direction, choices.size())
