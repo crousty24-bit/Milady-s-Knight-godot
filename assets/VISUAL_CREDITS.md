@@ -102,3 +102,10 @@ Le dépôt est public : un pack dont la licence interdit la redistribution des f
 | `world_items.py` | `assets/run018/world/` | Coffres common/rare, potion majeure, soin de kill, couteau départ/impacts |
 
 Tailles, frames, ancrages et limites détaillés dans [RUN-018_ASSET_MANIFEST.md](../docs/RUN-018_ASSET_MANIFEST.md). La recomposition Sword0 ressemble à l’atlas antérieur mais n’est pas identique pixel à pixel ; son jugement visuel reste humain.
+
+
+## Générés pour le projet — RUN-019 (5 octobre 2026)
+
+Les 37 PNG de `assets/run019/**` sont des visuels originaux du projet générés par `tools/art/run019/enemies_undead.py`, `enemies_blobs.py` et `world_run019.py`. Ces générateurs sont les sources conservées ; palette et outils pixel communs sont réutilisés. Le mur secret reprend l’atlas de pierre existant du projet en lecture seule. Aucun nouvel asset visuel tiers annoncé, aucune génération d’image par IA.
+
+Ennemis, Skulls, projectiles, pièges, mécanismes, pickups et effets : tables, frames et ancrages dans [RUN-019_ASSET_MANIFEST.md](../docs/RUN-019_ASSET_MANIFEST.md). Contribution Claude `d42804d`, passe validée en l’état par l’humain. Assets externes éventuels à adapter lors des prochaines passes autorisées.

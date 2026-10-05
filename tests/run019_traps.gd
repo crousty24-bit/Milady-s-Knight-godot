@@ -48,6 +48,17 @@ func shot(at: Vector2, aim: Vector2 = Vector2.RIGHT, speed: float = 1200.0) -> N
 	return node
 
 func run() -> void:
+	await reset()
+	var initial_spikes := trap("retractable_spikes", Vector2(200, 180))
+	initial_spikes.initial_phase = 2.1
+	room.add_child(initial_spikes)
+	initial_spikes.set_physics_process(false)
+	check(initial_spikes._art.animation == &"extended" and not initial_spikes._voice.playing, "initial dangerous phase is settled and silent")
+	initial_spikes.cycle_time = 0.0
+	initial_spikes._update_phase()
+	initial_spikes.cycle_time = 2.1
+	initial_spikes._update_phase()
+	check(initial_spikes._art.animation == &"extend" and initial_spikes._voice.playing, "later extension plays transition and cue")
 	for angle in [0.0, PI / 2.0, PI, -PI / 2.0]:
 		await reset()
 		var spikes := trap("retractable_spikes", Vector2(200, 180))
@@ -235,5 +246,7 @@ func run() -> void:
 	await reset()
 	room.queue_free()
 	await frames()
+	# Fixed-FPS simulation outruns the real-time mixer; drain freed fixture playbacks.
+	OS.delay_msec(300)
 	print("RESULT %d checks; %d failures" % [checks, failures])
 	quit(1 if failures else 0)

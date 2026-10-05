@@ -13,7 +13,7 @@ Orchestration : Opus 5.5 (principal : contrat de frames, intégration Godot, cap
   - `world_run019.py` lit `assets/sprites/terrain_stone.png` (lecture seule) pour que le mur secret corresponde exactement à la maçonnerie : si cet atlas change, relancer le générateur.
   - Les générateurs sont la source ; `assets/source/run019/` n'est donc pas créé.
 - **Sons : Helton Yan, *Pixel Combat* — CC BY 4.0, crédit obligatoire** (« Sound effects: Pixel Combat SFX by Helton Yan — CC BY 4.0 »). Même pack et même attribution qu'aux sections existantes. La bibliothèque locale est lue seulement. *Minifantasy Dungeon SFX* est écarté : sa licence interdit la redistribution.
-- **Crédits à intégrer par Codex** (fichiers de crédits non édités) :
+- **Crédits intégrés par Codex lors de la recette** :
   - une ligne dans `assets/VISUAL_CREDITS.md` : « RUN-019 : `assets/run019/**` généré par `tools/art/run019/` (original, projet) » ;
   - la section Sons ci-dessous dans `assets/AUDIO_CREDITS.md`.
 
@@ -62,7 +62,7 @@ Format des animations : `nom début+nombre@fps`, B = boucle.
 
 **Échelle.** Les squelettes mesurent environ 26 px, comme le chevalier ; le Sorcerer est plus haut avec son bâton. Bloated et Chud font environ 30–34 px de large × 26–30 px de haut, nettement plus imposants que le chevalier tout en restant centrés sur leur collision de 20×22.
 
-**Besoin physique signalé à Codex, sans édition.** L'Art Bible demande des élites à 1,5–2,5× la taille du joueur. Avec un corps de 20×22, le dessin déborde de la collision d'environ 5 px de chaque côté. Atteindre l'échelle cible exigerait d'agrandir les corps physiques : c'est une décision gameplay, hors de cette contribution.
+**Décision physique après audit Codex.** Collisions 20×22 conservées. L'Art Bible définit une taille visuelle, sans imposer une collision proportionnelle. Les contours alpha mesurés (appendices compris) atteignent 34×30 pour Bloated crawl, 34×29 pour Chud idle et 36×29 pour Chud walk ; le débord latéral peut donc atteindre 7–8 px. Aucun défaut physique démontré dans la recette. La validation humaine de la passe en l'état ne justifie pas de changer déplacements, contacts ou accès aux plateformes.
 
 ## Pièges, mécanismes, pickups (`assets/run019/world/`)
 
@@ -201,7 +201,7 @@ Les `_draw` provisoires sont retirés ; les `queue_redraw()` restants n'ont plus
 
 ## Limites et suites
 
-- **Validation humaine requise** :
+- **Passe Claude validée en l’état par l’humain le 5 octobre 2026**. Les sujets de présentation ci-dessous sont acceptés dans cette passe ; aucun détail d’écoute ou d’essai interactif n’est présumé :
   - rendu et lisibilité en mouvement, ressenti des préparations et de la cadence des animations ;
   - échelle des élites ;
   - distinction spawn/despawn/mort des Skulls à vitesse réelle ;
@@ -226,7 +226,7 @@ Les `_draw` provisoires sont retirés ; les `queue_redraw()` restants n'ont plus
 
 Les fichiers de présentation listés ci-dessus sont rendus à Codex.
 
-À faire côté Codex :
+Liste remise à Codex (historique ; voir audit ci-dessous pour les actions exécutées) :
 - appliquer ou adapter le drainage de `run019_traps` ;
 - intégrer les crédits audio et visuels ;
 - décider de l'échelle des élites ;
@@ -236,3 +236,13 @@ Les fichiers de présentation listés ci-dessus sont rendus à Codex.
 - validation humaine art, écoute et essai avant DONE.
 
 Aucun push, PR ni merge.
+
+## Audit Codex après retour
+
+Deux revues indépendantes en lecture seule (code et assets), suivies de recette root. Crédits visuels et section audio reportés ; collisions des élites conservées. Un défaut de piques chargées en phase dangereuse est reproduit par un test : `is_node_ready()` ne permet pas de distinguer cette initialisation. Un marqueur explicite affiche l’état initial sans transition/cue, puis autorise les transitions suivantes. Le drainage audio proposé est appliqué à la suite pièges ; ses assertions restent actives.
+
+Les cues de porte simultanés constituent le compromis de présentation documenté pour éviter un démarrage après fermeture ; aucune régression de collision/paiement démontrée. Cette superposition et les cues hit/death combinés sont conservés dans la passe acceptée, sans prétendre à une écoute Codex.
+
+Contrôle ciblé des sources audio : les 43 prises WAV référencées par le générateur existent dans la bibliothèque locale, sans modification de celle-ci. Ce contrôle ne constitue pas une nouvelle analyse juridique des licences ; attribution conservée depuis la provenance établie du pack.
+
+Recette finale Codex après correctifs : import+31 suites+8 processus froids+isolation, **1943 PASS**, code0 sans erreur/fuite (`work/test-results/run-BqKIOkCW/`, `work/run019/audit-full-suite.log`). Pilote rendu47/47, code0 sans erreur/fuite (`work/test-results/run-sHD1FPQq/audit-render.log`), captures représentatives inspectées. RUN-019 VERIFY ; passe Claude validée, essai humain complet non présumé, Jev/inspection avant DONE restent requis.

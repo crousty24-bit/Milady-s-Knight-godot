@@ -17,6 +17,7 @@ func _ready() -> void:
 	_build_art()
 	cycle_time = initial_phase
 	_update_phase()
+	_initial_art_phase = false
 
 func _physics_process(delta: float) -> void:
 	cycle_time += delta
@@ -48,6 +49,7 @@ const HIT_SFX = preload("res://assets/sounds/run019/sfx_spikes_hit.wav")
 const EXTEND_SFX = preload("res://assets/sounds/run019/sfx_spikes_extend.wav")
 var _art: AnimatedSprite2D
 var _voice: AudioStreamPlayer2D
+var _initial_art_phase := true
 
 func _build_art() -> void:
 	_art = Run019Art.sprite(self, Run019Art.frames(SHEET, Vector2i(32, 16), ANIMS), Vector2(16, 16), &"retracted")
@@ -56,7 +58,7 @@ func _build_art() -> void:
 
 func _on_phase_art(next: int) -> void:
 	# The initial phase is shown at rest, without a transition or sound.
-	var settled := not is_node_ready()
+	var settled := _initial_art_phase
 	match next:
 		Phase.WARNING: _art.play(&"warning")
 		Phase.EXTENDED:

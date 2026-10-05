@@ -630,7 +630,7 @@ La validation humaine de RUN-018 est reçue le 5 octobre 2026 après les explica
 
 ## RUN-019 — Checkpoint technique : menaces et exploration N2–4
 
-Le contrat du 5 octobre 2026 est validé. Les familles fonctionnent dans des scènes de test ; N2–4 ne sont pas encore construits. Leurs dessins sont provisoires, et la contribution artistique/sonore puis la validation humaine restent attendues.
+Le contrat du 5 octobre 2026 est validé. Les familles fonctionnent dans des scènes de test ; N2–4 ne sont pas encore construits. La contribution Claude apporte désormais les animations et sons ; sa passe est validée en l’état. Cela ne documente pas à soi seul un playtest interactif complet.
 
 Les ennemis avancés partagent un script de comportement avec des paramètres par scène. Warrior poursuit et prépare son coup ; Archer s'arrête pour tirer ; Sorcerer prépare une zone au sol figée qui explose après une seconde. Bloated blesse au contact, Chud par sa mêlée. Chaque profil garde sa santé, ses dégâts et sa récompense. Red étend le Slime existant sans donner d'aggro aux Slimes ordinaires. Un ennemi terrestre voit le joueur dans un rectangle et sans terrain entre eux ; il s'arrête aux bords/obstacles puis revient vers sa patrouille quand il perd l'aggro. Recevoir un coup le repousse sans interrompre son attaque.
 
@@ -645,3 +645,12 @@ Les bonus HP et les secrets utilisent les flags booléens déjà prévus par la 
 Une plaque peut être pressée ou touchée par un projectile du joueur ; un bouton s'utilise avec E. Les accès liés à un mécanisme ne sont pas payables : `coin_locked=false` empêche E de les contourner. Une porte payante utilise les coins, jamais les shards, et n'est débitée qu'une fois. Le niveau gère les priorités des interactions pour qu'E n'active pas deux objets à la fois. Portes et mécanismes se réinitialisent à chaque tentative ; les secrets révélés et bonus acquis restent durables. Les attaques de mêlée et les projectiles du joueur peuvent révéler un secret, avec occlusion par les autres murs.
 
 Les vérifications exécutent la physique, les entrées d'attaque/interactions, les erreurs disque, la pause, les sources de dégâts et des reprises dans des processus distincts. Le pilote graphique contrôle les états et le viewport640×360. Les chiffres et chemins précis sont dans `runs-journal.md` ; ces tests ne remplacent pas la validation artistique, l'écoute ou le playtest humain. Les vrais budgets de coins et parcours N2–4 seront vérifiés lors de RUN-020.
+
+
+## RUN-019 — Retour de la présentation Claude
+
+Les sprites suivent les événements du gameplay : préparation, relâche, contact, mort, activation ou acquisition réussie. Un effet de mort vit dans la scène après la suppression de l’ennemi ; il ne garde ni collision ni récompense. Le Shield affiche une aura et clignote pendant ses deux dernières secondes. Les animations et sons restent séparés des calculs de dégâts, des timers et des écritures de sauvegarde. Les crédits recensent les générateurs des 37 PNG et les prises Pixel Combat des 37 WAV.
+
+Un dessin peut dépasser son corps physique : les contours des élites mesurent jusqu’à 34–36 pixels de large, alors que leur collision fait 20×22. L’Art Bible décrit leur taille visible, pas leur zone de contact. Agrandir cette zone modifierait les contacts et déplacements ; l’audit conserve donc la collision du contrat validé.
+
+Le test des piques a révélé une différence entre charger un état et passer à cet état pendant le jeu. Une instance déjà sortie doit montrer ses piques sans jouer une nouvelle extension. Un marqueur explicite distingue le premier affichage des transitions suivantes ; le test contrôle aussi qu’une extension ultérieure joue toujours son animation et son son. Enfin, la simulation des tests à FPS fixe avance plus vite que le mixeur audio : après destruction des fixtures, 300 ms de drainage réel évitent de quitter avec des lectures audio encore retenues. Ce délai concerne le runner, pas le rythme du jeu.
