@@ -246,3 +246,5 @@ Les cues de porte simultanés constituent le compromis de présentation document
 Contrôle ciblé des sources audio : les 43 prises WAV référencées par le générateur existent dans la bibliothèque locale, sans modification de celle-ci. Ce contrôle ne constitue pas une nouvelle analyse juridique des licences ; attribution conservée depuis la provenance établie du pack.
 
 Recette finale Codex après correctifs : import+31 suites+8 processus froids+isolation, **1943 PASS**, code0 sans erreur/fuite (`work/test-results/run-BqKIOkCW/`, `work/run019/audit-full-suite.log`). Pilote rendu47/47, code0 sans erreur/fuite (`work/test-results/run-sHD1FPQq/audit-render.log`), captures représentatives inspectées. RUN-019 VERIFY ; passe Claude validée, essai humain complet non présumé, Jev/inspection avant DONE restent requis.
+
+Clôture ultérieure : run validée humainement avec absence explicite d’essai direct des nouveaux mobs ; Jev et inspection des preuves terminés, [PR #22](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/22) ouverte. RUN-019 DONE, sans fusion ni run suivante. Les mentions VERIFY et tâches à faire ci-dessus décrivent les checkpoints précédents.

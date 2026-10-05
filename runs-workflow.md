@@ -2,7 +2,7 @@
 
 ## Statut de cette planification
 
-**5 octobre 2026 — Version actuelle : 0.2.0 ; cible 0.3.0 autorisée.** RUN-001–018 et RUN-029 DONE (19 runs). RUN-018 intégrée dans `develop` par PR #21 (`288b518`). Préparation RUN-019 autorisée, branche `feature/run-019-threats-exploration` issue de develop propre ; neuf lots restent BACKLOG. RUN-019 VERIFY après recette de la contribution Claude validée en l’état ; validation humaine reçue avec limite explicite sur les nouveaux mobs ; revue Jev/inspection terminée, livraison PR en cours. Contrat D01/D06/D07 et budget Skull validés. Les checkpoints datés ci-dessous décrivent leur état historique.
+**5 octobre 2026 — Version actuelle : 0.2.0 ; cible 0.3.0 autorisée.** RUN-001–019 et RUN-029 DONE (20 runs). RUN-018 intégrée dans `develop` par PR #21 (`288b518`). Préparation RUN-019 autorisée, branche `feature/run-019-threats-exploration` issue de develop propre ; neuf lots restent BACKLOG. RUN-019 DONE après recette Claude, validation humaine avec limite explicite sur les nouveaux mobs, revue Jev/inspection et livraison [PR #22](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/22) vers develop ; PR non fusionnée. Contrat D01/D06/D07 et budget Skull validés. Les checkpoints datés ci-dessous décrivent leur état historique.
 
 **Clôture du 3 octobre 2026 : RUN-015–017 DONE, jalon 0.2.0 validé localement.** Deux passes Claude et playtest humain N1 validés ; correctif idle, recette finale et revue Jev/inspection terminés. [PR #18](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/18) ouverte de `feature/run-017-eidolon-vale` vers `develop`, sans fusion. Aucune autre run lancée. Les checkpoints antérieurs ci-dessous conservent leur contexte historique.
 
@@ -552,7 +552,7 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 ### RUN-019 — Menaces et exploration N2–4
 
-**Lot H · Main agent : Codex GPT-6.1 Sol Medium · Statut : VERIFY · Dépendances : RUN-018 DONE.**
+**Lot H · Main agent : Codex GPT-6.1 Sol Medium · Statut : DONE · Dépendances : RUN-018 DONE.**
 
 - **Préparation autorisée (5 octobre 2026) :** demande humaine « Lancer run 019 ». Baseline propre develop `288b518`, RUN-018 intégrée via PR #21 ; branche `feature/run-019-threats-exploration` créée. Inspection directe et deux audits Luna Medium en lecture seule : nouveaux ennemis/systèmes encore absents, sources de dégâts et flags v2 réutilisables. [Contrat concret proposé](docs/RUN-019_CONTRACT_REVIEW.md) pour D01/D06/D07 : +1 CURRENT en même temps que MAX, aggro avec visibilité et retour sans saut, quatre Skulls et budget de quatre shards par zone/tentative, Shield rafraîchi sans cumul, secrets mêlée/tir, portes/mécanismes de tentative. Ces choix ne sont pas encore validés. **Condition de reprise : validation du contrat ou corrections précises**, puis READY → ACTIVE. [Contribution Claude préparée](docs/RUN-019_CLAUDE_HANDOFF.md), sans message ni remise de fichiers partagés. Aucun changement gameplay/test runtime, push/PR/merge ni RUN-020. Réglage exact Sol Medium du main non exposé : Je ne sais pas.
 
@@ -563,6 +563,8 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 - **Retour Claude et audit Codex (5 octobre 2026) :** contribution `d42804d` reçue et passe validée en l’état par l’humain. Deux revues indépendantes et recette root : 37 PNG/37 WAV conformes, 43 sources audio présentes, crédits intégrés. Collisions élites20×22 conservées (Art Bible visuelle, aucun défaut physique démontré). État initial dangereux des piques reproduit en échec puis corrigé ; drainage audio de la suite pièges appliqué. Import+31 suites+8 processus froids+isolation : **1943 PASS**, code0 sans erreur/fuite ; rendu **47/47**, captures inspectées. **VERIFY** : aucun blocker technique identifié ; playtest humain requis non présumé par la validation de la seule passe Claude, puis Jev/inspection avant DONE. Journal/learning à jour, aucun push/PR/merge ni020/021.
 
 - **Validation et revue de clôture (5 octobre 2026) :** l’humain valide la run et autorise la PR, en signalant l’absence d’essai direct des nouveaux mobs faute de scène debug accessible. Limite enregistrée ; tests automatisés et rendu ne sont pas présentés comme un essai humain. Jev READY_FOR_DONE (couverture0,70 ; vérification0,59 ; blocage0,51 ; confiance0,08), puis inspection directe des preuves satisfaisante. **VERIFY pendant livraison PR**, aucune fusion ni RUN-020 autorisée.
+
+- **Livraison et clôture (5 octobre 2026) :** branche poussée, [PR #22](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/22) ouverte vers develop. Critères techniques, recette1943 PASS/rendu47, corrections/revue, crédits/journal/learning et validation humaine avec limite acceptée complets : **DONE**. PR non fusionnée ; RUN-020/021 non commencées.
 
 - **Résultat / scope :** Red/Bloated Slime ; Warrior, Archer, Sorcerer, Swarm et Chud ; piques rétractables, trappes, tourelles/plantes, Magic Shield, secrets permanents, mécanismes, portes secondaires et HP bonus. Implémenter par familles testées dans le même lot, avec télégraphies/SFX P0.
 - **Décisions avant implémentation dépendante :** D01/D06/D07 : effet bonus MAX HP sur CURRENT HP, aggro/ligne de vue, plafonds et vie des invocations, cumul Shield et déclencheurs de secrets.
