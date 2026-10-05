@@ -626,3 +626,22 @@ Codex a relancé la recette de retour :1743 contrôles, puis68 contrôles avec r
 
 
 La validation humaine de RUN-018 est reçue le 5 octobre 2026 après les explications de vérification du rendu, des sons et du combat/coffres. Les nouveaux objets restent intégrés aux fixtures : cette validation n’ajoute pas de placement dans les futurs niveaux N2–4 ni de banc d’essai interactif complet.
+
+
+## RUN-019 — Checkpoint technique : menaces et exploration N2–4
+
+Le contrat du 5 octobre 2026 est validé. Les familles fonctionnent dans des scènes de test ; N2–4 ne sont pas encore construits. Leurs dessins sont provisoires, et la contribution artistique/sonore puis la validation humaine restent attendues.
+
+Les ennemis avancés partagent un script de comportement avec des paramètres par scène. Warrior poursuit et prépare son coup ; Archer s'arrête pour tirer ; Sorcerer prépare une zone au sol figée qui explose après une seconde. Bloated blesse au contact, Chud par sa mêlée. Chaque profil garde sa santé, ses dégâts et sa récompense. Red étend le Slime existant sans donner d'aggro aux Slimes ordinaires. Un ennemi terrestre voit le joueur dans un rectangle et sans terrain entre eux ; il s'arrête aux bords/obstacles puis revient vers sa patrouille quand il perd l'aggro. Recevoir un coup le repousse sans interrompre son attaque.
+
+Une swarm crée quatre Skulls. La zone conserve quatre emplacements logiques, pas seulement les instances présentes : sortir/rentrer crée de nouvelles instances, mais chaque emplacement n'accorde qu'un shard par tentative. Détruire les quatre donne donc au maximum quatre shards. Un despawn ne récompense pas ; ces ennemis ne donnent pas de soin et ne subissent pas de recul. Au reset, la zone retrouve ses quatre récompenses.
+
+Les pièges utilisent des compteurs de temps de gameplay : les piques passent de rentrés à avertissement puis sortis ; la tourelle annonce son tir et balaie le trajet du projectile pour détecter un impact même entre deux frames. La trappe vérifie que les pieds passent sur sa largeur supérieure avant de s'ouvrir. Elle reste ouverte jusqu'au reset. La plante demeure solide. La pause suspend ces compteurs et déplacements.
+
+Magic Shield donne dix secondes de protection contre les ennemis. Un second pickup remet le compteur à dix, sans ajouter de temps. Les sources de dégâts distinguent maintenant le tir d'un ennemi du tir d'une tourelle : leurs réactions sont similaires, mais la tourelle est un piège et traverse le Shield. Le vide reste fatal. Le buff ne passe pas à une autre tentative ; son pickup revient.
+
+Les bonus HP et les secrets utilisent les flags booléens déjà prévus par la sauvegarde v2. Une acquisition écrit son ID avant de faire disparaître l'objet ou le mur. L'ancien fichier v2 garde ainsi sa banque et ses armes, sans migration supplémentaire. Si l'écriture échoue, le mur reste fermé ou le bonus reste disponible ; le HUD affiche l'échec et un nouvel essai est possible. Un bonus donne +1 MAX HP et +1 CURRENT HP : 1/3 devient 2/4. Le reset soigne à ce nouveau maximum ; l'objet acquis ne réapparaît plus. Accepter une arme ne soigne pas le joueur.
+
+Une plaque peut être pressée ou touchée par un projectile du joueur ; un bouton s'utilise avec E. Les accès liés à un mécanisme ne sont pas payables : `coin_locked=false` empêche E de les contourner. Une porte payante utilise les coins, jamais les shards, et n'est débitée qu'une fois. Le niveau gère les priorités des interactions pour qu'E n'active pas deux objets à la fois. Portes et mécanismes se réinitialisent à chaque tentative ; les secrets révélés et bonus acquis restent durables. Les attaques de mêlée et les projectiles du joueur peuvent révéler un secret, avec occlusion par les autres murs.
+
+Les vérifications exécutent la physique, les entrées d'attaque/interactions, les erreurs disque, la pause, les sources de dégâts et des reprises dans des processus distincts. Le pilote graphique contrôle les états et le viewport640×360. Les chiffres et chemins précis sont dans `runs-journal.md` ; ces tests ne remplacent pas la validation artistique, l'écoute ou le playtest humain. Les vrais budgets de coins et parcours N2–4 seront vérifiés lors de RUN-020.

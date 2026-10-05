@@ -81,6 +81,7 @@ func _ready() -> void:
 	for coin in $Coins.get_children(): coin.collected.connect(_on_collected)
 	for enemy in $Enemies.get_children():
 		register_enemy(enemy)
+	player.configure_bonus_health(progression.hp_bonus_count())
 	player.configure_loadout(progression.equipment)
 	player.equipment_changed.connect(_update_equipment_hud)
 	tutorial_chest = CHEST.instantiate()
@@ -94,6 +95,9 @@ func _ready() -> void:
 	player.died.connect(_on_died)
 	gate.offering_requested.connect(try_offering)
 	$ExitArea.body_entered.connect(_on_exit)
+	for item in get_tree().get_nodes_in_group("durable_items"):
+		if is_ancestor_of(item) and item.has_signal("save_error"):
+			item.save_error.connect(_durable_save_error)
 	_update_gold_hud()
 	hud.set_health(player.health, player.max_health)
 	_update_equipment_hud(player.active_slot)
@@ -159,10 +163,23 @@ func _process(delta: float) -> void:
 			if request_context("Free tutorial chest", "Longbow 0: 1 DMG / 1.5 s / 20 blocks\nA: select weapon   F (hold): attack / shoot", ["Accept Longbow 0", "Refuse"], _choose_tutorial_reward):
 				tutorial_chest.consume()
 		return
+	for button in get_tree().get_nodes_in_group("mechanism_buttons"):
+		if not is_ancestor_of(button) or not button.can_use(player): continue
+		hud.show_item_prompt(button.global_position + Vector2(0, -32), "E: Activate")
+		if Input.is_action_just_pressed("interact"): try_mechanism(button)
+		return
+	for door in get_tree().get_nodes_in_group("secondary_doors"):
+		if not is_ancestor_of(door) or not door.can_use(player): continue
+		hud.show_item_prompt(door.global_position + Vector2(0, -48), "E: Open, %d coins" % door.coin_cost)
+		if Input.is_action_just_pressed("interact") and not try_secondary_door(door): hud.flash_prompt_failure()
+		return
 	if gate.player_near() and not gate.opened:
 		hud.show_prompt(gate.global_position + GATE_PROMPT_OFFSET, gate.COST, gold)
 	else:
 		hud.hide_prompt()
+func _durable_save_error(_error: int) -> void:
+	hud.show_save_error()
+
 func _on_collected(value: int) -> void:
 	if finished or player.dead or value <= 0: return
 	gold += value
@@ -197,6 +214,22 @@ func _enemy_reward(value: int, at: Vector2, enemy: Node) -> void:
 func _update_gold_hud() -> void:
 	hud.set_gold(gold, gate.opened)
 	hud.set_bonus(progression.banked_bonus, 0 if reward_settled else bonus)
+func try_secondary_door(door: Node) -> bool:
+	if finished or player.dead or paused or not modal.is_empty() or resume_pending: return false
+	if not is_instance_valid(door) or not is_ancestor_of(door) or not door.coin_locked or not door.can_use(player): return false
+	if door.coin_cost < 0 or gold < door.coin_cost: return false
+	gold -= door.coin_cost
+	door.open()
+	_update_gold_hud()
+	hud.flash_prompt_success()
+	return true
+
+func try_mechanism(button: Node) -> bool:
+	if finished or player.dead or paused or not modal.is_empty() or resume_pending: return false
+	if not is_instance_valid(button) or not is_ancestor_of(button) or not button.can_use(player): return false
+	button.activate()
+	return true
+
 func try_offering() -> bool:
 	if finished or player.dead or gate.opened or not modal.is_empty() or resume_pending: return false
 	if gold < gate.COST:

@@ -1,6 +1,6 @@
 # RUN-019 — Contrat proposé avant implémentation
 
-**5 octobre 2026 — Proposition à valider ; aucune règle ci-dessous n'est encore implémentée ni approuvée.**
+**5 octobre 2026 — Contrat validé intégralement par l’humain (« Je valide le contrat décidé pour la run ») ; checkpoint technique vérifié, contribution art/SFX en attente.**
 Lancement demandé par l'humain. Baseline propre `develop` `288b518` (PR #21 intégrant RUN-018 DONE), branche `feature/run-019-threats-exploration` créée depuis develop.
 
 ## Périmètre et état vérifié
@@ -74,4 +74,4 @@ Art/SFX : contribution Claude cadrée dans [RUN-019_CLAUDE_HANDOFF.md](RUN-019_C
 6. Plaques/boutons/portes : clavier réel, paiement insuffisant/suffisant, maintien E, ouvertures multiples sans double débit, plusieurs portes proches, reset complet. Budget financier de fixture vérifié ; budget N2–4 réel à RUN-020.
 7. Import Godot 4.7.2, isolation user://, régressions complètes `tools/test.sh`, fixtures avec rendu 640×360 et inspection des captures ; validation humaine art/écoute et essai des nouvelles interactions. Évidence, corrections/retests et limites dans journal, learning sur résultat réel ; Jev puis inspection avant DONE.
 
-**Condition de reprise : validation de ce contrat ou corrections précises de D01/D06/D07 et du budget Skull.** Les paramètres techniques et l'organisation du code ne demandent pas une approbation supplémentaire à chaque étape. Aucun push/PR/merge autorisé par le lancement.
+**Validation acquise le 5 octobre 2026 pour D01/D06/D07 et le budget Skull ; implémentation autorisée.** Les paramètres techniques et l'organisation du code ne demandent pas une approbation supplémentaire à chaque étape. Aucun push/PR/merge autorisé par le lancement.

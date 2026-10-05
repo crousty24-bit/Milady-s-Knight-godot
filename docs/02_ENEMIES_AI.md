@@ -115,3 +115,12 @@
 				- capacité spéciale : charge. Pas le même comportement que pour le Chaos Champion mais même effet. Première charge au début du combat puis système aléatoire calculé toutes les 20 secondes : 30% de chances que le Boss fasse une charge sur le joueur peu importe sa position.
 				- capacité spéciale : invocation de *Possessed Skulls* (idem que Necromancer sauf pour le timer = au bout des 10 premières secondes de combat puis toutes les 15 secondes)
 				- capacité spéciale : lorsque les HP du Boss atteignent <= 20HP, il devient enragé = double vitesse de déplacement et augmente la vitesse de toute ses d'attaques ; l'invocation de *Possessed Skulls* n'est pas impactée
+
+
+## RUN-019 — Comportements N2–4 implémentés
+
+Les profils N2–4 ci-dessus sont livrés comme scènes réutilisables et fixtures. Aggro terrestre : rectangle attaché au mob et visibilité terrain, perte à la sortie/occlusion. Poursuite sans saut ni chute volontaire, arrêt aux bords/obstacles, retour vers le segment de patrouille initial sans téléport ni soin. Archer stationnaire en aggro. La perte d'aggro annule une préparation non libérée ; projectiles/zones libérés terminent leur cycle, sauf mort de la source qui les supprime.
+
+Sorcerer : point au sol capturé au lancement, avertissement1s puis impact unique2DMG avec profil projectile ennemi. Skulls : quatre par zone, aucun remplacement des morts tant que le joueur reste présent ; sortie/despawn puis reentrée/respawn. Un shard par emplacement logique et tentative, maximum quatre ; aucun soin. Les profils N5–9 et invocations Necromancer/Boss ne sont pas implémentés dans ce lot.
+
+Les paramètres techniques exacts et interfaces sont dans [le handoff](RUN-019_CLAUDE_HANDOFF.md), les décisions validées dans [le contrat](RUN-019_CONTRACT_REVIEW.md). Dessins provisoires et Red teinté ne constituent pas un habillage final ; contribution Claude P0 et playtest encore requis.

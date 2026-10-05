@@ -208,6 +208,23 @@ func set_permanent_flag(id: String) -> Error:
 	data.permanent_flags[id] = true
 	return _commit(data)
 
+# Unique IDs reuse v2's boolean flags; older v2 saves need no migration.
+func hp_bonus_count() -> int:
+	var count := 0
+	for id in permanent_flags:
+		if id.begins_with("hp_bonus:"): count += 1
+	return mini(count, 7) # The authored campaign contains seven bonus hearts.
+
+func has_hp_bonus(id: String) -> bool:
+	return not id.is_empty() and permanent_flags.has("hp_bonus:" + id)
+
+func acquire_hp_bonus(id: String) -> Error:
+	if id.is_empty(): return ERR_INVALID_PARAMETER
+	if not _can_modify(): return storage_error
+	if has_hp_bonus(id): return OK
+	if hp_bonus_count() >= 7: return ERR_INVALID_PARAMETER
+	return set_permanent_flag("hp_bonus:" + id)
+
 func complete_dialogue(id: String) -> Error:
 	if id.is_empty(): return ERR_INVALID_PARAMETER
 	if not _can_modify(): return storage_error

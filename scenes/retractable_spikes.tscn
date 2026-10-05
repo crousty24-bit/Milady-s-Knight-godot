@@ -1,0 +1,34 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/retractable_spikes.gd" id="1"]
+
+[sub_resource type="RectangleShape2D" id="SolidShape"]
+size = Vector2(32, 2)
+
+[sub_resource type="RectangleShape2D" id="ContactShape"]
+size = Vector2(34, 14)
+
+[sub_resource type="RectangleShape2D" id="PointsShape"]
+size = Vector2(32, 10)
+
+[node name="RetractableSpikes" type="StaticBody2D"]
+collision_layer = 1
+collision_mask = 0
+script = ExtResource("1")
+
+[node name="Solid" type="CollisionShape2D" parent="."]
+position = Vector2(0, -1)
+shape = SubResource("SolidShape")
+
+[node name="Points" type="CollisionShape2D" parent="."]
+position = Vector2(0, -7)
+shape = SubResource("PointsShape")
+disabled = true
+
+[node name="Contact" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="Shape" type="CollisionShape2D" parent="Contact"]
+position = Vector2(0, -7)
+shape = SubResource("ContactShape")

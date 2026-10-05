@@ -213,3 +213,10 @@ Le [contrat RUN-018](RUN-018_CONTRACT_REVIEW.md) est validé intégralement par 
 Exception validée au contrat RUN-015 : un common/rare débite à l’ouverture, puis sauvegarde l’item choisi séparément. Refus/Escape ne rembourse rien. Une fermeture avant choix conserve le débit de banque mais ne donne pas l’offre ; une acceptation écrite conserve l’équipement après fermeture. Le retry ne débite ni ne tire une seconde fois. Les coffres et compteurs common/rare sont locaux à la tentative. Le coffre tuto gratuit garde son comportement.
 
 La base technique utilise `WeaponCatalog`, `ChestEconomy`, les deux slots durables existants, des projectiles paramétrés et la potion majeure héritée de la mineure. Les profils de soin de kill sont explicités par la metadata ennemi `healing_profile` (`ordinary`, `elite`, `skull`) ; `skull` exclut le soin. L’intégration aux archétypes futurs relève de RUN-019. Aucun niveau N2–4 ni asset final nouveau n’est déclaré livré par ces contrats.
+
+
+## RUN-019 — Permanents et économie de swarm validés
+
+Bonus HP et secrets sauvegardés via IDs uniques dans les flags v2, écriture avant attribution ; doublon sans gain et erreur sans consommation. Bonus +1 MAX et CURRENT, Shield10s rafraîchi sans addition. Les Skulls de zone N4 donnent un shard au premier kill de chacun des quatre emplacements de la tentative ; les respawns par sortie/rentrée donnent zéro après épuisement, budget4. Despawn sans gain, aucun drop soin. Cette précision économique a été validée avec le contrat RUN-019. Les futures invocations Necromancer/Boss restent à définir dans leurs lots.
+
+La porte secondaire payante dépense uniquement les coins de tentative, une fois ; celle à mécanisme est exclue du paiement E. Budgets et placements N2–4 réels à RUN-020. Aucun nouveau taux de soin, coût de coffre ou comportement de Legendary dans RUN-019.
