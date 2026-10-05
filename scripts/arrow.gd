@@ -5,7 +5,7 @@ const DAMAGE = 1.0
 const RANGE = 20.0 * 16.0
 # Technical travel speed: 320 px/s; the full range takes one active second.
 const SPEED = 320.0
-const COLLISION_MASK = 1 | 4
+const COLLISION_MASK = 1 | 4 | 16
 var damage: float = DAMAGE
 var reach: float = RANGE
 var direction: int = 1
@@ -65,11 +65,14 @@ func _physics_process(delta: float) -> void:
 	var next := global_position + Vector2(direction * step, 0.0)
 	var query := PhysicsRayQueryParameters2D.create(global_position, next, COLLISION_MASK)
 	query.hit_from_inside = true
+	query.collide_with_areas = true
 	var hit := get_world_2d().direct_space_state.intersect_ray(query)
 	if not hit.is_empty():
 		global_position = hit.position
 		var body: Object = hit.collider
-		if body.has_method("take_damage"):
+		if body.has_method("receive_player_attack"):
+			body.receive_player_attack(damage, SlicePlayer.DamageSource.PROJECTILE)
+		elif body.has_method("take_damage"):
 			body.take_damage(damage, Vector2(direction * 60.0, -55.0), SlicePlayer.DamageSource.PROJECTILE)
 		impacted.emit(global_position, body.has_method("take_damage"))
 		queue_free()

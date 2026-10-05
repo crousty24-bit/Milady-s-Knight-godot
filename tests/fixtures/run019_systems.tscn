@@ -1,0 +1,32 @@
+[gd_scene load_steps=8 format=3]
+[ext_resource type="PackedScene" path="res://scenes/vertical_slice.tscn" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/secondary_door.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/mechanism_button.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/pressure_plate.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/secret_wall.tscn" id="5"]
+[ext_resource type="PackedScene" path="res://scenes/hp_bonus.tscn" id="6"]
+[ext_resource type="PackedScene" path="res://scenes/magic_shield.tscn" id="7"]
+[node name="Run019Systems" instance=ExtResource("1")]
+world_level = 4
+chest_position = Vector2(1800, 144)
+potion_position = Vector2(1880, 134)
+[node name="CoinDoor" parent="." instance=ExtResource("2")]
+position = Vector2(112, 144)
+coin_cost = 3
+[node name="Button" parent="." instance=ExtResource("3")]
+position = Vector2(192, 144)
+target_door = NodePath("../MechanismDoor")
+[node name="Plate" parent="." instance=ExtResource("4")]
+position = Vector2(272, 144)
+target_door = NodePath("../MechanismDoor")
+[node name="MechanismDoor" parent="." instance=ExtResource("2")]
+position = Vector2(336, 144)
+coin_locked = false
+[node name="Secret" parent="." instance=ExtResource("5")]
+position = Vector2(416, 144)
+secret_id = "run019_fixture_secret"
+[node name="Bonus" parent="." instance=ExtResource("6")]
+position = Vector2(368, 134)
+bonus_id = "run019_fixture_heart"
+[node name="Shield" parent="." instance=ExtResource("7")]
+position = Vector2(224, 134)

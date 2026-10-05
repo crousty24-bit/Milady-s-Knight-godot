@@ -2,9 +2,10 @@ class_name SliceSlime
 extends CharacterBody2D
 signal defeated(bonus: int, at: Vector2)
 signal health_changed(value: float, maximum: float)
-enum Kind { GREEN, PURPLE }
+enum Kind { GREEN, PURPLE, RED }
 const GREEN_PATROL_SPEED = 30.0
 const PURPLE_PATROL_SPEED = 34.0
+const RED_PATROL_SPEED = 38.0
 @export var patrol_left: float = -40.0
 @export var patrol_right: float = 40.0
 @export var variant: Kind = Kind.GREEN
@@ -20,18 +21,35 @@ var origin_x: float
 const KNOCKBACK_DURATION = 0.12
 const SPLASH = preload("res://assets/sprites/vfx_slime_splash.png")
 const HIT_SPRAY = preload("res://assets/sprites/vfx_slime_hit.png")
+# RUN-019 Red: own sheet with the green layout (tools/art/run019/enemies_blobs.py).
+const RED_SHEET = preload("res://assets/run019/enemies/enemy_slime_red.png")
+const RED_SPLASH = preload("res://assets/run019/enemies/vfx_slime_splash_red.png")
+const RED_SPRAY = preload("res://assets/run019/enemies/vfx_slime_hit_red.png")
+const RED_ANIMS = {&"red": [0, 8, 10, true], &"red_hit": [8, 2, 16, true], &"red_death": [10, 4, 20, false]}
 var knockback_time: float = 0.0
 var dead: bool = false
 @onready var sprite: AnimatedSprite2D = $Sprite
 
 func _ready() -> void:
 	origin_x = position.x
-	max_health_units = 20 if variant == Kind.PURPLE else 10
+	max_health_units = 10 if variant == Kind.GREEN else 20
 	health_units = max_health_units
+	if variant == Kind.RED: sprite.sprite_frames = Run019Art.frames(RED_SHEET, Vector2i(24, 24), RED_ANIMS)
 	sprite.play(_base_animation())
+	sprite.modulate = _base_tint()
+	if variant == Kind.RED:
+		var ancestor := get_parent()
+		while ancestor != null:
+			if ancestor.has_method("register_enemy"):
+				ancestor.register_enemy(self)
+				break
+			ancestor = ancestor.get_parent()
+
+func _base_tint() -> Color:
+	return Color.WHITE
 
 func _base_animation() -> StringName:
-	return &"purple" if variant == Kind.PURPLE else &"green"
+	return &"purple" if variant == Kind.PURPLE else (&"red" if variant == Kind.RED else &"green")
 
 func _physics_process(delta: float) -> void:
 	if dead: return
@@ -43,16 +61,16 @@ func _physics_process(delta: float) -> void:
 		$EdgeRay.position.x = direction * 10
 		$EdgeRay.force_raycast_update()
 		if is_on_wall() or (is_on_floor() and not $EdgeRay.is_colliding()): direction *= -1
-		velocity.x = direction * (PURPLE_PATROL_SPEED if variant == Kind.PURPLE else GREEN_PATROL_SPEED)
+		velocity.x = direction * (PURPLE_PATROL_SPEED if variant == Kind.PURPLE else (RED_PATROL_SPEED if variant == Kind.RED else GREEN_PATROL_SPEED))
 	move_and_slide()
 	sprite.flip_h = direction > 0
 	# Recoil frames only while the knockback lasts (tools/art/slime_art.py).
 	var wanted: StringName = _base_animation() if knockback_time <= 0.0 else StringName(String(_base_animation()) + "_hit")
 	if sprite.animation != wanted: sprite.play(wanted)
-	sprite.modulate = Color("fff1a6") if knockback_time > 0.0 else Color.WHITE
+	sprite.modulate = Color("fff1a6") if knockback_time > 0.0 else _base_tint()
 	for body in $ContactArea.get_overlapping_bodies():
 		if body is SlicePlayer:
-			body.take_damage(1.0 if variant == Kind.PURPLE else 0.5, Vector2(100.0 if body.global_position.x > global_position.x else -100.0, -150.0), SlicePlayer.DamageSource.CONTACT_MELEE)
+			body.take_damage(1.5 if variant == Kind.RED else (1.0 if variant == Kind.PURPLE else 0.5), Vector2(100.0 if body.global_position.x > global_position.x else -100.0, -150.0), SlicePlayer.DamageSource.CONTACT_MELEE)
 
 func take_damage(amount: float, impulse: Vector2, _source: int = SlicePlayer.DamageSource.CONTACT_MELEE) -> void:
 	if dead or amount <= 0.0: return
@@ -82,9 +100,9 @@ func _splash() -> void:
 	var holder: Node = get_tree().current_scene if get_tree().current_scene != null else get_parent()
 	if holder == null or holder == self: return
 	var splash := Sprite2D.new()
-	splash.texture = SPLASH
+	splash.texture = RED_SPLASH if variant == Kind.RED else SPLASH
 	splash.hframes = 6
-	splash.vframes = 2
+	splash.vframes = 1 if variant == Kind.RED else 2
 	var first: int = 6 if variant == Kind.PURPLE else 0
 	splash.frame = first
 	splash.process_mode = Node.PROCESS_MODE_PAUSABLE
@@ -102,9 +120,9 @@ func _spray(impulse: Vector2) -> void:
 	if holder == null or holder == self: return
 	var dir: float = -1.0 if impulse.x < 0.0 else 1.0
 	var spray := Sprite2D.new()
-	spray.texture = HIT_SPRAY
+	spray.texture = RED_SPRAY if variant == Kind.RED else HIT_SPRAY
 	spray.hframes = 4
-	spray.vframes = 2
+	spray.vframes = 1 if variant == Kind.RED else 2
 	var first: int = 4 if variant == Kind.PURPLE else 0
 	spray.frame = first
 	spray.flip_h = dir < 0.0

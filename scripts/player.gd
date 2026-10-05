@@ -8,7 +8,7 @@ signal equipment_changed(slot: int)
 signal projectile_fired(arrow: Node2D)
 const ARROW_SCRIPT = preload("res://scripts/arrow.gd")
 const BOW_INTERVAL = 1.5
-enum DamageSource { CONTACT_MELEE, PROJECTILE, SOLID_TRAP, FLAME, SWARM, VOID }
+enum DamageSource { CONTACT_MELEE, PROJECTILE, SOLID_TRAP, FLAME, SWARM, VOID, TRAP_PROJECTILE }
 const SPEED = 105.0
 const GRAVITY = 760.0
 const JUMP_SPEED = -255.0
@@ -48,6 +48,8 @@ const RUN_HIP_OFFSET = [0, 1, 0, -1, 0, 1, 0, -1]
 const LAND_DURATION = 0.1
 const LAND_SPEED = 160.0
 const LAND_DUST_DURATION = 0.24
+signal magic_shield_changed(remaining: float)
+var magic_shield_time: float = 0.0
 var max_health_units: int = 30
 var health_units: int = 30
 var health: float:
@@ -142,9 +144,37 @@ func _ready() -> void:
 		carrier.animation_changed.connect(_sync_weapon_layers)
 	_connect_kill_heal.call_deferred()
 	_sync_weapon_layers()
+	_build_shield_art()
 
 func _process(_delta: float) -> void:
 	_sync_weapon_layers()
+	# Follows the gameplay timer even when it is written directly (fixtures, closure resets).
+	_shield_aura.visible = magic_shield_time > 0.0 and not dead
+	if _shield_aura.visible:
+		# The last two seconds blink so the end can be anticipated.
+		_shield_aura.modulate.a = 1.0 if magic_shield_time > 2.0 or int(magic_shield_time * 8.0) % 2 == 0 else 0.35
+
+# RUN-019 Magic Shield presentation: aura while active, break effect and cue when it runs out
+# (not on death). Timers and protection rules stay in take_damage/activate_magic_shield.
+const SHIELD_AURA = preload("res://assets/run019/world/vfx_shield_aura.png")
+const SHIELD_END = preload("res://assets/run019/world/vfx_shield_end.png")
+const SHIELD_END_SFX = preload("res://assets/sounds/run019/sfx_magic_shield_end.wav")
+var _shield_aura: AnimatedSprite2D
+
+func _build_shield_art() -> void:
+	_shield_aura = Run019Art.sprite(self, OneShotFx.strip_frames(SHIELD_AURA, Vector2i(36, 40), 10.0, true), Vector2(18, 34), &"default", 1)
+	_shield_aura.name = &"ShieldAura"
+	_shield_aura.visible = magic_shield_time > 0.0
+	magic_shield_changed.connect(_on_magic_shield_art)
+
+func _on_magic_shield_art(remaining: float) -> void:
+	if remaining > 0.0:
+		_shield_aura.visible = true
+		_shield_aura.modulate.a = 1.0
+		return
+	if _shield_aura.visible and not dead:
+		OneShotFx.spawn(self, SHIELD_END, Vector2i(36, 40), 14.0, global_position, false, Vector2(0.5, 34.0 / 40.0), SHIELD_END_SFX, -6.0)
+	_shield_aura.visible = false
 
 func _knives() -> bool:
 	return str(equipment.ranged).begins_with("ThrowingKnives")
@@ -252,6 +282,10 @@ func _on_equipment_changed_fx(slot: int) -> void:
 		_equipment_sound.play()
 
 func _physics_process(delta: float) -> void:
+	if magic_shield_time > 0.0:
+		magic_shield_time = maxf(0.0, magic_shield_time - delta)
+		if magic_shield_time < 0.000001: magic_shield_time = 0.0
+		if magic_shield_time == 0.0: magic_shield_changed.emit(0.0)
 	if resurrection_active:
 		_update_resurrection_visuals()
 		return
@@ -486,6 +520,8 @@ func take_damage(amount: float, impulse: Vector2 = Vector2.ZERO, source: int = D
 	if source == DamageSource.VOID:
 		die()
 		return
+	if magic_shield_time > 0.0 and source in [DamageSource.CONTACT_MELEE, DamageSource.PROJECTILE, DamageSource.SWARM]:
+		return
 	if invulnerability > 0.0 or amount <= 0.0:
 		return
 	health_units = maxi(0, health_units - HealthUnits.from_hp(amount))
@@ -497,7 +533,7 @@ func take_damage(amount: float, impulse: Vector2 = Vector2.ZERO, source: int = D
 	invulnerability = INVULNERABILITY_DURATION
 	hurt_flash_time = HURT_FLASH_DURATION
 	var has_knockback: bool = source == DamageSource.CONTACT_MELEE or source == DamageSource.SOLID_TRAP or source == DamageSource.FLAME
-	var interrupts_attack: bool = source == DamageSource.CONTACT_MELEE or source == DamageSource.PROJECTILE
+	var interrupts_attack: bool = source in [DamageSource.CONTACT_MELEE, DamageSource.PROJECTILE, DamageSource.TRAP_PROJECTILE]
 	if source == DamageSource.CONTACT_MELEE:
 		hit_stun_time = HIT_STUN_DURATION
 	if interrupts_attack:
@@ -517,6 +553,21 @@ func _update_damage_visuals() -> void:
 		var blink_elapsed := maxf(0.0, INVULNERABILITY_DURATION - invulnerability - HURT_FLASH_DURATION)
 		sprite.modulate.a = 0.25 if int(blink_elapsed * 10.0) % 2 == 0 else 1.0
 
+func configure_bonus_health(count: int, grant_new: bool = false) -> void:
+	var next_max := 30 + clampi(count, 0, 7) * HealthUnits.PER_HP
+	var increase := maxi(0, next_max - max_health_units)
+	max_health_units = next_max
+	if not dead:
+		health_units = mini(max_health_units, health_units + increase) if grant_new else max_health_units
+	health_changed.emit(health, max_health)
+
+func activate_magic_shield() -> bool:
+	if dead or resurrection_active: return false
+	magic_shield_time = 10.0
+	magic_shield_changed.emit(magic_shield_time)
+	queue_redraw()
+	return true
+
 func heal(amount: float) -> float:
 	if dead or amount <= 0.0:
 		return 0.0
@@ -530,6 +581,8 @@ func die() -> void:
 	if dead or resurrection_active:
 		return
 	dead = true
+	magic_shield_time = 0.0
+	magic_shield_changed.emit(0.0)
 	for child in get_children():
 		if child.get_script() == ARROW_SCRIPT:
 			child.queue_free()
@@ -564,15 +617,20 @@ func _update_sword() -> void:
 	var query := PhysicsShapeQueryParameters2D.new()
 	query.shape = $AttackArea/Shape.shape
 	query.transform = sword.global_transform
-	query.collision_mask = 4
+	query.collision_mask = 4 | 16
 	for hit in get_world_2d().direct_space_state.intersect_shape(query):
 		var body = hit.collider
-		if not body.has_method("take_damage") or hit_targets.has(body.get_instance_id()):
+		var interactive: bool = body.has_method("receive_player_attack")
+		if (not interactive and not body.has_method("take_damage")) or hit_targets.has(body.get_instance_id()):
 			continue
 		var ray := PhysicsRayQueryParameters2D.create(to_global(hand), body.global_position + Vector2(0, -6), 1)
-		if not get_world_2d().direct_space_state.intersect_ray(ray).is_empty():
+		var blocker := get_world_2d().direct_space_state.intersect_ray(ray)
+		if not blocker.is_empty() and (not interactive or blocker.collider != body):
 			continue
 		hit_targets.append(body.get_instance_id())
+		if interactive:
+			body.receive_player_attack(WeaponCatalog.stats(equipment.melee).damage, DamageSource.CONTACT_MELEE)
+			continue
 		body.take_damage(WeaponCatalog.stats(equipment.melee).damage, Vector2(attack_facing * 60.0, -55.0))
 		hit_sparks.append([body.global_position + Vector2(-attack_facing * 4.0, -7.0), 0.0])
 

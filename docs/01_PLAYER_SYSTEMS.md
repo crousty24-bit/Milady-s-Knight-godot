@@ -88,3 +88,10 @@
 		- présentation de la mêlée (décision RUN-029) : les hits successifs d’une attaque maintenue enchaînent visuellement trois mouvements d’épée (taille, revers fendant, frappe à deux mains), puis reprennent au premier ; l’animation continue entre deux hits tant que F est maintenue. Chaque mouvement reste un seul hit : dégâts, ATK SPEED, fenêtre et zone de contact sont identiques
 	- **MORT = RESET**
 		- quand les HP du joueur sont réduit à zéro : mort du joueur et reset de la progression au début du niveau.
+
+
+## RUN-019 — Bonus HP et Magic Shield, contrat validé le 5 octobre 2026
+
+Bonus unique : +1 MAX HP et +1 CURRENT HP (1/3→2/4), sauvegarde du flag avant attribution. Reset/reprise soigne au nouveau maximum. Aucun soin par acquisition d'équipement. Sept bonus possibles dans la campagne spécifiée ; les paliers N5/N8 restent RUN-023.
+
+Shield : dix secondes de gameplay, rafraîchissement à dix sans cumul, suspendu par pause/modales ; échange d'arme sans effet. Protection des sources ennemies contact/mêlée, projectile/sort au sol et swarm ; aucun dégât ni réaction sur un impact bloqué. Tirs de tourelles explicitement classés comme pièges : ils restent dangereux. Mort/vide/reset/reprise/changement de niveau suppriment le buff. Les scènes de pickup, timers et interactions sont testés en fixture ; art/SFX et validation humaine attendus.

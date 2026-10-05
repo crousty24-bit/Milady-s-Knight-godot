@@ -626,3 +626,35 @@ Codex a relancé la recette de retour :1743 contrôles, puis68 contrôles avec r
 
 
 La validation humaine de RUN-018 est reçue le 5 octobre 2026 après les explications de vérification du rendu, des sons et du combat/coffres. Les nouveaux objets restent intégrés aux fixtures : cette validation n’ajoute pas de placement dans les futurs niveaux N2–4 ni de banc d’essai interactif complet.
+
+
+## RUN-019 — Checkpoint technique : menaces et exploration N2–4
+
+Le contrat du 5 octobre 2026 est validé. Les familles fonctionnent dans des scènes de test ; N2–4 ne sont pas encore construits. La contribution Claude apporte désormais les animations et sons ; sa passe est validée en l’état. Cela ne documente pas à soi seul un playtest interactif complet.
+
+Les ennemis avancés partagent un script de comportement avec des paramètres par scène. Warrior poursuit et prépare son coup ; Archer s'arrête pour tirer ; Sorcerer prépare une zone au sol figée qui explose après une seconde. Bloated blesse au contact, Chud par sa mêlée. Chaque profil garde sa santé, ses dégâts et sa récompense. Red étend le Slime existant sans donner d'aggro aux Slimes ordinaires. Un ennemi terrestre voit le joueur dans un rectangle et sans terrain entre eux ; il s'arrête aux bords/obstacles puis revient vers sa patrouille quand il perd l'aggro. Recevoir un coup le repousse sans interrompre son attaque.
+
+Une swarm crée quatre Skulls. La zone conserve quatre emplacements logiques, pas seulement les instances présentes : sortir/rentrer crée de nouvelles instances, mais chaque emplacement n'accorde qu'un shard par tentative. Détruire les quatre donne donc au maximum quatre shards. Un despawn ne récompense pas ; ces ennemis ne donnent pas de soin et ne subissent pas de recul. Au reset, la zone retrouve ses quatre récompenses.
+
+Les pièges utilisent des compteurs de temps de gameplay : les piques passent de rentrés à avertissement puis sortis ; la tourelle annonce son tir et balaie le trajet du projectile pour détecter un impact même entre deux frames. La trappe vérifie que les pieds passent sur sa largeur supérieure avant de s'ouvrir. Elle reste ouverte jusqu'au reset. La plante demeure solide. La pause suspend ces compteurs et déplacements.
+
+Magic Shield donne dix secondes de protection contre les ennemis. Un second pickup remet le compteur à dix, sans ajouter de temps. Les sources de dégâts distinguent maintenant le tir d'un ennemi du tir d'une tourelle : leurs réactions sont similaires, mais la tourelle est un piège et traverse le Shield. Le vide reste fatal. Le buff ne passe pas à une autre tentative ; son pickup revient.
+
+Les bonus HP et les secrets utilisent les flags booléens déjà prévus par la sauvegarde v2. Une acquisition écrit son ID avant de faire disparaître l'objet ou le mur. L'ancien fichier v2 garde ainsi sa banque et ses armes, sans migration supplémentaire. Si l'écriture échoue, le mur reste fermé ou le bonus reste disponible ; le HUD affiche l'échec et un nouvel essai est possible. Un bonus donne +1 MAX HP et +1 CURRENT HP : 1/3 devient 2/4. Le reset soigne à ce nouveau maximum ; l'objet acquis ne réapparaît plus. Accepter une arme ne soigne pas le joueur.
+
+Une plaque peut être pressée ou touchée par un projectile du joueur ; un bouton s'utilise avec E. Les accès liés à un mécanisme ne sont pas payables : `coin_locked=false` empêche E de les contourner. Une porte payante utilise les coins, jamais les shards, et n'est débitée qu'une fois. Le niveau gère les priorités des interactions pour qu'E n'active pas deux objets à la fois. Portes et mécanismes se réinitialisent à chaque tentative ; les secrets révélés et bonus acquis restent durables. Les attaques de mêlée et les projectiles du joueur peuvent révéler un secret, avec occlusion par les autres murs.
+
+Les vérifications exécutent la physique, les entrées d'attaque/interactions, les erreurs disque, la pause, les sources de dégâts et des reprises dans des processus distincts. Le pilote graphique contrôle les états et le viewport640×360. Les chiffres et chemins précis sont dans `runs-journal.md` ; ces tests ne remplacent pas la validation artistique, l'écoute ou le playtest humain. Les vrais budgets de coins et parcours N2–4 seront vérifiés lors de RUN-020.
+
+
+## RUN-019 — Retour de la présentation Claude
+
+Les sprites suivent les événements du gameplay : préparation, relâche, contact, mort, activation ou acquisition réussie. Un effet de mort vit dans la scène après la suppression de l’ennemi ; il ne garde ni collision ni récompense. Le Shield affiche une aura et clignote pendant ses deux dernières secondes. Les animations et sons restent séparés des calculs de dégâts, des timers et des écritures de sauvegarde. Les crédits recensent les générateurs des 37 PNG et les prises Pixel Combat des 37 WAV.
+
+Un dessin peut dépasser son corps physique : les contours des élites mesurent jusqu’à 34–36 pixels de large, alors que leur collision fait 20×22. L’Art Bible décrit leur taille visible, pas leur zone de contact. Agrandir cette zone modifierait les contacts et déplacements ; l’audit conserve donc la collision du contrat validé.
+
+Le test des piques a révélé une différence entre charger un état et passer à cet état pendant le jeu. Une instance déjà sortie doit montrer ses piques sans jouer une nouvelle extension. Un marqueur explicite distingue le premier affichage des transitions suivantes ; le test contrôle aussi qu’une extension ultérieure joue toujours son animation et son son. Enfin, la simulation des tests à FPS fixe avance plus vite que le mixeur audio : après destruction des fixtures, 300 ms de drainage réel évitent de quitter avec des lectures audio encore retenues. Ce délai concerne le runner, pas le rythme du jeu.
+
+La run est validée humainement le 5 octobre 2026 avec une limite explicite : les nouveaux mobs n’ont pas été essayés directement en debug, faute de scène de test accessible. Les fixtures automatisées et le pilote de rendu les exercent ; cela ne devient pas un essai humain. L’ouverture de PR vers develop est autorisée séparément, sans fusion ni lancement de RUN-020.
+
+La revue Jev et l’inspection des preuves sont terminées ; [PR #22](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/22) est ouverte vers develop. RUN-019 est DONE avec la limite humaine consignée ; les placements N2–4 restent à construire dans RUN-020.

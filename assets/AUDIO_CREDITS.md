@@ -107,3 +107,59 @@ Même auteur/source/licence et attribution Helton Yan *Pixel Combat*, CC BY 4.0,
 
 
 Les cues common/reveal/accept et navigation UI existants sont réutilisés. Sélection Claude par analyse objective uniquement ; écoute humaine pas encore validée pour RUN-018. Familles lourdes/couteaux partagées et substituts approximatifs sont tracés pour RUN-027, sans promettre leur acceptation sonore. Mesure Codex des12 WAV : mono44,1kHz16bits, durées concordantes, crêtes à±0,05dB des cibles ; cela ne remplace ni l’écoute ni la recette du mix en jeu.
+
+
+## Menaces et exploration — RUN-019 (5 octobre 2026)
+
+37 WAV dans `assets/sounds/run019/`, produits par `tools/art/run019/prepare_audio_run019.py`. Même auteur, source et licence que la section Helton Yan ci-dessus : [Pixel Combat SFX](https://heltonyan.itch.io/pixelcombat), CC BY 4.0. Attribution : « Sound effects: Pixel Combat SFX by Helton Yan — CC BY 4.0 ». Les originaux de la bibliothèque locale sont conservés.
+
+Transformation : pipeline `tools/prepare_audio.py` (trim −55 dB, fondu d’entrée 2 ms, mono 44,1 kHz PCM 16 bits, normalisation aux crêtes ci-dessous, coupe avec fondu de sortie si nécessaire). Les combinaisons superposent une seconde source à +0,12 s et −4 dB. La validation humaine de la passe Claude est reçue ; aucun détail d’écoute ou de playtest n’est présumé.
+
+
+Mesures relues par Claude sur les 37 WAV. Les `.tres` sont des `AudioStreamRandomizer` calqués sur `sfx_slime_death.tres`. « + » désigne une couche (seconde source +0,12 s, −4 dB).
+
+| Fichier | Source Helton Yan *Pixel Combat* | Crête dBFS | Durée | Branchement |
+| --- | --- | --- | --- | --- |
+| `sfx_skeleton_warrior_attack_01/02` + `.tres` | DSGNMisc_HIT-Hit Rattle 002/004 | −10 | 0,40 | relâche mêlée Warrior (P0) |
+| `sfx_skeleton_warrior_death` | Hit Rattle 001 + EXPLOSION-Crunching 005 | −8 | 0,90 | mort Warrior (P0) |
+| `sfx_skeleton_archer_shot_01/02` + `.tres` | SWSH_MOVEMENT-Bamboo Whip 001/003 | −10 | 0,21/0,23 | tir Archer (P0) |
+| `sfx_skeleton_archer_death` | Hit Rattle 006 + EXPLOSION-Cruncher 005 | −8 | 0,90 | mort Archer (P0) |
+| `sfx_sorcerer_spell_cast` | DSGNTonl_SKILL RELEASE-Mind Eraser 005 | −8 | 0,60 | début d'incantation (P0) |
+| `sfx_sorcerer_ground_warning` | MAGSpel_CAST-Energy Riser 005 | −8 | 0,91 | avertissement 1 s, attaché à la zone (P0) |
+| `sfx_sorcerer_ground_explosion` | EXPLOSION-Bass Hit 003 + Magisplosion 005 | −8 | 1,10 | explosion (P0) |
+| `sfx_sorcerer_melee_attack` | DSGNTonl_MOVEMENT-Arcane Slap 001 | −8 | 0,50 | coup de bâton (P0 docs/08) |
+| `sfx_sorcerer_death` | DSGNMisc_SKILL IMPACT-Dramatic Finish 005 | −8 | 1,10 | mort Sorcerer (P0) |
+| `sfx_skull_spawn` | MAGSpel_CAST-Sharp Summon 005 | −10 | 0,80 | `swarm_started`, une fois par swarm (P0) |
+| `sfx_skull_death_01/02/03` + `.tres` | DSGNMisc_SKILL IMPACT-Glassy Sprites 001/002/003 | −10 | 0,40 | mort Skull (P0) |
+| `sfx_skull_attack` | Hit Rattle 003 | −10 | 0,12 | contact Skull qui blesse (P1) |
+| `sfx_skull_despawn` | DSGNMisc_SKILL IMPACT-Energy Dissipate 005 | −10 | 0,60 | sortie de zone, hors chemin de récompense (P1) |
+| `sfx_bloated_slime_attack` | DSGNMisc_CAST-Slime Ball 003 | −8 | 0,60 | contact Bloated qui blesse (P0) |
+| `sfx_bloated_slime_death` | EXPLOSION-Thud 004 + Wet Splash 005 | −8 | 1,10 | mort Bloated (P0) |
+| `sfx_chud_attack_01/02` + `.tres` | FGHTImpt_MELEE-Gut Kick 003/001 | −10 | 0,37 | relâche du slam Chud (P0) |
+| `sfx_chud_death` | DSGNMisc_HIT-Mecha Gore Cruncher 005 | −8 | 0,99 | mort Chud (P0) |
+| `sfx_magic_shield_activate` | DSGNSynth_BUFF-Bonus Max Shield 005 | −8 | 0,80 | pickup Shield (P0) |
+| `sfx_magic_shield_end` | DSGNSynth_BUFF-Mecha Barrier Fail 004 | −10 | 0,70 | fin naturelle, pas à la mort (P1) |
+| `sfx_player_hp_bonus` | DSGNSynth_BUFF-Mecha Level Up 004 | −8 | 0,77 | bonus HP collecté, après écriture réussie (P1) |
+| `sfx_trapdoor_trigger` | DSGNSynth_BUFF-Mecha Lock In 004 | −8 | 0,50 | `warning_started` de la trappe (P0) |
+| `sfx_turret_fire` | DSGNMisc_SKILL RELEASE-Flame Ball 004 | −10 | 0,50 | `fired` (P0) |
+| `sfx_turret_projectile_impact` | EXPLOSION-Small Flare 001 | −10 | 0,40 | impact : −4 dB sur le joueur, −10 dB sur le décor (P0) |
+| `sfx_poison_plant_hit` | DSGNMisc_SKILL IMPACT-Bubbly Zaps 005 | −8 | 0,60 | contact plante qui blesse (P0) |
+| `sfx_spikes_hit` | DSGNMisc_HIT-Mecha Armor Piercer 006 | −8 | 0,50 | contact piques mobiles qui blesse (P0) |
+| `sfx_spikes_extend` | DSGNMisc_SKILL RELEASE-Flying Blades 005 | −8 | 0,40 | sortie des piques, −12 dB (P1) |
+| `sfx_door_coin_payment` | DSGNTonl_USABLE-Coin Spend 004 | −8 | 0,60 | ouverture d'une porte `coin_locked` (P0) |
+| `sfx_door_unlock` | UIMisc_INTERFACE-Lock 006 + DSGNSynth_BUFF-Mecha Lock In 004 | −8 | 0,76 | toutes portes (P0) |
+| `sfx_door_open` | DSGNMisc_MOVEMENT-Mecha Large Takeoff 005 | −8 | 1,10 | toutes portes (P0) |
+| `sfx_pressure_plate_activate` | FEETMisc_STEP-Boots on Metal 003 + UIClick Metallic Click 001 | −8 | 0,24 | plaque (P0) |
+| `sfx_button_activate` | UIClick_INTERFACE-Strong Click 1 003 | −8 | 0,26 | bouton (P0) |
+| `sfx_secret_reveal` | EXPLOSION-Sand Impact 005 + MAGSpel_CAST-Skill Ready 005 | −8 | 1,02 | `revealed`, jamais au rechargement (P0) |
+
+**Réutilisations.**
+- Le Red Slime partage la famille Slime existante (`sfx_melee_hit`, `sfx_slime_death`), comme docs/08 le permet.
+- Les coups non mortels sur les nouveaux ennemis réutilisent `sfx_melee_hit.tres` : les sons « hit » P1 dédiés ne sont pas livrés.
+- L'impact de flèche d'os réutilise `sfx_arrow_impact.wav`.
+- Familles reprises avec une prise différente, aucune prise déjà utilisée : Bamboo Whip (le saut utilise la 005), Wet Splash (mort Slime 001–003), Lock (coffre 002/004), Metallic Click (navigation UI 003).
+
+**Substituts approximatifs, à écouter en priorité.**
+- Le pack n'a pas de vrai équivalent pour : le tir d'archer (fouet, pas de corde), la trappe, la porte (grondement mécanique), la plante, les piques, la plaque, le bouton (clic d'interface).
+- Mort des Skulls (aigu, risque de sifflement si plusieurs meurent ensemble), incantation (très grave), activation du Shield (caractère « cyan » non vérifié).
+- **Sélection Claude sans écoute** : sélection par analyse objective (durée, enveloppe, centroïde, noms de fichier). Notes : `work/run019/claude/audio/selection.md`.

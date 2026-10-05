@@ -1,4 +1,17 @@
 extends CanvasLayer
+var save_error_time: float = 0.0
+var save_error_label: Label
+func show_save_error() -> void:
+	if save_error_label == null:
+		save_error_label = $Health.duplicate()
+		save_error_label.name = "SaveError"
+		save_error_label.position = Vector2(12, 90)
+		save_error_label.modulate = Color("ffad94")
+		save_error_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(save_error_label)
+	save_error_label.text = "Save failed. Try again."
+	save_error_label.show()
+	save_error_time = 2.0
 func set_gold(value: int, paid: bool) -> void:
 	$Gold.text = "COINS %02d  |  OPEN" % value if paid else "COINS %02d/12" % value
 	$Gold.modulate = Color("f4d384") if value >= 12 or paid else Color("dac38f")
@@ -142,6 +155,9 @@ func _kill_prompt_tween() -> void:
 	$Prompt/Bg.self_modulate = Color.WHITE
 
 func _process(_delta: float) -> void:
+	if save_error_time > 0.0:
+		save_error_time = maxf(0.0, save_error_time - _delta)
+		if save_error_time == 0.0: save_error_label.hide()
 	if _prompt_active: _place_prompt()
 
 func _place_prompt() -> void:
