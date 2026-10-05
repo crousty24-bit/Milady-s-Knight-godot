@@ -21,6 +21,11 @@ var origin_x: float
 const KNOCKBACK_DURATION = 0.12
 const SPLASH = preload("res://assets/sprites/vfx_slime_splash.png")
 const HIT_SPRAY = preload("res://assets/sprites/vfx_slime_hit.png")
+# RUN-019 Red: own sheet with the green layout (tools/art/run019/enemies_blobs.py).
+const RED_SHEET = preload("res://assets/run019/enemies/enemy_slime_red.png")
+const RED_SPLASH = preload("res://assets/run019/enemies/vfx_slime_splash_red.png")
+const RED_SPRAY = preload("res://assets/run019/enemies/vfx_slime_hit_red.png")
+const RED_ANIMS = {&"red": [0, 8, 10, true], &"red_hit": [8, 2, 16, true], &"red_death": [10, 4, 20, false]}
 var knockback_time: float = 0.0
 var dead: bool = false
 @onready var sprite: AnimatedSprite2D = $Sprite
@@ -29,6 +34,7 @@ func _ready() -> void:
 	origin_x = position.x
 	max_health_units = 10 if variant == Kind.GREEN else 20
 	health_units = max_health_units
+	if variant == Kind.RED: sprite.sprite_frames = Run019Art.frames(RED_SHEET, Vector2i(24, 24), RED_ANIMS)
 	sprite.play(_base_animation())
 	sprite.modulate = _base_tint()
 	if variant == Kind.RED:
@@ -39,12 +45,11 @@ func _ready() -> void:
 				break
 			ancestor = ancestor.get_parent()
 
-# Red uses the existing green atlas with a provisional tint pending the art handoff.
 func _base_tint() -> Color:
-	return Color("ef7373") if variant == Kind.RED else Color.WHITE
+	return Color.WHITE
 
 func _base_animation() -> StringName:
-	return &"purple" if variant == Kind.PURPLE else &"green"
+	return &"purple" if variant == Kind.PURPLE else (&"red" if variant == Kind.RED else &"green")
 
 func _physics_process(delta: float) -> void:
 	if dead: return
@@ -95,9 +100,9 @@ func _splash() -> void:
 	var holder: Node = get_tree().current_scene if get_tree().current_scene != null else get_parent()
 	if holder == null or holder == self: return
 	var splash := Sprite2D.new()
-	splash.texture = SPLASH
+	splash.texture = RED_SPLASH if variant == Kind.RED else SPLASH
 	splash.hframes = 6
-	splash.vframes = 2
+	splash.vframes = 1 if variant == Kind.RED else 2
 	var first: int = 6 if variant == Kind.PURPLE else 0
 	splash.frame = first
 	splash.process_mode = Node.PROCESS_MODE_PAUSABLE
@@ -115,9 +120,9 @@ func _spray(impulse: Vector2) -> void:
 	if holder == null or holder == self: return
 	var dir: float = -1.0 if impulse.x < 0.0 else 1.0
 	var spray := Sprite2D.new()
-	spray.texture = HIT_SPRAY
+	spray.texture = RED_SPRAY if variant == Kind.RED else HIT_SPRAY
 	spray.hframes = 4
-	spray.vframes = 2
+	spray.vframes = 1 if variant == Kind.RED else 2
 	var first: int = 4 if variant == Kind.PURPLE else 0
 	spray.frame = first
 	spray.flip_h = dir < 0.0

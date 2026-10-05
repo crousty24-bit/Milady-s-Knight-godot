@@ -17,6 +17,7 @@ func _physics_process(_delta: float) -> void:
 		_spawn()
 	elif not inside and occupied:
 		occupied = false
+		_despawn_art()
 		_clear()
 
 func _spawn() -> void:
@@ -45,3 +46,19 @@ func reset_attempt() -> void:
 	occupied = false
 	_clear()
 	rewarded_slots = [false, false, false, false]
+
+# --- Presentation (RUN-019 Claude SFX/VFX): spawn cue once per swarm, despawn effects only on
+# zone exit; neither touches rewarded_slots.
+const SPAWN_SFX = preload("res://assets/sounds/run019/sfx_skull_spawn.wav")
+const DESPAWN_SFX = preload("res://assets/sounds/run019/sfx_skull_despawn.wav")
+
+func _ready() -> void:
+	swarm_started.connect(func() -> void: Run019Art.sound(self, SPAWN_SFX, global_position + Vector2(0, -60), -5.0))
+
+func _despawn_art() -> void:
+	var any := false
+	for skull in skulls:
+		if is_instance_valid(skull) and not skull.dead:
+			skull.despawn_art()
+			any = true
+	if any: Run019Art.sound(self, DESPAWN_SFX, global_position + Vector2(0, -60), -8.0)

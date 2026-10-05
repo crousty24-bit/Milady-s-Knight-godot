@@ -6,6 +6,7 @@ var used: bool = false
 var save_failed: bool = false
 var progression: Node
 func _ready() -> void:
+	_build_art()
 	add_to_group("durable_items")
 	progression = get_node_or_null("/root/Progression")
 	if progression != null and not bonus_id.is_empty() and progression.has_hp_bonus(bonus_id):
@@ -38,7 +39,11 @@ func _consume() -> void:
 	used = true
 	hide()
 	set_deferred("monitoring", false)
-func _draw() -> void:
-	draw_circle(Vector2.ZERO, 6, Color("bc4564"))
-	draw_line(Vector2(-3, 0), Vector2(3, 0), Color("fff4dc"), 2)
-	draw_line(Vector2(0, -3), Vector2(0, 3), Color("fff4dc"), 2)
+# --- Presentation (RUN-019 Claude art/SFX): feedback only after a successful durable write.
+const FLOAT = preload("res://assets/run019/world/item_hp_bonus.png")
+const PICKUP = preload("res://assets/run019/world/vfx_hp_bonus_pickup.png")
+const PICKUP_SFX = preload("res://assets/sounds/run019/sfx_player_hp_bonus.wav")
+func _build_art() -> void:
+	Run019Art.sprite(self, OneShotFx.strip_frames(FLOAT, Vector2i(16, 16), 8.0, true), Vector2(8, 8), &"default")
+	collected.connect(func() -> void:
+		Run019Art.fx(self, PICKUP, Vector2i(32, 32), 14.0, global_position, Vector2(0.5, 0.5), false, PICKUP_SFX, -4.0))

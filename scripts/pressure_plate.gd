@@ -2,6 +2,8 @@ extends Area2D
 signal activated
 @export var target_door: NodePath
 var active: bool = false
+func _ready() -> void:
+	_build_art()
 func _physics_process(_delta: float) -> void:
 	if active: return
 	for body in get_overlapping_bodies():
@@ -19,5 +21,13 @@ func activate() -> bool:
 	activated.emit()
 	queue_redraw()
 	return true
-func _draw() -> void:
-	draw_rect(Rect2(-10, -3 if active else -5, 20, 3), Color("77a178") if active else Color("8e8390"))
+# --- Presentation (RUN-019 Claude art/SFX).
+const SHEET = preload("res://assets/run019/world/mech_pressure_plate.png")
+const ANIMS = {&"inactive": [0, 1, 1, false], &"press": [1, 3, 20, false], &"active": [4, 1, 1, false]}
+const SPARK = preload("res://assets/run019/world/vfx_mech_activate.png")
+const ACTIVATE_SFX = preload("res://assets/sounds/run019/sfx_pressure_plate_activate.wav")
+func _build_art() -> void:
+	var art := Run019Art.sprite(self, Run019Art.frames(SHEET, Vector2i(24, 8), ANIMS), Vector2(12, 8), &"inactive")
+	activated.connect(func() -> void:
+		Run019Art.chain(art, &"press", &"active")
+		Run019Art.fx(self, SPARK, Vector2i(24, 16), 16.0, global_position, Vector2(0.5, 1.0), false, ACTIVATE_SFX, -5.0))

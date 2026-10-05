@@ -6,6 +6,9 @@ var triggered: bool = false
 var is_open: bool = false
 var warning_remaining: float = 0.0
 
+func _ready() -> void:
+	_build_art()
+
 func _physics_process(delta: float) -> void:
 	if is_open: return
 	if triggered:
@@ -27,8 +30,16 @@ func _physics_process(delta: float) -> void:
 				queue_redraw()
 				break
 
-func _draw() -> void:
-	if is_open:
-		draw_line(Vector2(-16, 0), Vector2(-16, 8), Color.DIM_GRAY, 2)
-		draw_line(Vector2(16, 0), Vector2(16, 8), Color.DIM_GRAY, 2)
-	else: draw_rect(Rect2(-16, 0, 32, 4), Color.ORANGE if triggered else Color.SLATE_GRAY)
+# --- Presentation (RUN-019 Claude art/SFX).
+const SHEET = preload("res://assets/run019/world/trap_trapdoor.png")
+const ANIMS = {&"closed": [0, 1, 1, false], &"warning": [1, 4, 16, true], &"open": [5, 4, 20, false], &"opened": [9, 1, 1, false]}
+const TRIGGER_SFX = preload("res://assets/sounds/run019/sfx_trapdoor_trigger.wav")
+var _art: AnimatedSprite2D
+
+func _build_art() -> void:
+	_art = Run019Art.sprite(self, Run019Art.frames(SHEET, Vector2i(32, 20), ANIMS), Vector2(16, 4), &"closed")
+	var voice := Run019Art.voice(self, TRIGGER_SFX, -5.0)
+	warning_started.connect(func() -> void:
+		_art.play(&"warning")
+		voice.play())
+	opened.connect(func() -> void: Run019Art.chain(_art, &"open", &"opened"))

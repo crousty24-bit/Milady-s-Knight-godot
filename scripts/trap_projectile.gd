@@ -31,5 +31,13 @@ func _physics_process(delta: float) -> void:
 	distance_travelled += step
 	if distance_travelled >= reach: queue_free()
 
-func _draw() -> void:
-	draw_line(Vector2(-5, 0), Vector2.ZERO, Color.ORANGE_RED, 2.0)
+# --- Presentation (RUN-019 Claude art/SFX): node rotation already follows the aim.
+const BOLT = preload("res://assets/run019/world/proj_turret_bolt.png")
+const IMPACT = preload("res://assets/run019/world/vfx_turret_impact.png")
+const IMPACT_SFX = preload("res://assets/sounds/run019/sfx_turret_projectile_impact.wav")
+
+func _ready() -> void:
+	var art := Run019Art.sprite(self, OneShotFx.strip_frames(BOLT, Vector2i(12, 6), 12.0, true), Vector2(11, 3), &"default", 4)
+	art.play(&"default")
+	impacted.connect(func(at: Vector2, player_hit: bool) -> void:
+		Run019Art.fx(self, IMPACT, Vector2i(16, 16), 20.0, at, Vector2(0.5, 0.5), false, IMPACT_SFX, -4.0 if player_hit else -10.0))

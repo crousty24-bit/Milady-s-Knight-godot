@@ -3,6 +3,7 @@ signal activated
 @export var target_door: NodePath
 var active: bool = false
 func _ready() -> void:
+	_build_art()
 	add_to_group("mechanism_buttons")
 func can_use(player: SlicePlayer) -> bool:
 	return not active and player != null and not player.dead and overlaps_body(player)
@@ -14,6 +15,13 @@ func activate() -> bool:
 	activated.emit()
 	queue_redraw()
 	return true
-func _draw() -> void:
-	draw_rect(Rect2(-5, -12, 10, 12), Color("4b4655"))
-	draw_circle(Vector2(0,-7), 3, Color("77a178") if active else Color("c38364"))
+# --- Presentation (RUN-019 Claude art/SFX); E stays dispatched by the level.
+const SHEET = preload("res://assets/run019/world/mech_button.png")
+const ANIMS = {&"inactive": [0, 2, 3, true], &"press": [2, 3, 20, false], &"active": [5, 1, 1, false]}
+const SPARK = preload("res://assets/run019/world/vfx_mech_activate.png")
+const ACTIVATE_SFX = preload("res://assets/sounds/run019/sfx_button_activate.wav")
+func _build_art() -> void:
+	var art := Run019Art.sprite(self, Run019Art.frames(SHEET, Vector2i(16, 20), ANIMS), Vector2(8, 20), &"inactive")
+	activated.connect(func() -> void:
+		Run019Art.chain(art, &"press", &"active")
+		Run019Art.fx(self, SPARK, Vector2i(24, 16), 16.0, global_position + Vector2(0, -8), Vector2(0.5, 1.0), false, ACTIVATE_SFX, -5.0))

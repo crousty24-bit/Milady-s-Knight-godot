@@ -48,6 +48,7 @@ func _ready() -> void:
 	health_units = max_health_units
 	bonus_reward = REWARDS[kind]
 	set_meta("healing_profile", "elite" if kind in [Kind.BLOATED, Kind.CHUD] else "ordinary")
+	_build_art()
 	add_to_group("enemies")
 	var ancestor := get_parent()
 	while ancestor != null:
@@ -158,6 +159,7 @@ func _release_attack() -> void:
 func _damage_player(amount: float) -> void:
 	if is_instance_valid(target) and not target.dead and _clear_line(target.global_position + Vector2(0, -12)):
 		target.take_damage(amount, Vector2(direction * 100.0, -150.0), SlicePlayer.DamageSource.CONTACT_MELEE)
+		if kind == Kind.BLOATED and Run019Art.just_hurt(target): _contact_feedback()
 
 func take_damage(amount: float, impulse: Vector2, _source: int = SlicePlayer.DamageSource.CONTACT_MELEE) -> void:
 	if dead or amount <= 0.0: return
@@ -179,11 +181,102 @@ func _clear_attacks() -> void:
 
 func _exit_tree() -> void: _clear_attacks()
 
-func _draw() -> void:
-	var colors := [Color("ad78b8"), Color("ded6bd"), Color("d5b787"), Color("87bb79"), Color("bd8477")]
-	var tint: Color = Color("ffe082") if windup_time > 0.0 else colors[kind]
-	var size := Vector2(24, 24) if kind in [Kind.CHUD, Kind.BLOATED] else Vector2(16, 24)
-	draw_rect(Rect2(Vector2(-size.x / 2, -size.y), size), tint)
-	draw_circle(Vector2(direction * 4, -17), 2, Color("322638"))
-	if windup_time > 0.0:
-		draw_arc(Vector2(0, -14), 18, -PI, -PI + TAU * (1.0 - windup_time / windup_duration), 16, Color("fff3bd"), 2)
+# --- Presentation (RUN-019 Claude art/SFX). Reads gameplay state only; sheets face left,
+# feet on the last cell row (tools/art/run019/enemies_*.py, work SPEC tables).
+const SHEETS = [
+	[preload("res://assets/run019/enemies/bloated_slime.png"), Vector2i(40, 32), {&"crawl": [0, 8, 8, true], &"swell": [8, 4, 14, false], &"hit": [12, 2, 16, true], &"death": [14, 6, 12, false]}],
+	[preload("res://assets/run019/enemies/skeleton_warrior.png"), Vector2i(48, 32), {&"idle": [0, 4, 6, true], &"walk": [4, 6, 10, true], &"windup": [10, 3, 10, false], &"attack": [13, 4, 16, false], &"hit": [17, 2, 16, true], &"death": [19, 8, 12, false]}],
+	[preload("res://assets/run019/enemies/skeleton_archer.png"), Vector2i(40, 32), {&"idle": [0, 4, 6, true], &"walk": [4, 6, 10, true], &"windup": [10, 3, 10, false], &"shoot": [13, 3, 12, false], &"hit": [16, 2, 16, true], &"death": [18, 8, 12, false]}],
+	[preload("res://assets/run019/enemies/blight_sorcerer.png"), Vector2i(40, 36), {&"idle": [0, 4, 6, true], &"walk": [4, 6, 10, true], &"cast": [10, 4, 13, false], &"cast_release": [14, 3, 12, false], &"swing_windup": [17, 3, 10, false], &"swing": [20, 4, 16, false], &"hit": [24, 2, 16, true], &"death": [26, 8, 12, false]}],
+	[preload("res://assets/run019/enemies/chud_blob.png"), Vector2i(48, 36), {&"idle": [0, 4, 5, true], &"walk": [4, 6, 8, true], &"windup": [10, 3, 10, false], &"slam": [13, 4, 16, false], &"hit": [17, 2, 16, true], &"death": [19, 7, 10, false]}],
+]
+const STRIKES = [&"attack", &"shoot", &"cast_release", &"swing", &"slam", &"swell"]
+const HIT_SFX = preload("res://assets/sounds/sfx_melee_hit.tres")
+const DEATH_SFX = [
+	preload("res://assets/sounds/run019/sfx_bloated_slime_death.wav"),
+	preload("res://assets/sounds/run019/sfx_skeleton_warrior_death.wav"),
+	preload("res://assets/sounds/run019/sfx_skeleton_archer_death.wav"),
+	preload("res://assets/sounds/run019/sfx_sorcerer_death.wav"),
+	preload("res://assets/sounds/run019/sfx_chud_death.wav"),
+]
+const MELEE_SFX = [
+	preload("res://assets/sounds/run019/sfx_bloated_slime_attack.wav"),
+	preload("res://assets/sounds/run019/sfx_skeleton_warrior_attack.tres"),
+	null,
+	preload("res://assets/sounds/run019/sfx_sorcerer_melee_attack.wav"),
+	preload("res://assets/sounds/run019/sfx_chud_attack.tres"),
+]
+const SHOT_SFX = preload("res://assets/sounds/run019/sfx_skeleton_archer_shot.tres")
+const CAST_SFX = preload("res://assets/sounds/run019/sfx_sorcerer_spell_cast.wav")
+const RELEASE_FX = preload("res://assets/run019/enemies/vfx_bone_arrow_release.png")
+const CAST_FX = preload("res://assets/run019/enemies/vfx_blight_cast.png")
+const BURST_FX = preload("res://assets/run019/enemies/vfx_bloated_burst.png")
+const HIT_TINT = Color("fff1a6")
+var _art: AnimatedSprite2D
+var _voice: AudioStreamPlayer2D
+
+func _build_art() -> void:
+	var sheet: Array = SHEETS[kind]
+	var cell: Vector2i = sheet[1]
+	_art = Run019Art.sprite(self, Run019Art.frames(sheet[0], cell, sheet[2]), Vector2(cell.x * 0.5, cell.y), &"crawl" if kind == Kind.BLOATED else &"idle")
+	_voice = Run019Art.voice(self, null, -6.0)
+	attack_started.connect(_on_attack_started_art)
+	attack_released.connect(_on_attack_released_art)
+	health_changed.connect(_on_health_changed_art)
+	defeated.connect(_on_defeated_art)
+
+func _process(_delta: float) -> void:
+	if dead or _art == null: return
+	_art.flip_h = direction > 0
+	_art.modulate = HIT_TINT if knockback_time > 0.0 else Color.WHITE
+	var wanted := _art.animation
+	if pending_attack != &"":
+		wanted = &"cast" if pending_attack == &"blast" else (&"swing_windup" if kind == Kind.SORCERER else &"windup")
+	elif _art.animation in STRIKES and _art.is_playing():
+		return
+	elif knockback_time > 0.0:
+		wanted = &"hit"
+	elif kind == Kind.BLOATED:
+		wanted = &"crawl"
+	else:
+		wanted = &"walk" if absf(velocity.x) > 1.0 else &"idle"
+	_art.speed_scale = 1.5 if wanted == &"walk" and aggro else 1.0
+	if _art.animation != wanted: _art.play(wanted)
+
+func _play_voice(stream: AudioStream, volume_db: float = -6.0) -> void:
+	if stream == null: return
+	_voice.stream = stream
+	_voice.volume_db = volume_db
+	_voice.play()
+
+func _on_attack_started_art(attack_kind: StringName, _at: Vector2) -> void:
+	_art.play(&"cast" if attack_kind == &"blast" else (&"swing_windup" if kind == Kind.SORCERER else &"windup"))
+	if attack_kind == &"blast":
+		_play_voice(CAST_SFX, -6.0)
+		# Spark on the staff stone (upper front of the 40x36 cell).
+		Run019Art.fx(self, CAST_FX, Vector2i(16, 16), 14.0, global_position + Vector2(direction * 9, -30))
+
+func _on_attack_released_art(attack: Node2D) -> void:
+	if attack == self:
+		_art.play({Kind.WARRIOR: &"attack", Kind.SORCERER: &"swing", Kind.CHUD: &"slam"}.get(kind, &"idle"))
+		_play_voice(MELEE_SFX[kind], -5.0)
+	elif kind == Kind.ARCHER:
+		_art.play(&"shoot")
+		_play_voice(SHOT_SFX, -6.0)
+		Run019Art.fx(self, RELEASE_FX, Vector2i(16, 12), 24.0, attack.global_position, Vector2(0.0, 0.5), direction < 0)
+	else:
+		_art.play(&"cast_release")
+
+func _contact_feedback() -> void:
+	_art.play(&"swell")
+	_play_voice(MELEE_SFX[kind], -5.0)
+
+func _on_health_changed_art(value: float, _maximum: float) -> void:
+	if value > 0.0: _play_voice(HIT_SFX, -8.0)
+
+func _on_defeated_art(_bonus: int, at: Vector2) -> void:
+	var cell: Vector2i = SHEETS[kind][1]
+	Run019Art.spawn_anim(self, _art.sprite_frames, &"death", at, Vector2(cell.x * 0.5, cell.y), direction > 0)
+	if kind == Kind.BLOATED: Run019Art.fx(self, BURST_FX, Vector2i(64, 32), 14.0, at, Vector2(0.5, 1.0))
+	Run019Art.sound(self, HIT_SFX, at, -8.0)
+	Run019Art.sound(self, DEATH_SFX[kind], at, -5.0)

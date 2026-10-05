@@ -144,9 +144,37 @@ func _ready() -> void:
 		carrier.animation_changed.connect(_sync_weapon_layers)
 	_connect_kill_heal.call_deferred()
 	_sync_weapon_layers()
+	_build_shield_art()
 
 func _process(_delta: float) -> void:
 	_sync_weapon_layers()
+	# Follows the gameplay timer even when it is written directly (fixtures, closure resets).
+	_shield_aura.visible = magic_shield_time > 0.0 and not dead
+	if _shield_aura.visible:
+		# The last two seconds blink so the end can be anticipated.
+		_shield_aura.modulate.a = 1.0 if magic_shield_time > 2.0 or int(magic_shield_time * 8.0) % 2 == 0 else 0.35
+
+# RUN-019 Magic Shield presentation: aura while active, break effect and cue when it runs out
+# (not on death). Timers and protection rules stay in take_damage/activate_magic_shield.
+const SHIELD_AURA = preload("res://assets/run019/world/vfx_shield_aura.png")
+const SHIELD_END = preload("res://assets/run019/world/vfx_shield_end.png")
+const SHIELD_END_SFX = preload("res://assets/sounds/run019/sfx_magic_shield_end.wav")
+var _shield_aura: AnimatedSprite2D
+
+func _build_shield_art() -> void:
+	_shield_aura = Run019Art.sprite(self, OneShotFx.strip_frames(SHIELD_AURA, Vector2i(36, 40), 10.0, true), Vector2(18, 34), &"default", 1)
+	_shield_aura.name = &"ShieldAura"
+	_shield_aura.visible = magic_shield_time > 0.0
+	magic_shield_changed.connect(_on_magic_shield_art)
+
+func _on_magic_shield_art(remaining: float) -> void:
+	if remaining > 0.0:
+		_shield_aura.visible = true
+		_shield_aura.modulate.a = 1.0
+		return
+	if _shield_aura.visible and not dead:
+		OneShotFx.spawn(self, SHIELD_END, Vector2i(36, 40), 14.0, global_position, false, Vector2(0.5, 34.0 / 40.0), SHIELD_END_SFX, -6.0)
+	_shield_aura.visible = false
 
 func _knives() -> bool:
 	return str(equipment.ranged).begins_with("ThrowingKnives")
@@ -749,9 +777,6 @@ func _strip_frame(texture: Texture2D, frames: int, index: int) -> Rect2:
 	return Rect2(w * clampi(index, 0, frames - 1), 0, w, texture.get_height())
 
 func _draw() -> void:
-	# Functional shield indicator pending the scoped Claude art/audio handoff.
-	if magic_shield_time > 0.0:
-		draw_arc(Vector2(0, -12), 18.0, 0.0, TAU, 24, Color(0.4, 0.8, 1.0, 0.8), 1.0)
 	if motion_state == MotionState.WALL_SLIDE:
 		# Grit where the braced foot and the gripping hand scrape the wall.
 		var dust_frame: int = (Engine.get_physics_frames() / 4) % 3

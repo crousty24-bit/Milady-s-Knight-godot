@@ -51,10 +51,44 @@ func _finish(at: Vector2) -> void:
 	impacted.emit(at)
 	queue_free()
 
-func _draw() -> void:
+# --- Presentation (RUN-019 Claude art/SFX). The warning frame follows the gameplay timer and
+# the drawn rune is the real 48 px contact zone, frozen on the committed ground point.
+const ARROW = preload("res://assets/run019/enemies/proj_bone_arrow.png")
+const ARROW_IMPACT = preload("res://assets/run019/enemies/vfx_bone_arrow_impact.png")
+const ARROW_IMPACT_SFX = preload("res://assets/sounds/sfx_arrow_impact.wav")
+const WARNING = preload("res://assets/run019/enemies/vfx_blight_warning.png")
+const EXPLOSION = preload("res://assets/run019/enemies/vfx_blight_explosion.png")
+const WARNING_SFX = preload("res://assets/sounds/run019/sfx_sorcerer_ground_warning.wav")
+const EXPLOSION_SFX = preload("res://assets/sounds/run019/sfx_sorcerer_ground_explosion.wav")
+const WARNING_FRAMES = 8
+var _art: Sprite2D
+
+func _ready() -> void:
+	_art = Sprite2D.new()
+	_art.centered = false
 	if mode == 0:
-		var direction := motion.normalized()
-		draw_line(-direction * 6, direction * 6, Color("f4ddaa"), 2)
+		_art.texture = ARROW
+		# Tip (13, 2) on the flight point, turned along the motion.
+		_art.offset = Vector2(-13, -2)
+		_art.rotation = motion.angle()
+		_art.z_index = 4
 	else:
-		draw_rect(Rect2(Vector2(-radius, -3), Vector2(radius * 2, 3)), Color(0.7, 0.2, 0.65, 0.5))
-		draw_arc(Vector2(0, -radius / 2), radius, 0, TAU * minf(elapsed / warning_duration, 1), 24, Color("f7a4dd"), 2)
+		_art.texture = WARNING
+		_art.hframes = WARNING_FRAMES
+		_art.offset = Vector2(-28, -36)
+		_art.z_index = -1
+		if not is_equal_approx(radius, 24.0): _art.scale = Vector2.ONE * radius / 24.0
+		# Attached: the owner positions this node right after adding it; ends with the warning.
+		Run019Art.voice(self, WARNING_SFX, -6.0).play()
+	add_child(_art)
+	impacted.connect(_on_impacted_art)
+
+func _process(_delta: float) -> void:
+	if mode == 1 and _art != null:
+		_art.frame = clampi(int(elapsed / maxf(warning_duration, 0.001) * WARNING_FRAMES), 0, WARNING_FRAMES - 1)
+
+func _on_impacted_art(at: Vector2) -> void:
+	if mode == 0:
+		Run019Art.fx(self, ARROW_IMPACT, Vector2i(16, 16), 20.0, at, Vector2(0.5, 0.5), motion.x < 0.0, ARROW_IMPACT_SFX, -6.0)
+	else:
+		Run019Art.fx(self, EXPLOSION, Vector2i(64, 56), 16.0, at, Vector2(0.5, 52.0 / 56.0), false, EXPLOSION_SFX, -4.0)
