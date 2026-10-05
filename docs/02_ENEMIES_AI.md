@@ -12,6 +12,7 @@
 		- knockback : au moment où il subit un dégât, le mob est légèrement repoussé en arrière (dans le sens opposé de l'attaque)
 			- sauf exception : Possessed Skulls
 		- les mobs ne sont pas sujets à l'invincibilité temporaire, hit-stun, interruption d'attaque
+			- RUN-007 : Green/Purple conservent leur impulsion de recul pendant 0,12 s, puis reprennent leur patrouille. Le contact reste dangereux pendant ce recul et un autre impact est accepté immédiatement ; la teinte jaune est un feedback visuel, sans immunité.
 
 ## bestiaire des PNJ :
 - il y a 2 PNJ dans le jeu : 

@@ -65,17 +65,18 @@
 			- exemple : joueur possède 3 HP MAX, il subit 1 DMG d'une attaque de mob => joueur possède 2 CURRENT HP
 	- **REACTION AUX DEGATS**
 		- lorsque le joueur subit un dégât, plusieurs effets s'appliquent :
-			- invincibilité temporaire : fenêtre d'invincibilité après un hit durant laquelle le joueur ne peut pas subir de dégâts = éviter de subir plusieurs collisions consécutives selon l'implémentation et/ou si le joueur se retrouve "coincé" dans un ou plusieurs ennemis
-			- hit-stun : fenêtre temporaire parallèle à l'invincibilité temporaire durant laquelle le joueur ne peut pas effectuer d'attaques
-			- knockback : au moment où il subit un dégât, le personnage est légèrement repoussé en arrière (dans le sens opposé de l'attaque) ; fenêtre temporaire durant laquelle le joueur ne peut pas effectuer de jump
+			- invincibilité temporaire : fenêtre de 1,20 s après un hit durant laquelle le joueur ne peut pas subir de dégâts (ajustement RUN-007 validé après audit ; le vide reste fatal) = éviter de subir plusieurs collisions consécutives selon l'implémentation et/ou si le joueur se retrouve "coincé" dans un ou plusieurs ennemis
+			- hit-stun : fenêtre de 0,18 s parallèle à l'invincibilité temporaire durant laquelle le joueur ne peut pas effectuer d'attaques
+			- knockback : au moment où il subit un dégât, le personnage est légèrement repoussé en arrière (dans le sens opposé de l'attaque) ; fenêtre de 0,16 s durant laquelle le joueur ne peut pas effectuer de jump
 			- interruption d'attaque : si le joueur appui sur attaquer au même moment où il subit un dégât, l'action d'attaque est interrompue (annulé)
-			- **A DEFINIR :**
-				- les durées exactes seront à évaluer, décider puis à corriger avant et pendant l'implémentation/testing
+			- feedback RUN-007 : flash blanc opaque de 0,10 s puis clignotement contrasté (alpha 0,25/1 par phases de 0,10 s) jusqu’à la fin de l’invulnérabilité. La pause suspend ces effets avec les compteurs ; la mort supprime le flash et restaure l’opacité.
+			- les durées de recul/hit-stun sont conservées après audit ; l’équilibrage final reste à confirmer par essai humain. Les ronces poussent horizontalement loin de leur centre, avec repli opposé au regard si les centres sont alignés.
 		- cas où tous les effets ci-dessus s'appliquent : 
 			- le joueur subit un dégâts suite à une collision avec un mob : Slimes
 			- le joueur subit un dégâts suite à une attaque de mêlée d'un mob : Skeleton Warrior, Sorcerer, mobs d'élite, Boss
 		- cas où les effets ci-dessus s'appliquent différemment :
 			- le joueur subit un dégâts suite à une collision avec un piège : invincibilité temporaire et knockback = oui ; hit-stun et interruption d'attaque = non
+			- une flamme qui blesse le joueur suit le profil du piège : invincibilité temporaire et knockback = oui ; hit-stun et interruption d'attaque = non (décision RUN-006)
 			- le joueur subit un dégâts suite à une attaque de tir d'un mob (Skeleton Archer) :  invincibilité temporaire et interruption d'attaque = oui ; knockback et hit-stun = non
 			-  le joueur subit un dégâts suite à une collision avec un piège à projectiles (tir des mini-tourelles) : invincibilité temporaire et interruption d'attaque = oui ; knockback et hit-stun = non
 			- le joueur subit un dégâts suite à une collision avec un mob swarm (Possessed Skulls) : invincibilité temporaire uniquement
@@ -84,5 +85,6 @@
 		- une attaque de mêlée donne des hit répétés en continus lorsque la touche d'attaque est maintenue (hold) ; idem pour le tir ; hold (F)→ attaques (hits) répétées selon ATK SPEED de l'arme équipée
 		- les attaques infligent des dégâts basés sur les DMG de l'arme équipée et de son ATK SPEED (= DPS)
 		- le système doit garantir qu’une attaque ne provoque qu’un nombre de hits prévu et ne puisse pas infliger des dégâts à chaque frame physique : l’ATK SPEED correspond à un intervalle en secondes => cette règle doit rester la référence du système de dégâts
+		- présentation de la mêlée (décision RUN-029) : les hits successifs d’une attaque maintenue enchaînent visuellement trois mouvements d’épée (taille, revers fendant, frappe à deux mains), puis reprennent au premier ; l’animation continue entre deux hits tant que F est maintenue. Chaque mouvement reste un seul hit : dégâts, ATK SPEED, fenêtre et zone de contact sont identiques
 	- **MORT = RESET**
 		- quand les HP du joueur sont réduit à zéro : mort du joueur et reset de la progression au début du niveau.

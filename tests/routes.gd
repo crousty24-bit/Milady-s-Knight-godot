@@ -10,7 +10,7 @@ func run() -> void:
 		await driver.approach()
 		await driver.finish()
 		driver.release_inputs()
-		var ok: bool = not driver.failed and driver.level.finished and driver.level.gold == 0 and driver.level.bonus == driver.enemy_rewards + 1 and driver.level.reward_settled and driver.level.progression.banked_bonus == driver.starting_bank + driver.level.bonus
+		var ok: bool = not driver.failed and driver.level.finished and driver.level.gate.opened and driver.level.bonus == driver.enemy_rewards and driver.level.reward_settled and driver.level.progression.banked_bonus == driver.starting_bank + driver.level.bonus
 		print("PASS " if ok else "FAIL ", "routes ", upper, " pos=", driver.player.position, " hp=", driver.player.health, " seal=", driver.level.gold, " bonus=", driver.level.bonus)
 		if not ok: failures += 1
 		if DisplayServer.get_name() != "headless":

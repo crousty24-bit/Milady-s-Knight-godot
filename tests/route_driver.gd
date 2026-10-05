@@ -9,20 +9,66 @@ var tick := 0
 var captured: Dictionary = {}
 var starting_bank: int = 0
 var enemy_rewards: int = 0
+var offering_before: int = -1
+var offering_after: int = -1
 func _init(scene_tree: SceneTree) -> void: tree = scene_tree
-func start() -> void:
+func start(scene_path: String = "res://scenes/vertical_slice.tscn", existing_level: Node2D = null) -> void:
 	starting_bank = tree.root.get_node("Progression").banked_bonus
-	level = load("res://scenes/vertical_slice.tscn").instantiate()
-	tree.root.add_child(level)
+	level = existing_level if existing_level != null else load(scene_path).instantiate()
+	if existing_level == null: tree.root.add_child(level)
 	tree.current_scene = level
 	player = level.get_node("Player")
 	for enemy in level.get_node("Enemies").get_children():
 		enemy.defeated.connect(func(value: int, _at: Vector2): enemy_rewards += value)
+	for i in range(3):
+		await tree.physics_frame
+		await tree.process_frame
+	if level.n1_intro_enabled and not tree.root.get_node("Progression").completed_dialogues.has(level.INTRO_ID):
+		# Wait for the one-shot resurrection, then actually walk two blocks forward.
+		for i in range(240):
+			if level.modal != "resurrection" and not level.resume_pending: break
+			await tree.physics_frame
+			await tree.process_frame
+		Input.action_press("move_right")
+		for i in range(180):
+			await tree.physics_frame
+			await tree.process_frame
+			if level.modal in ["spirit_appearance", "dialogue"]: break
+		Input.action_release("move_right")
+		for i in range(120):
+			if level.modal == "dialogue": break
+			await tree.physics_frame
+			await tree.process_frame
+		if level.modal != "dialogue":
+			fail("introduction after walking two blocks")
+			return
+		for phrase in range(level.dialogue_panel.lines.size()):
+			Input.action_press("jump")
+			for i in range(3):
+				await tree.physics_frame
+				await tree.process_frame
+			Input.action_release("jump")
+			for i in range(3):
+				await tree.physics_frame
+				await tree.process_frame
 	for i in range(10): await step(0)
 func release_inputs() -> void:
 	for action in ["move_left", "move_right", "jump", "attack", "interact"]: Input.action_release(action)
 func step(direction: float, combat := true) -> void:
 	tick += 1
+	if level.n1_intro_enabled and level.modal == "context":
+		release_inputs()
+		for i in range(3):
+			await tree.physics_frame
+			await tree.process_frame
+		Input.action_press("interact")
+		for i in range(3):
+			await tree.physics_frame
+			await tree.process_frame
+		Input.action_release("interact")
+		for i in range(3):
+			await tree.physics_frame
+			await tree.process_frame
 	Input.action_release("move_left")
 	Input.action_release("move_right")
 	Input.action_release("attack")
@@ -30,10 +76,16 @@ func step(direction: float, combat := true) -> void:
 		for enemy in level.get_node("Enemies").get_children():
 			if enemy.dead: continue
 			var distance: Vector2 = enemy.position - player.position
-			if absf(distance.y) < 18 and absf(distance.x) < 36:
-				if player.is_on_floor() and absf(distance.x) < 27:
-					direction = signf(distance.x) if player.facing != int(signf(distance.x)) else 0.0
-				if player.attack_time <= 0 and tick % 2 == 0:
+			if absf(distance.y) < 18 and absf(distance.x) < 40:
+				var side := signf(distance.x)
+				var gap := absf(distance.x)
+				if player.is_on_floor():
+					# Stay inside sword reach, outside contact, and kite during recovery.
+					if player.attack_time > 0.0 or player.attack_cooldown <= 0.05:
+						direction = side if gap > 23.0 or player.facing != int(side) else 0.0
+					else:
+						direction = side if gap > 24.0 else (-side if gap < 22.0 else 0.0)
+				if gap < 28.0 and (player.attack_time > 0.0 or player.attack_cooldown <= 0.05):
 					Input.action_press("attack")
 				break
 	if direction < 0: Input.action_press("move_left")
@@ -164,6 +216,8 @@ func lower(right := true) -> void:
 		await jump(928)
 		await walk(1004)
 		await jump(1080)
+		await walk(1088)
+		await jump(1168)
 		await walk(1267)
 		await jump(1308)
 		await walk(1331)
@@ -171,6 +225,8 @@ func lower(right := true) -> void:
 		await walk(1390)
 		await jump(1430)
 	else:
+		await walk(1168)
+		await jump(1080)
 		await walk(1068)
 		await jump(992)
 		await walk(925)
@@ -194,9 +250,11 @@ func approach(right := true) -> void:
 func finish() -> void:
 	if failed: return
 	await walk(2035)
+	offering_before = level.gold
 	Input.action_press("interact")
 	await step(0)
 	Input.action_release("interact")
+	offering_after = level.gold
 	await walk(2140)
 	if not level.finished: fail("exit")
 func close() -> void:

@@ -1,0 +1,46 @@
+{
+  "run_id": "RUN-EXAMPLE",
+  "proposed_status": "VERIFY",
+  "acceptance_criteria": [
+    {
+      "id": "AC-1",
+      "description": "Every required acceptance criterion is satisfied.",
+      "status": "pending",
+      "evidence": "Replace with the exact check result, observed behavior, or durable evidence reference."
+    }
+  ],
+  "required_checks": [
+    {
+      "id": "TEST-1",
+      "description": "Required checks for this run have been executed successfully.",
+      "status": "pending",
+      "evidence": "Replace with the command, result, version, and relevant log path."
+    }
+  ],
+  "bugtest": {
+    "status": "pending",
+    "evidence": "Replace with the reproduction attempt and observed result."
+  },
+  "regressions": [
+    {
+      "id": "REG-1",
+      "description": "Relevant regressions have been checked for the systems changed.",
+      "status": "pending",
+      "evidence": "Replace with the exercised interactions and results."
+    }
+  ],
+  "journal": {
+    "status": "pending",
+    "evidence": "runs-journal.md contains the checks performed, results, bugs, and limitations."
+  },
+  "learning": {
+    "status": "pending",
+    "evidence": "learning.md explains the verified implementation for this run."
+  },
+  "human_validation": {
+    "required": true,
+    "status": "pending",
+    "evidence": "Replace with the recorded human decision required by this run."
+  },
+  "open_blockers": []
+}

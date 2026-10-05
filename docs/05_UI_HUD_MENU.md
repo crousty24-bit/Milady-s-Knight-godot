@@ -20,6 +20,7 @@
 	- elle affiche dans la zone supérieure gauche : 
 		- l'avatar du joueur : purement stylistique, n'apporte aucune information sur le gameplay => **A DEFINIR** si pertinent (après premiers playtests réels) où si consomme trop d'espace et gène visuellement
 		- les HP du joueur répartis sur 2 lignes, icon coeurs : les coeurs s'affichent visuellement par coeurs entiers ou par demi-coeurs
+			- pour les HP fractionnaires, la valeur numérique reste exacte ; l'icône arrondit vers le demi-cœur supérieur afin qu'un joueur encore vivant conserve un demi-cœur visible (décision RUN-006)
 		- un compteur de gold coins avec une icon : x gold coin /12
 		- un compteur de shards : doit afficher les current shards collectés (+35) et les saved shards (/50)
 		- les 2 slots d'armes affichés verticalement : slot 1 (mêlée) et slot 2 (tir)
@@ -332,3 +333,12 @@ Chaque feedback visuel doit répondre à au moins une question du joueur :
 Les règles précises de priorité, dimensions, marges, timings, transitions, couleurs et animations UI devront être définies plus rigoureusement avec Astra lors de la documentation technique du projet.
 
 ---
+
+
+## Règles normalisées RUN-015 — validées le 3 octobre 2026
+
+Flèches haut/bas pour les menus, E pour confirmer, Escape pour fermer/revenir puis pause uniquement depuis le jeu libre. Une seule modale importante possède les entrées ; une demande concurrente est refusée. L'entrée qui ouvre une fenêtre ne peut pas la fermer dans la même frame. À la reprise, E/F/Space/Escape doivent être relâchés avant retour du contrôle joueur. Le dialogue réserve Space au skip, bloque le contrôle joueur et n'ouvre pas pause avec Escape ; son intégration vient en RUN-017.
+
+Le menu ouvre New Game / Continue / Controls / Quit. Continue est indisponible sans sauvegarde lisible ; une v1 propose migration avec Cancel sélectionné par défaut. New Game avec un fichier existant exige confirmation, Cancel sélectionné par défaut, puis conservation de l'original avant remplacement. Pause propose Resume / Restart / Quit to menu ; restart et retour menu sont immédiats. Fermeture système termine le jeu et abandonne la tentative sans annuler les acquisitions/débits déjà durables.
+
+Deux slots HUD verticaux (mêlée/tir) sont retenus ; les choix de récompense dans un coffre restent horizontaux. La réalisation des slots/rewards vient en RUN-016. La présentation des menus et les assets/audio requis restent la contribution Claude ; le panneau fonctionnel de Codex ne vaut pas validation artistique.

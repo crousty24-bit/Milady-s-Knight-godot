@@ -188,3 +188,30 @@
 			- à l'inverse, posséder une arme Légendaire va volontairement rendre le joueur OP et donner un avantage considérable sur le combat du Boss Final : parti pris assumé compte tenu de la faible chance de drop une légendaire
 - en cas de mort du joueur : reset au début du niveau (zone de spawn fixe)
 	- le jeu se veut donc difficile (die and retry) avec une part de randomness et une approche rogue lite sans être non plus trop hardcore ni trop punitif
+
+
+## Implémentation vérifiée — RUN-008 (28 septembre 2026)
+
+`scenes/spikes.tscn` est un piège fixe orientable par rotation (0°, 90°, 180°, −90°). Son corps `StaticBody2D` bloque sur la couche terrain 1, sans la couche grippable 4 ; son `Area2D` de contact ne détecte que le joueur (couche 2). Le rectangle solide est de 32×12 px et le capteur de 34×14 px, légèrement plus large pour détecter le contact malgré la séparation physique. Le dessin provisoire présente quatre dents claires sur cette emprise rectangulaire ; il ne constitue pas un sprite final validé.
+
+Le contact inflige 0,5 HP avec protection 1,20 s et recul 0,16 s, sans hit-stun ni interruption de Sword. L’impulsion est tournée avec le piège et dirigée hors de sa surface. Le slice conserve ses ronces à 1 HP et ajoute deux placements de piques : sol `(1120,224)` et limite droite `(2240,80)`. Le terrain existant reste inchangé.
+
+Le niveau exporte `void_y`, exprimé dans ses coordonnées locales. Lorsque les pieds du joueur passent sous ce seuil, le profil VOID provoque une mort unique même pendant l’invulnérabilité ; la pause suspend le contrôle. Le slice règle ce seuil à 304 px, ancien bord supérieur de Pit. La zone Pit redondante et la limite globale `y > 340` du joueur sont retirées. La reprise reste manuelle jusqu’à RUN-009.
+
+
+## Contrat de persistance validé — RUN-015 (3 octobre 2026)
+
+Le [contrat RUN-015](RUN-015_CONTRACT_REVIEW.md) précise la table précédente : seul le **point de reprise du niveau** attend la sortie ; équipement, améliorations, uniques, dialogues terminés/skippés et débits de banque sont écrits immédiatement. Après mort, restart ou fermeture, reprise au début du niveau avec coins/gains courants remis à zéro ; la banque après dépenses reste acquise. Les flags de systèmes futurs sont un contrat de stockage, pas une implémentation de ces systèmes.
+
+Les dialogues ne se rejouent pas dans la même partie après mort ou reprise ; New Game les réinitialise. Le coffre tuto refusé/fermé disparaît pour la tentative et revient après reset tant que Longbow n'a pas été acquis ; acquisition persistante sans doublon. Ces comportements seront intégrés avec les objets/dialogues en RUN-016/017.
+
+
+### Adaptation N1 RUN-017 (3 octobre 2026)
+
+`scenes/eidolon_vale.tscn` hérite du terrain du slice, conservé avec ses collisions, deux branches, retours, 18 coins, 8 Slimes et porte à 12 coins. Cette scène active l'introduction et quatre explications contextuelles (déplacement/monnaies, combat/équipement, deux chemins/dangers, potion/sortie). Le coffre est placé à `(220,144)`, loin des pièces initiales, et la potion à `(1968,134)`, sur l'approche finale. Le Spirit est à `(140,144)`, sur la première tombe devant le spawn (demande humaine du 3 octobre 2026, seconde passe) : il apparaît devant le chevalier au trigger de 32 px au lieu de le chevaucher ; plus de décalage visuel de l'enfant `Art`. Seuil de départ inchangé (96 px du nœud). Repos/dialogue, portrait et halo de la première passe Claude sont validés humainement.
+
+La seconde passe RUN-017 ajoute la séquence d'ouverture demandée : New Game démarre le chevalier en pose morte, le relève puis passe à idle. Durée technique réglable : 2 s, dont 0,5 s en pose morte. `n1_new_game` est ajouté uniquement par New Game ; `n1_resurrection_started` est écrit avant lecture, dans les flags permanents v2 existants. La résurrection ne rejoue pas après mort, restart ou Continue, même si le dialogue n'a pas encore été terminé ; les anciens saves/migrations sans cette intention démarrent normalement. Un échec d'écriture immobilise la pose initiale et propose E pour réessayer.
+
+Le Spirit est d'abord caché ; il apparaît lorsque le joueur atteint 32 px devant le spawn, puis ouvre le dialogue. Apparition de 0,8 s, gameplay suspendu jusqu'à la fin du dialogue et relâchement des touches. Le chevalier passe à idle avant la pause ; seul son sprite continue de s'animer pendant apparition/dialogue, avec vitesse nulle et attaque annulée. La fin du dialogue restitue le mode de pause habituel du sprite ; la vraie mort garde son propre mode d'animation. Après dialogue enregistré, s'éloigner du Spirit d'au moins 96 px (6 blocs, valeur technique réglable) lance sa disparition de 0,8 s pendant le jeu ; une pause la gèle. Le retour du joueur ne l'annule pas et ne le fait pas réapparaître. Si le dialogue était déjà enregistré au chargement, le Spirit reste absent. Les strips dédiés `resurrect`, `appear`, `disappear`, la manifestation lumineuse et le cue d'apparition sont livrés par Claude et validés humainement, correctifs de placement/sol/caméra compris ; les fallbacks restent disponibles.
+
+New Game et le repli de reprise utilisent N1 ; les sauvegardes v2 qui pointaient vers `vertical_slice.tscn` sont redirigées en mémoire vers N1 avec banque, armes et flags préservés. Pas de nouveau schéma ni de conversion d'économie. Le slice reste une scène de régression. N1 n'a pas de destination de production N2 : les tests injectent `tests/fixtures/next_level.tscn`, tandis que la sortie ordinaire propose replay. Les passes artistiques et le playtest humain de difficulté/rythme sur les deux chemins jusqu'à la sortie sont validés (3 octobre 2026) ; les parcours automatisés constituent les preuves techniques distinctes.

@@ -1,34 +1,95 @@
-[gd_scene load_steps=16 format=3]
+[gd_scene load_steps=37 format=3]
 [ext_resource type="Script" path="res://scripts/slime.gd" id="1"]
-[ext_resource type="Texture2D" path="res://assets/sprites/slime_green.png" id="2"]
-[ext_resource type="AudioStream" path="res://assets/sounds/hurt.wav" id="3"]
-[ext_resource type="Texture2D" path="res://assets/sprites/slime_purple.png" id="4"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemy_slime_green.png" id="2"]
+[ext_resource type="AudioStream" path="res://assets/sounds/sfx_melee_hit.tres" id="3"]
+[ext_resource type="AudioStream" path="res://assets/sounds/sfx_slime_death.tres" id="5"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemy_slime_purple.png" id="4"]
 [sub_resource type="AtlasTexture" id="green0"]
 atlas = ExtResource("2")
-region = Rect2(0,24,24,24)
+region = Rect2(0,0,24,24)
 [sub_resource type="AtlasTexture" id="green1"]
 atlas = ExtResource("2")
-region = Rect2(24,24,24,24)
+region = Rect2(24,0,24,24)
 [sub_resource type="AtlasTexture" id="green2"]
 atlas = ExtResource("2")
-region = Rect2(48,24,24,24)
+region = Rect2(48,0,24,24)
 [sub_resource type="AtlasTexture" id="green3"]
 atlas = ExtResource("2")
-region = Rect2(72,24,24,24)
+region = Rect2(72,0,24,24)
+[sub_resource type="AtlasTexture" id="green4"]
+atlas = ExtResource("2")
+region = Rect2(96,0,24,24)
+[sub_resource type="AtlasTexture" id="green5"]
+atlas = ExtResource("2")
+region = Rect2(120,0,24,24)
+[sub_resource type="AtlasTexture" id="green6"]
+atlas = ExtResource("2")
+region = Rect2(144,0,24,24)
+[sub_resource type="AtlasTexture" id="green7"]
+atlas = ExtResource("2")
+region = Rect2(168,0,24,24)
+[sub_resource type="AtlasTexture" id="green8"]
+atlas = ExtResource("2")
+region = Rect2(192,0,24,24)
+[sub_resource type="AtlasTexture" id="green9"]
+atlas = ExtResource("2")
+region = Rect2(216,0,24,24)
+[sub_resource type="AtlasTexture" id="green10"]
+atlas = ExtResource("2")
+region = Rect2(240,0,24,24)
+[sub_resource type="AtlasTexture" id="green11"]
+atlas = ExtResource("2")
+region = Rect2(264,0,24,24)
+[sub_resource type="AtlasTexture" id="green12"]
+atlas = ExtResource("2")
+region = Rect2(288,0,24,24)
+[sub_resource type="AtlasTexture" id="green13"]
+atlas = ExtResource("2")
+region = Rect2(312,0,24,24)
 [sub_resource type="AtlasTexture" id="purple0"]
 atlas = ExtResource("4")
-region = Rect2(0,24,24,24)
+region = Rect2(0,0,24,24)
 [sub_resource type="AtlasTexture" id="purple1"]
 atlas = ExtResource("4")
-region = Rect2(24,24,24,24)
+region = Rect2(24,0,24,24)
 [sub_resource type="AtlasTexture" id="purple2"]
 atlas = ExtResource("4")
-region = Rect2(48,24,24,24)
+region = Rect2(48,0,24,24)
 [sub_resource type="AtlasTexture" id="purple3"]
 atlas = ExtResource("4")
-region = Rect2(72,24,24,24)
+region = Rect2(72,0,24,24)
+[sub_resource type="AtlasTexture" id="purple4"]
+atlas = ExtResource("4")
+region = Rect2(96,0,24,24)
+[sub_resource type="AtlasTexture" id="purple5"]
+atlas = ExtResource("4")
+region = Rect2(120,0,24,24)
+[sub_resource type="AtlasTexture" id="purple6"]
+atlas = ExtResource("4")
+region = Rect2(144,0,24,24)
+[sub_resource type="AtlasTexture" id="purple7"]
+atlas = ExtResource("4")
+region = Rect2(168,0,24,24)
+[sub_resource type="AtlasTexture" id="purple8"]
+atlas = ExtResource("4")
+region = Rect2(192,0,24,24)
+[sub_resource type="AtlasTexture" id="purple9"]
+atlas = ExtResource("4")
+region = Rect2(216,0,24,24)
+[sub_resource type="AtlasTexture" id="purple10"]
+atlas = ExtResource("4")
+region = Rect2(240,0,24,24)
+[sub_resource type="AtlasTexture" id="purple11"]
+atlas = ExtResource("4")
+region = Rect2(264,0,24,24)
+[sub_resource type="AtlasTexture" id="purple12"]
+atlas = ExtResource("4")
+region = Rect2(288,0,24,24)
+[sub_resource type="AtlasTexture" id="purple13"]
+atlas = ExtResource("4")
+region = Rect2(312,0,24,24)
 [sub_resource type="SpriteFrames" id="frames"]
-animations = [{"name": &"green", "speed": 6.0, "loop": true, "frames": [{"duration":1.0,"texture":SubResource("green0")},{"duration":1.0,"texture":SubResource("green1")},{"duration":1.0,"texture":SubResource("green2")},{"duration":1.0,"texture":SubResource("green3")}]},{"name": &"purple", "speed": 6.0, "loop": true, "frames": [{"duration":1.0,"texture":SubResource("purple0")},{"duration":1.0,"texture":SubResource("purple1")},{"duration":1.0,"texture":SubResource("purple2")},{"duration":1.0,"texture":SubResource("purple3")}]},]
+animations = [{"name": &"green", "speed": 10.0, "loop": true, "frames": [{"duration":1.0,"texture":SubResource("green0")},{"duration":1.0,"texture":SubResource("green1")},{"duration":1.0,"texture":SubResource("green2")},{"duration":1.0,"texture":SubResource("green3")},{"duration":1.0,"texture":SubResource("green4")},{"duration":1.0,"texture":SubResource("green5")},{"duration":1.0,"texture":SubResource("green6")},{"duration":1.0,"texture":SubResource("green7")}]},{"name": &"green_hit", "speed": 16.0, "loop": true, "frames": [{"duration":1.0,"texture":SubResource("green8")},{"duration":1.0,"texture":SubResource("green9")}]},{"name": &"green_death", "speed": 20.0, "loop": false, "frames": [{"duration":1.0,"texture":SubResource("green10")},{"duration":1.0,"texture":SubResource("green11")},{"duration":1.0,"texture":SubResource("green12")},{"duration":1.0,"texture":SubResource("green13")}]},{"name": &"purple", "speed": 10.0, "loop": true, "frames": [{"duration":1.0,"texture":SubResource("purple0")},{"duration":1.0,"texture":SubResource("purple1")},{"duration":1.0,"texture":SubResource("purple2")},{"duration":1.0,"texture":SubResource("purple3")},{"duration":1.0,"texture":SubResource("purple4")},{"duration":1.0,"texture":SubResource("purple5")},{"duration":1.0,"texture":SubResource("purple6")},{"duration":1.0,"texture":SubResource("purple7")}]},{"name": &"purple_hit", "speed": 16.0, "loop": true, "frames": [{"duration":1.0,"texture":SubResource("purple8")},{"duration":1.0,"texture":SubResource("purple9")}]},{"name": &"purple_death", "speed": 20.0, "loop": false, "frames": [{"duration":1.0,"texture":SubResource("purple10")},{"duration":1.0,"texture":SubResource("purple11")},{"duration":1.0,"texture":SubResource("purple12")},{"duration":1.0,"texture":SubResource("purple13")}]}]
 [sub_resource type="RectangleShape2D" id="body"]
 size = Vector2(14, 12)
 [sub_resource type="RectangleShape2D" id="contact"]
@@ -55,7 +116,13 @@ collision_mask = 2
 [node name="Shape" type="CollisionShape2D" parent="ContactArea"]
 position = Vector2(0,-6)
 shape = SubResource("contact")
-[node name="HitSound" type="AudioStreamPlayer" parent="."]
+[node name="HitSound" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("3")
-pitch_scale = 1.4
-volume_db = -16.0
+volume_db = -8.0
+max_distance = 480.0
+bus = &"SFX"
+[node name="DeathSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("5")
+volume_db = -9.0
+max_distance = 480.0
+bus = &"SFX"

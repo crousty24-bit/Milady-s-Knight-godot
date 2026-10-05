@@ -13,15 +13,17 @@
 
 Pour les sons très répétitifs, prévoir plusieurs variantes d'un même asset lorsque pertinent (`01`, `02`, `03`...).
 
+RUN-010 (30 septembre 2026) : les lignes cochées « Intégré » sont branchées dans le slice ; provenance, fichiers et transformations dans [assets/AUDIO_CREDITS.md](../assets/AUDIO_CREDITS.md). Première itération validée par l'humain avec ces limites à reprendre : musique trop basse et à remplacer par un autre morceau ; SFX globalement trop forts ; impact d'épée (`sfx_melee_hit`) peu agréable, à remplacer ; sons de saut et de double saut à remplacer.
+
 
 ### Player — Movement
 
 | Nom                          | Événement déclencheur | Catégorie         | Priorité | Asset trouvé ? | Source | Format | Intégré ? |
 | ---------------------------- | --------------------- | ----------------- | -------- | -------------- | ------ | ------ | --------- |
-| `sfx_player_jump`            | Jump simple           | Player / Movement | P0       | ☐              | —      | WAV    | ☐         |
-| `sfx_player_double_jump`     | Double jump           | Player / Movement | P0       | ☐              | —      | WAV    | ☐         |
+| `sfx_player_jump`            | Jump simple           | Player / Movement | P0       | ☑              | Helton Yan Pixel Combat (CC BY 4.0)      | WAV    | ☑         |
+| `sfx_player_double_jump`     | Double jump           | Player / Movement | P0       | ☑              | Helton Yan Pixel Combat (CC BY 4.0)      | WAV    | ☑         |
 | `sfx_player_land`            | Atterrissage          | Player / Movement | P1       | ☐              | —      | WAV    | ☐         |
-| `sfx_player_wall_jump`       | Wall jump             | Player / Movement | P0       | ☐              | —      | WAV    | ☐         |
+| `sfx_player_wall_jump`       | Wall jump             | Player / Movement | P0       | ☑              | Helton Yan Pixel Combat (CC BY 4.0)      | WAV    | ☑         |
 | `sfx_player_wall_slide_loop` | Wall slide            | Player / Movement | P1       | ☐              | —      | WAV    | ☐         |
 
 ---
@@ -30,11 +32,11 @@ Pour les sons très répétitifs, prévoir plusieurs variantes d'un même asset 
 
 |Nom|Événement déclencheur|Catégorie|Priorité|Asset trouvé ?|Source|Format|Intégré ?|
 |---|---|---|---|---|---|---|---|
-|`sfx_player_hit_01-03`|Joueur reçoit des dégâts|Player / State|P0|☐|—|WAV|☐|
+|`sfx_player_hit_01-03`|Joueur reçoit des dégâts|Player / State|P0|☑|Helton Yan Pixel Combat (CC BY 4.0)|WAV|☑|
 |`sfx_player_knockback`|Knockback après certains dégâts|Player / State|P1|☐|—|WAV|☐|
 |`sfx_player_heal`|Récupération de HP|Player / State|P0|☐|—|WAV|☐|
 |`sfx_player_hp_bonus`|Ramassage d'un bonus permanent +1 HP|Player / State|P1|☐|—|WAV|☐|
-|`sfx_player_death`|HP atteint 0|Player / Death|P0|☐|—|WAV|☐|
+|`sfx_player_death`|HP atteint 0|Player / Death|P0|☑|Helton Yan Pixel Combat (CC BY 4.0)|WAV|☑|
 |`sfx_player_death_message`|Apparition de "Thou hast perished."|Player / Death|P1|☐|—|WAV|☐|
 
 ---
@@ -43,9 +45,9 @@ Pour les sons très répétitifs, prévoir plusieurs variantes d'un même asset 
 
 | Nom                            | Événement déclencheur                     | Catégorie | Priorité | Asset trouvé ? | Source | Format | Intégré ? | Item concerné                                          |
 | ------------------------------ | ----------------------------------------- | --------- | -------- | -------------- | ------ | ------ | --------- | ------------------------------------------------------ |
-| `sfx_melee_swing_light_01-03`  | Attaque arme légère                       | Combat    | P0       | ☐              | —      | WAV    | ☐         | *Sword*<br>*Brutal Axe*<br>                            |
+| `sfx_melee_swing_light_01-03`  | Attaque arme légère                       | Combat    | P0       | ☑              | Helton Yan Pixel Combat (CC BY 4.0)      | WAV    | ☑         | *Sword*<br>*Brutal Axe*<br>                            |
 | `sfx_melee_swing_heavy_01-03`  | Attaque arme lourde                       | Combat    | P0       | ☐              | —      | WAV    | ☐         | *Dark Scythe*<br>*Warhammer*<br>*Halberds* *Longsword* |
-| `sfx_melee_hit_01-06`          | Attaque touche un ennemi                  | Combat    | P0       | ☐              | —      | WAV    | ☐         |                                                        |
+| `sfx_melee_hit_01-06`          | Attaque touche un ennemi                  | Combat    | P0       | ☑              | Helton Yan Pixel Combat (CC BY 4.0), 3/6 variantes      | WAV    | ☑         |                                                        |
 | `sfx_melee_hit_environment`    | Attaque touche décor / surface            | Combat    | P1       | ☐              | —      | WAV    | ☐         |                                                        |
 | `sfx_ranged_projectile_launch` | Tir générique                             | Combat    | P0       | ☐              | —      | WAV    | ☐         |                                                        |
 | `sfx_ranged_projectile_hit`    | Projectile touche ennemi / décor          | Combat    | P0       | ☐              | —      | WAV    | ☐         |                                                        |
@@ -96,7 +98,7 @@ Pour les sons très répétitifs, prévoir plusieurs variantes d'un même asset 
 
 |Nom|Événement déclencheur|Catégorie|Priorité|Asset trouvé ?|Source|Format|Intégré ?|
 |---|---|---|---|---|---|---|---|
-|`sfx_gold_coin_pickup_01-03`|Gold coin ramassé|Collectible|P0|☐|—|WAV|☐|
+|`sfx_gold_coin_pickup_01-03`|Gold coin ramassé|Collectible|P0|☑|Helton Yan Pixel Combat (CC BY 4.0)|WAV|☑|
 |`sfx_shard_gain_01-03`|Mob tué → shards obtenus|Collectible|P0|☐|—|WAV|☐|
 |`sfx_minor_potion_pickup`|Minor Healing Potion utilisée|Consumable|P0|☐|—|WAV|☐|
 |`sfx_major_potion_pickup`|Major Healing Potion utilisée|Consumable|P1|☐|—|WAV|☐|
@@ -127,7 +129,7 @@ Pour les sons très répétitifs, prévoir plusieurs variantes d'un même asset 
 | ----------------------- | ------------------------------------ | ------------- | -------- | -------------- | ------ | ------ | --------- |
 | `sfx_slime_attack`      | Collision offensive avec joueur      | Enemy / Slime | P1       | ☐              | —      | WAV    | ☐         |
 | `sfx_slime_hit_01-03`   | Slime reçoit un coup                 | Enemy / Slime | P1       | ☐              | —      | WAV    | ☐         |
-| `sfx_slime_death_01-03` | Slime tué                            | Enemy / Slime | P0       | ☐              | —      | WAV    | ☐         |
+| `sfx_slime_death_01-03` | Slime tué                            | Enemy / Slime | P0       | ☑              | Helton Yan Pixel Combat (CC BY 4.0)      | WAV    | ☑         |
 
 Une même famille de sons peut être pitchée/modifiée pour différencier Green, Purple et Red Slime OU uniformiser même sons pour tous les Slimes. **A DEFINIR**
 
@@ -351,11 +353,12 @@ Une même famille de sons peut être pitchée/modifiée pour différencier Green
 
 | Nom                      | Événement déclencheur           | Catégorie | Priorité | Asset trouvé ? | Source | Format | Intégré ? |
 | ------------------------ | ------------------------------- | --------- | -------- | -------------- | ------ | ------ | --------- |
-| `sfx_dialogue_open`      | Bandeau dialogue apparaît       | Dialogue  | P1       | ☐              | —      | WAV    | ☐         |
+| `sfx_dialogue_open`      | Bandeau dialogue apparaît       | Dialogue  | P1       | ☑              | Helton Yan CC BY 4.0 | WAV | ☑ RUN-017 |
 | `sfx_dialogue_text_tick` | Animation texte progressive     | Dialogue  | P2       | ☐              | —      | WAV    | ☐         |
-| `sfx_dialogue_next`      | Passage à la prochaine réplique | Dialogue  | P2       | ☐              | —      | WAV    | ☐         |
-| `sfx_dialogue_skip`      | Dialogue passé avec Space       | Dialogue  | P1       | ☐              | —      | WAV    | ☐         |
+| `sfx_spirit_appear`      | Spirit apparaît après deux blocs vers l'avant | Narration | P1 | ☑ | Helton Yan CC BY 4.0 | WAV | ☑ contribution RUN-017/2 validée humainement le 3 octobre 2026 |
 | `sfx_dialogue_close`     | Fin du dialogue                 | Dialogue  | P2       | ☐              | —      | WAV    | ☐         |
+
+Amendement humain RUN-017 (3 octobre 2026) : l'avance de phrase par Space est silencieuse. Ne pas produire ni intégrer de son `skip`/`next` pour cette interaction. Le son d'ouverture du bandeau est conservé ; le nouveau son d'apparition du Spirit doit être joué une fois au début de son apparition, pas à chaque phrase. Aucun son de résurrection ou de disparition supplémentaire n'est imposé par cette passe.
 
 ---
 

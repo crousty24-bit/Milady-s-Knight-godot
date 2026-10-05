@@ -1,95 +1,41 @@
-[gd_scene load_steps=26 format=3]
+[gd_scene load_steps=13 format=3]
 [ext_resource type="Script" path="res://scripts/player.gd" id="1"]
-[ext_resource type="Texture2D" path="res://assets/sprites/knight.png" id="2"]
-[ext_resource type="AudioStream" path="res://assets/sounds/jump.wav" id="3"]
-[ext_resource type="AudioStream" path="res://assets/sounds/hurt.wav" id="4"]
-[ext_resource type="AudioStream" path="res://assets/sounds/tap.wav" id="5"]
+[ext_resource type="SpriteFrames" path="res://assets/sprites/ashen_knight_frames.tres" id="2"]
+[ext_resource type="AudioStream" path="res://assets/sounds/sfx_player_jump.wav" id="3"]
+[ext_resource type="AudioStream" path="res://assets/sounds/sfx_player_hit.tres" id="4"]
+[ext_resource type="AudioStream" path="res://assets/sounds/sfx_melee_swing_light.tres" id="5"]
+[ext_resource type="AudioStream" path="res://assets/sounds/sfx_player_double_jump.wav" id="7"]
+[ext_resource type="AudioStream" path="res://assets/sounds/sfx_player_wall_jump.wav" id="8"]
+[ext_resource type="AudioStream" path="res://assets/sounds/sfx_player_death.wav" id="9"]
 
-[sub_resource type="AtlasTexture" id="idle0"]
-atlas = ExtResource("2")
-region = Rect2(0, 0, 32, 32)
+[ext_resource type="Shader" path="res://assets/shaders/hurt_flash.gdshader" id="6"]
 
-[sub_resource type="AtlasTexture" id="idle1"]
-atlas = ExtResource("2")
-region = Rect2(32, 0, 32, 32)
+[sub_resource type="ShaderMaterial" id="hurt_material"]
+resource_local_to_scene = true
+shader = ExtResource("6")
+shader_parameter/white_flash = 0.0
 
-[sub_resource type="AtlasTexture" id="idle2"]
-atlas = ExtResource("2")
-region = Rect2(64, 0, 32, 32)
-
-[sub_resource type="AtlasTexture" id="idle3"]
-atlas = ExtResource("2")
-region = Rect2(96, 0, 32, 32)
-
-[sub_resource type="AtlasTexture" id="run0"]
-atlas = ExtResource("2")
-region = Rect2(0, 64, 32, 32)
-
-[sub_resource type="AtlasTexture" id="run1"]
-atlas = ExtResource("2")
-region = Rect2(32, 64, 32, 32)
-
-[sub_resource type="AtlasTexture" id="run2"]
-atlas = ExtResource("2")
-region = Rect2(64, 64, 32, 32)
-
-[sub_resource type="AtlasTexture" id="run3"]
-atlas = ExtResource("2")
-region = Rect2(96, 64, 32, 32)
-
-[sub_resource type="AtlasTexture" id="run4"]
-atlas = ExtResource("2")
-region = Rect2(128, 64, 32, 32)
-
-[sub_resource type="AtlasTexture" id="run5"]
-atlas = ExtResource("2")
-region = Rect2(160, 64, 32, 32)
-
-[sub_resource type="AtlasTexture" id="run6"]
-atlas = ExtResource("2")
-region = Rect2(192, 64, 32, 32)
-
-[sub_resource type="AtlasTexture" id="run7"]
-atlas = ExtResource("2")
-region = Rect2(224, 64, 32, 32)
-
-[sub_resource type="AtlasTexture" id="jump0"]
-atlas = ExtResource("2")
-region = Rect2(64, 160, 32, 32)
-
-[sub_resource type="AtlasTexture" id="dead0"]
-atlas = ExtResource("2")
-region = Rect2(0, 224, 32, 32)
-
-[sub_resource type="AtlasTexture" id="dead1"]
-atlas = ExtResource("2")
-region = Rect2(32, 224, 32, 32)
-
-[sub_resource type="AtlasTexture" id="dead2"]
-atlas = ExtResource("2")
-region = Rect2(64, 224, 32, 32)
-
-[sub_resource type="AtlasTexture" id="dead3"]
-atlas = ExtResource("2")
-region = Rect2(96, 224, 32, 32)
-
-[sub_resource type="SpriteFrames" id="frames"]
-animations = [{"name": &"idle", "speed": 9, "loop": true, "frames": [{"duration":1.0,"texture":SubResource("idle0")},{"duration":1.0,"texture":SubResource("idle1")},{"duration":1.0,"texture":SubResource("idle2")},{"duration":1.0,"texture":SubResource("idle3")}]},{"name": &"run", "speed": 9, "loop": true, "frames": [{"duration":1.0,"texture":SubResource("run0")},{"duration":1.0,"texture":SubResource("run1")},{"duration":1.0,"texture":SubResource("run2")},{"duration":1.0,"texture":SubResource("run3")},{"duration":1.0,"texture":SubResource("run4")},{"duration":1.0,"texture":SubResource("run5")},{"duration":1.0,"texture":SubResource("run6")},{"duration":1.0,"texture":SubResource("run7")}]},{"name": &"jump", "speed": 9, "loop": true, "frames": [{"duration":1.0,"texture":SubResource("jump0")}]},{"name": &"dead", "speed": 6, "loop": false, "frames": [{"duration":1.0,"texture":SubResource("dead0")},{"duration":1.0,"texture":SubResource("dead1")},{"duration":1.0,"texture":SubResource("dead2")},{"duration":1.0,"texture":SubResource("dead3")}]},]
 [sub_resource type="CapsuleShape2D" id="body"]
 radius = 5.0
 height = 18.0
 [sub_resource type="RectangleShape2D" id="blade"]
-size = Vector2(22, 4)
+size = Vector2(24, 4)
 [node name="Player" type="CharacterBody2D" groups=["player"]]
 collision_layer = 2
 collision_mask = 1
 floor_snap_length = 4.0
 script = ExtResource("1")
 [node name="Sprite" type="AnimatedSprite2D" parent="."]
-position = Vector2(0, -12)
-sprite_frames = SubResource("frames")
+material = SubResource("hurt_material")
+position = Vector2(0, -29)
+sprite_frames = ExtResource("2")
 animation = &"idle"
 autoplay = "idle"
+[node name="Upper" type="AnimatedSprite2D" parent="Sprite"]
+visible = false
+use_parent_material = true
+sprite_frames = ExtResource("2")
+animation = &"up1"
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -9)
 shape = SubResource("body")
@@ -101,20 +47,28 @@ monitoring = false
 [node name="Shape" type="CollisionShape2D" parent="AttackArea"]
 shape = SubResource("blade")
 [node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(32, -38)
-limit_left = 0
-limit_top = -224
-limit_right = 2240
-limit_bottom = 304
-position_smoothing_enabled = true
-position_smoothing_speed = 7.0
 [node name="JumpSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("3")
-volume_db = -15.0
+volume_db = -14.0
+bus = &"SFX"
+[node name="DoubleJumpSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("7")
+volume_db = -14.0
+bus = &"SFX"
+[node name="WallJumpSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("8")
+volume_db = -12.0
+bus = &"SFX"
 [node name="HurtSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("4")
-volume_db = -12.0
+volume_db = -6.0
+bus = &"SFX"
 [node name="SwingSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("5")
-pitch_scale = 0.65
-volume_db = -8.0
+volume_db = -9.0
+bus = &"SFX"
+[node name="DeathSound" type="AudioStreamPlayer" parent="."]
+process_mode = 3
+stream = ExtResource("9")
+volume_db = -4.0
+bus = &"SFX"

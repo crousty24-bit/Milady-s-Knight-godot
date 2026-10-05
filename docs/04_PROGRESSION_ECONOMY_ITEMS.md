@@ -120,7 +120,7 @@
 	- il existe de 2 type d'item : équipements et consommables
 	- le joueur ne dispose pas d'un système d'inventaire à proprement parler
 	- à la place le joueur dispose de 2 slots d'équipement qui ne peuvent contenir chacun qu'une seul arme (item) équipée à la fois : 1 slot d'arme de mêlée et 1 slot d'arme de tir
-	- ces 2 slots sont affichés dans le UI joueur : arme de mêlée à gauche, arme de ti à droite
+	- ces 2 slots sont affichés dans le UI joueur : slots verticaux : mêlée en haut, tir en bas (contrat RUN-015 validé le 3 octobre 2026)
 	- les consommables sont des items utilisés instantanément lors du ramassage (collecte) sur le terrain ou gagné lors d'un kill de mob (comme les shards)
 	- il n'y a aucun consommable dans le niveau 1 ; sauf une seule potion de soin mineur (tuto)
 	- **ITEM ARMES (équipements)** :
@@ -137,10 +137,11 @@
 		- les armes disposent de 4 stats :
 			- dégâts infligés (DMG) : nombre de HP retirés au mob par attaques/coups
 			- vitesse d'attaque (ATK SPEED): vitesse à la laquelle les attaques sont donnés ; ici la valeur représente les secondes (voir profil ci-dessous) donc 1 ATK SPEED = 1 seconde => 1 attaque (hit) donné toute les 1 seconde (tant que touche attaque maintenue) ; plus cette valeur est basse, plus l'arme à une vitesse d'attaque élevée
-			- portée de mêlée (RANGE) : portée des attaques/coups
+			- portée de mêlée (RANGE) : longueur de la lame depuis la main jusqu’à la pointe ; 1 RANGE = 24 px = 1,5 bloc de terrain (décision humaine révisée RUN-007 après essai des 16 px). La grille de terrain reste à 16 px. Sword 0 dessine une lame de 24 px et utilise une forme de collision de 24×4 px centrée à 12 px de la main. La collision teste le volume du mob, pas uniquement son centre.
 			- portée de tir (FALLOFF) : distance maximal (en bloc) que les projectiles peuvent parcourir avant de disparaître SI ils ne sont pas entrés en contact (collision) avec un élément (terrain, objects, mobs)
 		- les armes ont différent type, ce qui détermine leur stats de départ (niveau 0) :
 			- *Sword* (mêlée) : 0,5 DMG | 1 ATK SPEED | 1 RANGE
+				- RUN-007 : départs espacés de 1 s, geste de 0,28 s avec fenêtre de contact conservée ; relâcher/reprendre F ou interrompre le coup ne remet pas le cooldown à zéro. Un coup par cible dans la fenêtre active ; l’attaque aérienne est autorisée, le wall slide annule la fenêtre active et interdit un nouveau départ.
 			- *Longsword* (mêlée) : 1 DMG | 1,5 ATK SPEED | 1,2 RANGE
 			- *Brutal Axe* (mêlée)  : 1,5 DMG | 1,2 ATK SPEED | 0,8 RANGE
 			- *Dark Scythe* (mêlée)  : 2 DMG | 2,5 ATK SPEED | 1,5 RANGE
@@ -187,3 +188,19 @@
 			- cas unique : l'Enchant Juice permet d'outre-passer la règle générale qui cap les item au niveau 3 max : il permet d'améliorer un item niveau 3 à +2niveaux = devient un item niveau 5 ; il permet d'améliorer un item niveau 2 à +2niveaux = devient un item niveau 4 => le système d'amélioration intervient et augmente les stats de l'item de manière proportionnel
 			- il ne permet pas d'améliorer un item Légendaire
 			- si le joueur annule l'amélioration, rien ne se passe et l'item disparaît à jamais
+
+
+## Banque et migration — contrat RUN-015
+
+Tous les coins ramassés restent des coins, même au-delà de la sortie ou après paiement ; aucun surplus ne devient shard. Les dépenses de shards consomment les gains courants avant la banque. Un débit de banque est sauvegardé immédiatement : banque 50 + gains 8, achat 12 → banque 46 + gains 0 ; une mort conserve 46. Une acquisition persistante et son paiement sont une seule écriture, confirmée uniquement après succès disque.
+
+Le format v2 garde banque, niveau, deux équipements et flags permanents/dialogues. Une v1 n'est convertie qu'après accord explicite au menu : tout le bonus devient shards, l'original est conservé byte pour byte. Corruption/version inconnue désactivent Continue et empêchent les transactions ordinaires d'écraser le fichier. New Game est la seule remise à zéro explicitement confirmée et conserve une copie du fichier précédent.
+
+Les bases de rétention des offrandes restent à trancher avant RUN-023 ; ce contrat ne les implémente pas.
+
+
+## RUN-016 — Intégration technique N1 (3 octobre 2026)
+
+Sword0 et Longbow0 sont stockés dans les deux slots durables ; A alterne les slots acquis, le spawn sélectionne Sword. Longbow0 : 1 DMG, 1,5 s, 320 px depuis sa bouche de tir ; vitesse technique 320 px/s. Projectile horizontal balayé contre terrain/ennemis, impact unique et suppression à portée ; pause suspend son trajet et son cooldown. Les deux cooldowns restent séparés lors du changement de slot. Le tir reste disponible en glissade murale ; la restriction de docs/01 est celle de la mêlée.
+
+Le coffre fixe gratuit et la potion mineure respectent le contrat de persistance ; leurs positions de test `(120,144)` et `(176,134)` restent temporaires avant l’adaptation N1 de RUN-017. La présentation et les feedbacks sont réservés à Claude ; voir [handoff RUN-016](RUN-016_CLAUDE_HANDOFF.md).
