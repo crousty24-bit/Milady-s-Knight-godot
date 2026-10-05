@@ -2,7 +2,7 @@
 
 ## Statut de cette planification
 
-**5 octobre 2026 — Version actuelle : 0.2.0.** RUN-001–017 et RUN-029 DONE (18 runs), 11 lots BACKLOG. La PR #18 est fusionnée dans `develop` (`3ae7b92`, 3 octobre). L’humain autorise la promotion de `develop` vers `main` et la mise à jour documentaire 0.2.0. Prochaine cible : **0.3.0**, aucune nouvelle run lancée. Les checkpoints datés ci-dessous décrivent leur état historique.
+**5 octobre 2026 — Version actuelle : 0.2.0 ; cible 0.3.0 autorisée.** RUN-001–018 et RUN-029 DONE (19 runs). RUN-018 validée humainement et clôturée localement après revue Jev/inspection ; dix lots restent BACKLOG. Baseline propre `develop` (`6bb15b4`), branche `feature/run-018-standard-equipment`. Promotion vers `main` présente localement (`9e9847b`, arbres identiques). Les checkpoints datés ci-dessous décrivent leur état historique.
 
 **Clôture du 3 octobre 2026 : RUN-015–017 DONE, jalon 0.2.0 validé localement.** Deux passes Claude et playtest humain N1 validés ; correctif idle, recette finale et revue Jev/inspection terminés. [PR #18](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/18) ouverte de `feature/run-017-eidolon-vale` vers `develop`, sans fusion. Aucune autre run lancée. Les checkpoints antérieurs ci-dessous conservent leur contexte historique.
 
@@ -236,7 +236,7 @@ Références de la révision du workflow du **22 septembre 2026** : recommandati
 | **0.4.0** | Capacités, légendaires, N5–10, Boss et conclusion | 022–026 : 5 lots | Codex GPT-6.1 Sol Medium ; Claude Opus 5.5 pour 025 |
 | **0.5.0 beta** | Présentation finale, équilibrage, recette et exports | 027–028 : 2 lots | Claude Opus 5.5 pour 027 ; Codex GPT-6.1 Sol Medium pour 028 |
 
-**Total actuel : 18 runs DONE + 11 lots BACKLOG = 29 identifiants**, sous la limite de 30. Les trois passes 012–014 ont été retenues et réalisées ; RUN-029 ajoute la seconde passe visuelle demandée explicitement. Les identifiants futurs restent inchangés. Le plan conserve tous les systèmes, les dix niveaux, les recettes et les validations artistiques/humaines.
+**Total actuel : 19 runs DONE + 10 lots BACKLOG = 29 identifiants**, sous la limite de 30. Les trois passes 012–014 ont été retenues et réalisées ; RUN-029 ajoute la seconde passe visuelle demandée explicitement. Les identifiants futurs restent inchangés. Le plan conserve tous les systèmes, les dix niveaux, les recettes et les validations artistiques/humaines.
 
 ### Correspondance avec le plan remplacé
 
@@ -517,14 +517,14 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 ## Version 0.3.0 — Économie, bestiaire et exploration N2–4
 
-**Statut : BACKLOG, non lancée.** **Prérequis :** 0.2.0 validée ; D01, D02, D04, D06, D07 selon les systèmes.
+**Statut : préparation RUN-018 autorisée le 5 octobre 2026 ; jalon non validé.** **Prérequis :** 0.2.0 validée (satisfait) ; D01, D02, D04, D06, D07 selon les systèmes.
 
 **Repères documentaires :** 01, 02, 03, 04, 05, 06, 07, 08, 13 dans `docs/`.
 
 **Critères de validation du jalon (conservés lors du regroupement) :**
 
-- [ ] Coûts common/rare, récompenses et upgrades conformes à une table validée ; Legendary encore exclu du pool jusqu’à son implémentation.
-- [ ] Armes standard hors Fire Gauntlet utilisables et persistantes ; soins de terrain et drops de soin testés.
+- [x] Coûts common/rare, récompenses et upgrades conformes à une table validée ; Legendary encore exclu du pool jusqu’à son implémentation.
+- [x] Armes standard hors Fire Gauntlet utilisables et persistantes ; soins de terrain et drops de soin testés.
 - [ ] N2 terminé à 18 coins, Red/Bloated Slime, piques rétractables et trappes ; N1 reste traversable.
 
 - [ ] Warrior, Archer, Sorcerer, Swarm et Chud ont chacun leurs tests de comportement ; télégraphies et SFX P0 intégrés.
@@ -533,7 +533,17 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 ### RUN-018 — Économie et équipement standard
 
-**Lot G · Main agent : Codex GPT-6.1 Sol Medium · Statut : BACKLOG · Dépendances : RUN-017 ; 0.2.0 validée.**
+**Lot G · Main agent : Codex GPT-6.1 Sol Medium · Statut : DONE · Dépendances : RUN-017 DONE ; 0.2.0 validée.**
+
+- **Lancement en préparation (5 octobre 2026) :** demandé par l’humain, baseline propre `develop` `6bb15b4`, branche `feature/run-018-standard-equipment`. Les six critères de 0.3.0 sont vérifiés et répartis entre 018–021 ; ils ne sont pas encore satisfaits. Inspection du code et audit délégué en lecture seule : tables D02/D04 absentes, seuls Sword0/Longbow0, coffre tuto et potion mineure sont intégrés. Proposition complète dans [RUN-018_CONTRACT_REVIEW.md](docs/RUN-018_CONTRACT_REVIEW.md), dont exception explicite au paiement/acquisition atomique de RUN-015 pour l’ouverture payante avant choix. **Condition de reprise : validation humaine du contrat ou corrections des tables/règles proposées**, puis READY → ACTIVE pour le code dépendant. Art/assets réservés à Claude avec [contrat de contribution](docs/RUN-018_CLAUDE_HANDOFF.md), préparé mais non transmis ; fichiers partagés non attribués à deux éditeurs. Aucun changement gameplay, push, PR ou fusion. Le réglage exact Sol Medium du main n’est pas exposé : Je ne sais pas. Luna Medium indisponible (capacité) ; audit repris par un explorateur avec modèle hérité.
+
+- **Reprise (5 octobre 2026) :** contrat complet validé par l’humain (« Je valide le contrat »), exception paiement à l’ouverture comprise. READY puis ACTIVE ; implémentation technique et tests en cours, ownership délégué catalogue/économie et runtime équipement séparé, intégration niveau/UI à Codex. Contrat Claude préparé, APIs à stabiliser avant handoff d’intégration.
+
+- **Checkpoint technique (5 octobre 2026) :** tables huit armes0–5, runtime et slots persistants, common/rare payants et upgrade/refus, prix/poids filtrés, potion majeure et drops de soin implémentés selon contrat. Import +27 suites et cinq sessions froides **1740 PASS**, code0 sans erreur/fuite ; correctif final présentation tir au remplacement couvert par recette ciblée **482 armes +47 combat +26 Longbow**, code0. Transactions avec rendu **29/29**, deux captures inspectées à640×360. Revue indépendante sans défaut concret résiduel. Items nouveaux testés en fixture, placements N2–4 aux runs suivantes. **BLOCKED sur assets/animations/icônes/feedbacks Claude** : [handoff prêt](docs/RUN-018_CLAUDE_HANDOFF.md), APIs et propriété d’intégration explicitement remises ; aucun message à un chat Claude envoyé. Codex cesse d’éditer les fichiers partagés jusqu’au retour. Art/écoute et essai humain armes/coffres, recette après intégration puis Jev restent requis avant DONE. Journal et learning à jour ; aucun push/PR/merge ni019.
+
+- **Retour Claude et recette Codex (5 octobre 2026) :** contribution `ff5caa0` présente sur branche propre, [manifeste relu/corrigé](docs/RUN-018_ASSET_MANIFEST.md). Corps du chevalier en trois couches, armes à portée exacte, Knives, coffres/UI/potion et sons intégrés ; crédits ajoutés, preview potion non référencée retirée. Revue indépendante sans défaut concret du gameplay. Recette Codex Godot4.7.2 : import +27 suites,19 contrôles à froid et isolation, **1743 PASS**, code0 sans erreur/fuite ; pilote rendu **68/68**, captures représentatives inspectées. Tailles20 PNG et format/niveaux12 WAV vérifiés. **VERIFY**, pas DONE : validation humaine du rendu, écoute et essai armes/coffres encore requis puis Jev/inspection de clôture. Gestes de mêlée partagés et sons approximatifs signalés au manifeste ; pas de push/PR/merge ni019.
+
+- **Clôture locale (5 octobre 2026) :** l’humain confirme « J’ai fait vérifications et je valide la run. » Validation artistique/sonore et essai requis acquis, sans inventer les actions détaillées du playtest. Recette1743 PASS et rendu68/68 relus ; revue Jev READY_FOR_DONE, puis inspection directe des critères/preuves satisfaisante. Journal/learning à jour, aucun défaut bloquant identifié : **DONE**. Objets nouveaux en fixtures ; placements N2–4 en RUN-020. Aucun push/PR/merge ni lancement RUN-019 ; jalon0.3.0 encore incomplet.
 
 - **Résultat / scope :** Tables d’armes jusqu’au niveau 5, mêlée standard et Throwing Knives, common/rare chests, coûts/poids, choix/refus/upgrades, potion majeure et drops de soin.
 - **Décisions avant implémentation dépendante :** D02/D04 : stats et ATK SPEED positif, croissance prix/poids, base banque/gains, drops/farm.

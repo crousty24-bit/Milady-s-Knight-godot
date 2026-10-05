@@ -1,5 +1,12 @@
 extends Node2D
 @export var n1_intro_enabled: bool = false
+@export_range(1, 10) var world_level: int = 1
+var chest_economy := ChestEconomy.new()
+var active_reward: Area2D
+var reward_choices: Array[String] = []
+var registered_enemies: Dictionary = {}
+var rewarded_enemies: Dictionary = {}
+signal kill_healed(amount: float)
 @export var chest_position := Vector2(120, 144)
 @export var potion_position := Vector2(176, 134)
 const DIALOGUE = preload("res://scripts/dialogue_panel.gd")
@@ -74,7 +81,7 @@ func _ready() -> void:
 	for coin in $Coins.get_children(): coin.collected.connect(_on_collected)
 	for enemy in $Enemies.get_children():
 		register_enemy(enemy)
-	player.configure_equipment(progression.equipment.ranged == "Longbow0")
+	player.configure_loadout(progression.equipment)
 	player.equipment_changed.connect(_update_equipment_hud)
 	tutorial_chest = CHEST.instantiate()
 	tutorial_chest.position = chest_position
@@ -137,6 +144,15 @@ func _process(delta: float) -> void:
 	if finished or player.dead or paused:
 		hud.hide_prompt()
 		return
+	for chest in get_tree().get_nodes_in_group("reward_chests"):
+		if not is_ancestor_of(chest) or chest.consumed or not chest.player_near(): continue
+		var price: int = chest_economy.price(chest.kind, world_level)
+		var text := "E: retry save" if chest.save_failed else "E: Open, %d shards" % price
+		if price < 0: text = "Chest unavailable"
+		hud.show_item_prompt(chest.global_position + Vector2(0, -44), text)
+		if Input.is_action_just_pressed("interact"):
+			if not open_reward_chest(chest): hud.flash_prompt_failure()
+		return
 	if tutorial_chest.player_near() and not tutorial_chest.consumed:
 		hud.show_item_prompt(tutorial_chest.global_position + Vector2(0, -44), "E: retry save" if tutorial_chest.save_failed else "E: free Longbow 0")
 		if Input.is_action_just_pressed("interact"):
@@ -163,8 +179,20 @@ func _on_enemy_defeated(value: int, at: Vector2) -> void:
 	add_child(feedback)
 
 func register_enemy(enemy: Node) -> void:
-	if enemy.has_signal("defeated") and not enemy.is_connected("defeated", _on_enemy_defeated):
-		enemy.connect("defeated", _on_enemy_defeated)
+	var id := enemy.get_instance_id()
+	if not enemy.has_signal("defeated") or registered_enemies.has(id): return
+	registered_enemies[id] = true
+	enemy.connect("defeated", _enemy_reward.bind(enemy))
+
+func _enemy_reward(value: int, at: Vector2, enemy: Node) -> void:
+	var id := enemy.get_instance_id()
+	if rewarded_enemies.has(id) or player.dead or finished: return
+	rewarded_enemies[id] = true
+	_on_enemy_defeated(value, at)
+	var profile: String = enemy.get_meta("healing_profile", "ordinary")
+	var amount: float = ChestEconomy.heal_drop(world_level, profile == "elite", profile == "skull", chest_economy.rng)
+	var healed := player.heal(amount)
+	if healed > 0.0: kill_healed.emit(healed)
 
 func _update_gold_hud() -> void:
 	hud.set_gold(gold, gate.opened)
@@ -250,7 +278,10 @@ func _open_pause() -> void:
 	pause_menu.show_menu("Paused", "Arrows: select   E: confirm   Escape: resume", ["Resume", "Restart", "Quit to menu"])
 
 func _close_pause() -> void:
-	if modal not in ["pause", "context"]: return
+	if modal not in ["pause", "context", "reward"]: return
+	if modal == "reward":
+		active_reward = null
+		reward_choices.clear()
 	context_result = Callable()
 	if not tutorial_id.is_empty():
 		dismissed_tutorials[tutorial_id] = true
@@ -262,6 +293,9 @@ func _close_pause() -> void:
 	get_tree().paused = false
 
 func _pause_choice(index: int) -> void:
+	if modal == "reward":
+		_choose_paid_reward(index)
+		return
 	if modal == "resurrection_save":
 		_begin_resurrection()
 		return
@@ -304,12 +338,66 @@ func _choose_tutorial_reward(index: int) -> void:
 		tutorial_chest.retry_after_failure()
 		return
 	bonus = remaining
-	player.configure_equipment(true)
+	player.configure_loadout(progression.equipment)
 	_update_equipment_hud(player.active_slot)
 	_update_gold_hud()
 
 func _update_equipment_hud(slot: int) -> void:
-	hud.set_equipment(slot, player.has_longbow)
+	hud.set_loadout(slot, player.equipment)
+
+# Payment precedes choice under the RUN-018 contract. Failed writes preserve the offer.
+func open_reward_chest(chest: Area2D) -> bool:
+	if not modal.is_empty() or resume_pending or player.dead or finished or closing or chest.consumed or not is_ancestor_of(chest) or not chest.player_near(): return false
+	var cost: int = chest_economy.price(chest.kind, world_level)
+	if cost < 0 or bonus + progression.banked_shards < cost: return false
+	if chest.offer.is_empty(): chest.offer = chest_economy.roll(chest.kind, player.active_item())
+	if chest.offer.is_empty(): return false
+	var remaining: int = progression.spend_shards(cost, bonus)
+	if remaining < 0:
+		chest.save_failed = true
+		return false
+	bonus = remaining
+	chest.paid = true
+	chest.consumed = true
+	chest.save_failed = false
+	chest.hide()
+	chest_economy.paid(chest.kind)
+	active_reward = chest
+	modal = "reward"
+	paused = true
+	player.controls_enabled = false
+	get_tree().paused = true
+	hud.hide_prompt()
+	_update_gold_hud()
+	_show_paid_reward()
+	return true
+
+func _show_paid_reward(error: bool = false, selected_index: int = 0) -> void:
+	reward_choices.assign([active_reward.offer.item])
+	var options: Array = [WeaponCatalog.label(active_reward.offer.item)]
+	if not active_reward.offer.upgrade.is_empty():
+		reward_choices.append(active_reward.offer.upgrade)
+		options.append("Upgrade +1\n" + WeaponCatalog.label(active_reward.offer.upgrade))
+	var detail := "Left/Right: select   E: accept   Escape: refuse\nPaid. Refusal does not refund shards."
+	if error: detail = "Unable to save. E: retry   Escape: refuse\nYour previous equipment is protected."
+	pause_menu.show_menu("Rare chest" if active_reward.kind == "rare" else "Common chest", detail, options, [], true)
+	if selected_index > 0:
+		pause_menu.selection = selected_index
+		pause_menu._redraw_rows()
+
+func _choose_paid_reward(index: int) -> void:
+	if not is_instance_valid(active_reward) or index < 0 or index >= reward_choices.size(): return
+	var item := reward_choices[index]
+	var slot: String = WeaponCatalog.stats(item).slot
+	var remaining: int = progression.acquire_equipment(slot, item, 0, bonus)
+	if remaining < 0:
+		active_reward.save_failed = true
+		_show_paid_reward(true, index)
+		return
+	bonus = remaining
+	player.configure_loadout(progression.equipment)
+	_update_gold_hud()
+	_close_pause()
 
 func _start_intro() -> void:
 	if progression.completed_dialogues.has(INTRO_ID): return

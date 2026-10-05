@@ -577,3 +577,52 @@ Claude a ajouté les animations dédiées de résurrection, apparition et dispar
 Le dernier défaut venait du moment où le niveau suspendait le jeu : le chevalier courait encore, donc son sprite conservait une frame de course. Il passe maintenant à idle avant la pause, avec vitesse nulle, attaque annulée et couche d'attaque masquée. Le sprite seul utilise le mode ALWAYS pour laisser l'idle respirer ; le corps physique et les ennemis restent figés. Après enregistrement du dialogue, le sprite reprend son mode hérité et les menus peuvent à nouveau le figer normalement. Ce sont deux responsabilités distinctes : autoriser le rendu à s'animer ne rend pas les contrôles au joueur.
 
 La vraie mort possède déjà son propre mode ALWAYS pour jouer l'effondrement sous l'overlay. La revue a repéré qu'une restauration systématique du mode du dialogue dans le handler de mort le casserait. Ce chemin conserve donc le mode choisi par `die()` ; le nouveau joueur après restart reçoit les réglages de sa scène. Le test vérifie autant l'idle animé pendant le dialogue que la mort animée sous pause, pour éviter de corriger l'une en bloquant l'autre.
+
+
+## RUN-018 — Équipement standard, coffres payants et soins (5 octobre 2026)
+
+Le contrat numérique a été validé avant le code. Les nouveaux objets sont exercés dans `tests/fixtures/economy_level.tscn` : cette scène de test n’est pas le niveau N2. Les placements de N2–4 et la passe artistique ne sont pas encore livrés.
+
+### Une définition commune pour les armes
+
+`WeaponCatalog` donne les dégâts, l’intervalle entre attaques et la portée des huit armes, niveaux 0 à 5. Le nom sauvegardé reste une chaîne, par exemple `BrutalAxe2` : le format v2 existant suffit, sans ajouter une migration. Les coffres offrent uniquement des niveaux 0–3 et l’upgrade ordinaire s’arrête à 3. Les valeurs 4/5 sont préparées et testées pour Enchant Juice futur, pas accessibles par ces coffres.
+
+Le joueur lit cette définition quand il attaque. Une lame de RANGE1 mesure 24 pixels depuis la main ; le tir compte les blocs de 16 pixels. La forme physique de la lame est dupliquée pour chaque joueur avant d’être redimensionnée : changer l’arme d’une instance ne modifie pas celle des autres. Les projectiles capturent leurs dégâts et leur portée au départ ; une acquisition ultérieure ne change pas les tirs déjà lancés.
+
+Les deux slots ont leurs propres cooldowns. Acquérir une arme ou passer d’un slot à l’autre ne remet pas ces timers à zéro. Cela évite de contourner la cadence en changeant constamment d’arme. La physique et les dégâts sont généralisés ; les sprites hérités Sword/Longbow ne représentent pas encore correctement les nouvelles armes et attendent Claude.
+
+### Pourquoi un coffre payant a deux étapes
+
+Le contrat demande de payer dès l’ouverture, même si l’on refuse ensuite. `level.gd` vérifie la proximité et les fonds, prépare une offre, puis dépense les shards courants avant la banque. Un débit de banque est sauvegardé avant d’ouvrir la fenêtre. Le coffre et son compteur ne sont consommés qu’après un paiement réussi.
+
+La fenêtre suspend le gameplay et laisse choisir l’item ou, lorsqu’il a été tiré, l’upgrade avec gauche/droite. E sauvegarde le choix avant d’équiper l’arme. Escape ferme sans rien donner ni rembourser. Cette séparation est l’exception explicite au contrat de transaction unique RUN-015, validée par l’humain pour RUN-018.
+
+Si le disque échoue au paiement, le coffre garde son offre et ne consomme rien. S’il échoue lors de l’acquisition, la fenêtre garde son offre et son choix pour le retry, sans deuxième paiement. La fermeture avant acceptation laisse l’ancien équipement ; après acceptation, l’arme sauvegardée survit à la fermeture et à la mort. Les coffres et prix croissants repartent de zéro à chaque tentative.
+
+`ChestEconomy` garde deux compteurs indépendants, common et rare. Le prix est le plafond de `base × 1,5^nombre_d’ouvertures`. Aux grands compteurs, une formule flottante pouvait donner un prix inférieur de deux shards : un calcul entier local conserve le résultat exact jusqu’à la limite de sauvegarde. Un prix hors de cette limite est refusé sans mutation.
+
+### Soins de terrain et de kill
+
+La potion mineure expose maintenant une quantité de soin. La potion majeure hérite de sa scène et règle cette quantité à 1 HP, tout en conservant la même collision. À pleine vie, le pickup reste sur place ; un soin partiel est plafonné au maximum et la consommation reste unique. Son dessin actuel est un repère de test.
+
+Un ennemi raccordé par `register_enemy` peut soigner directement le joueur à sa mort. Le profil `ordinary` donne éventuellement 0,5 HP, `elite` éventuellement 1 HP, et `skull` ne donne aucun soin. Un ennemi est récompensé une seule fois ; les soins ne sont ni stockés ni déposés sur le terrain. Les nouveaux archétypes et invocations devront utiliser ce raccord en RUN-019. Le niveau émet `kill_healed` après un soin effectif pour permettre à Claude d’ajouter le feedback.
+
+### Comment le résultat technique est vérifié
+
+`standard_weapons` presse réellement F pour mesurer les cadences et utilise de vraies formes/rayons physiques pour les portées, dégâts, occlusions et collisions. Les sondes aux pointes sont des fixtures contrôlées, pas des parcours humains. `chest_economy` vérifie les tables et les frontières des tirages déterministes ; un petit échantillon aléatoire ne suffit pas à prouver une probabilité.
+
+`reward_transactions` passe par les contacts et touches clavier pour les coffres, erreurs disque, refus, upgrades, soins et mort. `equipment_cold_session` relance des moteurs distincts et utilise Continue pour vérifier ce qui est réellement resté sur disque. `tools/test.sh` isole les données utilisateur et ajoute ces contrôles aux régressions N1 existantes. Les chiffres de recette finale restent au journal. La validation artistique, l’écoute et l’essai humain du nouveau combat ne sont pas remplacés par ces tests.
+
+
+### RUN-018 — Ce que la passe Claude a intégré
+
+Le chevalier utilise maintenant trois couches de frames : corps, parties devant la traînée et parties devant l’arme. Une arme dessinée séparément se place entre ces couches, avec la même main et le même angle que le rig. Sa longueur suit la portée physique du catalogue ; les grandes armes peuvent dépasser la cellule64×64 sans étirer les pixels. Les anciens atlas/générateurs restent conservés, notamment pour l’écran titre. Le résultat Sword0 est proche mais pas identique pixel à pixel : ce changement visuel a reçu la validation humaine de la run le 5 octobre 2026.
+
+Les couteaux ont leurs postures et lancers. Le projectile reçoit son look au départ, donc un couteau en vol garde cette apparence même si le joueur reprend l’arc. Les couches suivent les frames et le miroir du corps ou du haut du corps, y compris pendant les présentations où le gameplay est suspendu. Leurs cues et VFX ne modifient pas la collision ni les dégâts.
+
+Les slots montrent maintenant l’icône de chaque arme, son niveau et une plaque adaptée au texte. Le coffre présente ses récompenses sur des cartes horizontales ; common et rare ont des silhouettes et sons distincts. Un effet d’ouverture vit séparément du coffre caché pendant le choix. Il observe le changement d’équipement pour jouer le feedback : il ne réalise aucune transaction. La potion majeure et les soins au kill ont aussi leur rendu dédié ; le marqueur provisoire de potion a été retiré après contrôle des références.
+
+Codex a relancé la recette de retour :1743 contrôles, puis68 contrôles avec rendu, sans erreur/fuite. Les crédits gardent les générateurs visuels originaux et les sources Helton Yan CC BY4 des sons. Les mesures de format/crête et les captures ne remplacent pas l’écoute et un essai humain : ces validations humaines ont été reçues le 5 octobre 2026 ; revue Jev et inspection des preuves terminées, RUN-018 est DONE localement.
+
+
+La validation humaine de RUN-018 est reçue le 5 octobre 2026 après les explications de vérification du rendu, des sons et du combat/coffres. Les nouveaux objets restent intégrés aux fixtures : cette validation n’ajoute pas de placement dans les futurs niveaux N2–4 ni de banc d’essai interactif complet.

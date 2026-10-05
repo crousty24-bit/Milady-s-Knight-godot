@@ -204,3 +204,12 @@ Les bases de rétention des offrandes restent à trancher avant RUN-023 ; ce con
 Sword0 et Longbow0 sont stockés dans les deux slots durables ; A alterne les slots acquis, le spawn sélectionne Sword. Longbow0 : 1 DMG, 1,5 s, 320 px depuis sa bouche de tir ; vitesse technique 320 px/s. Projectile horizontal balayé contre terrain/ennemis, impact unique et suppression à portée ; pause suspend son trajet et son cooldown. Les deux cooldowns restent séparés lors du changement de slot. Le tir reste disponible en glissade murale ; la restriction de docs/01 est celle de la mêlée.
 
 Le coffre fixe gratuit et la potion mineure respectent le contrat de persistance ; leurs positions de test `(120,144)` et `(176,134)` restent temporaires avant l’adaptation N1 de RUN-017. La présentation et les feedbacks sont réservés à Claude ; voir [handoff RUN-016](RUN-016_CLAUDE_HANDOFF.md).
+
+
+## RUN-018 — Contrat validé et extension standard (5 octobre 2026)
+
+Le [contrat RUN-018](RUN-018_CONTRACT_REVIEW.md) est validé intégralement par l’humain et fait référence pour les tables numériques D02/D04 : huit armes standard 0–5, prix par monde/common/rare, poids et taux d’upgrade, soins de kill. Les tableaux sont centralisés dans ce contrat ; ne pas traiter les anciens exemples qualitatifs comme une seconde formule de prix. Fire Gauntlet et Legendary restent exclus des pools, upgrades ordinaires limités à 3 ; 4/5 uniquement préparés pour Enchant Juice futur.
+
+Exception validée au contrat RUN-015 : un common/rare débite à l’ouverture, puis sauvegarde l’item choisi séparément. Refus/Escape ne rembourse rien. Une fermeture avant choix conserve le débit de banque mais ne donne pas l’offre ; une acceptation écrite conserve l’équipement après fermeture. Le retry ne débite ni ne tire une seconde fois. Les coffres et compteurs common/rare sont locaux à la tentative. Le coffre tuto gratuit garde son comportement.
+
+La base technique utilise `WeaponCatalog`, `ChestEconomy`, les deux slots durables existants, des projectiles paramétrés et la potion majeure héritée de la mineure. Les profils de soin de kill sont explicités par la metadata ennemi `healing_profile` (`ordinary`, `elite`, `skull`) ; `skull` exclut le soin. L’intégration aux archétypes futurs relève de RUN-019. Aucun niveau N2–4 ni asset final nouveau n’est déclaré livré par ces contrats.

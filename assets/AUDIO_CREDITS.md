@@ -88,3 +88,22 @@ Première itération validée. À reprendre (traité par RUN-014, en attente d'�
 *Shooter Synthwave Music Pack* (AlkaKrab) : la licence interdit la redistribution des pistes telles quelles et demande une autorisation de l'auteur pour un jeu open source ; non intégré (RUN-014).
 
 *Minifantasy Dungeon SFX* (Leohpaz / Krishna Palacio) convenait au style mais interdit la redistribution des fichiers ; le dépôt GitHub étant public, il n'a pas été intégré.
+
+
+## SFX équipement standard et coffres — RUN-018 (5 octobre 2026)
+
+Même auteur/source/licence et attribution Helton Yan *Pixel Combat*, CC BY 4.0, que ci-dessus. Dérivés `assets/sounds/run018/`, générateur `tools/art/run018/prepare_audio_run018.py` ; sources lues uniquement dans la bibliothèque locale. Silence retiré, fondu de2ms, conversion mono44,1kHz PCM16bits, crête normalisée selon tableau, durées plafonnées avec fondu final. Le rare mélange deux sources (seconde retardée de120ms et abaissée de4dB).
+
+| Fichier | Source Helton Yan *Pixel Combat* | Crête | Durée | Usage |
+| --- | --- | --- | --- | --- |
+| `sfx_chest_open_rare.wav` | `UIMisc_INTERFACE-Lock_HY_PC-004` + `DSGNTonl_USABLE-Magic Item_HY_PC-006` (+120 ms, −4 dB) | −8 | 0,90 s | ouverture rare (common : `sfx_chest_open_common` réutilisé) |
+| `sfx_chest_reward_refuse.wav` | `DSGNTonl_USABLE-Failed Item_HY_PC-003` | −12 | 0,37 s | Escape dans la fenêtre payante |
+| `sfx_weapon_upgrade.wav` | `DSGNTonl_USABLE-Mecha Upgrade Equip_HY_PC-004` | −8 | 0,69 s | upgrade +1 accepté (item : `sfx_chest_reward_accept` réutilisé) |
+| `sfx_heal_kill.wav` | `MAGAngl_BUFF-Simple Heal_HY_PC-005` | −10 | 0,32 s | soin instantané au kill |
+| `sfx_major_potion_pickup.wav` | `DSGNTonl_MOVEMENT-Bubble Babbler_HY_PC-005` | −8 | 0,80 s | potion majeure (P1) |
+| `sfx_melee_swing_heavy_01–03.wav` + `.tres` | `WHSH_MOVEMENT-Wind Sweep Swish_HY_PC-001, -003, -005` | −8 | 0,60 s | Longsword, Dark Scythe, Warhammer, Halberds (P1, famille partagée) ; Sword/Brutal Axe gardent le swing léger (docs/08) |
+| `sfx_weapon_knives_throw_01–03.wav` + `.tres` | `SWSH_MOVEMENT-Reso Swish_HY_PC-001, -002, -004` | −10 | 0,28 s | lancer de couteau (P1) |
+| `sfx_knife_impact.wav` | `DSGNMisc_HIT-Zap Metal_HY_PC-002` | −10 | 0,22 s | impact couteau (P1) |
+
+
+Les cues common/reveal/accept et navigation UI existants sont réutilisés. Sélection Claude par analyse objective uniquement ; écoute humaine pas encore validée pour RUN-018. Familles lourdes/couteaux partagées et substituts approximatifs sont tracés pour RUN-027, sans promettre leur acceptation sonore. Mesure Codex des12 WAV : mono44,1kHz16bits, durées concordantes, crêtes à±0,05dB des cibles ; cela ne remplace ni l’écoute ni la recette du mix en jeu.
