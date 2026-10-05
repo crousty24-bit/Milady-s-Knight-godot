@@ -1,5 +1,6 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 [ext_resource type="Script" path="res://scripts/reward_chest.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/reward_chest_art.gd" id="2"]
 [sub_resource type="RectangleShape2D" id="shape"]
 size = Vector2(44, 48)
 [node name="RewardChest" type="Area2D" groups=["reward_chests"]]
@@ -10,3 +11,5 @@ script = ExtResource("1")
 [node name="Shape" type="CollisionShape2D" parent="."]
 position = Vector2(0, -16)
 shape = SubResource("shape")
+[node name="Art" type="Node2D" parent="."]
+script = ExtResource("2")

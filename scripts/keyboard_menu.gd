@@ -35,6 +35,15 @@ const SFX := {
 	"cancel": preload("res://assets/sounds/sfx_ui_cancel.wav"),
 	"error": preload("res://assets/sounds/sfx_ui_error.wav"),
 }
+# RUN-018 (Claude): paid chest choices are drawn as two horizontal cards (icon, exact label,
+# level badge), with chest-specific refusal audio. The option strings and selection are unchanged.
+const CARD = preload("res://assets/run018/ui/ui_reward_card.png")
+const CARD_FOCUS = preload("res://assets/run018/ui/ui_reward_card_focus.png")
+const LARGE_ICONS = preload("res://assets/run018/ui/ui_weapon_icons_large.png")
+const BADGES = preload("res://assets/run018/ui/ui_tier_badges.png")
+const CHEST_KINDS = preload("res://assets/run018/ui/ui_chest_kind.png")
+const ICON_ORDER := ["Sword", "Longsword", "BrutalAxe", "DarkScythe", "Warhammer", "Halberds", "Longbow", "ThrowingKnives"]
+const REFUSE_SFX = preload("res://assets/sounds/run018/sfx_chest_reward_refuse.wav")
 const GAME_TITLE = "Milady's Knight"
 const ERROR_TITLES = ["Unable to continue"]
 const GOLD_TEXT = Color(0.941, 0.824, 0.478)
@@ -209,6 +218,10 @@ func _redraw_rows() -> void:
 	for child in rows.get_children():
 		rows.remove_child(child)
 		child.queue_free()
+	if horizontal_choices:
+		for i in range(choices.size()): rows.add_child(_reward_card(i))
+		_layout.call_deferred()
+		return
 	for i in range(choices.size()):
 		var focused := i == selection and i not in unavailable
 		var row := PanelContainer.new()
@@ -235,6 +248,63 @@ func _redraw_rows() -> void:
 		line.add_child(right)
 		rows.add_child(row)
 	_layout.call_deferred()
+
+# Weapon ID behind an exact choice label ("Brutal Axe 2", "Upgrade +1\nSword 1"), or "".
+func _choice_item(text: String) -> String:
+	var line := text.split("\n")[-1].strip_edges()
+	var space := line.rfind(" ")
+	if space < 0: return ""
+	for base in WeaponCatalog.BASES:
+		if WeaponCatalog.BASES[base][4] == line.left(space): return base + line.substr(space + 1)
+	return ""
+
+func _atlas(texture: Texture2D, region: Rect2) -> TextureRect:
+	var atlas := AtlasTexture.new()
+	atlas.atlas = texture
+	atlas.region = region
+	var rect := TextureRect.new()
+	rect.texture = atlas
+	rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	rect.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
+	return rect
+
+func _reward_card(i: int) -> Control:
+	var focused := i == selection and i not in unavailable
+	var card := PanelContainer.new()
+	card.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.custom_minimum_size = Vector2(150, 0)
+	card.add_theme_stylebox_override("panel", _nine(CARD_FOCUS if focused else CARD, 8, Vector4(8, 6, 8, 7)))
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", 3)
+	card.add_child(column)
+	var item := _choice_item(choices[i])
+	var stats := WeaponCatalog.stats(item)
+	var top := HBoxContainer.new()
+	top.alignment = BoxContainer.ALIGNMENT_CENTER
+	var upgrade := choices[i].begins_with("Upgrade")
+	var kind := _atlas(CHEST_KINDS, Rect2(12 if heading.text.begins_with("Rare") else 0, 0, 12, 12))
+	top.add_child(kind)
+	var tag := Label.new()
+	tag.text = "Weapon"  # the upgrade label already reads "Upgrade +1"
+	_style_label(tag, 8, GOLD_TEXT if focused else DIM_TEXT)
+	top.modulate.a = 0.0 if upgrade else 1.0
+	top.add_child(tag)
+	column.add_child(top)
+	if not stats.is_empty():
+		column.add_child(_atlas(LARGE_ICONS, Rect2(ICON_ORDER.find(item.left(-1)) * 24, 0, 24, 24)))
+	var line := HBoxContainer.new()
+	line.alignment = BoxContainer.ALIGNMENT_CENTER
+	line.add_theme_constant_override("separation", 4)
+	var label := Label.new()
+	label.text = choices[i]
+	_style_label(label, 16, GOLD_TEXT if focused else (OFF_TEXT if i in unavailable else PALE_TEXT))
+	line.add_child(label)
+	if not stats.is_empty():
+		var badge := _atlas(BADGES, Rect2(int(stats.level) * 9, 0, 9, 9))
+		badge.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		line.add_child(badge)
+	column.add_child(line)
+	return card
 
 func _icon(texture: Texture2D, shown: bool, mirrored: bool) -> TextureRect:
 	var icon := TextureRect.new()
@@ -274,7 +344,9 @@ func _play(cue: String) -> void:
 	var player := get_tree().root.get_node_or_null("UiSfx") as AudioStreamPlayer if is_inside_tree() else null
 	if player == null: return
 	_last_cue = cue
-	player.stream = SFX[cue]
+	# Paid chest window: refusal has its own cue; acceptance sounds from the opened chest.
+	if horizontal_choices and cue == "confirm": return
+	player.stream = REFUSE_SFX if horizontal_choices and cue == "cancel" else SFX[cue]
 	player.play()
 
 func _exit_tree() -> void:

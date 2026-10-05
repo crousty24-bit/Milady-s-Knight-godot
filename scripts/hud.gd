@@ -195,6 +195,7 @@ func set_equipment(active: int, ranged_owned: bool) -> void:
 func set_loadout(active: int, slots: Dictionary) -> void:
 	$Equipment/Melee.text = ("> " if active == 0 else "  ") + WeaponCatalog.label(slots.melee)
 	$Equipment/Ranged.text = ("> " if active == 1 else "  ") + ("Empty" if slots.ranged.is_empty() else WeaponCatalog.label(slots.ranged))
+	$Equipment.set_items(str(slots.melee), str(slots.ranged))
 
 func show_item_prompt(world_position: Vector2, text: String) -> void:
 	_prompt_world = world_position
