@@ -2,7 +2,7 @@
 
 ## Statut de cette planification
 
-**5 octobre 2026 — Version actuelle : 0.2.0 ; cible 0.3.0 autorisée.** RUN-001–018 et RUN-029 DONE (19 runs). RUN-018 validée humainement et clôturée localement après revue Jev/inspection ; dix lots restent BACKLOG. Baseline propre `develop` (`6bb15b4`), branche `feature/run-018-standard-equipment`. Promotion vers `main` présente localement (`9e9847b`, arbres identiques). Les checkpoints datés ci-dessous décrivent leur état historique.
+**5 octobre 2026 — Version actuelle : 0.2.0 ; cible 0.3.0 autorisée.** RUN-001–018 et RUN-029 DONE (19 runs). RUN-018 intégrée dans `develop` par PR #21 (`288b518`). Préparation RUN-019 autorisée, branche `feature/run-019-threats-exploration` issue de develop propre ; neuf lots restent BACKLOG. RUN-019 BLOCKED sur les décisions produit D01/D06/D07 proposées dans son contrat, sans code dépendant commencé. Les checkpoints datés ci-dessous décrivent leur état historique.
 
 **Clôture du 3 octobre 2026 : RUN-015–017 DONE, jalon 0.2.0 validé localement.** Deux passes Claude et playtest humain N1 validés ; correctif idle, recette finale et revue Jev/inspection terminés. [PR #18](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/18) ouverte de `feature/run-017-eidolon-vale` vers `develop`, sans fusion. Aucune autre run lancée. Les checkpoints antérieurs ci-dessous conservent leur contexte historique.
 
@@ -517,7 +517,7 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 ## Version 0.3.0 — Économie, bestiaire et exploration N2–4
 
-**Statut : préparation RUN-018 autorisée le 5 octobre 2026 ; jalon non validé.** **Prérequis :** 0.2.0 validée (satisfait) ; D01, D02, D04, D06, D07 selon les systèmes.
+**Statut : RUN-018 DONE ; préparation RUN-019 autorisée le 5 octobre 2026 ; jalon non validé.** **Prérequis :** 0.2.0 validée (satisfait) ; D01, D02, D04, D06, D07 selon les systèmes.
 
 **Repères documentaires :** 01, 02, 03, 04, 05, 06, 07, 08, 13 dans `docs/`.
 
@@ -552,7 +552,9 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 ### RUN-019 — Menaces et exploration N2–4
 
-**Lot H · Main agent : Codex GPT-6.1 Sol Medium · Statut : BACKLOG · Dépendances : RUN-018.**
+**Lot H · Main agent : Codex GPT-6.1 Sol Medium · Statut : BLOCKED · Dépendances : RUN-018 DONE.**
+
+- **Préparation autorisée (5 octobre 2026) :** demande humaine « Lancer run 019 ». Baseline propre develop `288b518`, RUN-018 intégrée via PR #21 ; branche `feature/run-019-threats-exploration` créée. Inspection directe et deux audits Luna Medium en lecture seule : nouveaux ennemis/systèmes encore absents, sources de dégâts et flags v2 réutilisables. [Contrat concret proposé](docs/RUN-019_CONTRACT_REVIEW.md) pour D01/D06/D07 : +1 CURRENT en même temps que MAX, aggro avec visibilité et retour sans saut, quatre Skulls et budget de quatre shards par zone/tentative, Shield rafraîchi sans cumul, secrets mêlée/tir, portes/mécanismes de tentative. Ces choix ne sont pas encore validés. **Condition de reprise : validation du contrat ou corrections précises**, puis READY → ACTIVE. [Contribution Claude préparée](docs/RUN-019_CLAUDE_HANDOFF.md), sans message ni remise de fichiers partagés. Aucun changement gameplay/test runtime, push/PR/merge ni RUN-020. Réglage exact Sol Medium du main non exposé : Je ne sais pas.
 
 - **Résultat / scope :** Red/Bloated Slime ; Warrior, Archer, Sorcerer, Swarm et Chud ; piques rétractables, trappes, tourelles/plantes, Magic Shield, secrets permanents, mécanismes, portes secondaires et HP bonus. Implémenter par familles testées dans le même lot, avec télégraphies/SFX P0.
 - **Décisions avant implémentation dépendante :** D01/D06/D07 : effet bonus MAX HP sur CURRENT HP, aggro/ligne de vue, plafonds et vie des invocations, cumul Shield et déclencheurs de secrets.
