@@ -89,3 +89,16 @@ Le dépôt est public : un pack dont la licence interdit la redistribution des f
 | Free - Raven Fantasy Icons | Clockwork Raven | Redistribution interdite (non vérifié). |
 | 16x16 Assorted RPG Icons | Shade | **CC0, vérifié** sur OpenGameArt ; utilisable. |
 | Fichiers `pixellab-*.png` | Humain, via PixelLab | Propriété de l'utilisateur selon les conditions PixelLab (vérifiées) ; noter prompt et date si intégrés. |
+
+
+## Générés pour le projet — RUN-018 (5 octobre 2026)
+
+`assets/run018/**` est généré par `tools/art/run018/` : visuels originaux du projet, sans pixel tiers annoncé. Les générateurs sont les sources conservées. Palette commune et rig RUN-029 réutilisés ; `tools/art/knight.py` et l’atlas initial sont conservés. Contribution Claude livrée localement dans `ff5caa0` ; validation artistique humaine RUN-018 encore requise.
+
+| Générateur | Dérivés | Usage |
+| --- | --- | --- |
+| `knight_armed.py`, `weapon_raster.py` | `assets/run018/knight/` | Chevalier body/mid/over64×64 et rig, strips d’armes ; dessin runtime à portée exacte par `scripts/weapon_art.gd`, posture/lancer Knives |
+| `ui_icons.py` | `assets/run018/ui/` | Huit armes/vide, badges0–5, cartes de récompense/focus, glyphes common/rare |
+| `world_items.py` | `assets/run018/world/` | Coffres common/rare, potion majeure, soin de kill, couteau départ/impacts |
+
+Tailles, frames, ancrages et limites détaillés dans [RUN-018_ASSET_MANIFEST.md](../docs/RUN-018_ASSET_MANIFEST.md). La recomposition Sword0 ressemble à l’atlas antérieur mais n’est pas identique pixel à pixel ; son jugement visuel reste humain.

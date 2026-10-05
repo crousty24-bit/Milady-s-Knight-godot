@@ -1,6 +1,6 @@
 # RUN-018 — Manifeste de la contribution Claude (assets, intégration visuelle, preuves)
 
-**5 octobre 2026 — Contribution Claude remise à Codex pour recette et revue Jev.** Branche `feature/run-018-standard-equipment`, base `eb6fffc`. Contrat : [RUN-018_CLAUDE_HANDOFF.md](RUN-018_CLAUDE_HANDOFF.md). Rien n’est commité, poussé ni fusionné ; la run n’est pas DONE. Validation humaine artistique/sonore et essai combat/coffres restent requis.
+**5 octobre 2026 — Contribution Claude remise à Codex pour recette et revue Jev.** Branche `feature/run-018-standard-equipment`, base `eb6fffc`. Contrat : [RUN-018_CLAUDE_HANDOFF.md](RUN-018_CLAUDE_HANDOFF.md). Contribution présente dans le commit `ff5caa0`, constaté par Codex au retour. Le dépôt est propre au début de la revue ; la run n’est pas DONE. Aucun push ou merge de cette contribution n’a été effectué par Codex. Validation humaine artistique/sonore et essai combat/coffres restent requis.
 
 Orchestration : Opus 5.5 (principal) ; trois sous-agents Sonnet 5.5 sur fichiers disjoints — icônes/UI (`visual_architect`), objets du monde/VFX/couteau (`visual_architect`), sélection audio (`asset_integrator`). Le niveau de raisonnement des sous-agents n’est pas exposé par l’outil : il a été indiqué dans les consignes, sans preuve qu’il a été appliqué. Rig du chevalier, armes tenues, Throwing Knives, intégration Godot et vérifications : agent principal.
 
@@ -86,7 +86,7 @@ Navigation gauche/droite : `sfx_ui_navigate` réutilisé. Confirmer dans la fen�
 ## Vérifications réellement exécutées (Godot 4.7.2 Windows, `flock work/.godot.lock`, profils temporaires isolés)
 
 - Import éditeur sans erreur.
-- `tools/test.sh` complet, code 0 : **27 suites, 1724 contrôles de jeu + 19 contrôles en sessions à froid (5 processus), 0 échec**, aucune ligne FAIL/SCRIPT ERROR/ERROR/fuite. Logs `work/test-results/run-13N1WAsl/`, sortie `work/run018/claude/logs/full-suite-1.log`.
+- `tools/test.sh` complet, code 0 : **27 suites, 1723 contrôles de jeu + 19 contrôles en sessions à froid (5 processus) + 1 isolation = 1743 PASS, 0 échec**, aucune ligne FAIL/SCRIPT ERROR/ERROR/fuite. Logs `work/test-results/run-13N1WAsl/`, sortie `work/run018/claude/logs/full-suite-1.log`.
 - Pilotes rendus existants rejoués : knight_visual 31/31, combat_visual 2/2, hud_visual 11/11, feedback_visual 7/7, reward_transactions 29/29 (logs `work/run018/claude/logs/rendered-*.log`).
 - Nouveau pilote rendu `tests/run018_equipment_visual.gd` : **68/68** (`work/run018/claude/logs/visual-3.log`), captures 640×360 dans `work/run018/claude/render/` inspectées : six armes de mêlée N0/N3/N5, couches synchronisées, portée dessinée = portée gameplay ±2,5 px (contour compris), miroir à gauche, attaque aérienne sur le haut du corps superposé, arme rangée avec l’arc ; couteaux posture/lancer/vol et look conservé après échange ; HUD « Throwing Knives 3 » + badge dans la plaque, slot vide ; coffres fermés common/rare, cartes horizontales, focus droite, upgrade accepté (Sword 1), rare à une carte refusé ; potion majeure (+1 HP) ; soins au kill mineur/majeur.
 - Hors jeu : composition Python Sword0 vs atlas RUN-029 validé — visuellement équivalente (aperçu `work/run018/claude/knight/sword0_vs_orig_x4.png`), mais pas identique au pixel : 7109 pixels différents sur 61 886 (anti-crénelage de la lame et contour de lame en `OUTLINE` au lieu de `STEEL_DEEP` sur le corps).
@@ -101,4 +101,13 @@ Navigation gauche/droite : `sfx_ui_navigate` réutilisé. Confirmer dans la fen�
 
 ## Retour à Codex
 
-Fichiers de présentation listés ci-dessus rendus à Codex. À faire côté Codex : recette après intégration (cadence/portée/collision), crédits audio/visuels, suppression éventuelle de `major_potion_preview.gd`, ajout éventuel du pilote `run018_equipment_visual` aux pilotes rendus, journal/learning, puis revue Jev. Aucun commit, push, PR ni fusion effectué par cette contribution.
+Fichiers de présentation listés ci-dessus rendus à Codex. À faire côté Codex : recette après intégration (cadence/portée/collision), crédits audio/visuels, suppression éventuelle de `major_potion_preview.gd`, ajout éventuel du pilote `run018_equipment_visual` aux pilotes rendus, journal/learning, puis revue Jev. Le texte de retour initial annonçait aucun commit ; Git prouve désormais la livraison locale `ff5caa0`. Aucun push, PR ou merge effectué par Codex dans cette reprise.
+
+
+## Revue de retour Codex — 5 octobre 2026
+
+Baseline propre `ff5caa0` inspectée ; aucun défaut concret du gameplay/transactions trouvé par la revue indépendante. Dimensions des20 PNG et paramètres des12 WAV concordants (mono44,1kHz PCM16bits, durées et crêtes à±0,05dB des cibles). Crédits intégrés dans AUDIO_CREDITS/VISUAL_CREDITS. Marqueur non référencé major_potion_preview.gd et son UID retirés après recherche des références code/scènes/ressources.
+
+Recette Codex réellement relancée : tools/test.sh, Godot Windows4.7.2, profil NTFS isolé et verrou flock, code0 ; **1743 PASS** (1723 jeu,19 froids,1 isolation), aucun FAIL/SCRIPT ERROR/ERROR/fuite. Logs `work/test-results/run-WgV2sBn8/`, sortie `work/run018/codex-return/full-suite.log`. Pilote run018_equipment_visual non headless relancé sous profil NTFS isolé/verrou flock : **68/68**, code0 sans erreur/fuite (`work/run018/codex-return/render.log`). Captures représentatives inspectées à640×360 (Halberds3, Scythe aérienne, couteau en vol après échange, HUD longs, focus upgrade, soin majeur). Aucun playtest humain ni écoute sonore effectués par Codex.
+
+RUN-018 **VERIFY**, en attente de validation humaine artistique/sonore et essai combat/coffres. Jev de clôture reste à effectuer après ces validations, pas de DONE ni de RUN-019 lancée. Aucun push/PR/merge effectué par Codex.

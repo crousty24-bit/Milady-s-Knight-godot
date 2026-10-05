@@ -612,3 +612,14 @@ Un ennemi raccordé par `register_enemy` peut soigner directement le joueur à s
 `standard_weapons` presse réellement F pour mesurer les cadences et utilise de vraies formes/rayons physiques pour les portées, dégâts, occlusions et collisions. Les sondes aux pointes sont des fixtures contrôlées, pas des parcours humains. `chest_economy` vérifie les tables et les frontières des tirages déterministes ; un petit échantillon aléatoire ne suffit pas à prouver une probabilité.
 
 `reward_transactions` passe par les contacts et touches clavier pour les coffres, erreurs disque, refus, upgrades, soins et mort. `equipment_cold_session` relance des moteurs distincts et utilise Continue pour vérifier ce qui est réellement resté sur disque. `tools/test.sh` isole les données utilisateur et ajoute ces contrôles aux régressions N1 existantes. Les chiffres de recette finale restent au journal. La validation artistique, l’écoute et l’essai humain du nouveau combat ne sont pas remplacés par ces tests.
+
+
+### RUN-018 — Ce que la passe Claude a intégré
+
+Le chevalier utilise maintenant trois couches de frames : corps, parties devant la traînée et parties devant l’arme. Une arme dessinée séparément se place entre ces couches, avec la même main et le même angle que le rig. Sa longueur suit la portée physique du catalogue ; les grandes armes peuvent dépasser la cellule64×64 sans étirer les pixels. Les anciens atlas/générateurs restent conservés, notamment pour l’écran titre. Le résultat Sword0 est proche mais pas identique pixel à pixel : ce changement visuel attend encore le jugement humain.
+
+Les couteaux ont leurs postures et lancers. Le projectile reçoit son look au départ, donc un couteau en vol garde cette apparence même si le joueur reprend l’arc. Les couches suivent les frames et le miroir du corps ou du haut du corps, y compris pendant les présentations où le gameplay est suspendu. Leurs cues et VFX ne modifient pas la collision ni les dégâts.
+
+Les slots montrent maintenant l’icône de chaque arme, son niveau et une plaque adaptée au texte. Le coffre présente ses récompenses sur des cartes horizontales ; common et rare ont des silhouettes et sons distincts. Un effet d’ouverture vit séparément du coffre caché pendant le choix. Il observe le changement d’équipement pour jouer le feedback : il ne réalise aucune transaction. La potion majeure et les soins au kill ont aussi leur rendu dédié ; le marqueur provisoire de potion a été retiré après contrôle des références.
+
+Codex a relancé la recette de retour :1743 contrôles, puis68 contrôles avec rendu, sans erreur/fuite. Les crédits gardent les générateurs visuels originaux et les sources Helton Yan CC BY4 des sons. Les mesures de format/crête et les captures ne remplacent pas l’écoute et un essai humain : RUN-018 reste en VERIFY pour ces validations, sans clôture Jev encore effectuée.
