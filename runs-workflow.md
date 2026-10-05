@@ -2,6 +2,8 @@
 
 ## Statut de cette planification
 
+**5 octobre 2026 — Version actuelle : 0.2.0.** RUN-001–017 et RUN-029 DONE (18 runs), 11 lots BACKLOG. La PR #18 est fusionnée dans `develop` (`3ae7b92`, 3 octobre). L’humain autorise la promotion de `develop` vers `main` et la mise à jour documentaire 0.2.0. Prochaine cible : **0.3.0**, aucune nouvelle run lancée. Les checkpoints datés ci-dessous décrivent leur état historique.
+
 **Clôture du 3 octobre 2026 : RUN-015–017 DONE, jalon 0.2.0 validé localement.** Deux passes Claude et playtest humain N1 validés ; correctif idle, recette finale et revue Jev/inspection terminés. [PR #18](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/18) ouverte de `feature/run-017-eidolon-vale` vers `develop`, sans fusion. Aucune autre run lancée. Les checkpoints antérieurs ci-dessous conservent leur contexte historique.
 
 **Mise à jour du 3 octobre 2026 :** PR #16 fusionnée dans `develop` (`f997bcb`), verrou 0.2.0 levé. RUN-015–016 DONE ; passe Claude RUN-016 validée par l’humain, revue globale terminée sur `feature/v0.2.0-reprise-equipment`. Push et PR vers develop autorisés par la demande humaine de revue puis livraison ; pas de merge autorisé. Les paragraphes datés du 2 octobre conservent le contexte historique.
@@ -228,13 +230,13 @@ Références de la révision du workflow du **22 septembre 2026** : recommandati
 
 | Cible | Résultat | Runs | Orchestrateur principal |
 | --- | --- | --- | --- |
-| **0.1.0 actuelle** | Socle validé ; compléments visuels et audio réalisés | 001–014 et 029 DONE | Historique conservé ; Claude Opus 5.5 pour les compléments |
-| **0.2.0** | N1 complet, menus, tutoriel, tir et reprise | 015–017 : 3 lots | Codex GPT-6.1 Sol Medium |
+| **0.1.0 clôturée** | Socle validé ; compléments visuels et audio réalisés | 001–014 et 029 DONE | Historique conservé ; Claude Opus 5.5 pour les compléments |
+| **0.2.0 actuelle** | N1 complet, menus, tutoriel, tir et reprise validés | 015–017 DONE | Codex GPT-6.1 Sol Medium |
 | **0.3.0** | Économie et équipement standard, bestiaire et exploration N2–4 | 018–021 : 4 lots | Codex GPT-6.1 Sol Medium ; Claude Opus 5.5 pour 021 |
 | **0.4.0** | Capacités, légendaires, N5–10, Boss et conclusion | 022–026 : 5 lots | Codex GPT-6.1 Sol Medium ; Claude Opus 5.5 pour 025 |
 | **0.5.0 beta** | Présentation finale, équilibrage, recette et exports | 027–028 : 2 lots | Claude Opus 5.5 pour 027 ; Codex GPT-6.1 Sol Medium pour 028 |
 
-**Total : 15 runs DONE + 14 lots BACKLOG = 29 identifiants**, sous la limite de 30. Les trois passes 012–014 ont été retenues et réalisées ; RUN-029 ajoute la seconde passe visuelle demandée explicitement. Les identifiants futurs restent inchangés. Le plan conserve tous les systèmes, les dix niveaux, les recettes et les validations artistiques/humaines.
+**Total actuel : 18 runs DONE + 11 lots BACKLOG = 29 identifiants**, sous la limite de 30. Les trois passes 012–014 ont été retenues et réalisées ; RUN-029 ajoute la seconde passe visuelle demandée explicitement. Les identifiants futurs restent inchangés. Le plan conserve tous les systèmes, les dix niveaux, les recettes et les validations artistiques/humaines.
 
 ### Correspondance avec le plan remplacé
 
