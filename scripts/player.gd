@@ -84,6 +84,8 @@ var jump_effect_origin := Vector2.ZERO
 var motion_state: MotionState = MotionState.AIR
 var wall_normal: float = 0.0
 var blocked_wall_normal: float = 0.0
+var wall_coyote: float = 0.0
+var last_wall_normal: float = 0.0
 var wall_detach_time: float = 0.0
 var wall_control_time: float = 0.0
 var attack_cancelled: bool = false
@@ -301,6 +303,7 @@ func _physics_process(delta: float) -> void:
 	jump_flash = maxf(0.0, jump_flash - delta)
 	wall_detach_time = maxf(0.0, wall_detach_time - delta)
 	wall_control_time = maxf(0.0, wall_control_time - delta)
+	wall_coyote = maxf(0.0, wall_coyote - delta)
 	since_swing += delta
 	shot_age += delta
 	land_time = maxf(0.0, land_time - delta)
@@ -317,6 +320,7 @@ func _physics_process(delta: float) -> void:
 		coyote = 0.10
 		can_double_jump = false
 		wall_jump_lockout = false
+		wall_coyote = 0.0
 	else:
 		coyote = maxf(0.0, coyote - delta)
 	jump_buffer = maxf(0.0, jump_buffer - delta)
@@ -324,24 +328,28 @@ func _physics_process(delta: float) -> void:
 	_update_wall_state(direction)
 	if controls_enabled and knockback_time <= 0.0 and Input.is_action_just_pressed("jump"):
 		jump_buffer = 0.12
-	if knockback_time <= 0.0 and jump_buffer > 0.0 and coyote > 0.0:
-		velocity.y = JUMP_SPEED
-		jump_buffer = 0.0
-		coyote = 0.0
-		can_double_jump = true
-		$JumpSound.play()
-	elif knockback_time <= 0.0 and jump_buffer > 0.0 and wall_normal != 0.0 and not is_on_floor():
-		velocity = Vector2(wall_normal * WALL_JUMP_SPEED, JUMP_SPEED)
-		facing = int(wall_normal)
-		blocked_wall_normal = wall_normal
+	# Prefer the contacted/recently departed wall over stale ground coyote.
+	# Away + Space can arrive on adjacent physics ticks without losing the rebound.
+	var jump_wall := wall_normal if wall_normal != 0.0 else last_wall_normal if wall_coyote > 0.0 else 0.0
+	if knockback_time <= 0.0 and jump_buffer > 0.0 and jump_wall != 0.0 and not is_on_floor():
+		velocity = Vector2(jump_wall * WALL_JUMP_SPEED, JUMP_SPEED)
+		facing = int(jump_wall)
+		blocked_wall_normal = jump_wall
 		wall_control_time = 0.07
 		wall_detach_time = 0.20
+		wall_coyote = 0.0
 		wall_jump_lockout = true
 		can_double_jump = false
 		coyote = 0.0
 		jump_buffer = 0.0
 		motion_state = MotionState.AIR
 		$WallJumpSound.play()
+	elif knockback_time <= 0.0 and jump_buffer > 0.0 and coyote > 0.0:
+		velocity.y = JUMP_SPEED
+		jump_buffer = 0.0
+		coyote = 0.0
+		can_double_jump = true
+		$JumpSound.play()
 	elif knockback_time <= 0.0 and jump_buffer > 0.0 and can_double_jump and not wall_jump_lockout:
 		velocity.y = DOUBLE_JUMP_SPEED
 		jump_buffer = 0.0
@@ -495,8 +503,6 @@ func _update_wall_state(direction: float) -> void:
 		return
 	# Two probes cover the straight sides of the capsule, not its rounded feet.
 	for side in [-1.0, 1.0]:
-		if wall_detach_time > 0.0 and -side == blocked_wall_normal:
-			continue
 		for height in [-6.0, -12.0]:
 			var from := global_position + Vector2(0, height)
 			var query := PhysicsRayQueryParameters2D.create(from, from + Vector2(side * 5.5, 0), GRIPPABLE_MASK)
@@ -506,6 +512,16 @@ func _update_wall_state(direction: float) -> void:
 				break
 		if wall_normal != 0.0:
 			break
+	# Suppress the wall we just pushed off only until physical separation.
+	# Contact after returning is immediately usable, regardless of the timer.
+	if wall_detach_time > 0.0:
+		if wall_normal == blocked_wall_normal:
+			wall_normal = 0.0
+		else:
+			wall_detach_time = 0.0
+	if wall_normal != 0.0:
+		last_wall_normal = wall_normal
+		wall_coyote = 0.10
 	if wall_normal != 0.0 and velocity.y >= 0.0 and direction != wall_normal and knockback_time <= 0.0:
 		motion_state = MotionState.WALL_SLIDE
 		velocity.y = minf(velocity.y, WALL_SLIDE_SPEED)

@@ -74,6 +74,12 @@ func step(direction: float, combat := true) -> void:
 					direction = 0.0
 			# Beyond bow reach, continue the authored route; chasing a target
 			# behind across a gap would abandon the planned platform landing.
+		if closest is SliceSlime and closest_gap < 38.0 and player.is_on_floor() and not dodging:
+			# Contact guards can reach the player before Longbow0 recovers.
+			# Evade through real jump input, as for a telegraphed melee attack.
+			Input.action_press("jump")
+			dodge_ticks = 18
+			dodging = true
 		if closest != null and closest.get_script() == preload("res://scripts/run019_enemy.gd") and closest.pending_attack == &"melee" and closest.windup_time > 0.0 and player.is_on_floor() and not dodging:
 			Input.action_press("jump")
 			dodge_ticks = 18
@@ -161,6 +167,61 @@ func collect_coin(coin_name: String) -> void:
 		await step(signf(offset) if absf(offset) >= 2.0 else 0.0)
 	print("ROUTE could not physically collect ", coin_name, " at=", player.position)
 	route_failed = true
+func n2_authored_tunnel() -> void:
+	# The human-authored pillar closes both old approaches at X3088.
+	# Climb its outer left face, traverse the real gap, then drop through
+	# the sixteen-pixel shaft at X3280–3296 back to the square.
+	dodge_ticks = 0
+	dodging = false
+	await walk(3050, false)
+	if route_failed: return
+	print("ROUTE pillar launch at=", player.position, " floor=", player.is_on_floor(), " velocity=", player.velocity)
+	Input.action_release("jump")
+	# Rise outside the pillar's overhanging foot before approaching its face.
+	Input.action_press("jump")
+	for _tick in 16:
+		await step(0, false)
+	Input.action_release("jump")
+	await step(0, false)
+	var jump_hold := 0
+	var entered := false
+	for _tick in 900:
+		if player.position.x > 3104 and player.position.y < -110:
+			entered = true
+			break
+		if jump_hold == 0 and (player.is_on_floor() or player.wall_normal < 0.0):
+			Input.action_press("jump")
+			jump_hold = 6
+		await step(1, false)
+		if route_failed: break
+		if jump_hold > 0:
+			jump_hold -= 1
+			if jump_hold == 0: Input.action_release("jump")
+	Input.action_release("jump")
+	print("ROUTE authored tunnel entered=", entered, " at=", player.position)
+	if not entered:
+		route_failed = true
+		return
+	# Follow the right face down the shaft, then rebound to the left as
+	# the body clears the beam ends, avoiding the fixed spikes below.
+	await walk(3292, false)
+	for _tick in 360:
+		if route_failed: return
+		if player.position.y > -46: break
+		await step(1, false)
+	Input.action_press("jump")
+	await step(-1, false)
+	print("ROUTE shaft rebound at=", player.position, " velocity=", player.velocity, " grace=", player.wall_coyote)
+	for _tick in 18: await step(-1, false)
+	Input.action_release("jump")
+	await walk(3216)
+	for _tick in 180:
+		if route_failed: return
+		if player.is_on_floor() and player.position.y > 100: break
+		await step(signf(3216 - player.position.x) if absf(3216 - player.position.x) >= 2 else 0, false)
+	await collect_coin("Coin22")
+	print("ROUTE authored tunnel exit at=", player.position)
+
 func route(number: int) -> void:
 	print("ROUTE variant ", "upper" if upper_route else "lower", " N", number)
 	match number:
@@ -172,46 +233,73 @@ func route(number: int) -> void:
 			# body clears its ceiling, before the spikes begin at X416.
 			await cross(406, 480)
 			await walk(592)
+			await cross(742, 810) # Human-added retractable spikes at X784.
 			await cross(826, 908)
+			await collect_coin("Coin07") # Return on foot after any contact dodge.
 			await cross(982, 1032)
 			if upper_route:
 				await jump(1112)
-				await jump(1216)
+				# Land on the rampart's unguarded left end and clear its Purple
+				# before advancing, rather than landing directly on its patrol.
+				await jump(1178)
+				for _tick in 900:
+					if route_failed: return
+					if level.get_node("Enemies/Enemy15").dead: break
+					await step(0)
+				await walk(1216)
 				await cross(1250, 1344)
 				await jump(1344)
 				await jump(1428)
+				for _tick in 900:
+					if route_failed: return
+					if level.get_node("Enemies/Enemy03").dead: break
+					await step(0)
 				await walk(1472)
 				await cross(1504, 1584)
 			else:
 				await walk(1080)
+				# Descend at the vault entrance before approaching its Red guards.
+				await walk(1112, false)
+				for _tick in 120:
+					if route_failed: return
+					if player.is_on_floor(): break
+					await step(0, false)
 				await walk(1232)
 				await cross(1294, 1392)
 				await cross(1404, 1488)
 				await jump(1528)
 				await jump(1576)
-				await jump(1664)
+				await jump(1616)
 			await walk(1664)
 			await cross(1684, 1774)
 			await jump(1816)
+			# Fight from the well's actual support before landing on guarded crates.
+			await walk(1830)
 			await jump(1928)
 			await jump(2048)
 			await walk(2240)
 			await walk(2288)
-			await jump(2408)
+			# Leave the market roof near its edge, rather than landing among
+			# both street guards while the scripted jump suppresses combat.
+			var street_guard := level.get_node("Enemies/Enemy07")
+			for _tick in 900:
+				if route_failed: return
+				if street_guard.dead or (street_guard.position.x > 2375 and street_guard.velocity.x > 0 and player.bow_cooldown <= 0.02): break
+				await step(0, false)
+			await walk(2312, false)
+			for _tick in 120:
+				if route_failed: return
+				if player.is_on_floor(): break
+				await step(0, false)
+			await walk(2408)
 			await cross(2428, 2472)
-			if upper_route:
-				await jump(2552)
-				await jump(2672)
-				await cross(2736, 2820)
-				await cross(2858, 2950)
-				await walk(2976)
-				await walk(3130)
-			else:
-				await walk(2608)
-				await jump(2704)
-				await jump(2816)
-				await cross(2906, 2990)
-				await walk(3056)
+			if not upper_route: print("ROUTE N2 lower vault uses upper causeway to bypass closed authored lower lane")
+			await jump(2552)
+			await jump(2672)
+			await cross(2736, 2820)
+			await cross(2858, 2950)
+			await walk(2976)
+			await n2_authored_tunnel()
 			await walk(3216)
 			# Stay on the lower approach while fighting the pursuing elite;
 			# climbing its optional perch would suppress combat during ascent.

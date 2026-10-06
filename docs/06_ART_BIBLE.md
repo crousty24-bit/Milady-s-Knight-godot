@@ -741,3 +741,7 @@ La variété visuelle sert donc l'immersion et l'identité des niveaux sans comp
 
 
 ---
+
+## Ordre de dessin des fonds — RUN-021
+
+Les scripts de fond N1 et N2–4 imposent `z_index = -100` et `z_as_relative = false`, dans l’éditeur comme en jeu. Leurs dessins couvrent le viewport : les placer derrière les objets évite de masquer un ferry ou un autre élément ajouté avant le fond dans l’arbre de scène. Les objets de jeu ordinaires gardent leur profondeur existante ; leur emplacement dans l’arbre n’est plus une condition de visibilité face au fond. La ligne rouge horizontale de l’éditeur représente l’axe Y=0 et n’est pas une limite d’affichage en jeu.

@@ -23,3 +23,15 @@ Le scope final prévoit des niveaux beaucoup plus grands et plus riches que ces 
 Après la validation humaine de la passe précédente, de nouveaux correctifs gameplay ont été demandés puis intégrés : poursuite avec saut local pour les mobs concernés, contournement en vol des solides par les Skulls, et limitation du tirage direct du common chest aux niveaux0–2. Les scénarios ci-dessus sont à tester sur le jeu intégré. La validation humaine précédente ne couvre pas ces correctifs ; aucun résultat de playtest humain nouveau n’est consigné ici.
 
 Vérification Codex terminée : recette complète composée2375PASS/50RESULT, routes basses19/19 et hautes21/21, sauts rendus16/16. Les tests couvrent obstacles16/32px, gap16px, descente32px, refus de vide120px et plafonds/murs infranchissables ; ils ne couvrent pas toutes les géométries possibles ni le perchoir optionnel Coin23 N2 avec Bloated poursuivant. Les changements humains N2 sont préservés.
+
+## Dernière reprise — élites, ferry et rebond mural
+
+Le retour humain de la dernière passe demande encore trois corrections. Après leur vérification technique, contrôler en jeu :
+
+- Bloated et Chud : attirer chaque élite par-dessus un bloc, revenir de l’autre côté et répéter. Elle doit redescendre sur un appui sûr puis remonter, tant que la cible reste poursuivie. Montée et descente locales sont limitées à72px ; cela ne calcule pas un trajet global entre étages.
+- Ferry N2 : vérifier le ferry déjà ajouté près deX1209/Y−15, son mouvement, puis le transport et le saut du joueur. Le fond doit rester derrière lui indépendamment de l’ordre de ses nœuds. La ligne rouge de l’éditeur est l’axeY=0.
+- Wall slide/jump : Space seul depuis la glissade, Space avec la direction opposée, puis direction opposée légèrement avant Space ; tester les deux côtés, après un double saut consommé et en rebondissant entre murs. Le double saut après wall jump reste interdit jusqu’au sol.
+
+Ces changements demandent un nouvel essai du ressenti ; le retour reçu ne valide pas par anticipation le résultat corrigé.
+
+Vérification finale Codex : recette composée2476PASS/51RESULT,39suites dont variante haute,11sessions à froid et isolation ;102/102contrôles rendus. Les parcours N1→N4 réussissent19/19 et21/21 par entrées physiques. Dans le N2 actuel, le pilote par défaut emprunte la première branche basse puis la passerelle haute et le tunnel ; le second prend la première branche haute puis le même passage. L’ancienne sortie directe basse du deuxième embranchement est fermée par la nouvelle géométrie, et ces succès ne valident pas un parcours complet de cette branche. Les variantes basses/hautes N3/N4 sont couvertes. Le terrain humain et les37scènes de la baseline sont préservés.

@@ -12,6 +12,10 @@
 	- **A DEFINIR :**
 		- Pour les déplacements : l’accélération horizontale, la décélération, le contrôle aérien, la vitesse de chute maximale, un éventuel coyote time, un jump buffer ou les restrictions après wall jump. Ce ne sont pas forcément des features supplémentaires : ce sont surtout des paramètres de contrôle à décider durant le prototypage.
 	
+### Mobilité implémentée — reprise RUN-021 (6 octobre 2026)
+
+Space déclenche un rebond vers le côté opposé depuis un mur agrippable, même sans direction maintenue et même après consommation du double saut. Le contact mural garde une tolérance de 0,10 s après le départ : presser la direction opposée légèrement avant Space conserve le rebond. Le buffer de saut existant de 0,12 s fonctionne aussi à l’arrivée sur le mur. En l’air, ce rebond est prioritaire sur le coyote du sol. Après séparation physique, un nouveau contact permet immédiatement un autre rebond ; rester sur la touche ne déclenche pas de saut automatique. Le wall jump conserve l’interdiction de double saut jusqu’au retour au sol, ainsi que les règles de dégâts, pause et surfaces non agrippables.
+
 ## système de combat (joueur) :
 - système de combat (joueur) :
 	- attaque mêlée simple : directionnelle continue quand la touche Attaque est maintenue (F) ; touche (hit) le mob quand à portée (RANGE) et inflige dégât au contact

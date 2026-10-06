@@ -4,6 +4,12 @@
 # the near band is RUN-021) and a few slow motes. Purely visual and low-contrast; drawn behind
 # Decor, Terrain and gameplay.
 extends Node2D
+func _enter_tree() -> void:
+	# The backdrop fills the viewport; keep it behind gameplay when its node appears
+	# after platforms in a hand-authored level's scene tree.
+	z_as_relative = false
+	z_index = -100
+
 const CLOUDS = preload("res://assets/sprites/bg_clouds.png")
 const MIST = preload("res://assets/sprites/bg_mist.png")
 const SKIES = [preload("res://assets/run020/bg_blight_town_sky.png"), preload("res://assets/run020/bg_black_forrest_sky.png"), preload("res://assets/run020/bg_forbidden_graveyard_sky.png")]

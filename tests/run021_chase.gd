@@ -142,6 +142,35 @@ func ledges() -> void:
 		minimum_y = minf(minimum_y, enemy.position.y)
 	print("OBSERVATION gap x=", enemy.position.x, " minimum_y=", minimum_y)
 	check(enemy.position.x > 165 and minimum_y < 190, "chase physically jumps a sixteen-pixel gap to verified support")
+func elite_round_trips() -> void:
+	for scene in ["bloated_slime", "chud_blob"]:
+		for height in [32.0, 64.0, 72.0]:
+			await fixture(Vector2(300, 200))
+			var enemy = mob(scene)
+			await frames(3)
+			solid(Vector2(180, 200 - height / 2), Vector2(64, height))
+			for crossing in range(4):
+				player.position = Vector2(300 if crossing % 2 == 0 else 80, 200)
+				var reached_top := false
+				for frame in range(260):
+					await frames(1)
+					reached_top = reached_top or (enemy.position.x > 148 and enemy.position.x < 212 and enemy.position.y < 200 - height + 1)
+					if enemy.is_on_floor() and enemy.position.y > 199 and absf(enemy.position.x - player.position.x) < 35: break
+				print("OBSERVATION ", scene, " block=", height, " pursuit leg=", crossing, " position=", enemy.position, " aggro=", enemy.aggro)
+				check(reached_top, scene + " climbs " + str(height) + "px block on pursuit leg " + str(crossing))
+				check(enemy.is_on_floor() and enemy.position.y > 199 and absf(enemy.position.x - player.position.x) < 35, scene + " descends " + str(height) + "px block toward player on pursuit leg " + str(crossing))
+				check(enemy.aggro, scene + " retains pursuit across block on leg " + str(crossing))
+		await fixture()
+		var enemy = mob(scene)
+		await frames(3)
+		solid(Vector2(200, 184), Vector2(16, 32))
+		player.position = Vector2(1000, 200)
+		var minimum_y := 200.0
+		for frame in range(125):
+			await frames(1)
+			minimum_y = minf(minimum_y, enemy.position.y)
+		check(minimum_y < 168, scene + " performs verified obstacle jump while target leaves retention range")
+		check(not enemy.aggro, scene + " forgets out-of-range target after original two seconds despite terrain jump")
 func run() -> void:
 	for scene in ["skeleton_warrior", "skeleton_archer", "blight_sorcerer", "bloated_slime", "chud_blob"]:
 		await obstacle(scene, 16)
@@ -150,6 +179,7 @@ func run() -> void:
 	await area_items()
 	await traps_and_pause()
 	await ledges()
+	await elite_round_trips()
 	paused = true
 	for voice_type in ["AudioStreamPlayer", "AudioStreamPlayer2D"]:
 		for voice in room.find_children("*", voice_type, true, false): voice.stop()

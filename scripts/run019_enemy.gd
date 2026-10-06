@@ -87,7 +87,7 @@ func _safe_direction(dir: int) -> bool:
 # Chase probes use the whole collision body: elite shoulders must clear terrain too.
 const CHASE_GRAVITY = 760.0
 const CHASE_MAX_RISE = 72.0
-const CHASE_MAX_DROP = 64.0
+const CHASE_MAX_DROP = CHASE_MAX_RISE
 
 func _body_clear(feet: Vector2) -> bool:
 	var query := PhysicsShapeQueryParameters2D.new()
@@ -99,7 +99,9 @@ func _body_clear(feet: Vector2) -> bool:
 	return get_world_2d().direct_space_state.intersect_shape(query, 1).is_empty()
 
 func _landing(feet: Vector2, rise: float, drop: float) -> Dictionary:
-	var query := PhysicsRayQueryParameters2D.create(feet + Vector2(0, -rise), feet + Vector2(0, drop), 1)
+	# move_and_slide keeps the feet just above terrain by safe_margin. Include
+	# that contact clearance so a maximum-height block still has a valid descent.
+	var query := PhysicsRayQueryParameters2D.create(feet + Vector2(0, -rise), feet + Vector2(0, drop + safe_margin + 0.1), 1)
 	query.exclude = [get_rid()]
 	return get_world_2d().direct_space_state.intersect_ray(query)
 
@@ -154,6 +156,13 @@ func _chase_direction(dir: int) -> bool:
 		distance += 4.0
 	if not _body_clear(Vector2(landing.position.x, global_position.y - jump_height)): return false
 	velocity.y = -sqrt(2.0 * CHASE_GRAVITY * jump_height)
+	# A verified terrain jump is pursuit progress. Give its landing/descent the
+	# normal occlusion grace instead of expiring aggro halfway across the block.
+	# A target outside retention range must still be forgotten on schedule.
+	var center := global_position + Vector2(0, -12)
+	var retention_size := aggro_size + aggro_exit_margin * 2.0
+	if Rect2(center - retention_size / 2.0, retention_size).has_point(target.global_position + Vector2(0, -12)):
+		aggro_lost_time = 0.0
 	return true
 
 func _physics_process(delta: float) -> void:
