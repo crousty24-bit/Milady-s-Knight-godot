@@ -50,14 +50,14 @@
 				- vitesse d'aggro : c'est sa vitesse de déplacement lors de l'aggro du joueur
 				- la vitesse d'aggro est toujours un peu plus élevée que la vitesse de base
 				- exemple : un Skeleton Warrior en patrouille à une vitesse de base lente ; il aggro le joueur et se dirige vers lui avec une vitesse d'aggro modérée
-				- les *Slimes* n'ont qu'une vitesse de base
+				- les *Green, Purple et Red Slimes* n'ont qu'une vitesse de base
 		- **système aggro :** un mob aggro le joueur lorsque celui-ci entre un périmètre fixe (zone) défini par rapport à sa position initiale
 			- ce périmètre peut être plus ou moins large selon le type de mob
 			- ce périmètre est horizontal et vertical
 			- le point de départ du périmètre est le mob et est attaché à lui : il se déplace selon le déplacement du mob (exemple : le mob patrouille d'un point A vers B en aller-retour, son périmètre se déplace avec lui)
 			- le mob perd l'aggro après le délai de perte hors de son périmètre de conservation (réglages N2–4 ci-dessous) et retourne à son déplacement de patrouille initial
 			- un mob qui a l'aggro est toujours attiré vers le joueur, son déplacement est directement en direction du joueur et déclenche une attaque lorsqu'il est à portée de celui-ci
-			- les *Slimes* n'ont pas de système d'aggro
+			- les *Green, Purple et Red Slimes* n'ont pas de système d'aggro
 	
 	- **SLIMES (niveau 1 à 4) :**
 		- *Green Slime* : 1 HP | 0,5 DMG | attaque au contact avec joueur (collision)
@@ -119,7 +119,7 @@
 
 ## RUN-019 — Comportements N2–4 implémentés
 
-Les profils N2–4 ci-dessus sont livrés comme scènes réutilisables et fixtures. Révision RUN-020 du 6 octobre : aggro terrestre acquise avec visibilité dans un rectangle 480×96 px attaché au mob (±240 px horizontalement). Conservation dans 640×160 px ; perte après 2 s continues hors enveloppe ou sans visibilité, timer suspendu en pause et remis à zéro à la revue du joueur. Mort du joueur : perte immédiate. Aucune nouvelle attaque déclenchée à travers le terrain. Poursuite sans saut ni chute volontaire, arrêt aux bords/obstacles, retour vers le segment de patrouille initial sans téléport ni soin. Archer stationnaire en aggro. La perte d'aggro annule une préparation non libérée ; projectiles/zones libérés terminent leur cycle, sauf mort de la source qui les supprime.
+Les profils N2–4 ci-dessus sont livrés comme scènes réutilisables et fixtures. Révision RUN-020 du 6 octobre (comportement alors livré, remplacé pour la locomotion par RUN-021 ci-dessous) : aggro terrestre acquise avec visibilité dans un rectangle 480×96 px attaché au mob (±240 px horizontalement). Conservation dans 640×160 px ; perte après 2 s continues hors enveloppe ou sans visibilité, timer suspendu en pause et remis à zéro à la revue du joueur. Mort du joueur : perte immédiate. Aucune nouvelle attaque déclenchée à travers le terrain. La poursuite s’arrêtait alors aux bords/obstacles ; Archer était stationnaire en aggro. La perte d'aggro annule une préparation non libérée ; projectiles/zones libérés terminent leur cycle, sauf mort de la source qui les supprime.
 
 Sorcerer : point au sol capturé au lancement, avertissement1s puis impact unique2DMG avec profil projectile ennemi. Skulls : zone N4 de 480×240 px, quatre emplacements par tentative. Sortie : disparition des survivants ; réentrée : seuls les emplacements non vaincus réapparaissent. Un crâne tué ne revient plus avant mort/restart du niveau ; zone nettoyée = vide pour la tentative. Un shard par emplacement vaincu, maximum quatre ; aucun soin. Cette swarm est indépendante du Blight Sorcerer, qui ne l’invoque pas et dont la mort ne la supprime pas. Les profils N5–9 et invocations Necromancer/Boss ne sont pas implémentés dans ce lot.
 
@@ -134,6 +134,15 @@ Les silhouettes redessinées utilisent un corps physique centré sur leur masse,
 
 La logique considère désormais un intervalle de patrouille nul ou inversé comme une sentinelle : hors aggro, vitesse horizontale nulle et orientation conservée, y compris après un recul. La gravité, les collisions et le recul restent actifs. Les six archers N3/N4 gardent leurs bornes nulles et leur placement ; aucune cellule de terrain ni donnée de niveau n’est remplacée. Une patrouille positive garde ses retournements et ses sondes de bord. Le défaut ancien de retournements continus est reproduit puis corrigé dans le moteur ; la correspondance exacte avec la vidéo humaine reste non confirmée.
 
-Pour Archer et Blight Sorcerer seulement, acquisition avec visibilité dans720×144px (±360 horizontal, ±72 vertical), conservation880×208px avec la marge existante, délai de perte2s inchangé. La distance de déclenchement du tir/de la zone passe de140 à240px. L’archer reste immobile pendant l’aggro. Sa flèche conserve vitesse150px/s et durée maximale5s ; « portée240 » désigne ici la distance de déclenchement, pas une suppression à240px du projectile. Sorcerer conserve point au sol figé, avertissement1s et2DMG. Obstacles et visibilité gardent leur rôle.
+Pour Archer et Blight Sorcerer seulement, acquisition avec visibilité dans720×144px (±360 horizontal, ±72 vertical), conservation880×208px avec la marge existante, délai de perte2s inchangé. La distance de déclenchement du tir/de la zone passe de140 à240px. L’archer poursuit désormais à22px/s pendant l’aggro, y compris hors de sa portée de tir ou lorsque la ligne de tir est bloquée ; il ne tire qu’au sol, à portée et avec ligne de vue libre. Sa flèche conserve vitesse150px/s et durée maximale5s ; « portée240 » désigne ici la distance de déclenchement, pas une suppression à240px du projectile. Sorcerer conserve point au sol figé, avertissement1s et2DMG. La ligne de vue garde son rôle pour acquérir l’aggro et déclencher les attaques.
 
-Bloated poursuit à60px/s (36 avant) et Chud à48px/s (28 avant), avec patrouilles18/12px/s conservées. Corps44×40/36×40, contact Bloated30px, mêlée Chud28px, dégâts et préparation restent identiques. Le joueur marche à sa vitesse existante ; l’augmentation de poursuite doit encore être jugée en playtest, sans changement du terrain pour compenser.
+Bloated poursuit à60px/s (36 avant) et Chud à48px/s (28 avant), avec patrouilles18/12px/s conservées. Corps44×40/36×40, contact Bloated30px, mêlée Chud28px, dégâts et préparation restent identiques. Le joueur marche à sa vitesse existante. Ces réglages sont validés par le playtest de la passe précédente ; le nouveau franchissement ci-dessous reste à essayer.
+
+
+### Poursuite RUN-021 — obstacles franchissables
+
+Sur demande humaine après playtest, les Green, Purple et Red Slimes gardent leur locomotion actuelle et ne poursuivent pas le joueur. Tous les autres mobs concernés — Skeleton Warrior, Skeleton Archer, Blight Sorcerer, Bloated Slime et Chud Blob — tentent de rejoindre le joueur pendant l’aggro en franchissant physiquement les obstacles praticables. Bloated est explicitement inclus malgré son nom de Slime. Les Possessed Skulls contournent les solides en vol. Les coffres et objets ramassables sont des zones d’interaction et ne constituent pas des obstacles physiques.
+
+La locomotion terrestre sonde localement les appuis, l’espace du corps et le dégagement du saut ; elle peut monter jusqu’à72px, avec un saut plafonné à environ82px de hauteur, franchir un vide seulement si la portée horizontale du saut le permet et descendre jusqu’à64px. Les ennemis ne traversent ni murs ni plafonds. Ils conservent les collisions physiques et s’arrêtent si aucun trajet sûr local n’est praticable. Les Skulls contournent également sans traverser les solides. Ces limites décrivent le saut borné, pas un pathfinding global.
+
+Cette mise à jour ne change ni acquisition/conservation/perte d’aggro, ni portée de tir, ni délais. L’Archer garde sa poursuite à22px/s et ne lance son tir que s’il est au sol, à portée et en ligne de vue. Ces changements techniques sont en attente de nouveau playtest humain.

@@ -10,7 +10,7 @@ kind = 2
 aggro_size = Vector2(720, 144)
 ranged_range = 240.0
 patrol_speed = 22.0
-chase_speed = 0.0
+chase_speed = 22.0
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -11)
 shape = SubResource("body")

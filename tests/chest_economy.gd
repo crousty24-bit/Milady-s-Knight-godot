@@ -71,13 +71,15 @@ func run() -> void:
 	boundaries(ChestEconomy.RARE_WEIGHTS, "rare weapon")
 	boundaries(ChestEconomy.COMMON_LEVELS, "common level")
 	boundaries(ChestEconomy.RARE_LEVELS, "rare level")
-	check(ChestEconomy.COMMON_WEIGHTS == [9,8,7,6,5,4,3,1] and ChestEconomy.RARE_WEIGHTS == [5,9,6,8,4,7,3,1] and ChestEconomy.COMMON_LEVELS == [40,30,20,10] and ChestEconomy.RARE_LEVELS == [70,30], "contract weight tables")
+	check(ChestEconomy.COMMON_WEIGHTS == [9,8,7,6,5,4,3,1] and ChestEconomy.RARE_WEIGHTS == [5,9,6,8,4,7,3,1] and ChestEconomy.COMMON_LEVELS == [40,30,30] and ChestEconomy.RARE_LEVELS == [70,30], "contract weight tables")
 	check(ChestEconomy.weighted_index([1], -0.1) == -1 and ChestEconomy.weighted_index([1], 1.0) == -1, "out-of-range unit rolls rejected")
 
 	# Each seeded test compares independent RNG draws, not a statistical sample.
 	for kind in ["common", "rare"]:
 		var saw_upgrade := false
 		var saw_no_upgrade := false
+		var direct_levels: Dictionary = {}
+		var pool_valid := true
 		for seed_value in range(100):
 			var oracle := RandomNumberGenerator.new()
 			oracle.seed = seed_value
@@ -88,6 +90,9 @@ func run() -> void:
 			source.seed = seed_value
 			var subject := ChestEconomy.new(source)
 			var offer := subject.roll(kind, "Sword2")
+			var direct_level: int = WeaponCatalog.stats(offer.item).level
+			direct_levels[direct_level] = true
+			pool_valid = pool_valid and (direct_level >= 0 and direct_level <= 2 if kind == "common" else direct_level >= 2 and direct_level <= 3)
 			var item_index := ChestEconomy.weighted_index(ChestEconomy.COMMON_WEIGHTS if kind == "common" else ChestEconomy.RARE_WEIGHTS, minf(item_roll, 0.9999999999999999))
 			var level := ChestEconomy.weighted_index(ChestEconomy.COMMON_LEVELS if kind == "common" else ChestEconomy.RARE_LEVELS, minf(level_roll, 0.9999999999999999)) + (2 if kind == "rare" else 0)
 			var upgrade_expected := upgrade_roll < (0.05 if kind == "common" else 0.15)
@@ -98,6 +103,7 @@ func run() -> void:
 			var capped := subject.roll(kind, "Sword3")
 			check(capped.item == offer.item and capped.upgrade.is_empty() and source.state == oracle.state, "%s capped upgrade keeps item and stream seed %d" % [kind, seed_value])
 		check(saw_upgrade and saw_no_upgrade, kind + " exercises upgrade and absence")
+		check(pool_valid and direct_levels.size() == (3 if kind == "common" else 2), kind + " direct reward pool excludes forbidden levels and exercises every allowed level")
 
 	for world in range(1, 11):
 		for elite in [false, true]:

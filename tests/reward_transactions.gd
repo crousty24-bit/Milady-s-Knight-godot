@@ -78,17 +78,17 @@ func run() -> void:
 	await spawn()
 	check(level.chest_economy.price("common", 2) == 5 and not level.get_node("CommonChest").consumed, "reset restores common chest and initial price")
 	chest = await near_chest()
-	chest.offer = {"item": "ThrowingKnives3", "upgrade": "Sword1"}
+	chest.offer = {"item": "ThrowingKnives2", "upgrade": "Sword1"}
 	await tap("interact")
 	var paid_bank: int = progress.banked_shards
 	Input.action_press("interact")
 	await frames(8)
-	check(progress.equipment.ranged == "ThrowingKnives3" and progress.banked_shards == paid_bank and level.resume_pending, "held E accepts once and blocks gameplay until released")
+	check(progress.equipment.ranged == "ThrowingKnives2" and progress.banked_shards == paid_bank and level.resume_pending, "held E accepts once and blocks gameplay until released")
 	Input.action_release("interact")
 	await frames()
-	check(level.player.equipment.ranged == "ThrowingKnives3" and level.hud.get_node("Equipment/Ranged").text == "  Throwing Knives 3", "confirmed reward updates runtime and exact HUD")
+	check(level.player.equipment.ranged == "ThrowingKnives2" and level.hud.get_node("Equipment/Ranged").text == "  Throwing Knives 2", "confirmed reward updates runtime and exact HUD")
 	disk = reopen()
-	check(disk.equipment.ranged == "ThrowingKnives3", "acquisition survives disk reload")
+	check(disk.equipment.ranged == "ThrowingKnives2", "acquisition survives disk reload")
 	disk.free()
 	await spawn()
 	chest = await near_chest(true)

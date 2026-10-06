@@ -84,6 +84,78 @@ func _safe_direction(dir: int) -> bool:
 	var ground := PhysicsRayQueryParameters2D.create(feet + Vector2(front, -8), feet + Vector2(front, 16), 1)
 	return get_world_2d().direct_space_state.intersect_ray(wall).is_empty() and not get_world_2d().direct_space_state.intersect_ray(ground).is_empty()
 
+# Chase probes use the whole collision body: elite shoulders must clear terrain too.
+const CHASE_GRAVITY = 760.0
+const CHASE_MAX_RISE = 72.0
+const CHASE_MAX_DROP = 64.0
+
+func _body_clear(feet: Vector2) -> bool:
+	var query := PhysicsShapeQueryParameters2D.new()
+	query.shape = $CollisionShape2D.shape
+	query.transform = Transform2D(0.0, feet + $CollisionShape2D.position + Vector2(0, -0.1))
+	query.collision_mask = 1
+	query.exclude = [get_rid()]
+	query.collide_with_areas = false
+	return get_world_2d().direct_space_state.intersect_shape(query, 1).is_empty()
+
+func _landing(feet: Vector2, rise: float, drop: float) -> Dictionary:
+	var query := PhysicsRayQueryParameters2D.create(feet + Vector2(0, -rise), feet + Vector2(0, drop), 1)
+	query.exclude = [get_rid()]
+	return get_world_2d().direct_space_state.intersect_ray(query)
+
+func _chase_direction(dir: int) -> bool:
+	# Airborne motion continues until actual collision/landing; no midair attack brake.
+	if not is_on_floor(): return true
+	var half_width: float = $CollisionShape2D.shape.size.x * 0.5
+	var front := float(dir) * (half_width + 16.0)
+	var next_feet := global_position + Vector2(front, 0)
+	var landing := _landing(next_feet, CHASE_MAX_RISE, CHASE_MAX_DROP)
+	var forward_clear := _body_clear(global_position + Vector2(dir * 4.0, 0))
+	if not landing.is_empty() and not _body_clear(landing.position):
+		# A ray just before/after a ledge may see floor while the body's width
+		# still overlaps its wall. Find a nearby top or a full-width landing.
+		for advance in [4.0, 8.0, 16.0, 24.0, 32.0]:
+			var candidate := _landing(next_feet + Vector2(dir * advance, 0), CHASE_MAX_RISE, CHASE_MAX_DROP)
+			if not candidate.is_empty() and _body_clear(candidate.position):
+				landing = candidate
+				break
+	if forward_clear and not landing.is_empty() and landing.position.y >= global_position.y - 1.0 and _body_clear(landing.position):
+		# Descend only to a nearby visible supporting floor, never blindly into a pit.
+		return _body_clear(landing.position)
+	if landing.is_empty() and forward_clear:
+		var near_floor := _landing(global_position + Vector2(dir * (half_width + 4.0), 0), 1.0, 16.0)
+		if not near_floor.is_empty(): return true
+	if landing.is_empty():
+		# A short gap can be crossed only if a supporting floor is within the
+		# horizontal travel of a bounded jump at this profile's unchanged speed.
+		var reach := chase_speed * 0.8
+		var distance := absf(front) + 8.0
+		while distance <= reach:
+			var candidate := _landing(global_position + Vector2(dir * distance, 0), 1.0, CHASE_MAX_DROP)
+			if not candidate.is_empty() and _body_clear(candidate.position):
+				landing = candidate
+				break
+			distance += 8.0
+	if landing.is_empty(): return false
+	var rise: float = global_position.y - landing.position.y
+	if rise > CHASE_MAX_RISE or not _body_clear(landing.position): return false
+	# Check the entire upward corridor and the body above the ledge. Pick only
+	# the height needed (plus clearance), so low ceilings reject impossible jumps.
+	var jump_height := maxf(24.0, rise + 10.0)
+	if rise <= 1.0: jump_height = 64.0
+	var height := 4.0
+	while height <= jump_height:
+		if not _body_clear(global_position + Vector2(0, -height)): return false
+		height += 4.0
+	var distance := 0.0
+	var crossing := absf(landing.position.x - global_position.x)
+	while distance <= crossing:
+		if not _body_clear(global_position + Vector2(dir * distance, -jump_height)): return false
+		distance += 4.0
+	if not _body_clear(Vector2(landing.position.x, global_position.y - jump_height)): return false
+	velocity.y = -sqrt(2.0 * CHASE_GRAVITY * jump_height)
+	return true
+
 func _physics_process(delta: float) -> void:
 	if dead: return
 	target = _player()
@@ -111,16 +183,20 @@ func _physics_process(delta: float) -> void:
 	var patrolling := patrol_right > patrol_left
 	if aggro:
 		direction = 1 if target.global_position.x > global_position.x else -1
-		if cooldown == 0.0 and pending_attack == &"": _try_attack()
+		if is_on_floor() and cooldown == 0.0 and pending_attack == &"": _try_attack()
 	elif patrolling and global_position.x < origin_x + patrol_left:
 		direction = 1
 	elif patrolling and global_position.x > origin_x + patrol_right:
 		direction = -1
 	if knockback_time == 0.0:
-		var moving := (aggro or patrolling) and pending_attack == &"" and not (aggro and kind == Kind.ARCHER)
-		if (aggro or patrolling) and is_on_floor() and not _safe_direction(direction):
-			moving = false
-			if not aggro: direction *= -1
+		var ready_to_shoot := aggro and kind == Kind.ARCHER and is_on_floor() and (target.global_position - global_position).length() <= ranged_range and _clear_line(target.global_position + Vector2(0, -12))
+		var moving := (aggro or patrolling) and pending_attack == &"" and not ready_to_shoot
+		if moving and is_on_floor():
+			if aggro:
+				moving = _chase_direction(direction)
+			elif not _safe_direction(direction):
+				moving = false
+				direction *= -1
 		velocity.x = direction * (chase_speed if aggro else patrol_speed) if moving else 0.0
 	move_and_slide()
 	# Core half-width 22 + player half-width 5 + 3px visual allowance.

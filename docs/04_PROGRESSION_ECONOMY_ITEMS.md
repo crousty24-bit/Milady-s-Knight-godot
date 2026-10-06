@@ -45,7 +45,7 @@
 	- certains coffres peuvent être cachés
 	- les coffres sont présents du niveau 2 à 9 + coffre unique exemple tuto niveau 1
 	- il existe 3 types de coffres : common chest, rare chest & golden chest
-		- **common chest :** chance d'obtenir un item de niveau 0 ou 1 ou 2 ou 3 ET potentiellement une amélioration d'item
+		- **common chest :** donne directement un item de niveau 0, 1 ou 2, et peut aussi proposer une amélioration d'item. Une amélioration séparée peut porter l'équipement jusqu'au niveau 3.
 		- **rare chest :** chance d'obtenir un item de niveau 2 ou 3 ou Légendaire ET potentiellement une amélioration d'item
 		- **golden chest :** chance d'obtenir un item Légendaire ou rien
 		- par item, on entend ici : une arme de mêlée ou de tir. Rien d'autre.
@@ -98,7 +98,7 @@
 			- cas exemple : le joueur ouvre le coffre est reçoit une axe de niveau 2 et une amélioration d'arme +1 niveau ; il a actuellement une sword de niveau 1 ; la axe de niveau 2 ne l'intéresse pas, il accepte la récompense d'amélioration d'arme, la sword équipé passe au niveau 2 remplace la sword actuelle
 		- **TAUX DE DROP :**
 			- dans les common chest : 
-				- item : le taux de drop est proportionnel au niveau d'item, du niveau le plus bas ou plus haut, il y a plus de chance de drop un item de niveau 0  : niveau 0 > 1 > 2 > 3
+				- item : les niveaux directs disponibles sont 0, 1 et 2 ; le niveau 0 est le plus fréquent, puis 1, puis 2
 				- amélioration d'item : le taux de drop d'amélioration est très faible et bien sûr, significativement plus faible que dans un rare chest
 			- dans les rare chest : 
 				- item : le taux de drop est proportionnel au niveau d'item, du niveau le plus bas ou plus haut, il y a plus de chance de drop un item de niveau 2  : niveau 2 > 3 > Légendaire
@@ -231,3 +231,8 @@ Les munitions ne sont pas implémentées : idée retenue par l’humain pour un 
 ### Ajustement du tir RUN-021 (6 octobre 2026)
 
 Après demande humaine de réduire encore légèrement cadence et distance : Longbow0 part toutes les2,2s, portée176px (11blocs), contre2s/192px ; ThrowingKnives0 toutes les1,4s, portée104px (6,5blocs), contre1,3s/112px. Les niveaux0–5 conservent −0,1s d’intervalle et+8px de portée par niveau, ainsi que dégâts, vitesse des projectiles et cooldown conservé au changement d’arme. Longbow5 :1,7s/216px ; Knives5 :0,9s/144px. Catalogue, portée technique par défaut du projectile et texte du coffre tuto sont alignés. Les frontières physiques et intervalles réellement exécutés sont vérifiés par les tests d’armes ; leur ressenti appartient au playtest.
+
+
+### Mise à jour des common chests — RUN-021
+
+Depuis la correction demandée après playtest, le tirage direct d’un common chest est limité aux niveaux0,1,2 avec des poids40%,30%,30%. Il ne peut donc pas donner directement un item niveau3. L’offre d’amélioration est un tirage séparé : sa probabilité reste5% et elle peut améliorer l’équipement de niveau2 à3, dans la limite ordinaire du niveau3. Les probabilités des rare chests et leur table de récompenses ne changent pas.

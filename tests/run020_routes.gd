@@ -168,7 +168,9 @@ func route(number: int) -> void:
 			await cross(156, 200)
 			await walk(300)
 			await jump(352)
-			await cross(390, 480)
+			# The human-authored overhang ends at X400. Launch after the
+			# body clears its ceiling, before the spikes begin at X416.
+			await cross(406, 480)
 			await walk(592)
 			await cross(826, 908)
 			await cross(982, 1032)
@@ -211,9 +213,8 @@ func route(number: int) -> void:
 				await cross(2906, 2990)
 				await walk(3056)
 			await walk(3216)
-			await walk(3296)
-			await jump(3352, 64)
-			await walk(3216)
+			# Stay on the lower approach while fighting the pursuing elite;
+			# climbing its optional perch would suppress combat during ascent.
 			await walk(3600)
 		3:
 			await cross(204, 256)
@@ -342,14 +343,23 @@ func route(number: int) -> void:
 			await jump(3808)
 			await jump(3920)
 			await jump(4048)
+			# Combat can finish the approach in a dodge above the button.
+			# Reach its actual X and wait for a physical overlap before E.
+			var button := level.get_node("Exploration/MechanismButton")
+			await walk(button.position.x, false)
+			for _tick in 120:
+				if button.can_use(player): break
+				await step(0, false)
 			await tap("interact")
 			check(level.get_node("Exploration/MechanismDoor").opened, "N4 keyboard button opens required door on route")
 			await walk(4072)
+			# Leave the button platform before returning to its floor coin.
+			await walk(4108, false)
+			for _tick in 120:
+				if player.is_on_floor() and player.position.y > 100: break
+				await step(0, false)
 			await walk(4096)
-			if upper_route:
-				await walk(4108)
-				for _tick in 60: await step(0)
-				await walk(4096)
+			await collect_coin("Coin36")
 			await cross(4186, 4272)
 			await cross(4296, 4360)
 			await walk(4272)

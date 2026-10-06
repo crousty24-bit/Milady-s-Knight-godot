@@ -115,13 +115,16 @@ func run() -> void:
 		var cost: int = [18,25,32][index]
 		check(level.world_level == index + 2 and level.gate.COST == cost, "authored level number and exit price%d" % cost)
 		check(level.next_level_scene == (LEVELS[index + 1] if index < 2 else ""), "authored campaign successor")
-		check(level.get_node("Coins").get_child_count() == [24,32,40][index] and level.get_node("Enemies").get_child_count() == [10,13,14][index], "native scene population and budget")
+		# Human-authored levels may add mobs; the original population is a
+		# minimum coverage baseline, not a cap that would forbid these edits.
+		print("OBSERVATION native N", index + 2, " enemies=", level.get_node("Enemies").get_child_count())
+		check(level.get_node("Coins").get_child_count() == [24,32,40][index] and level.get_node("Enemies").get_child_count() >= [10,13,14][index], "native minimum population and coin budget")
 		for family in populations[index]:
 			var found := false
 			for enemy in level.get_node("Enemies").get_children():
 				if enemy.scene_file_path == "res://scenes/%s.tscn" % family: found = true
 			check(found, "native family " + family)
-		check(level.get_node("Hazards").get_child_count() == [10,11,10][index], "native authored trap population")
+		check(level.get_node("Hazards").get_child_count() >= [10,11,10][index], "native minimum authored trap population")
 		for family in (["spikes", "retractable_spikes", "trapdoor"] if index == 0 else ["spikes", "retractable_spikes", "trapdoor", "poison_plant", "turret"]):
 			var found := false
 			for hazard in level.get_node("Hazards").get_children():

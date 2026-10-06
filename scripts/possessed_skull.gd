@@ -12,6 +12,8 @@ var max_health: float:
 	get: return HealthUnits.to_hp(max_health_units)
 var dead: bool = false
 var target: SlicePlayer
+var detour_direction := Vector2.ZERO
+var detour_switched: bool = false
 
 func _ready() -> void:
 	set_meta("healing_profile", "skull")
@@ -24,12 +26,31 @@ func _ready() -> void:
 			break
 		ancestor = ancestor.get_parent()
 
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	if dead: return
 	target = get_tree().get_first_node_in_group("player") as SlicePlayer
 	if not is_instance_valid(target) or target.dead: return
 	var destination := target.global_position + Vector2(0, -12)
-	velocity = (destination - global_position).normalized() * speed
+	var heading := (destination - global_position).normalized()
+	var travel := speed * delta
+	# Start a detour only at a blocking solid, then hold its axis until the
+	# whole circle sweep to the target clears: a one-frame gap at a corner
+	# must not send the skull back into the same platform.
+	if detour_direction != Vector2.ZERO and not test_move(global_transform, destination - global_position):
+		detour_direction = Vector2.ZERO
+		detour_switched = false
+	if detour_direction == Vector2.ZERO and test_move(global_transform, heading * travel):
+		var preferred := Vector2.RIGHT if absf(heading.y) > absf(heading.x) else Vector2.UP
+		detour_direction = preferred if not test_move(global_transform, preferred * travel) else -preferred
+	if detour_direction != Vector2.ZERO:
+		var detour := detour_direction
+		if test_move(global_transform, detour * travel) and not detour_switched:
+			if not test_move(global_transform, -detour * travel):
+				detour_direction = -detour_direction
+				detour = -detour
+				detour_switched = true
+		heading = detour if not test_move(global_transform, detour * travel) else Vector2.ZERO
+	velocity = heading * speed
 	move_and_slide()
 	if global_position.distance_to(destination) < 16.0:
 		var ray := PhysicsRayQueryParameters2D.create(global_position, destination, 1)

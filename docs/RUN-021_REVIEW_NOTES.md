@@ -20,3 +20,12 @@ Contrats : [passe visuelle](RUN-021_CLAUDE_HANDOFF.md), [complément Archer/audi
 ## État après relais Codex
 
 Visuel et ajout musique N4 validés humainement. Cause logique Archer confirmée et corrigée, vidéo compatible avec l’alternance observée ; les six sentinelles sont stables. Réglages de portée/cadence/poursuite implémentés et tests exécutés ; recette2331PASS/48RESULT, parcours basses19/19 et hautes21/21, rendu68/68, six Archers6/6. Aucun terrain remplacé. Ces résultats ne constituent pas encore une validation humaine du nouvel équilibrage. Les candidats SFX restent des propositions non branchées ; la validation reçue n’inclut pas leur choix. Voir [playtest](RUN-021_PLAYTEST.md) et journal pour clôture après validation, sans lancement anticipé de RUN-022.
+
+
+## Correctifs après validation de la passe précédente
+
+Après son playtest, l’humain a demandé de faire poursuivre et sauter localement les obstacles franchissables par tous les mobs sauf Green/Purple/Red Slimes. La précision reçue confirme que Bloated Slime est inclus ; Warrior, Archer, Sorcerer et Chud le sont aussi. Les Skulls doivent contourner les solides en vol. Les portées d’aggro et la perte d’aggro doivent rester inchangées. Les coffres et objets ne sont pas des obstacles physiques.
+
+Un second correctif limite les récompenses directes des common chests aux niveaux0/1/2 ; une amélioration distincte à5% peut encore faire passer un item de2 à3, avec le cap3. Les rare chests restent inchangés.
+
+Ces correctifs ont été demandés sur la branche RUN-021 après la validation de la passe antérieure. La validation humaine déjà reçue ne couvre pas ces changements. Recette automatisée consignée :2375PASS/50RESULT, parcours19/19+21/21 et rendu de sauts16/16. Les ajouts humains de terrain, mobs et pièges N2 sont préservés. Un playtest humain de ces nouveaux correctifs reste attendu avant clôture ; voir [la fiche de playtest](RUN-021_PLAYTEST.md).

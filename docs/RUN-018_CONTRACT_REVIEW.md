@@ -55,7 +55,7 @@ Les prix N5–9 sont une table préparatoire ; le budget réel des niveaux sera 
 
 Tirages indépendants du type d’arme, du niveau et de l’upgrade, RNG injectable pour tests reproductibles.
 
-- Niveaux common : 0/1/2/3 = 40/30/20/10 %.
+- Niveaux common au contrat RUN-018 : 0/1/2/3 = 40/30/20/10 %. **Remplacé en RUN-021 le 6 octobre 2026 sur demande humaine : drops directs0/1/2 = 40/30/30 %, aucun drop direct3.** La proposition séparée d’upgrade reste à5 % et peut monter une arme2→3.
 - Niveaux rare : 2/3 = 70/30 %. Pas de case Legendary ou Fire Gauntlet tant que non implémentés.
 - Chance de proposer aussi l’upgrade de l’arme active : common 5 %, rare 15 %, uniquement si niveau inférieur à 3. L’arme active est capturée à l’ouverture ; le jeu est suspendu jusqu’au choix.
 

@@ -6,7 +6,8 @@ const BASE_PRICES: Array[int] = [5, 7, 10, 15, 22, 34, 50, 75]
 const ITEMS: Array[String] = ["Sword", "Longsword", "Halberds", "Warhammer", "BrutalAxe", "Longbow", "ThrowingKnives", "DarkScythe"]
 const COMMON_WEIGHTS: Array[int] = [9, 8, 7, 6, 5, 4, 3, 1]
 const RARE_WEIGHTS: Array[int] = [5, 9, 6, 8, 4, 7, 3, 1]
-const COMMON_LEVELS: Array[int] = [40, 30, 20, 10]
+# Direct common rewards stop at level 2; the former level-3 share goes to level 2.
+const COMMON_LEVELS: Array[int] = [40, 30, 30]
 const RARE_LEVELS: Array[int] = [70, 30]
 
 var counts: Dictionary = {"common": 0, "rare": 0}

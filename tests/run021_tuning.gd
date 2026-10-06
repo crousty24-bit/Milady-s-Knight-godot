@@ -114,8 +114,12 @@ func elite_profile(scene: String, speed: float, edge_limit: float) -> void:
 	await fixture(Vector2(300, 200))
 	solid(Vector2(150, 196), Vector2(16, 8))
 	var wall = mob(scene)
-	await frames(100)
-	check(wall.aggro and wall.is_on_floor() and wall.position.x < 140 and wall.velocity.x == 0.0, scene + " stops at terrain even when its sight line passes above the obstacle")
+	var highest := 200.0
+	for _tick in range(180):
+		await frames(1)
+		highest = minf(highest, wall.position.y)
+	print("OBSERVATION ", scene, " low obstacle x=", wall.position.x, " y=", wall.position.y, " apex=", highest)
+	check(highest < 192 and wall.aggro and wall.is_on_floor() and wall.position.x > 178 and wall.velocity.x > 0.0, scene + " jumps the low solid obstacle while retaining visible pursuit")
 
 func run() -> void:
 	await ranged_profile("skeleton_archer")
