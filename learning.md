@@ -695,3 +695,12 @@ Une silhouette visible, une collision de terrain et une portée d’attaque remp
 Bloated reçoit un seuil horizontal de contact30px et garde une bande verticale18px entre les pieds, la visibilité et l’aggro. Chud conserve sa portée et sa préparation de mêlée. Enfin, le sprite du joueur passe au premier plan des acteurs : le dessin peut encore se chevaucher, mais le chevalier reste visible. Les contrôles ciblés vérifient les deux côtés du seuil, la hauteur, les bords et le volume interrogé par les armes. Le jugement sur la lisibilité et la difficulté appartient encore au playtest humain.
 
 Le pilote a révélé un raccord impossible sous l’arche N4 : la marche accolée au plafond laissait16px de hauteur pour un corps18px. Retirer une colonne de deux tuiles au bout de la marche laisse le chevalier descendre vers le passage bas. C’est une correction locale du terrain et de son générateur.
+
+
+## Clôture RUN-020 et préparation RUN-021
+
+L’humain accepte RUN-020 en l’état. Cela clôt le résultat testé de cette run, sans affirmer que la taille des niveaux et l’équilibrage sont définitifs. Ses remarques deviennent des travaux identifiés de RUN-021 : cohérence visuelle Claude, animation Archer et audio, puis ajustements de portée/cadence et de poursuite par Codex. Aucune valeur de gameplay n’a changé pendant ce lancement.
+
+Un niveau édité manuellement devient la référence à préserver. Un générateur ancien ne connaît pas les décisions prises dans l’éditeur : le rejouer peut détruire ce travail, même si les tests attendent son ancien résultat. On conserve donc les scènes et les changements humains, puis on adapte les tests. Une review ou un audit observe et décrit ; elle n’autorise pas à effacer ou refaire le terrain.
+
+Le clip de l’Archer sert de point de départ à la reproduction, pas de preuve de cause. Il faut observer l’animation et son état dans Godot pour distinguer un dessin mal cadré d’un changement d’état de mouvement. Les contrats de RUN-021 demandent cette preuve et définissent à quel moment Claude remet le fichier partagé à Codex. La production et sa validation restent à effectuer.

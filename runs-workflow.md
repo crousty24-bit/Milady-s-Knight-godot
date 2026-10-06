@@ -2,7 +2,7 @@
 
 ## Statut de cette planification
 
-**6 octobre 2026 — Version actuelle : 0.2.0 ; cible 0.3.0 autorisée.** RUN-001–019 et RUN-029 DONE (20 runs). RUN-019 intégrée dans `develop` par PR #22 (`6a1b279`). RUN-020 VERIFY après reprise Claude et recette Codex du 6 octobre sur `feature/run-020-021-campaign`, issue de cette baseline propre ; RUN-021 autorisée ensuite sur la même branche avec délégation Claude. Huit lots restent BACKLOG. Contrat D01/D06/D07 et budget Skull validés. Les checkpoints datés ci-dessous décrivent leur état historique.
+**6 octobre 2026 — Version actuelle : 0.2.0 ; cible 0.3.0 autorisée.** RUN-001–020 et RUN-029 DONE (21 runs). RUN-019 intégrée dans `develop` par PR #22 (`6a1b279`). RUN-020 validée en l’état par l’humain le 6 octobre après reprise Claude et recette Codex ; clôture locale sur `feature/run-020-021-campaign`. RUN-021 ACTIVE, attribuée à Claude Opus5.5 : visuel d’abord, puis compléments et corrections finales. Sept lots restent BACKLOG. Contrat D01/D06/D07 et budget Skull validés. Les checkpoints datés ci-dessous décrivent leur état historique.
 
 **Clôture du 3 octobre 2026 : RUN-015–017 DONE, jalon 0.2.0 validé localement.** Deux passes Claude et playtest humain N1 validés ; correctif idle, recette finale et revue Jev/inspection terminés. [PR #18](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/18) ouverte de `feature/run-017-eidolon-vale` vers `develop`, sans fusion. Aucune autre run lancée. Les checkpoints antérieurs ci-dessous conservent leur contexte historique.
 
@@ -144,6 +144,14 @@ Autres garde-fous de scope : pas de génération procédurale, checkpoints intra
 Les invariants, le routage du contexte, les outils, la délégation et les autorisations Git sont définis dans [AGENTS.md](AGENTS.md). Les repères documentaires de chaque version orientent vers les sources utiles ; ils ne prescrivent pas leur lecture intégrale à chaque run.
 
 Codex et Claude peuvent contribuer en parallèle à la même run ACTIVE si leurs tâches et fichiers sont séparés selon `AGENTS.md`. Le [conseiller de routage Jev `task_router`](tools/jev/task_router/README.md) aide au choix d'un subagent avant délégation. Il reste indépendant de la revue Jev avant `DONE` ci-dessous.
+
+### Terrain et modifications manuelles de l’humain
+
+L’humain édite manuellement les TileMap (terrain) des niveaux pour façonner précisément le level design, y compris hors run, et demandera souvent une review ou un audit de son travail. **Ne jamais effacer ni écraser ces modifications.** Le dépôt courant devient la baseline de chaque passe : inspecter et conserver diffs/empreintes avant intervention. Les scènes manuelles font autorité sur leurs générateurs historiques.
+
+Ne pas rejouer un générateur, réenregistrer/remplacer globalement une scène, restaurer une version antérieure ou ajuster le terrain aux anciennes coordonnées d’un test. Adapter les tests aux scènes conservées. Une review/audit reste en lecture seule par défaut ; une correction de terrain humain nécessite une demande explicite de l’humain et un patch local identifié. Une modification humaine survenue pendant la run impose de rafraîchir la baseline et de coordonner les fichiers avant de poursuivre. L’habillage visuel doit préserver cellules, collisions et placements ; protéger aussi les ressources humaines dont il dépend.
+
+Les gabarits actuels N1–4 ne représentent pas le scope final. L’humain prévoit des niveaux beaucoup plus grands, avec beaucoup plus de mobs, chemins et items ; ne pas déclarer cette ambition satisfaite ni fixer une nouvelle cible chiffrée sans décision.
 
 ### Choix et délégation pendant la run ACTIVE
 
@@ -573,7 +581,7 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 ### RUN-020 — Construction et recette de Blight Town à Forbidden Graveyard
 
-**Lot I · Main agent : Codex GPT-6.1 Sol Medium · Statut : VERIFY · Dépendances : RUN-018–019 DONE.**
+**Lot I · Main agent : Codex GPT-6.1 Sol Medium · Statut : DONE · Dépendances : RUN-018–019 DONE.**
 
 - **Lancement (5 octobre 2026) :** demande humaine d’exécuter RUN-020 puis RUN-021 sur la même feature avec délégation Claude. Baseline propre `develop` `6a1b279`, PR #22 fusionnée ; branche `feature/run-020-021-campaign`. Inspection mécanique et préanalyse Claude Code Opus5.5 en lecture seule réellement exécutées. Noms de docs/03 retenus (Blight Town, Black Forest, Forbidden Graveyard), Ancient Spirit conservé conformément au lore et au N1 existant. Construction scènes N2–4 déléguée ; root possède raccordement, HUD/coût/caméra, tests et docs ; Claude reçoit des fichiers de présentation distincts. Réglage exact Sol Medium du root non exposé : Je ne sais pas. RUN-021 autorisée après clôture020, pas encore active. Aucun push/PR/merge autorisé.
 
@@ -583,6 +591,8 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 - **Checkpoint final du 6 octobre : VERIFY.** Reprise Claude intégrée, fixtures et guide adaptés ; corps élites/contact/lisibilité corrigés et raccord sous arche N4 réparé localement. Recette composée **2254 PASS /46 RESULT** (34 suites,11 sessions froides,isolation), variantes basses19/19 et hautes21/21, achat4/HP N4 réellement exercés ; rendu final57/57, élites20/20, N1 rendu11/11. Aucun échec/erreur/fuite dans les logs finaux ; preuves et limites au journal. Le playtest humain des nouvelles routes, du rythme, des sauts et des visuels reste obligatoire ; Jev/inspection de clôture après cette validation. Aucune autre passe technique identifiée actuellement ; RUN-021 attend DONE020, sans lancement anticipé ni push/PR/merge.
 
+- **Clôture humaine (6 octobre 2026) :** « Je valide la run 020 en l’état. Clôturer et lancement run 021. » Résultat du checkpoint `7079124` accepté, sans inventer de détail de parcours humain. Revue Jev exécutée puis preuves originales inspectées : READY_FOR_DONE consultatif à faible confiance, aucune vérification obligatoire restante pour ce résultat accepté. RUN-020 DONE localement. Les remarques sur taille cible, portée/aggro des tireurs, tir joueur, animation Archer, poursuite des élites et audio sont affectées explicitement à RUN-021 ; elles ne sont pas déclarées corrigées. Six fichiers modifiés depuis le checkpoint restent une baseline humaine préservée, hors commit de clôture. Ni 0.3.0, ni push/PR/merge validés par cette clôture.
+
 - **Résultat / scope :** Construire et peupler N2 Blight Town, N3 Black Forest et N4 Forbidden Graveyard ; raccorder N1–4 et toutes les récompenses/ambiances requises.
 - **Décisions avant implémentation dépendante :** Harmoniser les noms avant contenu (D10) ; suivre la répartition docs/03–04.
 - **Acceptation, tests et bugtest :** Sorties à 18/25/32 coins ; secret, potion majeure, rare chest et HP bonus de N4 ; parcours N1–4, achats/refus, dépenses optionnelles compatibles avec sortie, morts/reset/rechargement et invocations ; playtest humain difficulté/rythme.
@@ -590,7 +600,10 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 ### RUN-021 — Cohérence visuelle N1–4 et validation 0.3.0
 
-**Lot J · Main agent : Claude Opus 5.5 · Statut : BACKLOG · Dépendances : RUN-020.**
+**Lot J · Main agent : Claude Opus 5.5 · Statut : ACTIVE · Dépendances : RUN-020 DONE.**
+
+- **Lancement autorisé (6 octobre 2026) :** READY puis ACTIVE sur `feature/run-020-021-campaign`, après clôture020. Claude pilote la première passe visuelle ; Codex prépare le handoff et réserve les correctifs de gameplay/tests. [Contrat principal](docs/RUN-021_CLAUDE_HANDOFF.md), [complément Archer/audio](docs/RUN-021_CLAUDE_HANDOFF_02.md) et [remarques humaines](docs/RUN-021_REVIEW_NOTES.md). Six fichiers humains gelés, dont TileSet, ressources du chevalier et Blight Town ; aucune régénération ni substitution de terrain. Préanalyse initiale Claude Opus5.5 en lecture seule réellement exécutée ; points de sources/ownership N1 résolus dans le contrat. Aucune contribution de production ni nouvelle validation artistique présumée.
+- **Passes ajoutées par l’humain :** (A) cohérence visuelle Claude ; (A2) reproduction de l’animation Archer, audit/remplacement/suppression argumentés des SFX et piste N4 `delosound-dark-synthwave-retro-80s-453292` ; (B) Codex augmente aggro/portée Archer/Sorcerer et vitesse d’aggro Bloated/Chud, réduit légèrement cadence/distance du tir joueur, sur valeurs justifiées ; (C) corrections finales, recette complète, rendu et playtest humain. Remise exclusive avant toute édition d’un fichier partagé ; pas de tuning implicitement confié à la passe artistique. Les niveaux actuels restent loin de l’ampleur finale demandée ; les edits de terrain humains sont protégés selon la règle permanente ci-dessus.
 
 - **Résultat / scope :** Habiller les trois niveaux et harmoniser N1–4, sprites/animations des archétypes, VFX, objets et interfaces ; sources et crédits traçables.
 - **Décisions avant implémentation dépendante :** Choix d’assets et ownership des scènes avant intégration ; aucune modification implicite des profils gameplay.

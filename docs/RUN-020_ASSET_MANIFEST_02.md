@@ -146,3 +146,6 @@ La baseline Claude est conservée. Les volumes des élites sont ajustés à la m
 Un blocage de raccord a été reproduit dans Godot : la marche ouest du mausolée N4 finissait à x400, sous le plafond y96, laissant seulement16px à un corps18px. Elle finit désormais à x384 : les deux cellules(24,7)/(24,8) sont retirées, permettant la descente vers le passage inférieur. Le générateur et seule la scène N4 sont corrigés ; N2/N3 générés temporairement restent identiques octet pour octet. Ce correctif local préserve tous les acteurs, budgets et repères.
 
 **État après recette Codex : VERIFY.** Recette composée2254PASS/46RESULT, variantes basses19/19 et hautes21/21 (achat4 et HP N4 inclus), captures finales57/57, élites20/20 et rendu N1 11/11. Les tests et le guide sont adaptés ; preuves au journal. Le playtest humain et la revue de clôture restent nécessaires avant DONE020 puis RUN-021.
+
+
+**Clôture du 6 octobre 2026 : RUN-020 DONE.** L’humain valide la run « en l’état » et autorise RUN-021. Revue Jev puis inspection des preuves terminées ; les attentes de validation ci-dessus décrivent le checkpoint historique. Aucun parcours humain détaillé n’est inféré. Les nouvelles remarques et passes sont consignées dans [RUN-021_REVIEW_NOTES.md](RUN-021_REVIEW_NOTES.md).
