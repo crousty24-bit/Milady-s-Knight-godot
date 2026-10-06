@@ -69,6 +69,8 @@ func cadence(id: String) -> void:
 	equip(id)
 	var stats := WeaponCatalog.stats(id)
 	var ticks := int(round(stats.interval * 60.0))
+	if id.begins_with("Longbow"): ticks = 132 - 6 * int(id.right(1))
+	elif id.begins_with("ThrowingKnives"): ticks = 84 - 6 * int(id.right(1))
 	var starts: Array[int] = []
 	var previous := 0.0
 	Input.action_press("attack")
@@ -165,6 +167,10 @@ func run() -> void:
 	for base in WeaponCatalog.BASES:
 		for level in range(6):
 			var id := str(base) + str(level)
+			if base in ["Longbow", "ThrowingKnives"]:
+				var stats := WeaponCatalog.stats(id)
+				var expected_reach := (176.0 if base == "Longbow" else 104.0) + 8.0 * level
+				check(is_equal_approx(stats.reach, expected_reach), id + " retains reduced base range and eight pixel upgrades")
 			await cadence(id)
 			await state_rules(id)
 			for direction in [-1, 1]:
@@ -188,7 +194,7 @@ func run() -> void:
 	player._fire_arrow()
 	check(player._shot_frame() == 0, "actual shot begins release presentation")
 	player.configure_loadout({"melee": "Sword0", "ranged": "ThrowingKnives5"})
-	check(player._shot_frame() == -1 and player.bow_cooldown == 2.0, "ranged replacement cancels old release without changing cadence")
+	check(player._shot_frame() == -1 and player.bow_cooldown == 2.2, "ranged replacement cancels old release without changing cadence")
 	await frames(75)
 	check(player._shot_frame() == -1 and player.bow_cooldown > 0.0, "old release cannot replay when timer crosses the new interval")
 	for ranged in ["Longbow5", "ThrowingKnives5"]:

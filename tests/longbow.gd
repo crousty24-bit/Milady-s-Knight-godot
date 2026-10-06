@@ -71,7 +71,8 @@ func arrow_at(pos: Vector2, direction := 1) -> Node2D:
 	arrow.process_mode = Node.PROCESS_MODE_PAUSABLE
 	room.add_child(arrow)
 	arrow.global_position = pos
-	arrow.setup(direction)
+	var stats := WeaponCatalog.stats("Longbow0")
+	arrow.setup(direction, stats.damage, stats.reach)
 	return arrow
 func run() -> void:
 	await spawn()
@@ -80,10 +81,10 @@ func run() -> void:
 	await equip_bow()
 	check(player.active_slot == 1 and player.has_longbow, "mapped A selects owned Longbow")
 	key(KEY_F, true)
-	await frames(245)
+	await frames(269)
 	key(KEY_F, false)
-	check(shot_frames.size() == 3, "held mapped F fires three Longbow shots over four seconds")
-	check(shot_frames.size() == 3 and shot_frames[1] - shot_frames[0] == 120 and shot_frames[2] - shot_frames[1] == 120, "Longbow held cadence is exactly 2.0 seconds at 60 Hz")
+	check(shot_frames.size() == 3, "held mapped F fires three Longbow shots over 4.48 seconds")
+	check(shot_frames.size() == 3 and shot_frames[1] - shot_frames[0] == 132 and shot_frames[2] - shot_frames[1] == 132, "Longbow held cadence is exactly 2.2 seconds at 60 Hz")
 	await spawn()
 	await equip_bow()
 	player.facing = -1
@@ -122,7 +123,7 @@ func run() -> void:
 	key(KEY_F, true)
 	await frames(2)
 	key(KEY_F, false)
-	check(shots.size() == 1 and player.bow_cooldown > 1.9, "Bow has an independent cooldown and can fire after Sword switch")
+	check(shots.size() == 1 and player.bow_cooldown > 2.1, "Bow has an independent cooldown and can fire after Sword switch")
 	var bow_before := player.bow_cooldown
 	await switch_slot()
 	key(KEY_F, true)
@@ -191,7 +192,7 @@ func run() -> void:
 	var ranged := arrow_at(Vector2(164, 190))
 	ranged.set_physics_process(false)
 	ranged._physics_process(2.0)
-	check(ranged.is_queued_for_deletion() and ranged.global_position == Vector2(356, 190) and beyond.health == 1.0, "oversized step clamps to 192 px from muzzle and cannot hit beyond range")
+	check(ranged.is_queued_for_deletion() and ranged.global_position == Vector2(340, 190) and beyond.health == 1.0, "oversized step clamps to 176 px from muzzle and cannot hit beyond range")
 	await frames(2)
 	await spawn()
 	await equip_bow()

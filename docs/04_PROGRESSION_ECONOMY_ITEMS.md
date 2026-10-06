@@ -226,3 +226,8 @@ La porte secondaire payante dépense uniquement les coins de tentative, une fois
 Première passe de réglage à rejuger en jeu : Longbow niveau `n` (0–5), dégâts `1 + 0,5n`, intervalle `2 − 0,1n` s, portée `12 + 0,5n` blocs ; Throwing Knives, dégâts `0,5 + 0,5n`, intervalle `1,3 − 0,1n` s, portée `7 + 0,5n` blocs. Un bloc = 16 px. La portée et la cadence diminuent à tous les niveaux standard ; la progression et les dégâts restent conservés. Mêlée, Legendary et vitesse de projectile inchangés. Ces valeurs remplacent les tables de tir historiques RUN-018.
 
 Les munitions ne sont pas implémentées : idée retenue par l’humain pour un contrat dédié ultérieur, sans validation des chiffres ; [proposition et décision](RUN-020_PLAYTEST_REVIEW.md#munitions--proposition-non-implémentée). Aucun drop ni caisse destructible ajouté.
+
+
+### Ajustement du tir RUN-021 (6 octobre 2026)
+
+Après demande humaine de réduire encore légèrement cadence et distance : Longbow0 part toutes les2,2s, portée176px (11blocs), contre2s/192px ; ThrowingKnives0 toutes les1,4s, portée104px (6,5blocs), contre1,3s/112px. Les niveaux0–5 conservent −0,1s d’intervalle et+8px de portée par niveau, ainsi que dégâts, vitesse des projectiles et cooldown conservé au changement d’arme. Longbow5 :1,7s/216px ; Knives5 :0,9s/144px. Catalogue, portée technique par défaut du projectile et texte du coffre tuto sont alignés. Les frontières physiques et intervalles réellement exécutés sont vérifiés par les tests d’armes ; leur ressenti appartient au playtest.

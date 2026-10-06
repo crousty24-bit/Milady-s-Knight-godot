@@ -168,3 +168,8 @@ Les candidats doivent d'abord être promus de `assets/run021/audio/sfx_candidate
 ### 2.7 Écoute humaine en attente (SFX)
 
 Tout. En priorité : saut, double saut, saut mural (candidats vs actuels, fichier A/B) ; pièce (rafale de 5–10 pièces) ; potions ; tir d'arc et couteaux ; plante ; incantation Sorcerer ; porte d'or (`coin.wav` à 0 dBFS) ; famille Mecha (trappe, hp-bonus, upgrade) ; mix musique/ambiance/SFX en jeu.
+
+
+## Validation humaine après remise (6 octobre 2026)
+
+L’humain confirme : « Le visuel et l’ajout de la musique N4 est validé. » Les mentions d’attente précédentes décrivent la remise initiale. Cette validation ne s’étend pas aux candidats SFX non branchés, au correctif logique Archer ni aux nouveaux paramètres de gameplay Codex. Aucun détail d’écoute ou de comparaison image par image non fourni n’est inféré. La recette et les preuves Codex sont consignées au journal.

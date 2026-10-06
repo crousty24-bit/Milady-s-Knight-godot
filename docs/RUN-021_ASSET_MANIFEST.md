@@ -71,3 +71,11 @@ Risques et points à reprendre :
 - Les tests qui inspectent les couleurs du fond ou de la terre N3 sont à adapter à l’état livré.
 - À corriger côté Codex : patrouille nulle des archers (§5), plus les réglages déjà attribués (portée et aggro des tireurs, tir joueur, poursuite de Bloated et Chud).
 - Validation humaine requise : ajustement artistique (terre N3, bandes proches, densité et lueurs), lecture en mouvement de la parallaxe, absence de confusion fond/plateforme en jeu réel.
+
+
+## Validation humaine après remise (6 octobre 2026)
+
+L’humain confirme : « Le visuel et l’ajout de la musique N4 est validé. » Les mentions d’attente précédentes décrivent la remise initiale. Cette validation ne s’étend pas aux candidats SFX non branchés, au correctif logique Archer ni aux nouveaux paramètres de gameplay Codex. Aucun détail d’écoute ou de comparaison image par image non fourni n’est inféré. La recette et les preuves Codex sont consignées au journal.
+
+
+**Checkpoint Codex : RUN-021 VERIFY.** Recette composée2331PASS/48RESULT, parcours physiques19/19 et21/21, rendu68/68, observation des six sentinelles6/6. L’animation et les sprites Archer restent intacts ; la logique de patrouille nulle est corrigée. Visuel et ajout musique validés ; gameplay et choix SFX attendent validation finale. [Guide de playtest](RUN-021_PLAYTEST.md), preuves et limites au journal.

@@ -15,3 +15,8 @@
 | Ajouter des passes pour fixes/correctifs finaux après le visuel | Claude remet, Codex intègre, humain valide | Recette complète sur résultat intégré, rendu/interactions, parcours clavier N1–4 et routes, reset/reprise/persistance, écoute et playtest, Jev/inspection. RUN-021 ne peut être DONE avant ces étapes. |
 
 Contrats : [passe visuelle](RUN-021_CLAUDE_HANDOFF.md), [complément Archer/audio](RUN-021_CLAUDE_HANDOFF_02.md). Les directions d’équilibrage sont demandées ; les chiffres doivent être justifiés dans la passe technique et soumis avant code dépendant si une décision produit non définie demeure. Pas de nouvelle run, pas de munitions ni de capacités ajoutées à partir de ces remarques.
+
+
+## État après relais Codex
+
+Visuel et ajout musique N4 validés humainement. Cause logique Archer confirmée et corrigée, vidéo compatible avec l’alternance observée ; les six sentinelles sont stables. Réglages de portée/cadence/poursuite implémentés et tests exécutés ; recette2331PASS/48RESULT, parcours basses19/19 et hautes21/21, rendu68/68, six Archers6/6. Aucun terrain remplacé. Ces résultats ne constituent pas encore une validation humaine du nouvel équilibrage. Les candidats SFX restent des propositions non branchées ; la validation reçue n’inclut pas leur choix. Voir [playtest](RUN-021_PLAYTEST.md) et journal pour clôture après validation, sans lancement anticipé de RUN-022.

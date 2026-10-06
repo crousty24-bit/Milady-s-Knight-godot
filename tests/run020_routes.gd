@@ -57,11 +57,12 @@ func step(direction: float, combat := true) -> void:
 			var side := signf(closest.global_position.x - player.global_position.x)
 			var reach: float = WeaponCatalog.stats(player.equipment.ranged).reach - 16.0
 			if closest_gap <= reach:
-				# Aim and fire when ready; retreat during the two-second bow recovery.
+				# Aim and fire when ready; keep room for the enemy's chase
+				# throughout the equipped ranged weapon's recovery.
 				if player.bow_cooldown <= 0.02:
 					direction = side if player.facing != int(side) else 0.0
 					Input.action_press("attack")
-				elif closest_gap < 100.0:
+				elif closest_gap < reach:
 					var edge := player.global_position + Vector2(-side * 18.0, 0)
 					var ground := PhysicsRayQueryParameters2D.create(edge + Vector2(0, -8), edge + Vector2(0, 16), 1)
 					var footing := player.get_world_2d().direct_space_state.intersect_ray(ground)
@@ -96,7 +97,8 @@ func step(direction: float, combat := true) -> void:
 					dodge_ticks = 8
 					dodging = true
 					break
-		if dodging: direction = 0.0
+		# Keep the chosen movement while evading: stopping throughout a jump
+		# lets a chasing melee enemy reach the landing point.
 
 	if direction > 0: Input.action_press("move_right")
 	if direction < 0: Input.action_press("move_left")
@@ -149,6 +151,16 @@ func jump(target: float, clear_rise := 0.0) -> void:
 func cross(before: float, after: float) -> void:
 	await walk(before)
 	await jump(after)
+func collect_coin(coin_name: String) -> void:
+	# A projectile dodge can carry the player above a floor coin at its X.
+	# Return on foot and keep fighting until the actual pickup occurs.
+	var coin := level.get_node_or_null("Coins/" + coin_name)
+	for _tick in 1200:
+		if route_failed or not is_instance_valid(coin) or coin.picked_up: return
+		var offset: float = coin.global_position.x - player.global_position.x
+		await step(signf(offset) if absf(offset) >= 2.0 else 0.0)
+	print("ROUTE could not physically collect ", coin_name, " at=", player.position)
+	route_failed = true
 func route(number: int) -> void:
 	print("ROUTE variant ", "upper" if upper_route else "lower", " N", number)
 	match number:
@@ -270,6 +282,7 @@ func route(number: int) -> void:
 			await walk(704)
 			await cross(778, 862)
 			await walk(928)
+			await collect_coin("Coin09")
 			await cross(956, 1000)
 			if upper_route:
 				await jump(1120)
@@ -342,6 +355,9 @@ func route(number: int) -> void:
 			await walk(4272)
 			await walk(4624)
 	await walk(level.gate.position.x - 30)
+	if level.gold < level.gate.COST:
+		for coin in level.get_node("Coins").get_children():
+			if not coin.picked_up: print("ROUTE uncollected ", coin.name, " at=", coin.position)
 	check(not route_failed and not player.dead and level.gold >= level.gate.COST, "N%d route reaches sealed gate with enough collected coins; HP %.1f coins %d" % [number, player.health, level.gold])
 	if route_failed: return
 	var before: int = level.gold

@@ -107,16 +107,18 @@ func _physics_process(delta: float) -> void:
 	if windup_time > 0.0:
 		windup_time = maxf(0.0, windup_time - delta)
 		if windup_time == 0.0: _release_attack()
+	# A collapsed patrol interval denotes a sentry, not an every-frame U-turn.
+	var patrolling := patrol_right > patrol_left
 	if aggro:
 		direction = 1 if target.global_position.x > global_position.x else -1
 		if cooldown == 0.0 and pending_attack == &"": _try_attack()
-	elif global_position.x < origin_x + patrol_left:
+	elif patrolling and global_position.x < origin_x + patrol_left:
 		direction = 1
-	elif global_position.x > origin_x + patrol_right:
+	elif patrolling and global_position.x > origin_x + patrol_right:
 		direction = -1
 	if knockback_time == 0.0:
-		var moving := pending_attack == &"" and not (aggro and kind == Kind.ARCHER)
-		if is_on_floor() and not _safe_direction(direction):
+		var moving := (aggro or patrolling) and pending_attack == &"" and not (aggro and kind == Kind.ARCHER)
+		if (aggro or patrolling) and is_on_floor() and not _safe_direction(direction):
 			moving = false
 			if not aggro: direction *= -1
 		velocity.x = direction * (chase_speed if aggro else patrol_speed) if moving else 0.0

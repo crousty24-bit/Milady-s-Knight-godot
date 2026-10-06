@@ -59,7 +59,60 @@ func reward_received(value: int, _at: Vector2) -> void:
 	reward += value
 	deaths += 1
 
+func stationary_patrol() -> void:
+	await fixture(Vector2(1000, 200))
+	player.set_physics_process(false)
+	var archer = mob("skeleton_archer")
+	archer.patrol_left = 0.0
+	archer.patrol_right = 0.0
+	await frames(2)
+	var start_x: float = archer.position.x
+	var initial_direction: int = archer.direction
+	var turns := 0
+	var moving_frames := 0
+	for i in range(60):
+		await frames(1)
+		if archer.direction != initial_direction: turns += 1
+		initial_direction = archer.direction
+		if absf(archer.velocity.x) > 0.01: moving_frames += 1
+	print("OBSERVATION stationary archer: turns=%d moving_frames=%d" % [turns, moving_frames])
+	check(turns == 0 and moving_frames == 0 and is_equal_approx(archer.position.x, start_x), "zero-width patrol holds position and facing for every physics frame")
+	check(archer.get("_art").animation == &"idle", "stationary archer uses idle instead of walking in place")
+	player.position = Vector2(180, 200)
+	await frames(3)
+	check(archer.aggro and archer.direction == 1 and archer.pending_attack == &"arrow", "stationary archer acquires and faces player with normal arrow windup")
+	await frames(20)
+	check(archer.active_attacks.size() == 1, "stationary archer still releases its arrow")
+	player.position = Vector2(1000, 200)
+	await frames(130)
+	var retained_direction: int = archer.direction
+	start_x = archer.position.x
+	await frames(30)
+	check(not archer.aggro and archer.direction == retained_direction and is_equal_approx(archer.position.x, start_x), "aggro loss returns to stationary patrol with stable facing")
+	archer.take_damage(0.2, Vector2(-60, 0))
+	await frames(3)
+	check(archer.position.x < start_x and archer.knockback_time > 0, "stationary patrol preserves damage recoil")
+	await frames(30)
+	start_x = archer.position.x
+	await frames(30)
+	check(archer.velocity.x == 0 and is_equal_approx(archer.position.x, start_x) and archer.direction == retained_direction, "stationary patrol does not walk back or turn after recoil")
+	archer.patrol_left = 10.0
+	archer.patrol_right = -10.0
+	await frames(10)
+	check(archer.velocity.x == 0 and archer.direction == retained_direction, "invalid negative-width patrol also stays stationary")
+
+	await fixture(Vector2(1000, 200))
+	player.set_physics_process(false)
+	archer = mob("skeleton_archer")
+	archer.patrol_left = -8.0
+	archer.patrol_right = 8.0
+	await frames(5)
+	check(archer.velocity.x < 0 and archer.position.x < archer.origin_x, "positive-width archer patrol still walks")
+	await frames(25)
+	check(archer.direction == 1 and archer.velocity.x > 0, "positive-width patrol still turns at its left boundary")
+
 func run() -> void:
+	await stationary_patrol()
 	await fixture(Vector2(300, 200))
 	var profiles := [["red_slime", 2.0, 1], ["bloated_slime", 5.0, 5], ["skeleton_warrior", 2.0, 1], ["skeleton_archer", 2.0, 1], ["blight_sorcerer", 2.0, 1], ["chud_blob", 10.0, 5], ["possessed_skull", 1.0, 1]]
 	for profile in profiles:

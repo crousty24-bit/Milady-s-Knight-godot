@@ -128,3 +128,12 @@ Les paramètres techniques exacts et interfaces sont dans [le handoff](RUN-019_C
 ### RUN-020 — Volumes des élites après reprise visuelle
 
 Les silhouettes redessinées utilisent un corps physique centré sur leur masse, pieds à l’origine : Bloated 44×40, Chud 36×40. Le volume sert aux collisions avec le terrain et à la réception des coups ; les excroissances et l’arme restent hors de ce rectangle. Les sondes de bord se placent 4 px devant la demi-largeur réelle du corps. Bloated inflige son contact sous 30 px horizontalement et 18 px verticalement entre les pieds, avec ligne libre et aggro ; Chud garde sa mêlée de 28 px et sa préparation de 0,3 s. Le sprite du chevalier se dessine au premier plan des acteurs pour rester visible au contact.
+
+
+## Réglage RUN-021 après remise visuelle (6 octobre 2026)
+
+La logique considère désormais un intervalle de patrouille nul ou inversé comme une sentinelle : hors aggro, vitesse horizontale nulle et orientation conservée, y compris après un recul. La gravité, les collisions et le recul restent actifs. Les six archers N3/N4 gardent leurs bornes nulles et leur placement ; aucune cellule de terrain ni donnée de niveau n’est remplacée. Une patrouille positive garde ses retournements et ses sondes de bord. Le défaut ancien de retournements continus est reproduit puis corrigé dans le moteur ; la correspondance exacte avec la vidéo humaine reste non confirmée.
+
+Pour Archer et Blight Sorcerer seulement, acquisition avec visibilité dans720×144px (±360 horizontal, ±72 vertical), conservation880×208px avec la marge existante, délai de perte2s inchangé. La distance de déclenchement du tir/de la zone passe de140 à240px. L’archer reste immobile pendant l’aggro. Sa flèche conserve vitesse150px/s et durée maximale5s ; « portée240 » désigne ici la distance de déclenchement, pas une suppression à240px du projectile. Sorcerer conserve point au sol figé, avertissement1s et2DMG. Obstacles et visibilité gardent leur rôle.
+
+Bloated poursuit à60px/s (36 avant) et Chud à48px/s (28 avant), avec patrouilles18/12px/s conservées. Corps44×40/36×40, contact Bloated30px, mêlée Chud28px, dégâts et préparation restent identiques. Le joueur marche à sa vitesse existante ; l’augmentation de poursuite doit encore être jugée en playtest, sans changement du terrain pour compenser.

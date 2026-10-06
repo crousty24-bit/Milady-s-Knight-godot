@@ -704,3 +704,12 @@ L’humain accepte RUN-020 en l’état. Cela clôt le résultat testé de cette
 Un niveau édité manuellement devient la référence à préserver. Un générateur ancien ne connaît pas les décisions prises dans l’éditeur : le rejouer peut détruire ce travail, même si les tests attendent son ancien résultat. On conserve donc les scènes et les changements humains, puis on adapte les tests. Une review ou un audit observe et décrit ; elle n’autorise pas à effacer ou refaire le terrain.
 
 Le clip de l’Archer sert de point de départ à la reproduction, pas de preuve de cause. Il faut observer l’animation et son état dans Godot pour distinguer un dessin mal cadré d’un changement d’état de mouvement. Les contrats de RUN-021 demandent cette preuve et définissent à quel moment Claude remet le fichier partagé à Codex. La production et sa validation restent à effectuer.
+
+
+## RUN-021 — Sentinelles et portée des tireurs
+
+Les bornes d’une patrouille décrivent un intervalle autour du point de départ. Lorsque ses deux bornes sont égales, marcher fait immédiatement sortir de cet intervalle, puis repartir dans l’autre sens : l’Archer se retournait sans arrêt sur place. Le correctif traite cette configuration comme une sentinelle. Il conserve l’orientation hors aggro, mais peut encore regarder le joueur, tirer, tomber ou reculer après un coup. Les niveaux et leurs perchoirs sont conservés ; on corrige le comportement qui interprète leurs données.
+
+La détection, la distance de déclenchement et le trajet d’une attaque sont différents. Les tireurs repèrent désormais plus loin et commencent leurs attaques à240px. L’Archer reste immobile en aggro ; sa flèche conserve sa vitesse et sa durée, tandis que Sorcerer annonce toujours un point au sol figé. On teste les positions juste avant et après chaque limite ainsi que les murs, plutôt que de vérifier seulement une valeur exportée.
+
+Les élites poursuivent plus vite et le tir joueur devient légèrement plus lent et plus court. Les tests mesurent la distance réellement parcourue et les intervalles entre tirs, puis la recette doit exercer les routes avec ces changements combinés. La difficulté et le ressenti restent à valider humainement. Le raccord de musique N4 existant est réutilisé ; les candidats SFX préparés ne sont pas présentés comme des sons déjà retenus ou branchés.

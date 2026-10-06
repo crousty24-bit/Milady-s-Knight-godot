@@ -9,8 +9,8 @@ const BASES: Dictionary = {
 	"DarkScythe": [2.0, 2.5, 1.5, "melee", "Dark Scythe"],
 	"Warhammer": [1.5, 1.5, 0.8, "melee", "Warhammer"],
 	"Halberds": [1.0, 1.5, 2.0, "melee", "Halberds"],
-	"Longbow": [1.0, 2.0, 12.0, "ranged", "Longbow"],
-	"ThrowingKnives": [0.5, 1.3, 7.0, "ranged", "Throwing Knives"],
+	"Longbow": [1.0, 2.2, 11.0, "ranged", "Longbow"],
+	"ThrowingKnives": [0.5, 1.4, 6.5, "ranged", "Throwing Knives"],
 }
 
 static func stats(id: String) -> Dictionary:
