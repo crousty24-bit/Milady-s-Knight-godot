@@ -73,7 +73,7 @@ func reveal_secret(occlusion: bool = false) -> void:
 	# The two attacks come from actual weapon input, including bow selection.
 	level.player.configure_loadout({"melee":"Sword0", "ranged":"Longbow0"})
 	level.player.controls_enabled = true
-	await place(Vector2(544, 48))
+	await place(secret.position + Vector2(-24, 0))
 	level.player.facing = 1
 	if occlusion:
 		blocker = StaticBody2D.new()
@@ -85,7 +85,7 @@ func reveal_secret(occlusion: bool = false) -> void:
 		shape.shape = rectangle
 		blocker.add_child(shape)
 		level.add_child(blocker)
-		blocker.position = Vector2(556, 32)
+		blocker.position = secret.position + Vector2(-12, -16)
 		await frames(3)
 		await tap("attack")
 		await frames(25)
@@ -115,13 +115,13 @@ func run() -> void:
 		var cost: int = [18,25,32][index]
 		check(level.world_level == index + 2 and level.gate.COST == cost, "authored level number and exit price%d" % cost)
 		check(level.next_level_scene == (LEVELS[index + 1] if index < 2 else ""), "authored campaign successor")
-		check(level.get_node("Coins").get_child_count() == [24,32,40][index] and level.get_node("Enemies").get_child_count() == [7,10,11][index], "native scene population and budget")
+		check(level.get_node("Coins").get_child_count() == [24,32,40][index] and level.get_node("Enemies").get_child_count() == [10,13,14][index], "native scene population and budget")
 		for family in populations[index]:
 			var found := false
 			for enemy in level.get_node("Enemies").get_children():
 				if enemy.scene_file_path == "res://scenes/%s.tscn" % family: found = true
 			check(found, "native family " + family)
-		check(level.get_node("Hazards").get_child_count() == (5 if index == 0 else 8), "native authored trap population")
+		check(level.get_node("Hazards").get_child_count() == [10,11,10][index], "native authored trap population")
 		for family in (["spikes", "retractable_spikes", "trapdoor"] if index == 0 else ["spikes", "retractable_spikes", "trapdoor", "poison_plant", "turret"]):
 			var found := false
 			for hazard in level.get_node("Hazards").get_children():
@@ -145,12 +145,12 @@ func run() -> void:
 		await collect_coins()
 		check(level.gold == [24,32,40][index], "real coin pickups fund full authored route")
 		if index == 2:
-			await place(Vector2(1280,48))
+			await place(level.get_node("Exploration/CoinDoor").position + Vector2(-24, 0))
 			await tap("interact")
 			check(level.get_node("Exploration/CoinDoor").opened and level.gold == 36, "E pays optional four coin branch once")
 			await tap("interact")
 			check(level.gold == 36, "opened optional door cannot charge twice")
-			await place(Vector2(2640,144))
+			await place(level.get_node("Exploration/MechanismButton").position)
 			await tap("interact")
 			check(level.get_node("Exploration/MechanismButton").active and level.get_node("Exploration/MechanismDoor").opened and level.gold == 36, "E mechanism opens required passage without spending coins")
 		await place(level.gate.position + Vector2(-24,0))
@@ -159,7 +159,7 @@ func run() -> void:
 	await spawn(LEVELS[2])
 	await reveal_secret(true)
 	level.player.health_units = 10
-	await place(Vector2(1424,48))
+	await place(level.get_node("Items/HpBonus").position + Vector2(0, 12))
 	check(progress.has_hp_bonus("n4_hp_01") and level.player.max_health_units == 40 and level.player.health_units == 20, "real authored HP pickup grants current and max health durably")
 	# Direct bank funding and deterministic offer are setup fixtures; all payments,
 	# acceptance/refusal and equipment commits below pass through keyboard menus.
@@ -179,19 +179,19 @@ func run() -> void:
 	await tap("interact")
 	check(progress.banked_shards == 60 and progress.equipment.melee == "Longsword1" and level.player.equipment.melee == "Longsword1", "real rare acceptance debits30 and saves equipment (modal=%s bank=%d saved=%s runtime=%s)" % [level.modal, progress.banked_shards, progress.equipment.melee, level.player.equipment.melee])
 	check(level.player.health_units == 20, "equipment acceptance preserves existing injury")
-	await place(Vector2(640,48))
+	await place(level.get_node("Items/MajorPotion").position + Vector2(0, 12))
 	check(level.get_node("Items/MajorPotion").used and level.player.health_units == 30, "physical authored major potion restores exactly one HP")
 	# Swarm direct damage is an isolated reward transaction criterion. Spawn,
 	# despawn and reentry are caused by physical player position in the real zone.
 	var swarm = level.get_node("Exploration/SkullSwarm")
-	await place(Vector2(2016,144))
+	await place(swarm.position + Vector2(0, 48))
 	check(swarm.skulls.size() == 4, "authored zone physically spawns four skull slots")
 	for skull in swarm.skulls: skull.take_damage(10, Vector2.ZERO)
 	await frames(5)
 	var earned: int = level.bonus
 	check(earned == 4, "isolated four skull kills credit bounded reward four")
-	await place(Vector2(1680,144))
-	await place(Vector2(2016,144))
+	await place(swarm.position + Vector2(-swarm.zone_size.x / 2 - 64, 96))
+	await place(swarm.position + Vector2(0, 48))
 	check(swarm.skulls.is_empty(), "cleared zone stays cleared on reentry in the same attempt")
 	await frames(5)
 	check(level.bonus == earned, "reentry cannot farm additional shard rewards")

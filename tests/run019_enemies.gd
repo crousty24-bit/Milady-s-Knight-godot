@@ -252,6 +252,42 @@ func run() -> void:
 	var bloated = mob("bloated_slime", Vector2(100, 200))
 	await frames(2)
 	check(player.health_units == 15 and bloated.get_meta("healing_profile") == "elite", "bloated contact deals 1.5 HP and elite metadata")
+	for gap in [31.0, 29.0]:
+		await fixture(Vector2(100 + gap, 200))
+		player.set_physics_process(false)
+		bloated = mob("bloated_slime", Vector2(100, 200))
+		bloated.chase_speed = 0
+		bloated.patrol_speed = 0
+		await frames(3)
+		check(player.health_units == (30 if gap == 31.0 else 15), "Bloated contact boundary at %.0fpx follows visual core" % gap)
+	await fixture(Vector2(125, 178))
+	player.set_physics_process(false)
+	bloated = mob("bloated_slime", Vector2(100, 200))
+	bloated.chase_speed = 0
+	bloated.patrol_speed = 0
+	await frames(3)
+	check(player.health_units == 30, "Bloated horizontal contact does not damage a player above its feet band")
+	for elite_scene in ["bloated_slime", "chud_blob"]:
+		await fixture(Vector2(300, 200), 120)
+		var elite = mob(elite_scene, Vector2(120, 200))
+		await frames(100)
+		check(elite.is_on_floor() and elite.position.x <= 157.0 - elite.get_node("CollisionShape2D").shape.size.x * 0.5, "%s wider body stops before unsupported edge (pos=%s floor=%s)" % [elite_scene, elite.position, elite.is_on_floor()])
+		# Intersect the actual upper/outer core, formerly outside the 20x22 body.
+		var point_query := PhysicsPointQueryParameters2D.new()
+		point_query.position = elite.global_position + Vector2(15, -30)
+		point_query.collision_mask = 4
+		var hits := elite.get_world_2d().direct_space_state.intersect_point(point_query)
+		check(hits.size() == 1 and hits[0].collider == elite, "%s upper outer core receives weapon physics queries" % elite_scene)
+	await fixture(Vector2(140, 200))
+	bloated = mob("bloated_slime", Vector2(100, 200))
+	bloated.set_physics_process(false) # Isolate weapon reach from contact/chase.
+	player.controls_enabled = true
+	player.facing = -1
+	Input.action_press("attack")
+	await frames(2)
+	Input.action_release("attack")
+	await frames(30)
+	check(bloated.health == 4.5, "real Sword0 input hits Bloated outer core for 0.5HP from 40px without body penetration (HP=%s)" % bloated.health)
 	await fixture(Vector2(120, 200))
 	var chud = mob("chud_blob", Vector2(100, 200))
 	await frames(23)

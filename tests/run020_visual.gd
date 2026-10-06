@@ -58,15 +58,20 @@ func run() -> void:
 		await frames(1)
 		check(ambient.playing and ambient.get_playback_position() < 1.0, "native ambience crosses end and loops")
 		await snapshot("n%d-spawn" % (index + 2), Vector2(128,144))
-		await snapshot("n%d-trap" % (index + 2), Vector2([1468,1244,1708][index],176))
-		await snapshot("n%d-combat" % (index + 2), Vector2([2380,2468,3320][index],[144,128,144][index]))
+		await snapshot("n%d-trap" % (index + 2), level.get_node("Hazards/Trapdoor").position + Vector2(-40, 0))
+		await snapshot("n%d-combat" % (index + 2), level.get_node("Enemies/Enemy%d" % [10, 12, 14][index]).position + Vector2(-64, 0))
+		# Both authored forks: upper/lower views use scene coin positions as landmarks.
+		for fork in 2:
+			for route in 2:
+				var coin_index: int = [[[9, 11], [19, 20]], [[12, 14], [23, 25]], [[11, 13], [26, 29]]][index][fork][route]
+				await snapshot("n%d-f%d-%s" % [index + 2, fork + 1, "upper" if route == 0 else "lower"], level.get_node("Coins/Coin%02d" % coin_index).position + Vector2(0, 12))
 		if index == 2:
-			await snapshot("n4-secret-closed", Vector2(540,48))
+			await snapshot("n4-secret-closed", level.get_node("Exploration/SecretWall").position + Vector2(-28, 0))
 			level.get_node("Exploration/SecretWall").receive_player_attack(1, SlicePlayer.DamageSource.CONTACT_MELEE)
 			paused = false
 			await frames(40)
-			await snapshot("n4-secret-open", Vector2(600,48))
-			await snapshot("n4-mechanism", Vector2(2640,144))
+			await snapshot("n4-secret-open", level.get_node("Items/MajorPotion").position + Vector2(-40, 12))
+			await snapshot("n4-mechanism", level.get_node("Exploration/MechanismButton").position)
 		await close_scene()
 	print("RESULT %d render checks; %d failures" % [checks,failures])
 	quit(1 if failures else 0)

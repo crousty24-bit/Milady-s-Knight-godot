@@ -14,7 +14,7 @@ func run() -> void:
 		await spawn(LEVELS[2])
 		await reveal_secret()
 		level.player.health_units = 10
-		await place(Vector2(1424,48))
+		await place(level.get_node("Items/HpBonus").position)
 		check(progress.has_hp_bonus("n4_hp_01") and level.player.health_units == 20 and level.player.max_health_units == 40, "physical authored heart commits before process closure")
 		var rare = level.get_node("Items/RareChest")
 		check(rare.kind == "rare", "cold authored secret chest remains a real rare chest")
@@ -24,9 +24,9 @@ func run() -> void:
 		await tap("interact")
 		check(progress.equipment.melee == "Longsword1" and progress.banked_shards == 70, "physical paid acceptance saves equipment and bank")
 		await collect_coins()
-		await place(Vector2(1280,48))
+		await place(level.get_node("Exploration/CoinDoor").position + Vector2(-24, 0))
 		await tap("interact")
-		await place(Vector2(2640,144))
+		await place(level.get_node("Exploration/MechanismButton").position)
 		await tap("interact")
 		check(level.gold == 36 and level.get_node("Exploration/CoinDoor").opened and level.get_node("Exploration/MechanismDoor").opened, "closing attempt contains physical coins and opened doors")
 		level.player.activate_magic_shield() # Attempt-state setup for cold reset assertion.

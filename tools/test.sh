@@ -78,6 +78,8 @@ for suite in movement physics mobility combat platform boundaries keyboard integ
     run_check "$suite" "$suite_timeout" --headless --fixed-fps 60 --script "res://tests/$suite.gd"
   fi
 done
+# Exercise the other authored branch of both forks in N2-N4 as well.
+run_check run020-routes-upper 180 --headless --fixed-fps 60 --script res://tests/run020_routes.gd -- upper
 # Cold closure uses the real clock so gameplay and audio shutdown share the same timing.
 run_check n1-cold-prepare 90 --headless --script res://tests/n1_cold_session.gd -- prepare
 run_check n1-cold-reopen 90 --headless --script res://tests/n1_cold_session.gd -- reopen
@@ -90,4 +92,4 @@ run_check run019-cold-reset 90 --headless --script res://tests/run019_cold_sessi
 run_check run020-cold-prepare 90 --headless --script res://tests/run020_cold_session.gd -- prepare
 run_check run020-cold-reopen 90 --headless --script res://tests/run020_cold_session.gd -- reopen
 run_check run020-cold-reset 90 --headless --script res://tests/run020_cold_session.gd -- reset
-printf '33 suites et onze sessions à froid terminées ; isolation user:// vérifiée. Logs : %s\n' "$results_dir"
+printf '34 suites et onze sessions à froid terminées ; isolation user:// vérifiée. Logs : %s\n' "$results_dir"

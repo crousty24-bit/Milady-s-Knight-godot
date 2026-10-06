@@ -77,8 +77,11 @@ func _sees_player(retaining: bool = false) -> bool:
 
 func _safe_direction(dir: int) -> bool:
 	var feet := global_position
-	var wall := PhysicsRayQueryParameters2D.create(feet + Vector2(0, -8), feet + Vector2(dir * 14, -8), 1)
-	var ground := PhysicsRayQueryParameters2D.create(feet + Vector2(dir * 14, -8), feet + Vector2(dir * 14, 16), 1)
+	# Probe beyond the actual body, including the wider RUN-020 elites.
+	var half_width: float = $CollisionShape2D.shape.size.x * 0.5
+	var front := dir * maxf(14.0, half_width + 4.0)
+	var wall := PhysicsRayQueryParameters2D.create(feet + Vector2(0, -8), feet + Vector2(front, -8), 1)
+	var ground := PhysicsRayQueryParameters2D.create(feet + Vector2(front, -8), feet + Vector2(front, 16), 1)
 	return get_world_2d().direct_space_state.intersect_ray(wall).is_empty() and not get_world_2d().direct_space_state.intersect_ray(ground).is_empty()
 
 func _physics_process(delta: float) -> void:
@@ -118,7 +121,8 @@ func _physics_process(delta: float) -> void:
 			if not aggro: direction *= -1
 		velocity.x = direction * (chase_speed if aggro else patrol_speed) if moving else 0.0
 	move_and_slide()
-	if kind == Kind.BLOATED and aggro and global_position.distance_to(target.global_position) < 18.0:
+	# Core half-width 22 + player half-width 5 + 3px visual allowance.
+	if kind == Kind.BLOATED and aggro and absf(global_position.x - target.global_position.x) < 30.0 and absf(global_position.y - target.global_position.y) < 18.0:
 		_damage_player(1.5)
 	queue_redraw()
 

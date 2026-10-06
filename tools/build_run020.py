@@ -295,7 +295,7 @@ def forbidden_graveyard():
 	# wall (n4_secret_01); the room above the path holds the rare chest and major potion.
 	p.ground(0, 1040, 144)
 	p.block(208, 240, 128, 144)  # grave
-	p.block(352, 400, 112, 144)  # step
+	p.block(352, 384, 112, 144)  # step; 16px landing gap lets the player descend under the arch
 	p.block(400, 544, 64, 144)  # mausoleum, roof at 64
 	p.carve(400, 544, 96, 144)  # arch: the path passes under it
 	p.slab(544, 768, 64)  # secret room floor

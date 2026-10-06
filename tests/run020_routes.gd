@@ -1,4 +1,5 @@
-# Authored campaign traversal: real inputs only after explicit initial loadout setup.
+# Authored campaign traversal: real inputs and the actual N1 tutorial Longbow.
+# Default: N2–4 lower forks. Add -- upper for upper forks plus the N4 paid HP room.
 # Never moves an actor or edits health, coins, enemies, or terrain during the route.
 extends SceneTree
 const N1_DRIVER = preload("res://tests/route_driver.gd")
@@ -12,6 +13,7 @@ var failures := 0
 var route_failed := false
 var dodge_ticks := 0
 var dodging := false
+var upper_route := false
 func _initialize() -> void: call_deferred("run")
 func check(ok: bool, label: String) -> void:
 	checks += 1
@@ -62,11 +64,19 @@ func step(direction: float, combat := true) -> void:
 				elif closest_gap < 100.0:
 					var edge := player.global_position + Vector2(-side * 18.0, 0)
 					var ground := PhysicsRayQueryParameters2D.create(edge + Vector2(0, -8), edge + Vector2(0, 16), 1)
-					direction = -side if not player.get_world_2d().direct_space_state.intersect_ray(ground).is_empty() else 0.0
+					var footing := player.get_world_2d().direct_space_state.intersect_ray(ground)
+					direction = -side if not footing.is_empty() and footing.collider == level.get_node("Terrain") else 0.0
+					for hazard in level.get_node("Hazards").get_children():
+						if absf(hazard.global_position.x - edge.x) < 34 and absf(hazard.global_position.y - edge.y) < 24:
+							direction = 0.0
 				else:
 					direction = 0.0
 			# Beyond bow reach, continue the authored route; chasing a target
 			# behind across a gap would abandon the planned platform landing.
+		if closest != null and closest.get_script() == preload("res://scripts/run019_enemy.gd") and closest.pending_attack == &"melee" and closest.windup_time > 0.0 and player.is_on_floor() and not dodging:
+			Input.action_press("jump")
+			dodge_ticks = 18
+			dodging = true
 		if player.is_on_floor() and not dodging:
 			var projectiles: Array[Node] = level.get_node("Hazards").get_children()
 			for enemy in get_nodes_in_group("enemies"):
@@ -106,8 +116,14 @@ func walk(target: float, combat := true) -> void:
 	for enemy in get_nodes_in_group("enemies"):
 		if level.is_ancestor_of(enemy): print("ROUTE enemy ", enemy.name, " at=", enemy.global_position, " hp=", enemy.health)
 	route_failed = true
-func jump(target: float) -> void:
+func jump(target: float, clear_rise := 0.0) -> void:
 	if route_failed: return
+	for _tick in 120:
+		if player.hit_stun_time <= 0.0 and player.is_on_floor(): break
+		await step(0, false)
+	# Near a tall solid face, rise before moving instead of demanding a wall jump.
+	var launch_y := player.position.y
+	var cleared := clear_rise == 0.0
 	var double_jump := true
 	var second_jump_tick := 28 if absf(target - player.position.x) > 110 else 21
 	Input.action_release("jump")
@@ -119,7 +135,8 @@ func jump(target: float) -> void:
 		if i == 20: Input.action_release("jump")
 		if double_jump and i == second_jump_tick: Input.action_press("jump")
 		if double_jump and i == second_jump_tick + 24: Input.action_release("jump")
-		await step(signf(target - player.position.x) if absf(target - player.position.x) >= 2 else 0.0, false)
+		cleared = cleared or player.position.y < launch_y - clear_rise - 1
+		await step(signf(target - player.position.x) if cleared and absf(target - player.position.x) >= 2 else 0.0, false)
 		if not player.is_on_floor(): airborne = true
 		if airborne and player.is_on_floor():
 			print("ROUTE landed target ", target, " at ", player.position)
@@ -133,51 +150,197 @@ func cross(before: float, after: float) -> void:
 	await walk(before)
 	await jump(after)
 func route(number: int) -> void:
+	print("ROUTE variant ", "upper" if upper_route else "lower", " N", number)
 	match number:
 		2:
-			await cross(424, 504)
-			await cross(552, 656)
-			await cross(824, 904)
-			await cross(936, 984)
-			await walk(1468)
-			await jump(1540)
-			await cross(1540, 1592)
-			await cross(1608, 1688)
-			await cross(1832, 1952)
-			await cross(2120, 2200)
-			await cross(2216, 2264)
+			await cross(156, 200)
+			await walk(300)
+			await jump(352)
+			await cross(390, 480)
+			await walk(592)
+			await cross(826, 908)
+			await cross(982, 1032)
+			if upper_route:
+				await jump(1112)
+				await jump(1216)
+				await cross(1250, 1344)
+				await jump(1344)
+				await jump(1428)
+				await walk(1472)
+				await cross(1504, 1584)
+			else:
+				await walk(1080)
+				await walk(1232)
+				await cross(1294, 1392)
+				await cross(1404, 1488)
+				await jump(1528)
+				await jump(1576)
+				await jump(1664)
+			await walk(1664)
+			await cross(1684, 1774)
+			await jump(1816)
+			await jump(1928)
+			await jump(2048)
+			await walk(2240)
+			await walk(2288)
+			await jump(2408)
+			await cross(2428, 2472)
+			if upper_route:
+				await jump(2552)
+				await jump(2672)
+				await cross(2736, 2820)
+				await cross(2858, 2950)
+				await walk(2976)
+				await walk(3130)
+			else:
+				await walk(2608)
+				await jump(2704)
+				await jump(2816)
+				await cross(2906, 2990)
+				await walk(3056)
+			await walk(3216)
+			await walk(3296)
+			await jump(3352, 64)
+			await walk(3216)
+			await walk(3600)
 		3:
-			await cross(392, 472)
-			await cross(488, 608)
-			await cross(744, 824)
-			await cross(840, 888)
-			await walk(1244)
-			await jump(1320)
-			await cross(1352, 1400)
-			await cross(1540, 1628)
-			await cross(1640, 1688)
-			await cross(1992, 2128)
-			await cross(2272, 2420)
-			await cross(2440, 2488)
-			await cross(2668, 2756)
-			await cross(2744, 2824)
+			await cross(204, 256)
+			await cross(430, 514)
+			await jump(592)
+			await walk(640)
+			await cross(650, 734)
+			await cross(812, 896)
+			await walk(1088)
+			await jump(1168)
+			await cross(1180, 1224)
+			if upper_route:
+				await jump(1312)
+				await jump(1440)
+				await jump(1552)
+				await jump(1704)
+				await cross(1740, 1840)
+				await jump(1960)
+			else:
+				await walk(1344)
+				await cross(1446, 1536)
+				await jump(1648)
+				await jump(1668)
+				await walk(1712)
+				await walk(1792)
+				await walk(1984)
+			await walk(2096)
+			await walk(2196)
+			await jump(2288)
+			await jump(2368)
+			await jump(2448)
+			await jump(2544)
+			await walk(2600)
+			await jump(2744)
+			if upper_route:
+				await jump(2880)
+				await jump(2992)
+				await jump(3112)
+				await cross(3150, 3248)
+				await jump(3376)
+				await jump(3504)
+				await jump(3616)
+				await walk(3640)
+				await jump(3792)
+			else:
+				await walk(2872)
+				await cross(2906, 3008)
+				await cross(3050, 3138)
+				await cross(3290, 3374)
+				await walk(3536)
+				await cross(3642, 3688)
+				await jump(3736)
+				await jump(3792)
+			await walk(3792)
+			await cross(3836, 3880)
+			await walk(3960)
+			await jump(4040)
+			await walk(4144)
 		4:
-			await cross(376, 440)
-			await cross(872, 992)
-			await cross(1592, 1672)
-			await walk(1708)
-			await jump(1788)
-			await cross(1800, 1848)
-			await cross(1848, 1928)
-			await cross(2010, 2120)
-			await cross(2244, 2328)
-			await cross(2408, 2544)
-			await walk(2640)
+			await cross(188, 224)
+			await walk(304)
+			await cross(332, 376)
+			await jump(472, 48)
+			await walk(376)
+			await walk(608)
+			await walk(704)
+			await cross(778, 862)
+			await walk(928)
+			await cross(956, 1000)
+			if upper_route:
+				await jump(1120)
+				await jump(1248)
+				await jump(1420)
+				await walk(1522)
+				var before_door: int = level.gold
+				await tap("interact")
+				check(level.get_node("Exploration/CoinDoor").opened and before_door - level.gold == 4, "N4 upper route pays exact optional 4-coin door")
+				await walk(1640)
+				check(root.get_node("Progression").has_hp_bonus("n4_hp_01"), "N4 upper route physically acquires permanent HP bonus")
+				await walk(1518)
+				await jump(1600, 64)
+				await walk(1676)
+				await jump(1776)
+				await jump(1896)
+				await walk(1918)
+				await jump(2048)
+			else:
+				await walk(1064)
+				await walk(1376)
+				await cross(1658, 1744)
+				await walk(1824)
+				await walk(1904)
+				await jump(1976)
+				await jump(2048)
+			await walk(2096)
+			await walk(2144)
+			await jump(2176)
+			await walk(2240)
+			await jump(2336)
+			await walk(2416)
+			await walk(2480)
+			await jump(2544)
+			await walk(2688)
+			if upper_route:
+				await cross(2764, 2856)
+				await cross(2924, 2976)
+				await cross(3082, 3170)
+				await walk(3264)
+				await cross(3290, 3360)
+				await jump(3416)
+				await cross(3424, 3560)
+			else:
+				await walk(2808)
+				await walk(2896)
+				await cross(3018, 3104)
+				await cross(3194, 3278)
+				await walk(3440)
+				await walk(3496)
+				await jump(3520, 48)
+				await jump(3576, 48)
+			await walk(3600)
+			await walk(3744)
+			await cross(3756, 3808)
+			await walk(3856)
+			await jump(3808)
+			await jump(3920)
+			await jump(4048)
 			await tap("interact")
 			check(level.get_node("Exploration/MechanismDoor").opened, "N4 keyboard button opens required door on route")
-			await cross(2984, 3064)
-			await cross(3112, 3160)
-			await cross(3180, 3268)
+			await walk(4072)
+			await walk(4096)
+			if upper_route:
+				await walk(4108)
+				for _tick in 60: await step(0)
+				await walk(4096)
+			await cross(4186, 4272)
+			await cross(4296, 4360)
+			await walk(4272)
+			await walk(4624)
 	await walk(level.gate.position.x - 30)
 	check(not route_failed and not player.dead and level.gold >= level.gate.COST, "N%d route reaches sealed gate with enough collected coins; HP %.1f coins %d" % [number, player.health, level.gold])
 	if route_failed: return
@@ -197,6 +360,7 @@ func drain() -> void:
 	paused = false
 	await frames(3)
 func run() -> void:
+	upper_route = "upper" in OS.get_cmdline_user_args()
 	var progress = root.get_node("Progression")
 	progress.persistence_enabled = false
 	progress.new_game()

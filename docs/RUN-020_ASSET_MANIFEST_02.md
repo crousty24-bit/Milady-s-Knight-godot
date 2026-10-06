@@ -138,3 +138,11 @@ Non exécutés : la recette complète `tools/test.sh`, le pilote de parcours, `r
 - temps de parcours, à mesurer.
 
 Aucune apparence n’est déclarée validée.
+
+## 9. Arbitrage technique Codex après remise
+
+La baseline Claude est conservée. Les volumes des élites sont ajustés à la masse centrale visible : Bloated 44×40, Chud 36×40, pieds inchangés ; pas de collision sur les appendices ou le couperet. Le contact Bloated passe à `|dx| < 30`, `|dy| < 18` avec les conditions existantes de visibilité/aggro. La mêlée Chud conserve portée28 et préparation0,3s. Les sondes de bord utilisent la demi-largeur réelle +4px. Le sprite du joueur est dessiné à z1 pour rester visible pendant le chevauchement ; cela vaut aussi dans N1. Vérifications et état de clôture actualisés au journal ; les paragraphes précédents décrivent la remise Claude avant cette recette.
+
+Un blocage de raccord a été reproduit dans Godot : la marche ouest du mausolée N4 finissait à x400, sous le plafond y96, laissant seulement16px à un corps18px. Elle finit désormais à x384 : les deux cellules(24,7)/(24,8) sont retirées, permettant la descente vers le passage inférieur. Le générateur et seule la scène N4 sont corrigés ; N2/N3 générés temporairement restent identiques octet pour octet. Ce correctif local préserve tous les acteurs, budgets et repères.
+
+**État après recette Codex : VERIFY.** Recette composée2254PASS/46RESULT, variantes basses19/19 et hautes21/21 (achat4 et HP N4 inclus), captures finales57/57, élites20/20 et rendu N1 11/11. Les tests et le guide sont adaptés ; preuves au journal. Le playtest humain et la revue de clôture restent nécessaires avant DONE020 puis RUN-021.
