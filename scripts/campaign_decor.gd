@@ -8,8 +8,10 @@
 # Sibling of Player, Coins, Enemies...; place it after Backdrop and before Terrain/TerrainSkin.
 extends Node2D
 const GLOW = preload("res://assets/sprites/prop_glow.png")
-enum Light { NONE, LANTERN, CANDLE }
+enum Light { NONE, LANTERN, CANDLE, SPORE }
 # Per biome: [texture, weight, light]. Weights are relative; big props are rare.
+# RUN-021: more dim light sources (lanterns, spore caps, grave candles) so N2-N4 keep a few
+# warm/cold accents like the lit village of N1.
 var SETS := [
 	[
 		[preload("res://assets/sprites/prop_house.png"), 2, Light.NONE],
@@ -18,7 +20,7 @@ var SETS := [
 		[preload("res://assets/sprites/prop_cart.png"), 2, Light.NONE],
 		[preload("res://assets/sprites/prop_gallows.png"), 1, Light.NONE],
 		[preload("res://assets/sprites/prop_fence.png"), 3, Light.NONE],
-		[preload("res://assets/sprites/prop_lantern_post.png"), 3, Light.LANTERN],
+		[preload("res://assets/sprites/prop_lantern_post.png"), 5, Light.LANTERN],
 		[preload("res://assets/run020/blight_town_barrels.png"), 4, Light.NONE],
 		[preload("res://assets/run020/blight_town_rot_mound.png"), 4, Light.NONE],
 		[preload("res://assets/sprites/prop_rubble.png"), 3, Light.NONE],
@@ -32,7 +34,7 @@ var SETS := [
 		[preload("res://assets/sprites/prop_tree_dead_b.png"), 2, Light.NONE],
 		[preload("res://assets/run020/black_forrest_stump.png"), 3, Light.NONE],
 		[preload("res://assets/run020/black_forrest_rock.png"), 4, Light.NONE],
-		[preload("res://assets/run020/black_forrest_fungus.png"), 3, Light.NONE],
+		[preload("res://assets/run020/black_forrest_fungus.png"), 4, Light.SPORE],
 		[preload("res://assets/sprites/prop_bush.png"), 5, Light.NONE],
 	],
 	[
@@ -40,7 +42,7 @@ var SETS := [
 		[preload("res://assets/run020/forbidden_graveyard_willow.png"), 2, Light.NONE],
 		[preload("res://assets/run020/forbidden_graveyard_cross.png"), 3, Light.NONE],
 		[preload("res://assets/run020/forbidden_graveyard_fence.png"), 3, Light.NONE],
-		[preload("res://assets/run020/forbidden_graveyard_candle.png"), 3, Light.CANDLE],
+		[preload("res://assets/run020/forbidden_graveyard_candle.png"), 5, Light.CANDLE],
 		[preload("res://assets/sprites/prop_grave_a.png"), 4, Light.NONE],
 		[preload("res://assets/sprites/prop_grave_b.png"), 4, Light.NONE],
 		[preload("res://assets/sprites/prop_grave_c.png"), 4, Light.NONE],
@@ -62,7 +64,7 @@ const TINTS = [Color(0.92, 0.9, 0.84), Color(0.78, 0.86, 0.94), Color(0.84, 0.8,
 		queue_redraw()
 # Mean gap between props, in px; lower is denser. The forest is denser than the town.
 @export_range(24.0, 240.0) var spacing := 72.0
-const SPACING_SCALE = [1.0, 0.6, 0.9]
+const SPACING_SCALE = [0.75, 0.6, 0.8]
 const MIN_RUN = 4
 # Thin floating ledges (fewer solid rows below than this) only host props up to SMALL_PROP px
 # high, so houses, trees or mausoleums never stand on a rampart slab or a branch.
@@ -167,13 +169,17 @@ func _clear(foot: Vector2, w: float, h: float, obstacles: Array) -> bool:
 		if absf(p.x - foot.x) < w * 0.5 + r and p.y > foot.y - h - r and p.y < foot.y + r:
 			return false
 	return true
-# Warm lantern or cold grave-candle light: dithered low-alpha glow, flame only for lanterns.
+# Warm lantern, cold grave-candle or faint spore light: dithered low-alpha glow.
 func _light(point: Vector2, kind: int, phase: float) -> void:
 	var flicker := 0.78 + 0.22 * sin(_time * 7.0 + phase) * sin(_time * 3.1 + phase * 2.0)
 	if kind == Light.LANTERN:
 		draw_texture(GLOW, (point - Vector2(32, 32)).round(), Color(1, 1, 1, clampf(flicker * 0.6, 0.0, 1.0)))
-	else:
+	elif kind == Light.CANDLE:
 		draw_texture(GLOW, (point - Vector2(32, 32)).round(), Color(0.45, 0.75, 0.8, clampf(flicker * 0.35, 0.0, 1.0)))
+	else:
+		# Spores pulse slowly instead of flickering; kept greyer than healing green.
+		var pulse := 0.7 + 0.3 * sin(_time * 1.2 + phase)
+		draw_texture(GLOW, (point - Vector2(32, 32)).round(), Color(0.55, 0.72, 0.62, 0.22 * pulse))
 func _draw() -> void:
 	if not _laid_out: _layout()
 	var b := clampi(world_level, 2, 4) - 2
@@ -188,3 +194,4 @@ func _draw() -> void:
 		match int(item[3]):
 			Light.LANTERN: _light(foot + Vector2(5, -38), Light.LANTERN, item[4])
 			Light.CANDLE: _light(foot + Vector2(0, -9), Light.CANDLE, item[4])
+			Light.SPORE: _light(foot + Vector2(0, -5), Light.SPORE, item[4])

@@ -1,0 +1,35 @@
+{
+  "asset": "Dark Synthwave Retro 80s",
+  "artist": "DELOSound",
+  "pixabay_id": "453292",
+  "selection": "human choice recorded in docs/RUN-021_CLAUDE_HANDOFF_02.md (N4 Forbidden Graveyard music)",
+  "official_page": "https://pixabay.com/music/dance-dark-synthwave-retro-80s-453292/",
+  "page_facts_consulted_2026-10-06": {
+    "title": "Dark Synthwave Retro 80s", "artist": "DELOSound", "duration": "3:24",
+    "upload_date": "December 18, 2025",
+    "licence_statement": "Free for use under the Pixabay Content License",
+    "content_id": "Content ID Registered (shown on the page; also flagged by the human)"
+  },
+  "licence": "Pixabay Content License",
+  "licence_summary_url": "https://pixabay.com/service/license-summary/",
+  "licence_terms_consulted_2026-10-06": [
+    "free use; modification/adaptation into new works allowed",
+    "attribution not required (appreciated)",
+    "forbidden: selling or distributing the content on a standalone basis in essentially unchanged form",
+    "forbidden: immoral/illegal/misleading use; use in trademarks or business names; merchandise with recognisable trademarks",
+    "content may be subject to additional intellectual property rights; user must check permissions"
+  ],
+  "download_certificate": "none held; none invented. Only the local copy listed below exists.",
+  "content_id_note": "Track is Content ID Registered: if the game is monetised on video platforms, a claim is possible; keep this page/licence reference and consider a Pixabay whitelisting request. Not a legal opinion.",
+  "local_origin": "/mnt/c/Users/allen/OneDrive/Images/assets_ressources/Mildays-knight/Music/delosound-dark-synthwave-retro-80s-453292.mp3 (read-only library, copied unchanged)",
+  "file": "delosound-dark-synthwave-retro-80s-453292.mp3",
+  "sha256": "0eb8ae69cc50a3ab5ac8108d92e2aaf3b3859f9efa7b2e654e1e7b5bb6414c3c",
+  "size_bytes": 6529358,
+  "ffprobe": {"codec": "mp3", "sample_rate": 44100, "channels": 2, "bit_rate": 256000, "duration_s": 204.042438, "id3_tags": "none"},
+  "measured": {"integrated_lufs": -13.2, "true_peak_dbfs": 0.1, "lra_lu": 11.3, "estimated_bpm": 106.9},
+  "derivative": {
+    "file": "assets/run021/audio/music_n4_forbidden_graveyard.ogg",
+    "command_script": "work/run021/audio/prepare_n4.sh",
+    "loop_start_s": 5.564, "loop_end_s": 185.274
+  }
+}

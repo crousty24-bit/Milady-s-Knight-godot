@@ -167,3 +167,12 @@ Mesures relues par Claude sur les 37 WAV. Les `.tres` sont des `AudioStreamRando
 ## Ambiances originales — RUN-020 (5 octobre 2026)
 
 `assets/sounds/run020/amb_{blight_town,black_forrest,forbidden_graveyard}.ogg` : synthèse originale déterministe par `tools/art/run020/ambience_run020.py`, contribution Claude/Sonnet5.5. PCM source mono22,05kHz/16bits/28s conservé dans `assets/source/run020/`; dérivés Vorbis qualité4 produits avec ffmpeg par Codex, boucle au début. Aucun son tiers dans ces trois ambiances. N2–4 réutilisent provisoirement la piste Pixabay *Dreamer* déjà créditée plus haut. [Manifeste RUN-020](../docs/RUN-020_ASSET_MANIFEST.md). Écoute humaine attendue.
+
+## Musique N4 Forbidden Graveyard — RUN-021 (6 octobre 2026)
+
+- **Fichier de jeu :** `run021/audio/music_n4_forbidden_graveyard.ogg`, référencé par le node `Music` de `scenes/forbidden_graveyard.tscn` (choix humain).
+- **Morceau :** « Dark Synthwave Retro 80s », auteur Pixabay **DELOSound**, identifiant 453292, 3:24 ; [page officielle](https://pixabay.com/music/dance-dark-synthwave-retro-80s-453292/). La page affiche « Content ID Registered » (signalé aussi par l'humain) : une revendication Content ID reste possible si le jeu est diffusé en vidéo monétisée ; à garder en tête pour la recette des licences.
+- **Licence :** [Pixabay Content License](https://pixabay.com/service/license-summary/) (consultée le 6 octobre 2026) — usage gratuit, modification permise, attribution non requise ; vente ou distribution du contenu seul, sous une forme essentiellement inchangée, interdite. Aucun certificat de téléchargement n'est détenu ni inventé.
+- **Source conservée :** `assets/source/run021/audio/delosound-dark-synthwave-retro-80s-453292.mp3` (copie inchangée de `Music/…` ; SHA-256 `0eb8ae69cc50a3ab5ac8108d92e2aaf3b3859f9efa7b2e654e1e7b5bb6414c3c`, 6 529 358 octets, MP3 256 kb/s 44,1 kHz stéréo, 204,04 s) ; provenance détaillée dans `provenance.json` du même dossier.
+- **Transformation :** coupe à 185,274 s (avant la sortie finale), loudnorm −13 LUFS / TP −1,5 dBFS (résultat mesuré −12,6 LUFS, true peak −0,8 dBFS), fondu croisé de 6 ms entre la fin et les 6 ms précédant le point de boucle, Ogg Vorbis q5 44,1 kHz stéréo ; boucle d'import activée avec `loop_offset` 5,564 s (l'intro de 5,6 s ne se joue qu'une fois). Commandes : `work/run021/audio/prepare_n4.sh`. Détails : [docs/RUN-021_AUDIO_REVIEW.md](../docs/RUN-021_AUDIO_REVIEW.md). Écoute humaine attendue.
+- **Statut :** N4 n'utilise plus *Dreamer* ; N2 et N3 le conservent.
