@@ -15,7 +15,9 @@ const REWARDS = [5, 1, 1, 1, 5]
 @export var patrol_right: float = 40.0
 @export var patrol_speed: float = 24.0
 @export var chase_speed: float = 48.0
-@export var aggro_size: Vector2 = Vector2(240, 96)
+@export var aggro_size: Vector2 = Vector2(480, 96)
+@export var aggro_exit_margin: Vector2 = Vector2(80, 32)
+@export_range(0.0, 5.0, 0.1) var aggro_loss_delay: float = 2.0
 @export var melee_range: float = 28.0
 @export var ranged_range: float = 140.0
 @export_range(0.05, 5.0, 0.05) var windup_duration: float = 0.3
@@ -32,6 +34,7 @@ var max_health: float:
 var bonus_reward: int
 var dead: bool = false
 var aggro: bool = false
+var aggro_lost_time: float = 0.0
 var direction: int = -1
 var origin_x: float
 var knockback_time: float = 0.0
@@ -65,11 +68,12 @@ func _clear_line(to: Vector2) -> bool:
 	ray.exclude = [get_rid()]
 	return get_world_2d().direct_space_state.intersect_ray(ray).is_empty()
 
-func _sees_player() -> bool:
+func _sees_player(retaining: bool = false) -> bool:
 	if not is_instance_valid(target) or target.dead: return false
 	var center := global_position + Vector2(0, -12)
 	var point := target.global_position + Vector2(0, -12)
-	return Rect2(center - aggro_size / 2.0, aggro_size).has_point(point) and _clear_line(point)
+	var size := aggro_size + aggro_exit_margin * 2.0 if retaining else aggro_size
+	return Rect2(center - size / 2.0, size).has_point(point) and _clear_line(point)
 
 func _safe_direction(dir: int) -> bool:
 	var feet := global_position
@@ -80,7 +84,14 @@ func _safe_direction(dir: int) -> bool:
 func _physics_process(delta: float) -> void:
 	if dead: return
 	target = _player()
-	var seen := _sees_player()
+	var seen := _sees_player(aggro)
+	if not is_instance_valid(target) or target.dead:
+		aggro_lost_time = 0.0
+	elif seen:
+		aggro_lost_time = 0.0
+	elif aggro:
+		aggro_lost_time += delta
+		seen = aggro_lost_time < aggro_loss_delay
 	if seen != aggro:
 		aggro = seen
 		aggro_changed.emit(aggro)
@@ -113,6 +124,8 @@ func _physics_process(delta: float) -> void:
 
 func _try_attack() -> void:
 	if kind == Kind.BLOATED: return
+	# Retained aggro through brief occlusion must not start attacks through terrain.
+	if not _clear_line(target.global_position + Vector2(0, -12)): return
 	var offset := target.global_position - global_position
 	if absf(offset.y) < 24.0 and absf(offset.x) <= melee_range and kind != Kind.ARCHER:
 		pending_attack = &"melee"

@@ -190,10 +190,9 @@ func run() -> void:
 	await frames(5)
 	var earned: int = level.bonus
 	check(earned == 4, "isolated four skull kills credit bounded reward four")
-	await place(Vector2(1840,144))
+	await place(Vector2(1680,144))
 	await place(Vector2(2016,144))
-	check(swarm.skulls.size() == 4, "zone reentry respawns four skulls")
-	for skull in swarm.skulls: skull.take_damage(10, Vector2.ZERO)
+	check(swarm.skulls.is_empty(), "cleared zone stays cleared on reentry in the same attempt")
 	await frames(5)
 	check(level.bonus == earned, "reentry cannot farm additional shard rewards")
 	level.player.take_damage(0, Vector2.ZERO, SlicePlayer.DamageSource.VOID)

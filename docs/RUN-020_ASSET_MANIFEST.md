@@ -24,7 +24,7 @@ python3 tools/art/run020/ambience_run020.py --ogg
 | Niveau | `world_level` | Accents | Terrain | Fond (ciel / lointain / proche) |
 | --- | --- | --- | --- | --- |
 | N2 Blight Town | 2 | brun putride / olive sourd (**proposition**, non prescrite par docs/06) | maçonnerie N1 avec mousse de pourriture olive et teinte boue (`terrain_campaign.png` thème 0) | lune voilée jaune-gris, brume olive ; village et clocher penchés, fumées ; maisons condamnées, gibet, arbres morts |
-| N3 Black Forrest | 3 | bleu nuit / vert froid (docs/06) | terre tassée, pierres et racines, rebord de mousse froide clair (thème 1) | lune pâle froide ; crêtes de pins ; grands pins et troncs nus |
+| N3 Black Forest | 3 | bleu nuit / vert froid (docs/06) | terre tassée, pierres et racines, rebord de mousse froide clair (thème 1) | lune pâle froide ; crêtes de pins ; grands pins et troncs nus |
 | N4 Forbidden Graveyard | 4 | violet désaturé / cyan spectral grisé (docs/06) | **`terrain_stone.png` thème 0 inchangé** pour que le mur secret RUN-019 corresponde ; touffes et vrilles violet-gris propres à N4 | lune cyan grisé ; colline aux croix, chapelle ; mausolée, saule mort, grille en fer |
 
 - Saturations réservées : aucun cyan saturé (Shield), aucun violet saturé (shards), aucun or (coins), aucun rouge vif (danger/Red Slime) dans le décor. Lumières chaudes rares (lanternes N2), lueur froide basse opacité (bougies N4).

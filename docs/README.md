@@ -28,3 +28,5 @@ Documentation découpée par responsabilité afin de servir de base de lecture e
 Les catalogues 11 et 12 restent sur la machine où ils existent déjà. Un nouveau clone ne les contient pas ; les spécifications suivies par Git sont dans les autres documents de ce dossier.
 
 L'essai visuel de RUN-003 et ses captures comparatives sont dans [RUN-003_SCALE_COMPARISON.md](RUN-003_SCALE_COMPARISON.md).
+
+RUN-020 après playtest : [review et proposition munitions](RUN-020_PLAYTEST_REVIEW.md), [contrat de reprise Claude](RUN-020_CLAUDE_HANDOFF_02.md).

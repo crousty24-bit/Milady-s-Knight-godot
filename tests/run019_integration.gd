@@ -84,9 +84,7 @@ func run() -> void:
 		player.health_units = 40
 		player.attack_cancelled = false
 		player.take_damage(0.5, Vector2(90, -180), source)
-		check(player.health_units == 35 and player.invulnerability > 0.0, "shield does not protect trap source%d" % source)
-		if source == SlicePlayer.DamageSource.TRAP_PROJECTILE:
-			check(player.attack_cancelled and player.hit_stun_time == 0.0, "turret interrupts without stun")
+		check(player.health_units == 40 and player.invulnerability == 0.0 and not player.attack_cancelled and player.knockback_time == 0.0, "shield blocks trap source%d and reactions" % source)
 	player.velocity = Vector2.ZERO
 	player.knockback_time = 0.0
 	player.invulnerability = 0.0
@@ -105,6 +103,9 @@ func run() -> void:
 	paused = false
 	await frames(610)
 	check(player.magic_shield_time == 0.0, "shield expires after ten active seconds")
+	player.invulnerability = 0.0
+	player.take_damage(0.5, Vector2.ZERO, SlicePlayer.DamageSource.TRAP_PROJECTILE)
+	check(player.health_units == 35 and player.attack_cancelled and player.invulnerability > 0.0, "turret damage and interruption resume after shield expires")
 	player.activate_magic_shield()
 	player.take_damage(0.0, Vector2.ZERO, SlicePlayer.DamageSource.VOID)
 	check(player.dead and player.magic_shield_time == 0.0, "void remains fatal under shield and clears buff")

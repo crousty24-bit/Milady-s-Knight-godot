@@ -3,11 +3,15 @@
 extends SceneTree
 const N1_DRIVER = preload("res://tests/route_driver.gd")
 const PATHS = ["res://scenes/blight_town.tscn", "res://scenes/black_forrest.tscn", "res://scenes/forbidden_graveyard.tscn"]
+const TRAP_BOLT = preload("res://scripts/trap_projectile.gd")
+const ENEMY_ATTACK = preload("res://scripts/run019_enemy_attack.gd")
 var level: Node2D
 var player: SlicePlayer
 var checks := 0
 var failures := 0
 var route_failed := false
+var dodge_ticks := 0
+var dodging := false
 func _initialize() -> void: call_deferred("run")
 func check(ok: bool, label: String) -> void:
 	checks += 1
@@ -26,21 +30,64 @@ func tap(action: String) -> void:
 	Input.action_release(action)
 	await frames(3)
 func step(direction: float, combat := true) -> void:
+	if dodge_ticks > 0:
+		dodge_ticks -= 1
+		if dodge_ticks == 0: Input.action_release("jump")
+	elif dodging and player.is_on_floor():
+		dodging = false
 	Input.action_release("move_left")
 	Input.action_release("move_right")
 	Input.action_release("attack")
 	if combat:
-		Input.action_press("attack")
+		var closest: Node2D
+		var closest_gap := 280.0
 		for enemy in get_nodes_in_group("enemies"):
 			if not level.is_ancestor_of(enemy) or enemy.dead: continue
 			var difference: Vector2 = enemy.global_position - player.global_position
-			if difference.x > 0 and difference.x < 280 and player.is_on_floor():
-				var origin := player.global_position + Vector2(4, -10)
-				var ray := PhysicsRayQueryParameters2D.create(origin, Vector2(enemy.global_position.x, origin.y), 1 | 4)
-				var hit := player.get_world_2d().direct_space_state.intersect_ray(ray)
-				if hit.is_empty() or hit.collider != enemy: continue
-				if difference.x < 230: direction = 1 if player.facing < 0 else 0
-				break
+			if absf(difference.y) > 24.0 or absf(difference.x) >= closest_gap: continue
+			var origin := player.global_position + Vector2(4 * signf(difference.x), -10)
+			var ray := PhysicsRayQueryParameters2D.create(origin, Vector2(enemy.global_position.x, origin.y), 1 | 4)
+			var hit := player.get_world_2d().direct_space_state.intersect_ray(ray)
+			if hit.is_empty() or hit.collider != enemy: continue
+			closest = enemy
+			closest_gap = absf(difference.x)
+		if closest != null and player.is_on_floor():
+			var side := signf(closest.global_position.x - player.global_position.x)
+			var reach: float = WeaponCatalog.stats(player.equipment.ranged).reach - 16.0
+			if closest_gap <= reach:
+				# Aim and fire when ready; retreat during the two-second bow recovery.
+				if player.bow_cooldown <= 0.02:
+					direction = side if player.facing != int(side) else 0.0
+					Input.action_press("attack")
+				elif closest_gap < 100.0:
+					var edge := player.global_position + Vector2(-side * 18.0, 0)
+					var ground := PhysicsRayQueryParameters2D.create(edge + Vector2(0, -8), edge + Vector2(0, 16), 1)
+					direction = -side if not player.get_world_2d().direct_space_state.intersect_ray(ground).is_empty() else 0.0
+				else:
+					direction = 0.0
+			# Beyond bow reach, continue the authored route; chasing a target
+			# behind across a gap would abandon the planned platform landing.
+		if player.is_on_floor() and not dodging:
+			var projectiles: Array[Node] = level.get_node("Hazards").get_children()
+			for enemy in get_nodes_in_group("enemies"):
+				if level.is_ancestor_of(enemy) and enemy.get_script() == preload("res://scripts/run019_enemy.gd"):
+					for projectile in enemy.active_attacks:
+						if is_instance_valid(projectile): projectiles.append(projectile)
+			for projectile in projectiles:
+				var motion := Vector2.ZERO
+				if projectile.get_script() == TRAP_BOLT:
+					motion = projectile.direction * projectile.speed
+				elif projectile.get_script() == ENEMY_ATTACK and projectile.mode == 0:
+					motion = projectile.motion
+				else: continue
+				var offset: Vector2 = player.global_position + Vector2(0, -12) - projectile.global_position
+				if absf(offset.y) < 18 and absf(offset.x) < 70 and offset.dot(motion) > 0:
+					Input.action_press("jump")
+					dodge_ticks = 8
+					dodging = true
+					break
+		if dodging: direction = 0.0
+
 	if direction > 0: Input.action_press("move_right")
 	if direction < 0: Input.action_press("move_left")
 	await frames(1)
@@ -177,6 +224,11 @@ func run() -> void:
 			check(false, "campaign transition reaches expected N%d" % number)
 			break
 		player = level.player
+		player.health_changed.connect(func(value: float, _maximum: float) -> void:
+			print("ROUTE health ", value, " at=", player.position, " slot=", player.active_slot)
+			for enemy in get_nodes_in_group("enemies"):
+				if level.is_ancestor_of(enemy) and not enemy.dead and enemy.global_position.distance_to(player.global_position) < 200:
+					print("ROUTE nearby ", enemy.name, " at=", enemy.position, " hp=", enemy.health))
 		await frames(5)
 		await tap("switch_equipment")
 		check(player.active_slot == 1, "N%d keyboard selects carried Longbow0" % number)

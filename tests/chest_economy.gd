@@ -30,8 +30,8 @@ func run() -> void:
 		"DarkScythe": [2.0, 2.5, 36.0, 4.5, 2.0, 48.0, "melee"],
 		"Warhammer": [1.5, 1.5, 19.2, 4.0, 1.0, 31.2, "melee"],
 		"Halberds": [1.0, 1.5, 48.0, 3.5, 1.0, 60.0, "melee"],
-		"Longbow": [1.0, 1.5, 320.0, 3.5, 1.0, 400.0, "ranged"],
-		"ThrowingKnives": [0.5, 1.0, 160.0, 3.0, 0.5, 240.0, "ranged"],
+		"Longbow": [1.0, 2.0, 192.0, 3.5, 1.5, 232.0, "ranged"],
+		"ThrowingKnives": [0.5, 1.3, 112.0, 3.0, 0.8, 152.0, "ranged"],
 	}
 	for base in expected:
 		var values: Array = expected[base]

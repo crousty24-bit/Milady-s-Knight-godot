@@ -21,7 +21,7 @@ LEVELS = [
                   ("bloated_slime", 2464)],
          spikes=[464, 1648], retract=[864, 2160], plants=[], turrets=[],
          chest=688, potion=2304, shield=None),
-    dict(name="BlackForrest", file="black_forrest", number=3, width=3200, cost=25,
+    dict(name="BlackForest", file="black_forrest", number=3, width=3200, cost=25,
          next="forbidden_graveyard", count=32,
          runs=[(0, 512, 144), (592, 864, 144), (864, 1024, 128),
                (1024, 1232, 144), (1232, 1264, 176), (1296, 1376, 176),
@@ -200,7 +200,7 @@ def build(level):
         scene.item("MechanismButton", "mechanism_button", 2640, 144, "Exploration",
                    target_door='NodePath("../MechanismDoor")')
         scene.item("SkullSwarm", "skull_swarm", 2016, 96, "Exploration",
-                   zone_size="Vector2(240, 160)")
+                   zone_size="Vector2(480, 240)")
     scene.item("GoldGate", "gold_gate", width - 144, 144, COST=level["cost"])
     scene.node("ExitArea", ".", "Area2D", collision_layer=0, collision_mask=2)
     scene.node("Shape", "ExitArea", "CollisionShape2D",

@@ -188,8 +188,8 @@ func run() -> void:
 	player._fire_arrow()
 	check(player._shot_frame() == 0, "actual shot begins release presentation")
 	player.configure_loadout({"melee": "Sword0", "ranged": "ThrowingKnives5"})
-	check(player._shot_frame() == -1 and player.bow_cooldown == 1.5, "ranged replacement cancels old release without changing cadence")
-	await frames(65)
+	check(player._shot_frame() == -1 and player.bow_cooldown == 2.0, "ranged replacement cancels old release without changing cadence")
+	await frames(75)
 	check(player._shot_frame() == -1 and player.bow_cooldown > 0.0, "old release cannot replay when timer crosses the new interval")
 	for ranged in ["Longbow5", "ThrowingKnives5"]:
 		await spawn()

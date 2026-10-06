@@ -1,5 +1,7 @@
 # RUN-018 — Contrat proposé avant implémentation
 
+> **Révision RUN-020 :** Les tables historiques de portée/cadence des armes de tir standard sont remplacées par la passe de rééquilibrage demandée lors du playtest RUN-020 du 6 octobre. Voir [les valeurs actuelles](RUN-020_PLAYTEST_REVIEW.md#tir--première-passe-technique-à-playtester). Les autres règles restent inchangées.
+
 **5 octobre 2026 — Contrat validé intégralement par l’humain (« Je valide le contrat »), tables et exception de paiement comprises.**
 Branche : `feature/run-018-standard-equipment`, issue de `develop` propre `6bb15b4`.
 RUN-017 DONE et 0.2.0 validée ; `develop` est ancêtre de `main` et leurs arbres sont identiques lors du lancement.

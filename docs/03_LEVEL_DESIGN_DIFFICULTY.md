@@ -19,11 +19,11 @@
 			- introduction au gameplay et fonctionnalités grâce à des fenêtres de texte pour expliquer (tuto)
 			- le niveau doit contenir un common chest à ouvrir, exceptionnellement gratuit uniquement pour présenter son fonctionnement ; donne une récompense fixe prédéterminée : une arme de tir =  *Longbow* niveau 0 ; mais pas d'amélioration
 			- le niveau doit contenir une potion de soin mineure à ramasser
-		- **niveau 2** - *Blight Town* : village infesté et corrompu par la pourriture ; niveau basique, introduit la difficulté standard du jeu ; axé sur l'horizontalité et forte linéarité 
+		- **niveau 2** - *Blight Town* : village infesté et corrompu par la pourriture ; niveau basique, introduit la difficulté standard du jeu ; dominante horizontale avec embranchements et variations de hauteur (retour humain RUN-020 : forte linéarité rejetée)
 			- ennemis : Green, Purple et Red Slime + élite mob Bloated Slime
-		- **niveau 3** - *Black Forrest* : forêt dense, de nuit ; niveau basique, difficulté standard ; axé sur l'horizontalité et forte linéarité 
+		- **niveau 3** - *Black Forest* : forêt dense, de nuit ; niveau basique, difficulté standard ; dominante horizontale avec embranchements et variations de hauteur (retour humain RUN-020 : forte linéarité rejetée)
 			- ennemis : Green, Purple et Red Slime ; Skeleton Warrior et Skeleton Archer
-		- **niveau 4** - *Forbidden Graveyard* : cimetière hantée ; niveau basique, difficulté standard un peu plus élevée ; axé sur l'horizontalité et forte linéarité 
+		- **niveau 4** - *Forbidden Graveyard* : cimetière hantée ; niveau basique, difficulté standard un peu plus élevée ; dominante horizontale avec embranchements et variations de hauteur (retour humain RUN-020 : forte linéarité rejetée)
 			- ennemis : Red Slime, Skeleton Warrior, Skeleton Archer, Blight Sorcerer et Possessed Skulls + mob élite Chud Blob
 		- **niveau 5** - *Haunted Caves* : les catacombs du cimetière ; niveau avancée, difficulté plus élevée (gap significatif) ; axé sur l'horizontalité et la verticalité, bien moins linéaire
 			- ennemis : Skeleton Warrior, Skeleton Archer, Blight Sorcerer et Possessed Skulls
@@ -235,3 +235,7 @@ N2 introduit Red/Bloated, piques rétractables et trappe. N3 ajoute Warrior/Arch
 N4 : salle secrète x560–784 (mur id`n4_secret_01`, potion majeure et rare chest) ; branche optionnelle x1296–1520 (porte4 coins et bonus HP id`n4_hp_01`). Les40 coins couvrent32 de sortie +4 de branche avec4 de marge. Bouton x2640 et porte x2808 obligatoires, sans paiement. Les acquisitions durables survivent aux tentatives ; les mécanismes et portes reviennent fermés.
 
 Le parcours réel N1–4 et les transactions sur ces scènes sont exercés séparément. Difficulté/rythme restent à valider humainement ; [guide de playtest](RUN-020_PLAYTEST.md), preuves exactes au journal. Fonds/accessoires et ambiances livrés via Claude, [manifeste](RUN-020_ASSET_MANIFEST.md) ; la passe globale RUN-021 reste à venir.
+
+## Reprise après playtest RUN-020, 6 octobre 2026
+
+Les dimensions/layouts ci-dessus décrivent la première passe livrée, jugée trop pauvre et linéaire par l’humain. Ils ne sont pas un gabarit final accepté. N4 est la meilleure référence relative mais reste insuffisant. La recomposition N2–4, les nouveaux gabarits et placements sont confiés à Claude dans [le contrat de reprise](RUN-020_CLAUDE_HANDOFF_02.md). Codex ne modifie pas le terrain ni les placements lors de la passe technique. Les coûts de sortie restent18/25/32 ; seule la zone de détection de swarm est élargie à480×240.

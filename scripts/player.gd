@@ -520,7 +520,8 @@ func take_damage(amount: float, impulse: Vector2 = Vector2.ZERO, source: int = D
 	if source == DamageSource.VOID:
 		die()
 		return
-	if magic_shield_time > 0.0 and source in [DamageSource.CONTACT_MELEE, DamageSource.PROJECTILE, DamageSource.SWARM]:
+	# Shield prevents every damage/reaction; leaving the level remains fatal above.
+	if magic_shield_time > 0.0:
 		return
 	if invulnerability > 0.0 or amount <= 0.0:
 		return

@@ -1,5 +1,7 @@
 # RUN-019 — Contrat proposé avant implémentation
 
+> **Révision RUN-020 :** Les règles historiques Shield, aggro et réapparition des Skulls sont révisées à la demande du playtest RUN-020 du 6 octobre. Voir [la review actuelle](RUN-020_PLAYTEST_REVIEW.md). Le budget quatre shards reste conservé ; le vide reste mortel sous Shield, confirmé par l’humain.
+
 **5 octobre 2026 — Contrat validé intégralement par l’humain (« Je valide le contrat décidé pour la run ») ; checkpoint technique vérifié, contribution art/SFX en attente.**
 Lancement demandé par l'humain. Baseline propre `develop` `288b518` (PR #21 intégrant RUN-018 DONE), branche `feature/run-019-threats-exploration` créée depuis develop.
 

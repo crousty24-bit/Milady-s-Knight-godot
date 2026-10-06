@@ -2,7 +2,7 @@
 
 Art Bible docs/06: a common dark palette plus 1-2 dominant secondary colours per biome.
 - N2 Blight Town: putrid brown / muted olive (proposal, human judgement pending).
-- N3 Black Forrest: night blue / cold green (docs/06).
+- N3 Black Forest: night blue / cold green (docs/06).
 - N4 Forbidden Graveyard: desaturated violet / spectral cyan (docs/06). Saturated cyan
   stays reserved for the Magic Shield and saturated violet for shards: the spectral
   ramp below is deliberately greyed and only used dim, in the background or as low-alpha light.

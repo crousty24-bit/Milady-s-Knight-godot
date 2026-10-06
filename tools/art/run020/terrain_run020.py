@@ -3,7 +3,7 @@
 terrain_campaign.png follows the layout of assets/sprites/terrain_stone.png (16 px tiles,
 column = exposure mask 1 up / 2 right / 4 down / 8 left, row = theme*18 + seed*6 + phase):
   theme 0 = Blight Town: the masonry of world_terrain.py with rot moss and mud tint;
-  theme 1 = Black Forrest: packed earth with stones and roots under a cold moss rim.
+  theme 1 = Black Forest: packed earth with stones and roots under a cold moss rim.
 Forbidden Graveyard keeps terrain_stone.png theme 0 (village masonry) unchanged, so the
 RUN-019 secret wall, which samples those exact tiles, matches its surroundings.
 

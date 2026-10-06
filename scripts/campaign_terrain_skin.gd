@@ -3,7 +3,7 @@
 # Sibling of Terrain; collision and layout stay in Terrain, this node only draws.
 # Atlas layout as terrain_stone.png: column = exposure mask, row = theme * 18 + seed * 6 + phase.
 #   N2 Blight Town: terrain_campaign.png theme 0 (masonry, rot moss).
-#   N3 Black Forrest: terrain_campaign.png theme 1 (packed earth, cold moss rim).
+#   N3 Black Forest: terrain_campaign.png theme 1 (packed earth, cold moss rim).
 #   N4 Forbidden Graveyard: terrain_stone.png theme 0, unchanged, so the RUN-019 secret wall matches.
 extends Node2D
 const STONE = preload("res://assets/sprites/terrain_stone.png")

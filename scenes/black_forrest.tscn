@@ -58,7 +58,7 @@ size = Vector2(3200, 16)
 [sub_resource type="RectangleShape2D" id="shape3"]
 size = Vector2(48, 96)
 
-[node name="BlackForrest" type="Node2D"]
+[node name="BlackForest" type="Node2D"]
 script = ExtResource("1")
 process_mode = 3
 world_level = 3

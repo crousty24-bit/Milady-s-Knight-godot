@@ -165,7 +165,7 @@ func _process(delta: float) -> void:
 	if is_instance_valid(tutorial_chest) and tutorial_chest.player_near() and not tutorial_chest.consumed:
 		hud.show_item_prompt(tutorial_chest.global_position + Vector2(0, -44), "E: retry save" if tutorial_chest.save_failed else "E: free Longbow 0")
 		if Input.is_action_just_pressed("interact"):
-			if request_context("Free tutorial chest", "Longbow 0: 1 DMG / 1.5 s / 20 blocks\nA: select weapon   F (hold): attack / shoot", ["Accept Longbow 0", "Refuse"], _choose_tutorial_reward):
+			if request_context("Free tutorial chest", "Longbow 0: 1 DMG / 2 s / 12 blocks\nA: select weapon   F (hold): attack / shoot", ["Accept Longbow 0", "Refuse"], _choose_tutorial_reward):
 				tutorial_chest.consume()
 		return
 	for button in get_tree().get_nodes_in_group("mechanism_buttons"):

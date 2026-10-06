@@ -1,5 +1,7 @@
 # RUN-019 — Contribution Claude préparée
 
+> Contrat historique RUN-019. Après playtest RUN-020, les règles Shield/aggro/Skulls sont révisées ; utiliser [le contrat de reprise actuel](RUN-020_CLAUDE_HANDOFF_02.md) pour une nouvelle contribution.
+
 **5 octobre 2026 — Contrat validé, checkpoint technique vérifié ; contribution Claude prête et fichiers de présentation remis. Aucun message envoyé à un chat.**
 Branche `feature/run-019-threats-exploration`. Codex orchestre le lot ; [contrat proposé](RUN-019_CONTRACT_REVIEW.md). Les interfaces vérifiées et la remise exacte de propriété figurent ci-dessous, après le périmètre de la contribution.
 

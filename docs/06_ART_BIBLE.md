@@ -429,7 +429,7 @@ Chaque biome peut ajouter 1 à 2 couleurs dominantes secondaires.
 
 Exemples :
 
-	Black Forrest : bleu nuit / vert froid.
+	Black Forest : bleu nuit / vert froid.
 	Forbidden Graveyard : violet désaturé / cyan spectral.  
 	Haunted Caves : brun / vert maladif.  
 	Desolands : ocre / rouge poussière.  

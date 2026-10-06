@@ -55,7 +55,7 @@
 			- ce périmètre peut être plus ou moins large selon le type de mob
 			- ce périmètre est horizontal et vertical
 			- le point de départ du périmètre est le mob et est attaché à lui : il se déplace selon le déplacement du mob (exemple : le mob patrouille d'un point A vers B en aller-retour, son périmètre se déplace avec lui)
-			- le mob perd l'aggro quand le joueur quitte son périmètre d'aggro et retourne à son déplacement de patrouille initial
+			- le mob perd l'aggro après le délai de perte hors de son périmètre de conservation (réglages N2–4 ci-dessous) et retourne à son déplacement de patrouille initial
 			- un mob qui a l'aggro est toujours attiré vers le joueur, son déplacement est directement en direction du joueur et déclenche une attaque lorsqu'il est à portée de celui-ci
 			- les *Slimes* n'ont pas de système d'aggro
 	
@@ -119,8 +119,8 @@
 
 ## RUN-019 — Comportements N2–4 implémentés
 
-Les profils N2–4 ci-dessus sont livrés comme scènes réutilisables et fixtures. Aggro terrestre : rectangle attaché au mob et visibilité terrain, perte à la sortie/occlusion. Poursuite sans saut ni chute volontaire, arrêt aux bords/obstacles, retour vers le segment de patrouille initial sans téléport ni soin. Archer stationnaire en aggro. La perte d'aggro annule une préparation non libérée ; projectiles/zones libérés terminent leur cycle, sauf mort de la source qui les supprime.
+Les profils N2–4 ci-dessus sont livrés comme scènes réutilisables et fixtures. Révision RUN-020 du 6 octobre : aggro terrestre acquise avec visibilité dans un rectangle 480×96 px attaché au mob (±240 px horizontalement). Conservation dans 640×160 px ; perte après 2 s continues hors enveloppe ou sans visibilité, timer suspendu en pause et remis à zéro à la revue du joueur. Mort du joueur : perte immédiate. Aucune nouvelle attaque déclenchée à travers le terrain. Poursuite sans saut ni chute volontaire, arrêt aux bords/obstacles, retour vers le segment de patrouille initial sans téléport ni soin. Archer stationnaire en aggro. La perte d'aggro annule une préparation non libérée ; projectiles/zones libérés terminent leur cycle, sauf mort de la source qui les supprime.
 
-Sorcerer : point au sol capturé au lancement, avertissement1s puis impact unique2DMG avec profil projectile ennemi. Skulls : quatre par zone, aucun remplacement des morts tant que le joueur reste présent ; sortie/despawn puis reentrée/respawn. Un shard par emplacement logique et tentative, maximum quatre ; aucun soin. Les profils N5–9 et invocations Necromancer/Boss ne sont pas implémentés dans ce lot.
+Sorcerer : point au sol capturé au lancement, avertissement1s puis impact unique2DMG avec profil projectile ennemi. Skulls : zone N4 de 480×240 px, quatre emplacements par tentative. Sortie : disparition des survivants ; réentrée : seuls les emplacements non vaincus réapparaissent. Un crâne tué ne revient plus avant mort/restart du niveau ; zone nettoyée = vide pour la tentative. Un shard par emplacement vaincu, maximum quatre ; aucun soin. Cette swarm est indépendante du Blight Sorcerer, qui ne l’invoque pas et dont la mort ne la supprime pas. Les profils N5–9 et invocations Necromancer/Boss ne sont pas implémentés dans ce lot.
 
 Les paramètres techniques exacts et interfaces sont dans [le handoff](RUN-019_CLAUDE_HANDOFF.md), les décisions validées dans [le contrat](RUN-019_CONTRACT_REVIEW.md). Dessins provisoires et Red teinté ne constituent pas un habillage final ; contribution Claude P0 et playtest encore requis.
