@@ -64,6 +64,10 @@ const TINTS = [Color(0.92, 0.9, 0.84), Color(0.78, 0.86, 0.94), Color(0.84, 0.8,
 @export_range(24.0, 240.0) var spacing := 72.0
 const SPACING_SCALE = [1.0, 0.6, 0.9]
 const MIN_RUN = 4
+# Thin floating ledges (fewer solid rows below than this) only host props up to SMALL_PROP px
+# high, so houses, trees or mausoleums never stand on a rampart slab or a branch.
+const GROUNDED_ROWS = 3
+const SMALL_PROP = 20
 # Sibling nodes whose children (or themselves) keep a clear horizontal margin, in px.
 # Coins are not listed: they draw over this dark, low-contrast decor and stay readable (as in N1).
 # Secret walls and doors (Exploration) and the gate get a wide berth.
@@ -150,6 +154,9 @@ func _fits(tex: Texture2D, cursor: float, surface: Dictionary, used: Dictionary,
 	var rows_up := ceili(tex.get_height() / 16.0)
 	for x in range(left, right + 1):
 		if not surface.has(x): return false
+		if tex.get_height() > SMALL_PROP:
+			for k in range(1, GROUNDED_ROWS):
+				if not used.has(Vector2i(x, y + k)): return false
 		for k in range(1, rows_up + 1):
 			if used.has(Vector2i(x, y - k)): return false
 	return true

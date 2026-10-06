@@ -113,3 +113,7 @@ Ennemis, Skulls, projectiles, pièges, mécanismes, pickups et effets : tables, 
 ## Générés pour le projet — RUN-020 (5 octobre 2026)
 
 Les 24 PNG de `assets/run020/` sont originaux, générés par `tools/art/run020/biomes_run020.py`, `terrain_run020.py`, `backdrop_run020.py`, `props_run020.py` et `palette_run020.py`. Générateurs conservés, palette et accessoires du projet réutilisés en lecture seule ; aucun pixel tiers nouveau ni génération d’image par IA. Contribution Claude Code Opus5.5 ; intégration Codex. [Manifeste RUN-020](../docs/RUN-020_ASSET_MANIFEST.md). Validation artistique humaine attendue.
+
+## Générés pour le projet — reprise RUN-020 (6 octobre 2026)
+
+`assets/run020_feedback/enemies/bloated_slime.png`, `chud_blob.png` et `vfx_bloated_burst.png` sont originaux, redessinés à densité native par `tools/art/run020_feedback/elites.py` (palettes et utilitaires RUN-019/projet importés en lecture seule). Les feuilles RUN-019 restent en place, non référencées. Aucun pixel tiers ni génération d’image par IA. Contribution Claude Code Opus5.5 avec sous-agent Sonnet5.5 ; [manifeste de reprise](../docs/RUN-020_ASSET_MANIFEST_02.md). Validation artistique humaine attendue.
