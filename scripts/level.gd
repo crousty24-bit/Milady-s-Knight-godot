@@ -38,6 +38,13 @@ const TUTORIALS = [
 @export var void_y: float = 304.0
 @export_file("*.tscn") var next_level_scene: String = ""
 const COIN_SCENE = preload("res://scenes/coin.tscn")
+# Area names announced by the HUD title card on the first load of a level (not on death/restart).
+const LEVEL_TITLES = {
+	"res://scenes/eidolon_vale.tscn": "Eidolon Vale",
+	"res://scenes/blight_town.tscn": "Blight Town",
+	"res://scenes/black_forrest.tscn": "Black Forest",
+	"res://scenes/forbidden_graveyard.tscn": "Forbidden Graveyard",
+}
 var gold: int = 0
 var bonus: int = 0
 var reward_settled: bool = false
@@ -108,6 +115,8 @@ func _ready() -> void:
 	_update_gold_hud()
 	hud.set_health(player.health, player.max_health)
 	_update_equipment_hud(player.active_slot)
+	hud.magic_shield_source = func() -> float: return player.magic_shield_time
+	_announce_level()
 	$Music.play()
 	var ambience := get_node_or_null("Ambient") as AudioStreamPlayer
 	if ambience != null: ambience.play()
@@ -146,6 +155,7 @@ func _process(delta: float) -> void:
 			transitioning = true
 			call_deferred("_next_level")
 		elif not transitioning:
+			progression.announced_level = ""  # replaying a finished level is a new launch
 			_restart_attempt()
 		return
 	if Input.is_action_just_pressed("pause") and not finished and not player.dead and modal.is_empty():
@@ -278,6 +288,12 @@ func _next_level() -> void:
 		get_tree().paused = true
 		hud.set_overlay("Next level unavailable", "Your shards are saved.\nE: retry")
 
+func _announce_level() -> void:
+	var title: String = LEVEL_TITLES.get(scene_file_path, "")
+	if title.is_empty() or progression.announced_level == scene_file_path: return
+	progression.announced_level = scene_file_path
+	hud.show_level_title(title)
+
 func _on_died() -> void:
 	if death_elapsed >= 0.0: return
 	bonus = 0
@@ -357,6 +373,7 @@ func _pause_choice(index: int) -> void:
 		2:
 			_release_menu_inputs()
 			get_tree().paused = false
+			progression.announced_level = ""
 			progression.change_level("res://scenes/game.tscn")
 
 func _release_menu_inputs() -> void:

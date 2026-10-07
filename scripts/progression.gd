@@ -15,6 +15,8 @@ var banked_bonus: int:
 	get: return banked_shards
 	set(value): banked_shards = value
 var resume_scene: String = DEFAULT_LEVEL
+# Runtime only, never saved: level whose title card was already shown since it was loaded.
+var announced_level: String = ""
 var equipment: Dictionary = {"melee": "Sword0", "ranged": ""}
 var permanent_flags: Dictionary = {}
 var completed_dialogues: Dictionary = {}

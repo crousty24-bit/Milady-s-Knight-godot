@@ -43,7 +43,7 @@
 	- affichage dynamique avec animation lors du changements d'état des HP joueur : perte d'HP, gain HP
 	- affichage dynamique avec animation lors de mise à jour des gold coin et des shards
 	- slot équipement actif : focus visuel clair et distinct
-	- affichage des effets consommables dans coin supérieur droit : icon + durée restante d'effet du Magic Shield et/ou du Rage Drink
+	- affichage des effets consommables dans la zone supérieure gauche, après les HP (décision humaine du 7 octobre 2026, remplace le coin supérieur droit) : icon + durée restante d'effet du Magic Shield et/ou du Rage Drink
 	- le cooldown pour capacité arme légendaire (Dragon Slayer) + cooldown utilisation Fire Gauntlet : une jauge translucide se rempli progressivement dans le slot de l'arme pour signifier le cooldown = lorsque jauge a rempli le slot => cooldown passé et utilisation possible
 		- il faut prévoir une petite animation lorsque la jauge de cooldown est passée pour marquer visuellement au joueur que la capacité/utilisation est disponible
 
@@ -342,3 +342,13 @@ Flèches haut/bas pour les menus, E pour confirmer, Escape pour fermer/revenir p
 Le menu ouvre New Game / Continue / Controls / Quit. Continue est indisponible sans sauvegarde lisible ; une v1 propose migration avec Cancel sélectionné par défaut. New Game avec un fichier existant exige confirmation, Cancel sélectionné par défaut, puis conservation de l'original avant remplacement. Pause propose Resume / Restart / Quit to menu ; restart et retour menu sont immédiats. Fermeture système termine le jeu et abandonne la tentative sans annuler les acquisitions/débits déjà durables.
 
 Deux slots HUD verticaux (mêlée/tir) sont retenus ; les choix de récompense dans un coffre restent horizontaux. La réalisation des slots/rewards vient en RUN-016. La présentation des menus et les assets/audio requis restent la contribution Claude ; le panneau fonctionnel de Codex ne vaut pas validation artistique.
+
+
+## Passe HUD RUN-021 — demande humaine du 7 octobre 2026
+
+- Seul l'avatar garde un cadre. HP, coins, shards, slots d'armes et munitions s'affichent sans panneau ni plaque de fond ; lisibilité assurée par l'ombre portée du texte et les contours des icônes.
+- Aucun libellé texte : les icônes nomment les valeurs (plus de « HP », « COINS », « SHARDS », « reserve/bank/current »). HP exact après les cœurs ; coins `07/12` (ou `07  OPEN` une fois la porte payée) ; shards juste à droite des coins, sur la même ligne : total puis gain courant non sauvegardé `+N` en ton atténué.
+- Slot actif : marqueur `>`, texte or et icône pleine ; slot inactif : icône légèrement atténuée.
+- Effet Magic Shield : icône bouclier 12×12 et secondes restantes arrondies au supérieur, après le nombre de HP ; clignote pendant les 2 dernières secondes comme l'aura. Une seconde rangée de cœurs décale coins/shards et slots d'une rangée.
+- Titrage de niveau (style Dark Souls) au premier chargement d'un niveau : nom centré (police 24 px), fondu d'entrée 1 s, maintien 3 s, fondu de sortie 1 s (5 s au total), sting sur le bus UI. Pas de nouveau titrage après mort ou restart ; relancé après retour au menu ou replay d'un niveau terminé. Noms : Eidolon Vale, Blight Town, Black Forest, Forbidden Graveyard. Une fenêtre système (mort, fin de niveau) masque le titre.
+- Message de mort centré à l'écran (le panneau n'est plus remonté dans le tiers supérieur).

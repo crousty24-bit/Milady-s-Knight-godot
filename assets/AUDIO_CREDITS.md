@@ -176,3 +176,11 @@ Mesures relues par Claude sur les 37 WAV. Les `.tres` sont des `AudioStreamRando
 - **Source conservée :** `assets/source/run021/audio/delosound-dark-synthwave-retro-80s-453292.mp3` (copie inchangée de `Music/…` ; SHA-256 `0eb8ae69cc50a3ab5ac8108d92e2aaf3b3859f9efa7b2e654e1e7b5bb6414c3c`, 6 529 358 octets, MP3 256 kb/s 44,1 kHz stéréo, 204,04 s) ; provenance détaillée dans `provenance.json` du même dossier.
 - **Transformation :** coupe à 185,274 s (avant la sortie finale), loudnorm −13 LUFS / TP −1,5 dBFS (résultat mesuré −12,6 LUFS, true peak −0,8 dBFS), fondu croisé de 6 ms entre la fin et les 6 ms précédant le point de boucle, Ogg Vorbis q5 44,1 kHz stéréo ; boucle d'import activée avec `loop_offset` 5,564 s (l'intro de 5,6 s ne se joue qu'une fois). Commandes : `work/run021/audio/prepare_n4.sh`. Détails : [docs/RUN-021_AUDIO_REVIEW.md](../docs/RUN-021_AUDIO_REVIEW.md). Écoute humaine attendue.
 - **Statut :** N4 n'utilise plus *Dreamer* ; N2 et N3 le conservent.
+
+## Titrage de niveau — RUN-021 (7 octobre 2026, Helton Yan, *Pixel Combat*, CC BY 4.0)
+
+| Fichier de jeu | Fichiers source | Durée | Transformation |
+| --- | --- | --- | --- |
+| `sounds/run021/sfx_level_title.wav` | `DSGNImpt_EXPLOSION-Thud_HY_PC-003.wav` (impact à t=0, −2 dB) + `MAGSpel_CAST-Teleport Downer_HY_PC-005.wav` (ton grave descendant, retard 80 ms) | 2,44 s | mix deux couches, mono 44,1 kHz 16 bits, coupe 2,5 s + fondu 0,15 s, pic −12 dBFS (`UI_PEAK_DB`) ; `tools/art/run021/prepare_audio_title.py` |
+
+Choix objectif (contenu grave/aigu mesuré, aucune prise déjà utilisée) ; joué sur le bus UI à l'apparition du nom du niveau. Écoute humaine attendue (caractère « Dark Souls » contre sci-fi, volume face à la musique).

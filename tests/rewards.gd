@@ -73,8 +73,8 @@ func run() -> void:
 	var previous_gold: int = level.gold
 	level._on_collected(15)
 	level._on_enemy_defeated(2, Vector2(300, 120))
-	check(level.gold == previous_gold + 15 and level.bonus == 2 and level.hud.get_node("Gold").text == "COINS %02d/12" % (previous_gold + 15) and level.hud.get_node("BonusPending").text == "+2 current", "HUD exact after independent coins and shards collection")
-	check(level.try_offering() and level.gold == previous_gold + 3 and level.hud.get_node("Gold").text == "COINS %02d  |  OPEN" % (previous_gold + 3), "door payment preserves surplus coin display")
+	check(level.gold == previous_gold + 15 and level.bonus == 2 and level.hud.get_node("Gold").text == "%02d/12" % (previous_gold + 15) and level.hud.get_node("BonusPending").text == "+2", "HUD exact after independent coins and shards collection")
+	check(level.try_offering() and level.gold == previous_gold + 3 and level.hud.get_node("Gold").text == "%02d  OPEN" % (previous_gold + 3), "door payment preserves surplus coin display")
 	level.player.die()
 	await frames(210)
 	level = current_scene
@@ -85,7 +85,7 @@ func run() -> void:
 	check(not level.minor_potion.used and level.player.health == 3.0, "potion remains on terrain when player is full")
 	level.player.take_damage(0.5, Vector2.ZERO, SlicePlayer.DamageSource.PROJECTILE)
 	await frames(4)
-	check(level.minor_potion.used and level.player.health == 3.0 and level.hud.get_node("Health").text == "HP 3", "physical potion overlap heals exactly 0.5 and updates HUD")
+	check(level.minor_potion.used and level.player.health == 3.0 and level.hud.get_node("Health").text == "3", "physical potion overlap heals exactly 0.5 and updates HUD")
 	level.player.invulnerability = 0
 	level.player.take_damage(0.5, Vector2.ZERO, SlicePlayer.DamageSource.PROJECTILE)
 	await frames(4)

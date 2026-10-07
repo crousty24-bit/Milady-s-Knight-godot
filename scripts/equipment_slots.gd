@@ -10,6 +10,7 @@ const FOCUS = preload("res://assets/sprites/ui_menu_focus.png")
 const ACTIVE_TEXT = Color(0.941, 0.824, 0.478)
 const IDLE_TEXT = Color(0.867, 0.886, 0.91)
 const EMPTY_TEXT = Color(0.384, 0.365, 0.404)
+const INACTIVE_ICON = Color(0.78, 0.78, 0.8)
 const ORDER := ["Sword", "Longsword", "BrutalAxe", "DarkScythe", "Warhammer", "Halberds", "Longbow", "ThrowingKnives"]
 const EMPTY_ICON := 8
 const MIN_WIDTH := 92.0
@@ -57,6 +58,8 @@ func _refresh(slot: int, label: Label, plate: NinePatchRect, icon: TextureRect) 
 	var empty := label.text.strip_edges().ends_with("Empty")
 	plate.texture = FOCUS if active else PLATE
 	plate.modulate.a = 1.0 if active else 0.85
+	# RUN-021: plates stay hidden (no panel behind the HUD); focus = marker, gold text, full-bright icon.
+	icon.modulate = Color.WHITE if active or empty else INACTIVE_ICON
 	var stats := {} if empty else WeaponCatalog.stats(_items[slot])
 	var index: int = EMPTY_ICON
 	if not stats.is_empty(): index = ORDER.find(str(_items[slot]).left(-1))
