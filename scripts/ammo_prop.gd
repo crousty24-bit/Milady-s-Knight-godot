@@ -11,11 +11,9 @@ var rng := RandomNumberGenerator.new()
 func _ready() -> void:
 	rng.randomize()
 	var art := get_node_or_null("Art") as AnimatedSprite2D
-	if art != null and art.sprite_frames.has_animation(_family_animation("intact")):
-		art.play(_family_animation("intact"))
-
-func _family_animation(base: String) -> StringName:
-	return StringName(base + ("_knives" if ammo_family == "ThrowingKnives" else "_arrows"))
+	# Crates and barrels look the same for both families; only the pickup reveals the ammo.
+	if art != null and art.sprite_frames.has_animation(&"intact"):
+		art.play(&"intact")
 
 func drop_amount_for_roll(roll: float) -> int:
 	# Roll is in [0, 1); the same function drives actual loot and boundary tests.
@@ -46,9 +44,9 @@ func receive_player_attack(amount: float, source: int) -> bool:
 		pickup.global_position = global_position + Vector2(0, -8)
 	destroyed.emit(dropped)
 	var art := get_node_or_null("Art") as AnimatedSprite2D
-	if art != null and art.sprite_frames.has_animation(_family_animation("break")) and art.sprite_frames.get_frame_count(_family_animation("break")) > 0:
+	if art != null and art.sprite_frames.has_animation(&"break") and art.sprite_frames.get_frame_count(&"break") > 0:
 		art.animation_finished.connect(queue_free, CONNECT_ONE_SHOT)
-		art.play(_family_animation("break"))
+		art.play(&"break")
 	else:
 		hide()
 		queue_free()

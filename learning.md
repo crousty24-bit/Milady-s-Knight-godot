@@ -749,3 +749,10 @@ Le joueur possède deux petits compteurs : flèches et couteaux. Un projectile c
 Le jeu garde séparément une photo des stocks à l’entrée du niveau. Pendant l’essai, seuls les compteurs du joueur changent. À la mort ou au restart, il recharge cette photo. Lors d’une sortie réussie, il prend une nouvelle photo des stocks restants et l’enregistre avec le niveau suivant. Ainsi N2 terminé avec2flèches donne2flèches à l’entrée de N3 ; en ramasser5 puis mourir dans N3 ramène à2. Les achats et autres sauvegardes intermédiaires utilisent toujours la photo d’entrée : ils ne permettent pas de conserver le loot d’une tentative ratée.
 
 Les piques rétractables avaient un petit socle2px au-dessus du sol. Même sans pointes actives, ce rebord gênait la marche. Le socle est désormais encastré : sa surface arrive au plan de pose, et il reste présent pour les pièges suspendus. Le comportement des pointes et leur danger restent ceux du cycle existant.
+
+
+## RUN-021 — Donner une marge à l'esquive et stabiliser une poursuite
+
+Le rectangle de Bloated sert à se déplacer sur le terrain et à recevoir les coups. Ses dégâts de contact utilisent une autre vérification de distance entre les pieds. Réduire seulement le rectangle n'aurait donc pas changé les collisions qui blessent. Sa poursuite passe de60 à48px/s : le joueur gagne de l'avance pendant son double saut. Les tests comparent les mêmes commandes avant/après, dans les deux sens, puis isolent Bloated sur le terrainN2 existant. Le bon timing reste nécessaire.
+
+Un mob qui regarde le joueur calcule normalement s'il est à gauche ou à droite. Si le joueur est juste dessous, un minuscule déplacement peut inverser ce choix à chaque frame : le mob tremble et ses petits pas entretiennent sa poursuite. Une tolérance de2px stabilise ce choix. Le cap reste aussi fixe pendant un saut ; le mob décide à nouveau sur son prochain appui. Cela ne supprime pas la recherche d'un détour praticable vers un toit.

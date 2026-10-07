@@ -391,6 +391,9 @@ position = Vector2(1031, -64)
 [node name="MinorPotion" parent="Items" unique_id=1015211806 instance=ExtResource("15")]
 position = Vector2(2976, 38)
 
+[node name="MinorPotion3" parent="Items" unique_id=170580091 instance=ExtResource("15")]
+position = Vector2(3365, -216)
+
 [node name="MinorPotion2" parent="Items" unique_id=2135822654 instance=ExtResource("15")]
 position = Vector2(1000, -135)
 

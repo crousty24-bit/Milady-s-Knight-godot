@@ -90,6 +90,8 @@ func _safe_direction(dir: int) -> bool:
 const CHASE_GRAVITY = 760.0
 const CHASE_MAX_RISE = 72.0
 const CHASE_MAX_DROP = CHASE_MAX_RISE
+# A vertically aligned target is not a left/right steering decision.
+const CHASE_ALIGN_TOLERANCE = 2.0
 
 func _body_clear(feet: Vector2) -> bool:
 	var query := PhysicsShapeQueryParameters2D.new()
@@ -232,7 +234,12 @@ func _physics_process(delta: float) -> void:
 	# A collapsed patrol interval denotes a sentry, not an every-frame U-turn.
 	var patrolling := patrol_right > patrol_left
 	if aggro:
-		direction = 1 if target.global_position.x > global_position.x else -1
+		var horizontal_offset := target.global_position.x - global_position.x
+		if is_on_floor():
+			if absf(horizontal_offset) > CHASE_ALIGN_TOLERANCE:
+				direction = 1 if horizontal_offset > 0.0 else -1
+			elif chase_detour_dir != 0:
+				direction = chase_detour_dir
 		if is_on_floor() and cooldown == 0.0 and pending_attack == &"": _try_attack()
 	elif patrolling and global_position.x < origin_x + patrol_left:
 		direction = 1
@@ -240,7 +247,18 @@ func _physics_process(delta: float) -> void:
 		direction = -1
 	if knockback_time == 0.0:
 		var ready_to_shoot := aggro and kind == Kind.ARCHER and is_on_floor() and (target.global_position - global_position).length() <= ranged_range and _clear_line(target.global_position + Vector2(0, -12))
-		var moving := (aggro or patrolling) and pending_attack == &"" and not ready_to_shoot
+		# Keep the launch direction while airborne. On support, stop chasing an
+		# aligned target instead of oscillating and renewing occlusion forever.
+		var aligned_on_floor := aggro and is_on_floor() and chase_detour_dir == 0 and absf(target.global_position.x - global_position.x) <= CHASE_ALIGN_TOLERANCE
+		if aligned_on_floor and target.global_position.y < global_position.y - 1.0 and pending_attack == &"":
+			# Alignment can still have a reachable roof. Only a verified retreat
+			# starts motion; an unavailable vertical route stays stopped.
+			var exit_x := _overhang_exit(direction)
+			if not is_nan(exit_x):
+				chase_detour_dir = direction
+				chase_detour_x = exit_x
+				aligned_on_floor = false
+		var moving := (aggro or patrolling) and pending_attack == &"" and not ready_to_shoot and not aligned_on_floor
 		if moving and is_on_floor():
 			if aggro:
 				var prefer_jump := false

@@ -17,6 +17,6 @@ shape = SubResource("shape")
 
 [node name="Art" type="AnimatedSprite2D" parent="."]
 sprite_frames = ExtResource("2")
-animation = &"intact_arrows"
+animation = &"intact"
 centered = false
 offset = Vector2(-16, -32)

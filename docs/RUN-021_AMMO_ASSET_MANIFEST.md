@@ -4,6 +4,8 @@
 
 Périmètre de la phase 1 : assets, icônes et proposition de présentation. **Aucune** scène/script partagé, scène de niveau, HUD, test, workflow, audio ni art des piques n’est modifié. Godot n’a pas été lancé et aucune commande Git modifiant l’état n’a été exécutée. RUN-021 reste ACTIVE ; aucune validation artistique n’est présumée.
 
+> **Amendement du 7 octobre 2026 (retour humain) :** les props ne montrent plus de munitions. Il n’existe plus qu’**une caisse** et **un tonneau** neutres, fermés, sans contenu dépassant ni étiquette de famille : `prop_crate.png`, `prop_barrel.png` et leurs casses `prop_crate_break.png`, `prop_barrel_break.png` (mêmes dimensions, pivot et 6 frames à 12 fps). Animations SpriteFrames uniques `intact` / `break`, lues par `scripts/ammo_prop.gd` quelle que soit `ammo_family`. La famille reste une propriété gameplay inchangée (loot), révélée seulement par le pickup. Les huit planches `prop_{crate,barrel}_{arrows,knives}[_break].png` sont retirées (dérivés du générateur, sans autre référence). Les §2–4 ci-dessous décrivent la version d’origine pour ces props ; pickups, VFX et icônes HUD sont inchangés.
+
 ## 1. Source, méthode, provenance
 
 - **Générateur (source conservée) :** `tools/art/run021/ammo/ammo_art.py` ; aperçus seulement : `tools/art/run021/ammo/ammo_preview.py`. Commande : `python3 tools/art/run021/ammo/ammo_art.py [--preview DIR]`.

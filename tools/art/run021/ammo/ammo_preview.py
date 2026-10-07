@@ -158,10 +158,10 @@ def mock_world(outputs):
 	if deco:
 		c.blit(deco, 60, floor - deco.h)
 	x = 96
-	for name in ("prop_crate_arrows.png", "prop_barrel_arrows.png", "prop_crate_knives.png", "prop_barrel_knives.png"):
+	for name in ("prop_crate.png", "prop_barrel.png", "prop_crate.png", "prop_barrel.png"):
 		c.blit(outputs[name], x, floor - 32)
 		x += 34
-	brk = outputs["prop_barrel_knives_break.png"]
+	brk = outputs["prop_barrel_break.png"]
 	for i in (0, 2, 3, 5):
 		c.blit(frame(brk, i, 32, 32), x, floor - 32)
 		x += 34

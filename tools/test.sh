@@ -69,7 +69,7 @@ run_check() {
 
 run_check import 180 --headless --editor --import --quit
 run_check user-data-path 30 --headless --script res://tests/user_data_path.gd
-for suite in movement physics mobility combat platform boundaries keyboard integration bonus routes backtracking damage_profiles damage_protection spikes_void death_transition audio progression_v2 menus longbow rewards dialogue_panel resurrection_player n1_cinematics n1_flow chest_economy standard_weapons reward_transactions run019_enemies run019_traps run019_exploration run019_integration run020_campaign run020_routes run021_tuning run021_audio run021_chase run021_elite_navigation run021_flight run021_wall_jump retractable_walk ammunition ammo_props; do
+for suite in movement physics mobility combat platform boundaries keyboard integration bonus routes backtracking damage_profiles damage_protection spikes_void death_transition audio progression_v2 menus longbow rewards dialogue_panel resurrection_player n1_cinematics n1_flow chest_economy standard_weapons reward_transactions run019_enemies run019_traps run019_exploration run019_integration run020_campaign run020_routes run021_tuning run021_audio run021_chase run021_elite_navigation run021_flight run021_wall_jump retractable_walk ammunition ammo_props run021_vertical_pursuit run021_bloated_dodge; do
   suite_timeout=90
   if [[ "$suite" == standard_weapons || "$suite" == run020_campaign || "$suite" == run020_routes || "$suite" == run021_elite_navigation ]]; then suite_timeout=180; fi
   if [[ "$suite" == run019_exploration || "$suite" == run019_integration || "$suite" == run020_campaign || "$suite" == run021_audio ]]; then
@@ -96,4 +96,4 @@ run_check run020-cold-reset 90 --headless --script res://tests/run020_cold_sessi
 run_check ammo-cold-prepare 90 --headless --script res://tests/ammo_cold_session.gd -- prepare
 run_check ammo-cold-reopen 90 --headless --script res://tests/ammo_cold_session.gd -- reopen
 run_check ammo-cold-reset 90 --headless --script res://tests/ammo_cold_session.gd -- reset
-printf '43 suites et quatorze sessions à froid terminées ; isolation user:// vérifiée. Logs : %s\n' "$results_dir"
+printf '45 suites et quatorze sessions à froid terminées ; isolation user:// vérifiée. Logs : %s\n' "$results_dir"

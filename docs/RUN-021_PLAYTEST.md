@@ -58,3 +58,14 @@ La passe précédente est testée et validée par l’humain. Cette nouvelle pas
 - Juger le confort à réserve basse ou nulle, la visibilité du compteur, la présence des ravitaillements sur les routes, leur quantité et la lisibilité de la casse. Signaler niveau/repère/famille/stock initial si un passage obligatoire paraît nécessiter du tir.
 
 Positions exactes des26props dans le [manifeste d’intégration](RUN-021_AMMO_INTEGRATION_MANIFEST.md). Les captures natives de poses et fixtures de transactions ne constituent pas ce playtest ni une preuve d’équilibrage.
+
+
+## Complément du 7 octobre — Bloated et poursuite verticale
+
+La passe piques/munitions est validée humainement. Ce complément demande son propre essai :
+
+- DansN2, esquiver Bloated par double saut en arrivant de chaque côté ; comparer la marge pendant la montée, la descente et après l'atterrissage. La vitesse est48px/s ; le mob conserve taille et dégâts. Les essais automatiques ne garantissent pas tous les timings ni les rencontres avec plusieurs mobs.
+- Rester sous la plateforme d'un Archer, bouger légèrement horizontalement puis changer de côté. Vérifier l'absence de tremblement et la reprise de poursuite. Faire de même avec Warrior, Sorcerer et élites sur un autre étage, puis au-dessus lorsqu'un chemin existe.
+- Faire poursuivre une élite vers un petit toit accessible : le détour et le saut doivent rester actifs malgré l'alignement vertical. Vérifier aussi un joueur qui croise le mob pendant son saut.
+
+Le contrat Claude complémentaire existant est [RUN-021_CLAUDE_HANDOFF_03.md](RUN-021_CLAUDE_HANDOFF_03.md), livré pour les props/HUD de munitions. Les correctifs ci-dessus sont techniques et ne demandent pas de nouveau livrable artistique.
