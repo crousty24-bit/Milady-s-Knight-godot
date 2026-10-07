@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3]
+[gd_scene load_steps=23 format=3]
 [ext_resource type="Script" path="res://scripts/hud.gd" id="1"]
 [ext_resource type="FontFile" path="res://assets/fonts/PixelOperator8.ttf" id="2"]
 [ext_resource type="Script" path="res://scripts/health_hearts.gd" id="3"]
@@ -13,6 +13,7 @@
 [ext_resource type="Texture2D" path="res://assets/sprites/ui_menu_focus.png" id="22"]
 [ext_resource type="Script" path="res://scripts/equipment_slots.gd" id="23"]
 [ext_resource type="Script" path="res://scripts/shard_counter_fx.gd" id="24"]
+[ext_resource type="Texture2D" path="res://assets/run021/ammo/ui_ammo_icons.png" id="30"]
 [sub_resource type="AtlasTexture" id="slot_melee"]
 atlas = ExtResource("21")
 region = Rect2(0, 0, 12, 12)
@@ -25,6 +26,9 @@ region = Rect2(36, 0, 12, 12)
 [sub_resource type="AtlasTexture" id="coin_icon_prompt"]
 atlas = ExtResource("4")
 region = Rect2(36, 0, 12, 12)
+[sub_resource type="AtlasTexture" id="ammo_icon"]
+atlas = ExtResource("30")
+region = Rect2(0, 0, 12, 12)
 [sub_resource type="Theme" id="theme"]
 default_font = ExtResource("2")
 default_font_size = 8
@@ -334,8 +338,8 @@ mouse_filter = 2
 [node name="Equipment" type="Control" parent="."]
 offset_left = 8.0
 offset_top = 44.0
-offset_right = 116.0
-offset_bottom = 76.0
+offset_right = 208.0
+offset_bottom = 93.0
 mouse_filter = 2
 script = ExtResource("23")
 [node name="MeleePlate" type="NinePatchRect" parent="Equipment"]
@@ -386,4 +390,45 @@ offset_right = 92.0
 offset_bottom = 30.0
 theme = SubResource("theme")
 text = "  Empty"
+mouse_filter = 2
+
+[node name="AmmoPlate" type="NinePatchRect" parent="Equipment"]
+visible = false
+offset_top = 34.0
+offset_right = 62.0
+offset_bottom = 49.0
+mouse_filter = 2
+texture = ExtResource("6")
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 4
+patch_margin_bottom = 4
+
+[node name="AmmoIcon" type="TextureRect" parent="Equipment"]
+visible = false
+offset_left = 3.0
+offset_top = 36.0
+offset_right = 15.0
+offset_bottom = 48.0
+texture = SubResource("ammo_icon")
+mouse_filter = 2
+
+[node name="AmmoCount" type="Label" parent="Equipment"]
+visible = false
+offset_left = 17.0
+offset_top = 37.0
+offset_right = 60.0
+offset_bottom = 47.0
+theme = SubResource("theme")
+text = "00/00"
+mouse_filter = 2
+
+[node name="AmmoFeedback" type="Label" parent="Equipment"]
+visible = false
+offset_left = 66.0
+offset_top = 37.0
+offset_right = 200.0
+offset_bottom = 47.0
+theme = SubResource("theme")
+modulate = Color(0.941, 0.824, 0.478, 1)
 mouse_filter = 2

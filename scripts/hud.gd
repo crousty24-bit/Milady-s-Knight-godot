@@ -1,4 +1,38 @@
 extends CanvasLayer
+var ammo_feedback_time: float = 0.0
+
+func set_ammo(family: String, current: int, maximum: int) -> void:
+	var counter := get_node_or_null("Equipment/AmmoCount") as Label
+	var icon := get_node_or_null("Equipment/AmmoIcon") as TextureRect
+	if counter != null:
+		counter.visible = not family.is_empty()
+		counter.text = "%02d/%d" % [current, maximum]
+		counter.modulate = TITLE_RED if current == 0 else (TITLE_GOLD if current == maximum else Color.WHITE)
+	if icon != null:
+		icon.visible = not family.is_empty()
+		var atlas := AtlasTexture.new()
+		atlas.atlas = load("res://assets/run021/ammo/ui_ammo_icons.png")
+		var index := (1 if family == "ThrowingKnives" else 0) + (2 if current == 0 else 0)
+		atlas.region = Rect2(index * 12, 0, 12, 12)
+		icon.texture = atlas
+	var plate := get_node_or_null("Equipment/AmmoPlate") as CanvasItem
+	if plate != null: plate.visible = not family.is_empty()
+
+func show_ammo_empty(family: String) -> void:
+	# Held attack at zero must not restart the feedback every physics tick.
+	if ammo_feedback_time > 0.0: return
+	_show_ammo_feedback("NO KNIVES" if family == "ThrowingKnives" else "NO ARROWS")
+
+func show_ammo_pickup(family: String, amount: int) -> void:
+	_show_ammo_feedback("+%d %s" % [amount, "KNIVES" if family == "ThrowingKnives" else "ARROWS"])
+
+func _show_ammo_feedback(message: String) -> void:
+	var feedback := get_node_or_null("Equipment/AmmoFeedback") as Label
+	if feedback == null: return
+	feedback.text = message
+	feedback.show()
+	ammo_feedback_time = 0.8
+
 var save_error_time: float = 0.0
 var save_error_label: Label
 func show_save_error() -> void:
@@ -155,6 +189,11 @@ func _kill_prompt_tween() -> void:
 	$Prompt/Bg.self_modulate = Color.WHITE
 
 func _process(_delta: float) -> void:
+	if ammo_feedback_time > 0.0:
+		ammo_feedback_time = maxf(0.0, ammo_feedback_time - _delta)
+		if ammo_feedback_time == 0.0:
+			var feedback := get_node_or_null("Equipment/AmmoFeedback") as Label
+			if feedback != null: feedback.hide()
 	if save_error_time > 0.0:
 		save_error_time = maxf(0.0, save_error_time - _delta)
 		if save_error_time == 0.0: save_error_label.hide()

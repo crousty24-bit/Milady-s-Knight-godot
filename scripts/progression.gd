@@ -4,6 +4,10 @@ const SAVE_VERSION = 2
 const DEFAULT_LEVEL = "res://scenes/eidolon_vale.tscn"
 const LEGACY_SLICE = "res://scenes/vertical_slice.tscn"
 const SAVE_PATH = "user://progress.json"
+const AMMO_DEFAULTS = {"Longbow": 10, "ThrowingKnives": 12}
+const AMMO_CAPS = {"Longbow": 15, "ThrowingKnives": 20}
+# Only the level-entry snapshot is durable; live pools stay on the player.
+var ammo_entry: Dictionary = AMMO_DEFAULTS.duplicate()
 const MAX_BONUS = 9007199254740991 # JSON's exact integer range.
 var banked_shards: int = 0
 # Compatibility for existing level/HUD callers.
@@ -51,6 +55,7 @@ func _read_progress() -> Error:
 		return ERR_FILE_CORRUPT
 	if not _valid_flags(data.get("permanent_flags")) or not _valid_flags(data.get("completed_dialogues")):
 		return ERR_FILE_CORRUPT
+	if data.has("ammo_entry") and not _valid_ammo(data.ammo_entry): return ERR_FILE_CORRUPT
 	_apply(data)
 	has_save = true
 	return OK
@@ -61,6 +66,12 @@ func _parse_json(text: String) -> Variant:
 
 func _valid_amount(value: Variant) -> bool:
 	return (value is float or value is int) and is_finite(float(value)) and value >= 0 and value <= MAX_BONUS and float(value) == floorf(float(value))
+
+func _valid_ammo(value: Variant) -> bool:
+	if not value is Dictionary or value.size() != AMMO_DEFAULTS.size(): return false
+	for family in AMMO_DEFAULTS:
+		if not _valid_amount(value.get(family)) or value[family] > AMMO_CAPS[family]: return false
+	return true
 
 func _valid_flags(value: Variant) -> bool:
 	if not value is Dictionary: return false
@@ -75,16 +86,20 @@ func _valid_level(path: String) -> bool:
 	return path.begins_with("res://") and path.ends_with(".tscn") and ResourceLoader.exists(path, "PackedScene")
 
 func _state() -> Dictionary:
-	return {"version": SAVE_VERSION, "shards_bank": banked_shards, "resume_scene": resume_scene, "equipment": equipment.duplicate(true), "permanent_flags": permanent_flags.duplicate(true), "completed_dialogues": completed_dialogues.duplicate(true)}
+	return {"version": SAVE_VERSION, "shards_bank": banked_shards, "resume_scene": resume_scene, "equipment": equipment.duplicate(true), "ammo_entry": ammo_entry.duplicate(), "permanent_flags": permanent_flags.duplicate(true), "completed_dialogues": completed_dialogues.duplicate(true)}
 
 func _initial_state() -> Dictionary:
-	return {"version": SAVE_VERSION, "shards_bank": 0, "resume_scene": DEFAULT_LEVEL, "equipment": {"melee": "Sword0", "ranged": ""}, "permanent_flags": {}, "completed_dialogues": {}}
+	return {"version": SAVE_VERSION, "shards_bank": 0, "resume_scene": DEFAULT_LEVEL, "equipment": {"melee": "Sword0", "ranged": ""}, "ammo_entry": AMMO_DEFAULTS.duplicate(), "permanent_flags": {}, "completed_dialogues": {}}
 
 func _apply(data: Dictionary) -> void:
 	banked_shards = int(data.shards_bank)
 	resume_scene = data.resume_scene if _valid_level(data.resume_scene) else DEFAULT_LEVEL
 	# Existing prototype saves enter N1 with all equipment, bank and flags intact.
 	if resume_scene == LEGACY_SLICE: resume_scene = DEFAULT_LEVEL
+	var stocks: Dictionary = data.get("ammo_entry", AMMO_DEFAULTS)
+	ammo_entry = {}
+	for family in AMMO_DEFAULTS:
+		ammo_entry[family] = int(stocks[family]) if resume_scene == data.resume_scene else AMMO_DEFAULTS[family]
 	equipment = data.equipment.duplicate(true)
 	permanent_flags = data.permanent_flags.duplicate(true)
 	completed_dialogues = data.completed_dialogues.duplicate(true)
@@ -166,13 +181,18 @@ func new_game() -> Error:
 	initial.permanent_flags["n1_new_game"] = true
 	return _commit(initial)
 
-func settle_level(earned_bonus: int, destination: String) -> Error:
+func settle_level(earned_bonus: int, destination: String, current_ammo: Dictionary = {}) -> Error:
 	if earned_bonus < 0 or not _valid_level(destination): return ERR_INVALID_PARAMETER
+	if not current_ammo.is_empty() and not _valid_ammo(current_ammo): return ERR_INVALID_PARAMETER
 	if not _can_modify(): return storage_error
 	if earned_bonus > MAX_BONUS - banked_shards: return ERR_INVALID_PARAMETER
 	var data := _state()
 	data.shards_bank += earned_bonus
 	data.resume_scene = destination
+	# Replay keeps its entry stock. A new destination inherits remaining ammunition
+	# atomically with the bank and resume path; failed writes leave all three intact.
+	if destination != resume_scene and not current_ammo.is_empty():
+		data.ammo_entry = current_ammo.duplicate()
 	return _commit(data)
 
 func _spend_state(cost: int, current_gains: int) -> Dictionary:

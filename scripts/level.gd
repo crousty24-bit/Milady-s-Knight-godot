@@ -83,6 +83,10 @@ func _ready() -> void:
 	for coin in $Coins.get_children(): coin.collected.connect(_on_collected)
 	for enemy in $Enemies.get_children():
 		register_enemy(enemy)
+	player.initialize_ammo(progression.ammo_entry if progression.resume_scene == scene_file_path else SlicePlayer.AMMO_DEFAULTS)
+	player.ammo_changed.connect(_update_ammo_hud)
+	player.ammo_empty.connect(hud.show_ammo_empty)
+	player.ammo_collected.connect(hud.show_ammo_pickup)
 	player.configure_bonus_health(progression.hp_bonus_count())
 	player.configure_loadout(progression.equipment)
 	player.equipment_changed.connect(_update_equipment_hud)
@@ -257,7 +261,7 @@ func _on_exit(body: Node2D) -> void:
 func _settle_reward() -> void:
 	if reward_settled: return
 	var destination: String = scene_file_path if next_level_scene.is_empty() else next_level_scene
-	var error: Error = progression.settle_level(bonus, destination)
+	var error: Error = progression.settle_level(bonus, destination, player.ammo if destination != scene_file_path else {})
 	if error != OK:
 		hud.set_overlay("Level complete", "Shards not saved.\nE: retry saving")
 		return
@@ -384,6 +388,15 @@ func _choose_tutorial_reward(index: int) -> void:
 
 func _update_equipment_hud(slot: int) -> void:
 	hud.set_loadout(slot, player.equipment)
+	var family: String = str(player.equipment.ranged).left(-1)
+	if player.AMMO_CAPS.has(family):
+		hud.set_ammo(family, player.ammo[family], player.AMMO_CAPS[family])
+	else:
+		hud.set_ammo("", 0, 0)
+
+func _update_ammo_hud(family: String, current: int, maximum: int) -> void:
+	if str(player.equipment.ranged).left(-1) == family:
+		hud.set_ammo(family, current, maximum)
 
 # Payment precedes choice under the RUN-018 contract. Failed writes preserve the offer.
 func open_reward_chest(chest: Area2D) -> bool:

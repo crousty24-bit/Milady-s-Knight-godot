@@ -121,3 +121,7 @@ Les 24 PNG de `assets/run020/` sont originaux, générés par `tools/art/run020/
 ## Générés pour le projet — RUN-021 (6 octobre 2026)
 
 `assets/run021/terrain_black_forest.png` (terre N3 éclaircie d’un cran, générée par `tools/art/run021/terrain_run021.py` à partir des fonctions RUN-020 importées en lecture seule) et `assets/run021/bg_{blight_town,black_forrest,forbidden_graveyard}_near.png` (bandes de parallaxe proches N2–4, `tools/art/run021/backdrop_run021.py`) sont originaux. Palette et utilitaires du projet réutilisés en lecture seule ; aucun pixel tiers ni génération d’image par IA. Contribution Claude Code Opus5.5 avec sous-agent Sonnet5.5 ; [manifeste RUN-021](../docs/RUN-021_ASSET_MANIFEST.md). Validation artistique humaine attendue.
+
+## Générés pour le projet — RUN-021 munitions (7 octobre 2026)
+
+Les 12 PNG de `assets/run021/ammo/` (caisse/tonneau flèches et couteaux intacts et casse, pickups flèches/couteaux, éclat de ramassage, icônes HUD) sont originaux, générés par `tools/art/run021/ammo/ammo_art.py` (source conservée, déterministe) avec `pixel.py`/`palette.py` du projet en lecture seule. `proj_arrow.png` et `proj_knife.png` servent de références de motif et de couleur, sans pixel copié. Aucun pixel tiers ni génération d’image par IA ; la bibliothèque locale a été examinée en lecture seule sans rien retenir. Contribution Claude Code Opus5.5 ; [manifeste munitions](../docs/RUN-021_AMMO_ASSET_MANIFEST.md). Intégration Codex et validation artistique humaine attendues.

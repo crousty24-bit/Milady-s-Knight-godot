@@ -6,6 +6,13 @@ signal health_changed(value: float, maximum: float)
 signal died
 signal equipment_changed(slot: int)
 signal projectile_fired(arrow: Node2D)
+signal ammo_changed(family: String, current: int, maximum: int)
+signal ammo_empty(family: String)
+signal ammo_collected(family: String, amount: int)
+const AMMO_DEFAULTS = {"Longbow": 10, "ThrowingKnives": 12}
+const AMMO_CAPS = {"Longbow": 15, "ThrowingKnives": 20}
+var ammo: Dictionary = AMMO_DEFAULTS.duplicate()
+var _ammo_initialized: bool = false
 const ARROW_SCRIPT = preload("res://scripts/arrow.gd")
 const BOW_INTERVAL = 1.5
 enum DamageSource { CONTACT_MELEE, PROJECTILE, SOLID_TRAP, FLAME, SWARM, VOID, TRAP_PROJECTILE }
@@ -481,10 +488,33 @@ func _update_melee_shape() -> void:
 	var shape: RectangleShape2D = $AttackArea/Shape.shape
 	shape.size = Vector2(WeaponCatalog.stats(equipment.melee).reach, 4.0)
 
+# Setup belongs to level entry, never equipment acquisition or upgrades.
+func initialize_ammo(stocks: Dictionary) -> void:
+	if _ammo_initialized: return
+	_ammo_initialized = true
+	for family in AMMO_DEFAULTS:
+		ammo[family] = clampi(int(stocks.get(family, AMMO_DEFAULTS[family])), 0, AMMO_CAPS[family])
+		ammo_changed.emit(family, ammo[family], AMMO_CAPS[family])
+
+func add_ammo(family: String, amount: int) -> int:
+	if dead or amount <= 0 or not AMMO_CAPS.has(family): return 0
+	var taken: int = mini(amount, AMMO_CAPS[family] - ammo[family])
+	if taken <= 0: return 0
+	ammo[family] += taken
+	ammo_changed.emit(family, ammo[family], AMMO_CAPS[family])
+	ammo_collected.emit(family, taken)
+	return taken
+
 func _fire_arrow() -> void:
 	if resurrection_active:
 		return
-	var stats := WeaponCatalog.stats(equipment.ranged if has_longbow else "Longbow0")
+	var item: String = equipment.ranged if has_longbow else "Longbow0"
+	var family := item.left(-1)
+	var stats := WeaponCatalog.stats(item)
+	if stats.is_empty(): return
+	if AMMO_CAPS.has(family) and ammo[family] <= 0:
+		ammo_empty.emit(family)
+		return
 	bow_cooldown = stats.interval
 	shot_age = 0.0
 	var arrow: Node2D = ARROW_SCRIPT.new()
@@ -494,6 +524,9 @@ func _fire_arrow() -> void:
 	arrow.top_level = true
 	arrow.global_position = global_position + Vector2(4.0 * facing, -10.0)
 	arrow.setup(facing, stats.damage, stats.reach)
+	if AMMO_CAPS.has(family):
+		ammo[family] -= 1
+		ammo_changed.emit(family, ammo[family], AMMO_CAPS[family])
 	projectile_fired.emit(arrow)
 
 func _update_wall_state(direction: float) -> void:

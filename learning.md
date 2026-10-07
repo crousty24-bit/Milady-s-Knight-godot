@@ -740,3 +740,12 @@ Les tests précédents prouvaient les allers-retours sur des blocs pleins. Une p
 Dans le N2, le passage fait48px de haut pour un corps d’élite de40px. Les piques à sa sortie réduisent cette hauteur à36px : le mob ne peut pas physiquement sauter par-dessous. Il cherche donc un bord dégagé en reculant sur des appuis sûrs, puis saute sur le toit et redescend. La recherche reste locale et bornée à144px ; elle ne traverse ni vide ni mur. Le recul est un déplacement réel, pas une affectation de position.
 
 Une cible peut rester cachée par le toit pendant la traversée. Un déplacement réellement effectué sur un appui vers elle, ou le long du détour vérifié, renouvelle alors la courte tolérance d’occlusion. Rester immobile contre un obstacle ne suffit pas ; sortir de portée conserve la perte après2s. Les nouveaux scénarios distinguent passage libre, sortie fermée, cible sur le toit, plusieurs phases de patrouille, changement de côté, mort, pause et terrain infranchissable. Cette couverture évite de confondre un seul saut réussi avec une poursuite complète.
+
+
+## RUN-021 — Un stock courant et un stock d’entrée
+
+Le joueur possède deux petits compteurs : flèches et couteaux. Un projectile créé enlève une unité du compteur correspondant. Ramasser un item en ajoute jusqu’au plafond ; ce qui ne rentre pas reste au sol. Les caisses et tonneaux peuvent être cassés à l’épée : il reste donc un moyen de se ravitailler quand le compteur vaut zéro. Leurs collisions reçoivent les attaques sans bloquer la marche.
+
+Le jeu garde séparément une photo des stocks à l’entrée du niveau. Pendant l’essai, seuls les compteurs du joueur changent. À la mort ou au restart, il recharge cette photo. Lors d’une sortie réussie, il prend une nouvelle photo des stocks restants et l’enregistre avec le niveau suivant. Ainsi N2 terminé avec2flèches donne2flèches à l’entrée de N3 ; en ramasser5 puis mourir dans N3 ramène à2. Les achats et autres sauvegardes intermédiaires utilisent toujours la photo d’entrée : ils ne permettent pas de conserver le loot d’une tentative ratée.
+
+Les piques rétractables avaient un petit socle2px au-dessus du sol. Même sans pointes actives, ce rebord gênait la marche. Le socle est désormais encastré : sa surface arrive au plan de pose, et il reste présent pour les pièges suspendus. Le comportement des pointes et leur danger restent ceux du cycle existant.

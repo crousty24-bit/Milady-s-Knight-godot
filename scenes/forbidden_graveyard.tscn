@@ -1,4 +1,4 @@
-[gd_scene load_steps=35 format=4]
+[gd_scene load_steps=37 format=4]
 
 [ext_resource type="Script" path="res://scripts/level.gd" id="1"]
 
@@ -59,6 +59,8 @@
 [ext_resource type="AudioStream" path="res://assets/run021/audio/music_n4_forbidden_graveyard.ogg" id="29"]
 
 [ext_resource type="AudioStream" path="res://assets/sounds/run020/amb_forbidden_graveyard.ogg" id="30"]
+[ext_resource type="PackedScene" path="res://scenes/ammo_crate.tscn" id="ammo_crate_scn"]
+[ext_resource type="PackedScene" path="res://scenes/ammo_barrel.tscn" id="ammo_barrel_scn"]
 
 [sub_resource type="RectangleShape2D" id="shape0"]
 size = Vector2(16, 528)
@@ -420,3 +422,40 @@ bus = &"Music"
 stream = ExtResource("30")
 volume_db = -8.0
 bus = &"Ambient"
+
+[node name="AmmoSupplies" type="Node2D" parent="."]
+
+[node name="AmmoCrate01" parent="AmmoSupplies" instance=ExtResource("ammo_crate_scn")]
+position = Vector2(150, 144)
+
+[node name="AmmoBarrel01" parent="AmmoSupplies" instance=ExtResource("ammo_barrel_scn")]
+position = Vector2(650, 144)
+ammo_family = "ThrowingKnives"
+
+[node name="AmmoCrate02" parent="AmmoSupplies" instance=ExtResource("ammo_crate_scn")]
+position = Vector2(930, 144)
+ammo_family = "ThrowingKnives"
+
+[node name="AmmoBarrel02" parent="AmmoSupplies" instance=ExtResource("ammo_barrel_scn")]
+position = Vector2(1320, 240)
+
+[node name="AmmoCrate03" parent="AmmoSupplies" instance=ExtResource("ammo_crate_scn")]
+position = Vector2(1900, 240)
+ammo_family = "ThrowingKnives"
+
+[node name="AmmoBarrel03" parent="AmmoSupplies" instance=ExtResource("ammo_barrel_scn")]
+position = Vector2(2250, 144)
+
+[node name="AmmoCrate04" parent="AmmoSupplies" instance=ExtResource("ammo_crate_scn")]
+position = Vector2(2720, 144)
+
+[node name="AmmoBarrel04" parent="AmmoSupplies" instance=ExtResource("ammo_barrel_scn")]
+position = Vector2(3270, 144)
+ammo_family = "ThrowingKnives"
+
+[node name="AmmoCrate05" parent="AmmoSupplies" instance=ExtResource("ammo_crate_scn")]
+position = Vector2(3600, 144)
+ammo_family = "ThrowingKnives"
+
+[node name="AmmoBarrel05" parent="AmmoSupplies" instance=ExtResource("ammo_barrel_scn")]
+position = Vector2(4560, 144)

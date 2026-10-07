@@ -225,7 +225,7 @@ La porte secondaire payante dépense uniquement les coins de tentative, une fois
 
 Première passe de réglage à rejuger en jeu : Longbow niveau `n` (0–5), dégâts `1 + 0,5n`, intervalle `2 − 0,1n` s, portée `12 + 0,5n` blocs ; Throwing Knives, dégâts `0,5 + 0,5n`, intervalle `1,3 − 0,1n` s, portée `7 + 0,5n` blocs. Un bloc = 16 px. La portée et la cadence diminuent à tous les niveaux standard ; la progression et les dégâts restent conservés. Mêlée, Legendary et vitesse de projectile inchangés. Ces valeurs remplacent les tables de tir historiques RUN-018.
 
-Les munitions ne sont pas implémentées : idée retenue par l’humain pour un contrat dédié ultérieur, sans validation des chiffres ; [proposition et décision](RUN-020_PLAYTEST_REVIEW.md#munitions--proposition-non-implémentée). Aucun drop ni caisse destructible ajouté.
+État historique au 6 octobre : idée de munitions retenue pour un contrat ultérieur ; la proposition de réserve commune12/24 n’a pas été implémentée. Remplacée par le contrat validé du7octobre ci-dessous.
 
 
 ### Ajustement du tir RUN-021 (6 octobre 2026)
@@ -236,3 +236,14 @@ Après demande humaine de réduire encore légèrement cadence et distance : Lon
 ### Mise à jour des common chests — RUN-021
 
 Depuis la correction demandée après playtest, le tirage direct d’un common chest est limité aux niveaux0,1,2 avec des poids40%,30%,30%. Il ne peut donc pas donner directement un item niveau3. L’offre d’amélioration est un tirage séparé : sa probabilité reste5% et elle peut améliorer l’équipement de niveau2 à3, dans la limite ordinaire du niveau3. Les probabilités des rare chests et leur table de récompenses ne changent pas.
+
+
+### Munitions — RUN-021, contrat validé du 7 octobre
+
+Deux réserves distinctes, partagées entre niveaux d’amélioration d’une famille : Longbow10 au départ, plafond15 ; Throwing Knives12, plafond20. Une munition par projectile créé ; tir à zéro refusé sans nouveau cooldown. Échange, acquisition et amélioration ne rechargent pas. Lance-flamme hors système.
+
+Le stock **courant** de chaque famille devient le stock d’entrée du niveau suivant lors d’une sortie réussie. Mort/restart/menu/reprise à froid restaurent ce stock d’entrée, jamais le loot de l’essai interrompu. Exemple : N2 finit à2 → N3 entre à2 → ramasse5 → mort → N3 repart à2. Snapshot `ammo_entry` optionnel en sauvegardev2, enregistré atomiquement avec destination/banque ; anciennev2 sans champ =10/12. Les actions durables en cours de niveau conservent le snapshot sans enregistrer les réserves courantes. Replay du même niveau ne remplace pas ce snapshot par le loot final.
+
+Caisses et tonneaux non bloquants, destruction par une frappe dommageable ou un projectile standard. Famille de drop fixe et visible par instance. Quantités0/1/3/5 à20/40/30/10 %, moyenne1,8. Collecte au contact, plafond respecté, reliquat conservé au sol, props remis au reset ; aucun drop ajouté aux mobs/coffres. HUD courant/plafond, feedback de quantité réelle ou réserve vide. Budgets : N1 deux propsflèches, N2 six(4/2), N3 huit(4/4), N4 dix(5/5). Réglages de prototype à équilibrer par playtest, pas un équilibrage final.
+
+[Contrat détaillé](RUN-021_AMMO_SPIKES_PROPOSAL.md), [visuels](RUN-021_AMMO_ASSET_MANIFEST.md), [placements](RUN-021_AMMO_INTEGRATION_MANIFEST.md). Implémentation locale réalisée ; recette finale et validation humaine du résultat consignées au journal/workflow.

@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=4]
+[gd_scene load_steps=30 format=4]
 
 [ext_resource type="Script" path="res://scripts/level.gd" id="1"]
 
@@ -45,6 +45,8 @@
 [ext_resource type="AudioStream" path="res://assets/music/music_slice_dreamer.ogg" id="22"]
 
 [ext_resource type="AudioStream" path="res://assets/sounds/run020/amb_black_forrest.ogg" id="23"]
+[ext_resource type="PackedScene" path="res://scenes/ammo_crate.tscn" id="ammo_crate_scn"]
+[ext_resource type="PackedScene" path="res://scenes/ammo_barrel.tscn" id="ammo_barrel_scn"]
 
 [sub_resource type="RectangleShape2D" id="shape0"]
 size = Vector2(16, 528)
@@ -351,3 +353,33 @@ bus = &"Music"
 stream = ExtResource("23")
 volume_db = -8.0
 bus = &"Ambient"
+
+[node name="AmmoSupplies" type="Node2D" parent="."]
+
+[node name="AmmoCrate01" parent="AmmoSupplies" instance=ExtResource("ammo_crate_scn")]
+position = Vector2(150, 144)
+
+[node name="AmmoBarrel01" parent="AmmoSupplies" instance=ExtResource("ammo_barrel_scn")]
+position = Vector2(736, 144)
+ammo_family = "ThrowingKnives"
+
+[node name="AmmoCrate02" parent="AmmoSupplies" instance=ExtResource("ammo_crate_scn")]
+position = Vector2(1170, 144)
+
+[node name="AmmoBarrel02" parent="AmmoSupplies" instance=ExtResource("ammo_barrel_scn")]
+position = Vector2(2060, 144)
+ammo_family = "ThrowingKnives"
+
+[node name="AmmoCrate03" parent="AmmoSupplies" instance=ExtResource("ammo_crate_scn")]
+position = Vector2(2580, 128)
+
+[node name="AmmoBarrel03" parent="AmmoSupplies" instance=ExtResource("ammo_barrel_scn")]
+position = Vector2(3000, 240)
+ammo_family = "ThrowingKnives"
+
+[node name="AmmoCrate04" parent="AmmoSupplies" instance=ExtResource("ammo_crate_scn")]
+position = Vector2(3392, 240)
+ammo_family = "ThrowingKnives"
+
+[node name="AmmoBarrel04" parent="AmmoSupplies" instance=ExtResource("ammo_barrel_scn")]
+position = Vector2(3800, 144)

@@ -11,6 +11,8 @@ var starting_bank: int = 0
 var enemy_rewards: int = 0
 var offering_before: int = -1
 var offering_after: int = -1
+var supply_goal: float = NAN
+var supply_goal_y: float = 0.0
 func _init(scene_tree: SceneTree) -> void: tree = scene_tree
 func start(scene_path: String = "res://scenes/vertical_slice.tscn", existing_level: Node2D = null) -> void:
 	starting_bank = tree.root.get_node("Progression").banked_bonus
@@ -72,6 +74,10 @@ func step(direction: float, combat := true) -> void:
 	Input.action_release("move_left")
 	Input.action_release("move_right")
 	Input.action_release("attack")
+	if not is_nan(supply_goal) and (absf(supply_goal - player.global_position.x) > 36.0 or absf(supply_goal_y - player.global_position.y) > 24.0):
+		# A detour, fight or jump can leave the pickup behind. Never chase it
+		# back across authored gaps after the original opportunity has passed.
+		supply_goal = NAN
 	if combat:
 		for enemy in level.get_node("Enemies").get_children():
 			if enemy.dead: continue
@@ -88,6 +94,31 @@ func step(direction: float, combat := true) -> void:
 				if gap < 28.0 and (player.attack_time > 0.0 or player.attack_cooldown <= 0.05):
 					Input.action_press("attack")
 				break
+		# The pilot already fights with Sword. Harvest nearby authored supplies
+		# with that same F input, then cross the drop location for body pickup.
+		var supplies := level.get_node_or_null("AmmoSupplies")
+		if supplies != null and player.is_on_floor():
+			var danger := false
+			for enemy in level.get_node("Enemies").get_children():
+				if not enemy.dead and absf(enemy.position.y - player.position.y) < 24.0 and absf(enemy.position.x - player.position.x) < 60.0: danger = true
+			if not danger:
+				var supply: Node2D
+				for prop in supplies.get_children():
+					if not prop.has_method("receive_player_attack") or prop.broken: continue
+					var offset: Vector2 = prop.global_position - player.global_position
+					if absf(offset.y) < 24.0 and absf(offset.x) < 32.0 and player.ammo[prop.ammo_family] < player.AMMO_CAPS[prop.ammo_family]:
+						supply = prop
+						break
+				if supply != null:
+					supply_goal = supply.global_position.x
+					supply_goal_y = supply.global_position.y
+					var offset: float = supply_goal - player.global_position.x
+					direction = signf(offset) if absf(offset) > 20.0 or player.facing != int(signf(offset)) else 0.0
+					if absf(offset) < 28.0: Input.action_press("attack")
+				elif not is_nan(supply_goal):
+					var offset: float = supply_goal - player.global_position.x
+					direction = signf(offset) if absf(offset) > 3.0 else 0.0
+					if absf(offset) <= 3.0: supply_goal = NAN
 	if direction < 0: Input.action_press("move_left")
 	if direction > 0: Input.action_press("move_right")
 	await tree.physics_frame

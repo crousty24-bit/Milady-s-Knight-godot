@@ -2,6 +2,7 @@
 # Default: N2–4 lower forks. Add -- upper for upper forks plus the N4 paid HP room.
 # Never moves an actor or edits health, coins, enemies, or terrain during the route.
 extends SceneTree
+const AMMO_ROUTE_SEED = 210307
 const N1_DRIVER = preload("res://tests/route_driver.gd")
 const PATHS = ["res://scenes/blight_town.tscn", "res://scenes/black_forrest.tscn", "res://scenes/forbidden_graveyard.tscn"]
 const TRAP_BOLT = preload("res://scripts/trap_projectile.gd")
@@ -13,7 +14,10 @@ var failures := 0
 var route_failed := false
 var dodge_ticks := 0
 var dodging := false
+var dodge_direction := 0.0
 var upper_route := false
+var supply_goal: float = NAN
+var supply_goal_y: float = 0.0
 func _initialize() -> void: call_deferred("run")
 func check(ok: bool, label: String) -> void:
 	checks += 1
@@ -31,6 +35,62 @@ func tap(action: String) -> void:
 	await frames(2)
 	Input.action_release(action)
 	await frames(3)
+func retreat_direction(side: float, distance: float = 18.0) -> float:
+	var edge := player.global_position + Vector2(-side * distance, 0)
+	var ground := PhysicsRayQueryParameters2D.create(edge + Vector2(0, -8), edge + Vector2(0, 16), 1)
+	var footing := player.get_world_2d().direct_space_state.intersect_ray(ground)
+	if footing.is_empty() or footing.collider != level.get_node("Terrain"): return 0.0
+	for enemy in get_nodes_in_group("enemies"):
+		if level.is_ancestor_of(enemy) and not enemy.dead and absf(enemy.global_position.x - edge.x) < 40.0 and absf(enemy.global_position.y - edge.y) < 24.0: return 0.0
+	for hazard in level.get_node("Hazards").get_children():
+		if absf(hazard.global_position.x - edge.x) < 34 and absf(hazard.global_position.y - edge.y) < 24: return 0.0
+	return -side
+func seed_supplies(at: Node2D, number: int) -> void:
+	# Stable randomness in this test only; seed once at each level start.
+	at.chest_economy.rng.seed = AMMO_ROUTE_SEED + number * 100 + 99
+	var supplies := at.get_node_or_null("AmmoSupplies")
+	if supplies == null: return
+	for index in supplies.get_child_count():
+		var prop := supplies.get_child(index)
+		prop.rng.seed = AMMO_ROUTE_SEED + number * 100 + index
+		prop.destroyed.connect(func(amount: int): print("ROUTE supply destroyed ", prop.name, " family=", prop.ammo_family, " amount=", amount))
+	print("ROUTE supply seed base=", AMMO_ROUTE_SEED, " level=", number)
+func buy_nearby_common() -> void:
+	if route_failed: return
+	var chest := level.get_node_or_null("Items/CommonChest")
+	if chest == null or chest.consumed or not chest.player_near(): return
+	var price: int = level.chest_economy.price(chest.kind, level.world_level)
+	var progress = root.get_node("Progression")
+	if progress.banked_shards + level.bonus < price: return
+	release()
+	var before: int = progress.banked_shards + level.bonus
+	var stocks: Dictionary = player.ammo.duplicate()
+	await tap("interact")
+	check(level.modal == "reward" and before - progress.banked_shards - level.bonus == price, "N%d real common chest pays %d earned shards" % [level.world_level, price])
+	if level.modal != "reward": return
+	print("ROUTE actual paid offer ", level.reward_choices, " equipment=", player.equipment)
+	var choice := 0
+	var best_gain := 1.0
+	for index in level.reward_choices.size():
+		var offered: String = level.reward_choices[index]
+		var stats := WeaponCatalog.stats(offered)
+		var current: String = str(player.equipment[stats.slot])
+		var existing := WeaponCatalog.stats(current)
+		var gain: float = (stats.damage / stats.interval) / (existing.damage / existing.interval)
+		if stats.slot == "ranged":
+			gain *= float(player.ammo.get(offered.left(-1), 0) + 1) / float(player.ammo.get(current.left(-1), 0) + 1)
+		if gain > best_gain:
+			best_gain = gain
+			choice = index
+	if best_gain <= 1.0:
+		await tap("pause") # Refuse an actual paid offer with no useful improvement.
+		print("ROUTE refuses paid offer without refund")
+		return
+	for index in choice: await tap("move_right")
+	var selected: String = level.reward_choices[choice]
+	await tap("interact")
+	check(level.modal.is_empty() and player.equipment[WeaponCatalog.stats(selected).slot] == selected and player.ammo == stocks, "actual reward selection equips " + selected + " without recharging ammunition")
+	print("ROUTE progression equipment=", player.equipment, " ammo=", player.ammo)
 func step(direction: float, combat := true) -> void:
 	if dodge_ticks > 0:
 		dodge_ticks -= 1
@@ -40,20 +100,60 @@ func step(direction: float, combat := true) -> void:
 	Input.action_release("move_left")
 	Input.action_release("move_right")
 	Input.action_release("attack")
+	if not is_nan(supply_goal) and (absf(supply_goal - player.global_position.x) > 36.0 or absf(supply_goal_y - player.global_position.y) > 24.0):
+		# A detour, fight or jump can leave the pickup behind. Never chase it
+		# back across authored gaps after the original opportunity has passed.
+		supply_goal = NAN
 	if combat:
+		var family: String = str(player.equipment.ranged).left(-1)
+		if player.active_slot == 1 and player.ammo.get(family, 1) <= 0 and player.controls_enabled and player.hit_stun_time <= 0.0:
+			# Empty held F cannot stop the waypoint indefinitely: choose Sword
+			# with actual A input, without refilling or editing the player's state.
+			await tap("switch_equipment")
+			print("ROUTE empty reserve switches to melee at=", player.position, " ammo=", player.ammo)
 		var closest: Node2D
+		var closest_blocker: Node2D
 		var closest_gap := 280.0
 		for enemy in get_nodes_in_group("enemies"):
 			if not level.is_ancestor_of(enemy) or enemy.dead: continue
 			var difference: Vector2 = enemy.global_position - player.global_position
 			if absf(difference.y) > 24.0 or absf(difference.x) >= closest_gap: continue
 			var origin := player.global_position + Vector2(4 * signf(difference.x), -10)
-			var ray := PhysicsRayQueryParameters2D.create(origin, Vector2(enemy.global_position.x, origin.y), 1 | 4)
+			var ray := PhysicsRayQueryParameters2D.create(origin, Vector2(enemy.global_position.x, origin.y), 1 | 4 | 16)
+			ray.hit_from_inside = true
 			var hit := player.get_world_2d().direct_space_state.intersect_ray(ray)
-			if hit.is_empty() or hit.collider != enemy: continue
+			if hit.is_empty(): continue
+			if hit.collider != enemy and not hit.collider.has_method("receive_player_attack"): continue
+			closest_blocker = hit.collider if hit.collider != enemy else null
 			closest = enemy
 			closest_gap = absf(difference.x)
-		if closest != null and player.is_on_floor():
+		var supply: Node2D
+		var supplies := level.get_node_or_null("AmmoSupplies")
+		if supplies != null and player.is_on_floor():
+			for prop in supplies.get_children():
+				if not prop.has_method("receive_player_attack") or prop.broken: continue
+				var offset: Vector2 = prop.global_position - player.global_position
+				if absf(offset.y) < 24.0 and absf(offset.x) < 32.0 and (closest_gap > 60.0 or prop == closest_blocker):
+					supply = prop
+					break
+		if supply != null:
+			if player.active_slot == 1: await tap("switch_equipment")
+			supply_goal = supply.global_position.x
+			supply_goal_y = supply.global_position.y
+			var offset: float = supply_goal - player.global_position.x
+			direction = signf(offset) if absf(offset) > 20.0 or player.facing != int(signf(offset)) else 0.0
+			if absf(offset) < 28.0: Input.action_press("attack")
+		elif not is_nan(supply_goal) and closest_gap > 60.0:
+			# Walk through the actual drop location, including the zero-drop case.
+			var offset: float = supply_goal - player.global_position.x
+			direction = signf(offset) if absf(offset) > 3.0 else 0.0
+			if absf(offset) <= 3.0: supply_goal = NAN
+		elif player.active_slot == 0 and player.is_on_floor() and player.ammo.get(family, 0) > 0 and closest_gap > 60.0 and is_nan(supply_goal) and player.attack_time <= 0.0 and player.controls_enabled and player.hit_stun_time <= 0.0:
+			await tap("switch_equipment")
+		if closest != null and closest_blocker == null and player.active_slot == 1 and player.bow_cooldown > 0.02 and closest_gap < 60.0 and player.controls_enabled and player.hit_stun_time <= 0.0:
+			# Finish a nearby pursuer with the blade during the long bow recovery.
+			await tap("switch_equipment")
+		if closest != null and closest_blocker == null and player.is_on_floor() and player.active_slot == 1:
 			var side := signf(closest.global_position.x - player.global_position.x)
 			var reach: float = WeaponCatalog.stats(player.equipment.ranged).reach - 16.0
 			if closest_gap <= reach:
@@ -63,27 +163,35 @@ func step(direction: float, combat := true) -> void:
 					direction = side if player.facing != int(side) else 0.0
 					Input.action_press("attack")
 				elif closest_gap < reach:
-					var edge := player.global_position + Vector2(-side * 18.0, 0)
-					var ground := PhysicsRayQueryParameters2D.create(edge + Vector2(0, -8), edge + Vector2(0, 16), 1)
-					var footing := player.get_world_2d().direct_space_state.intersect_ray(ground)
-					direction = -side if not footing.is_empty() and footing.collider == level.get_node("Terrain") else 0.0
-					for hazard in level.get_node("Hazards").get_children():
-						if absf(hazard.global_position.x - edge.x) < 34 and absf(hazard.global_position.y - edge.y) < 24:
-							direction = 0.0
+					direction = retreat_direction(side)
 				else:
 					direction = 0.0
 			# Beyond bow reach, continue the authored route; chasing a target
 			# behind across a gap would abandon the planned platform landing.
-		if closest is SliceSlime and closest_gap < 38.0 and player.is_on_floor() and not dodging:
+		var striking_gap: float = WeaponCatalog.stats(player.equipment.melee).reach + 6.0
+		if closest != null and player.active_slot == 0 and closest_gap < striking_gap + 12.0:
+			# Account for the real equipped blade and guard body, including
+			# equipment acquired through the campaign chests.
+			var side := signf(closest.global_position.x - player.global_position.x)
+			if player.is_on_floor():
+				if player.attack_time > 0.0 or player.attack_cooldown <= 0.05:
+					direction = side if closest_gap > striking_gap or player.facing != int(side) else 0.0
+				else:
+					direction = side if closest_gap > striking_gap + 1.0 else (-side if closest_gap < striking_gap - 1.0 else 0.0)
+			if closest_gap < striking_gap + 5.0 and (player.attack_time > 0.0 or player.attack_cooldown <= 0.05):
+				Input.action_press("attack")
+		if closest is SliceSlime and closest_gap < (38.0 if player.active_slot == 1 else 20.0) and player.is_on_floor() and not dodging:
 			# Contact guards can reach the player before Longbow0 recovers.
 			# Evade through real jump input, as for a telegraphed melee attack.
 			Input.action_press("jump")
 			dodge_ticks = 18
 			dodging = true
+			dodge_direction = retreat_direction(signf(closest.global_position.x - player.global_position.x), 80.0)
 		if closest != null and closest.get_script() == preload("res://scripts/run019_enemy.gd") and closest.pending_attack == &"melee" and closest.windup_time > 0.0 and player.is_on_floor() and not dodging:
 			Input.action_press("jump")
 			dodge_ticks = 18
 			dodging = true
+			dodge_direction = retreat_direction(signf(closest.global_position.x - player.global_position.x), 80.0)
 		if player.is_on_floor() and not dodging:
 			var projectiles: Array[Node] = level.get_node("Hazards").get_children()
 			for enemy in get_nodes_in_group("enemies"):
@@ -102,10 +210,19 @@ func step(direction: float, combat := true) -> void:
 					Input.action_press("jump")
 					dodge_ticks = 8
 					dodging = true
+					dodge_direction = direction
 					break
 		# Keep the chosen movement while evading: stopping throughout a jump
 		# lets a chasing melee enemy reach the landing point.
 
+		if dodging and not player.is_on_floor(): direction = dodge_direction
+	elif player.active_slot == 0 and not player.is_on_floor():
+		# Scripted traversal keeps its steering, but a close airborne Sword hit
+		# is still possible through F; do not land silently on a live guard.
+		for enemy in get_nodes_in_group("enemies"):
+			if level.is_ancestor_of(enemy) and not enemy.dead and absf(enemy.global_position.y - player.global_position.y) < 20.0 and absf(enemy.global_position.x - player.global_position.x) < 35.0:
+				Input.action_press("attack")
+				break
 	if direction > 0: Input.action_press("move_right")
 	if direction < 0: Input.action_press("move_left")
 	await frames(1)
@@ -120,15 +237,21 @@ func walk(target: float, combat := true) -> void:
 			return
 		await step(signf(target - player.position.x), combat)
 	print("ROUTE stuck walk ", target, " at ", player.position, " hp=", player.health, " coins=", level.gold)
-	print("ROUTE state face=", player.facing, " slot=", player.active_slot, " cooldown=", player.bow_cooldown, " controls=", player.controls_enabled)
+	print("ROUTE state face=", player.facing, " slot=", player.active_slot, " cooldown=", player.bow_cooldown, " controls=", player.controls_enabled, " ammo=", player.ammo)
 	for enemy in get_nodes_in_group("enemies"):
 		if level.is_ancestor_of(enemy): print("ROUTE enemy ", enemy.name, " at=", enemy.global_position, " hp=", enemy.health)
 	route_failed = true
 func jump(target: float, clear_rise := 0.0) -> void:
 	if route_failed: return
-	for _tick in 120:
-		if player.hit_stun_time <= 0.0 and player.is_on_floor(): break
-		await step(0, false)
+	for _tick in 600:
+		if route_failed: return
+		var threatened := false
+		for enemy in get_nodes_in_group("enemies"):
+			if level.is_ancestor_of(enemy) and not enemy.dead and absf(enemy.global_position.y - player.global_position.y) < 24.0 and absf(enemy.global_position.x - player.global_position.x) < 45.0:
+				threatened = true
+		if player.hit_stun_time <= 0.0 and player.is_on_floor() and not threatened: break
+		# Do not abandon a live adjacent guard while waiting to take off.
+		await step(0)
 	# Near a tall solid face, rise before moving instead of demanding a wall jump.
 	var launch_y := player.position.y
 	var cleared := clear_rise == 0.0
@@ -265,6 +388,7 @@ func route(number: int) -> void:
 					if player.is_on_floor(): break
 					await step(0, false)
 				await walk(1232)
+				await buy_nearby_common()
 				await cross(1294, 1392)
 				await cross(1404, 1488)
 				await jump(1528)
@@ -279,18 +403,10 @@ func route(number: int) -> void:
 			await jump(2048)
 			await walk(2240)
 			await walk(2288)
-			# Leave the market roof near its edge, rather than landing among
-			# both street guards while the scripted jump suppresses combat.
-			var street_guard := level.get_node("Enemies/Enemy07")
-			for _tick in 900:
-				if route_failed: return
-				if street_guard.dead or (street_guard.position.x > 2375 and street_guard.velocity.x > 0 and player.bow_cooldown <= 0.02): break
-				await step(0, false)
-			await walk(2312, false)
-			for _tick in 120:
-				if route_failed: return
-				if player.is_on_floor(): break
-				await step(0, false)
+			# Prepare the blade for the landing between nearby contact guards.
+			# Its aerial strike is driven by actual F input during traversal.
+			if player.active_slot == 1: await tap("switch_equipment")
+			await jump(2368)
 			await walk(2408)
 			await cross(2428, 2472)
 			if not upper_route: print("ROUTE N2 lower vault uses upper causeway to bypass closed authored lower lane")
@@ -324,6 +440,7 @@ func route(number: int) -> void:
 			else:
 				await walk(1344)
 				await cross(1446, 1536)
+				await buy_nearby_common()
 				await jump(1648)
 				await jump(1668)
 				await walk(1712)
@@ -480,6 +597,7 @@ func run() -> void:
 	progress.new_game()
 	var n1 = N1_DRIVER.new(self)
 	await n1.start("res://scenes/eidolon_vale.tscn")
+	seed_supplies(n1.level, 1)
 	await n1.walk(n1.level.tutorial_chest.position.x)
 	Input.action_press("interact")
 	await n1.step(0)
@@ -502,6 +620,7 @@ func run() -> void:
 			check(false, "campaign transition reaches expected N%d" % number)
 			break
 		player = level.player
+		seed_supplies(level, number)
 		player.health_changed.connect(func(value: float, _maximum: float) -> void:
 			print("ROUTE health ", value, " at=", player.position, " slot=", player.active_slot)
 			for enemy in get_nodes_in_group("enemies"):
@@ -509,10 +628,11 @@ func run() -> void:
 					print("ROUTE nearby ", enemy.name, " at=", enemy.position, " hp=", enemy.health))
 		await frames(5)
 		await tap("switch_equipment")
-		check(player.active_slot == 1, "N%d keyboard selects carried Longbow0" % number)
+		check(player.active_slot == 1, "N%d keyboard selects carried ranged weapon" % number)
 		route_failed = false
+		supply_goal = NAN
 		await route(number)
-		print("ROUTE N", number, " hp=", player.health, " pos=", player.position, " coins=", level.gold, " fail=", route_failed)
+		print("ROUTE N", number, " hp=", player.health, " pos=", player.position, " coins=", level.gold, " fail=", route_failed, " ammo=", player.ammo)
 		if route_failed: break
 		if number < 4:
 			await tap("interact")

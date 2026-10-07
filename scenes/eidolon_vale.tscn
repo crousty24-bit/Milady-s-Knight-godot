@@ -3,6 +3,8 @@
 [ext_resource type="PackedScene" path="res://scenes/vertical_slice.tscn" id="1"]
 [ext_resource type="Script" uid="uid://bp265b87c3oyh" path="res://scripts/spirit_art.gd" id="2"]
 [ext_resource type="AudioStream" uid="uid://brsorv0ctbl6w" path="res://assets/sounds/sfx_spirit_appear.wav" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/ammo_crate.tscn" id="ammo_crate_scn"]
+[ext_resource type="PackedScene" path="res://scenes/ammo_barrel.tscn" id="ammo_barrel_scn"]
 
 [node name="EidolonVale" unique_id=1879591143 instance=ExtResource("1")]
 n1_intro_enabled = true
@@ -16,3 +18,11 @@ position = Vector2(140, 144)
 [node name="Art" type="Node2D" parent="AncientSpirit" index="0" unique_id=2123825077]
 script = ExtResource("2")
 appearance_sound = ExtResource("3")
+
+[node name="AmmoSupplies" type="Node2D" parent="."]
+
+[node name="AmmoCrate01" parent="AmmoSupplies" instance=ExtResource("ammo_crate_scn")]
+position = Vector2(290, 144)
+
+[node name="AmmoBarrel01" parent="AmmoSupplies" instance=ExtResource("ammo_barrel_scn")]
+position = Vector2(1690, 144)

@@ -45,3 +45,16 @@ La correction traite la navigation sous la plateforme suspendue et la sortie fer
 Les tests natifs de cette reprise utilisent le terrain N2 intact et une chute physique du joueur. Bloated est le mob réel du niveau ; le même terrain avec substitution explicite par Chud est une fixture d’intégration de ce profil, pas un nouveau placement en production ni un parcours N1→N4.
 
 Vérification finale sur le code corrigé : **188/188 contrôles de navigation**, inclus dans **651PASS/21RESULT** (9suites avec les deux parcours,11sessions à froid et isolation), plus **46/46 contrôles rendus**. Les essais natifs vérifient acquisition après chute, toit, retour au sol gauche, absence de heurt du plafond et de pénétration du terrain, poursuite conservée ; les captures des deux profils sur le toit sont inspectées. Les38scènes correspondent à la baseline de cette reprise. Ces preuves ciblées incluent les systèmes IA touchés ; elles ne sont pas présentées comme une nouvelle commande globale de toutes les suites réussie. RUN-021 reste VERIFY pour ce comportement corrigé ; la validation précédente est conservée.
+
+
+## Nouvelle passe du 7 octobre — Piques et munitions
+
+La passe précédente est testée et validée par l’humain. Cette nouvelle passe a son propre playtest ; [règles validées](RUN-021_AMMO_SPIKES_PROPOSAL.md). Aucun nouvel équilibrage ou visuel présumé accepté.
+
+- Marcher dans les deux sens sur les piques RETRACTED/WARNING, sans saut ; vérifier danger et lisibilité à leur sortie. Rejouer les piques murales et les placements suspendus humains N2.
+- Observer le compteur Longbow courant/15, et courant/20 si Knives acquises. Tirer jusqu’à zéro : aucun projectile ; mêlée encore utilisable. Changer/améliorer l’arme sans recharge.
+- Casser une caisse et un tonneau à la mêlée ; traverser les props intacts ; vérifier flèches/couteaux visibles, drops et feedback de quantité réellement récupérée. À réserve presque pleine, vérifier que le reliquat reste au sol. Les quantités0/1/3/5 sont aléatoires : un prop vide n’est pas un bug.
+- Dans N2, relever le stock juste avant la sortie ; entrer dans N3 avec ce même stock. Y ramasser des munitions puis mourir/restart : retrouver le stock relevé à l’entrée de N3. Retour menu/Continue et relance du jeu doivent aussi restaurer ce snapshot, sans garder le loot de l’essai.
+- Juger le confort à réserve basse ou nulle, la visibilité du compteur, la présence des ravitaillements sur les routes, leur quantité et la lisibilité de la casse. Signaler niveau/repère/famille/stock initial si un passage obligatoire paraît nécessiter du tir.
+
+Positions exactes des26props dans le [manifeste d’intégration](RUN-021_AMMO_INTEGRATION_MANIFEST.md). Les captures natives de poses et fixtures de transactions ne constituent pas ce playtest ni une preuve d’équilibrage.
