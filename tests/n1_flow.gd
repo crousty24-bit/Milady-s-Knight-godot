@@ -60,7 +60,7 @@ func run() -> void:
 	await menu()
 	await tap("move_down")
 	await tap("interact")
-	check(current_scene.screen == "controls" and current_scene.menu.description.text.contains("next dialogue phrase"), "Controls exposes N1 Space contract through keyboard")
+	check(current_scene.screen == "controls" and current_scene.controls_menu.opened and current_scene.controls_menu.menu.description.text.contains(root.get_node("Controls").label("jump") + ": jump / next dialogue phrase"), "Controls exposes N1 Space contract through keyboard")
 	await tap("pause")
 	await tap("interact")
 	await frames(8)
@@ -125,7 +125,7 @@ func run() -> void:
 	level.player.projectile_fired.connect(func(_arrow: Node2D) -> void: shots += 1)
 	await tap("switch_equipment")
 	await tap("attack")
-	check(level.player.active_slot == 1 and shots == 1, "A selects bow and F fires an actual projectile")
+	check(level.player.active_slot == 1 and shots == 1, "Equipment switch selects bow and Attack fires an actual projectile")
 	await tap("switch_equipment")
 	level.player.position = level.minor_potion.position
 	level.player.velocity = Vector2.ZERO

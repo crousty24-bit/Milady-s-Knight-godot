@@ -1,4 +1,5 @@
 extends Node2D
+@onready var controls = get_node("/root/Controls")
 @export var n1_intro_enabled: bool = false
 @export_range(1, 10) var world_level: int = 1
 @export var camera_bounds := Rect2(0, -224, 2240, 528)
@@ -33,10 +34,10 @@ var dialogue_panel: CanvasLayer
 var tutorial_id: String = ""
 var dismissed_tutorials: Dictionary = {}
 const TUTORIALS = [
-	["n1_movement", 0.0, "The Eidolon Vale", "Arrows: move   Space: jump / double jump\nCollect coins for the exit. Slime kills give shards."],
-	["n1_combat", 280.0, "Weapons and health", "F (hold): attack / shoot   A: switch equipment\nSlimes hurt on contact. Watch your hearts."],
-	["n1_traversal", 450.0, "Two paths", "Explore above or below. Jump away from rough walls.\nAvoid spikes and falls. Escape: pause / restart."],
-	["n1_exit", 1940.0, "Healing and the exit", "The potion restores 0.5 HP and stays if health is full.\nPay 12 coins with E at the gate. Shards save at the exit."],
+	["n1_movement", 0.0, "The Eidolon Vale", "{move_left}/{move_right}: move   {jump}: jump / double jump\nCollect coins for the exit. Slime kills give shards."],
+	["n1_combat", 280.0, "Weapons and health", "{attack} (hold): attack / shoot   {switch_equipment}: equipment\nSlimes hurt on contact. Watch your hearts."],
+	["n1_traversal", 450.0, "Two paths", "Explore above or below. Jump away from rough walls.\nAvoid spikes and falls. {pause}: pause / restart."],
+	["n1_exit", 1940.0, "Healing and the exit", "The potion restores 0.5 HP and stays if health is full.\nPay 12 coins with {interact} at the gate. Shards save at the exit."],
 ]
 @export var void_y: float = 304.0
 @export_file("*.tscn") var next_level_scene: String = ""
@@ -64,6 +65,8 @@ var finished: bool = false
 var paused: bool = false
 var closing: bool = false
 const MENU = preload("res://scripts/keyboard_menu.gd")
+const CONTROLS_MENU = preload("res://scripts/controls_menu.gd")
+var controls_menu: CanvasLayer
 const CHEST_REVEAL = preload("res://scripts/chest_reveal.gd")
 var chest_reveal: CanvasLayer
 var modal: String = ""
@@ -91,6 +94,11 @@ func _ready() -> void:
 	add_child(pause_menu)
 	pause_menu.selected.connect(_pause_choice)
 	pause_menu.cancelled.connect(_close_pause)
+	controls_menu = CONTROLS_MENU.new()
+	add_child(controls_menu)
+	controls_menu.closed.connect(_return_from_controls)
+	resume_pending = controls.menu_inputs_held()
+	if resume_pending: player.controls_enabled = false
 	chest_reveal = CHEST_REVEAL.new()
 	add_child(chest_reveal)
 	chest_reveal.revealed.connect(_on_chest_revealed)
@@ -161,7 +169,7 @@ func _process(delta: float) -> void:
 		_process_n1_cinematic(delta)
 		return
 	if resume_pending:
-		if not Input.is_action_pressed("interact") and not Input.is_action_pressed("attack") and not Input.is_action_pressed("jump") and not Input.is_action_pressed("pause"):
+		if not controls.menu_inputs_held():
 			resume_pending = false
 			player.controls_enabled = true
 		return
@@ -194,26 +202,26 @@ func _process(delta: float) -> void:
 	for chest in get_tree().get_nodes_in_group("reward_chests"):
 		if not is_ancestor_of(chest) or chest.consumed or not chest.player_near(): continue
 		var price: int = chest_economy.price(chest.kind, world_level)
-		var text := "E: retry save" if chest.save_failed else "E: Open, %d shards" % price
+		var text: String = controls.label("interact") + ": retry save" if chest.save_failed else "%s: Open, %d shards" % [controls.label("interact"), price]
 		if price < 0: text = "Chest unavailable"
 		hud.show_item_prompt(chest.global_position + Vector2(0, -44), text)
 		if Input.is_action_just_pressed("interact"):
 			if not open_reward_chest(chest): hud.flash_prompt_failure()
 		return
 	if is_instance_valid(tutorial_chest) and tutorial_chest.player_near() and not tutorial_chest.consumed:
-		hud.show_item_prompt(tutorial_chest.global_position + Vector2(0, -44), "E: retry save" if tutorial_chest.save_failed else "E: free Longbow 0")
+		hud.show_item_prompt(tutorial_chest.global_position + Vector2(0, -44), controls.label("interact") + ": retry save" if tutorial_chest.save_failed else controls.label("interact") + ": free Longbow 0")
 		if Input.is_action_just_pressed("interact"):
-			if request_context("Free tutorial chest", "Longbow 0: 1 DMG / 2.2 s / 11 blocks\nA: select weapon   F (hold): attack / shoot", ["Accept Longbow 0", "Refuse"], _choose_tutorial_reward):
+			if request_context("Free tutorial chest", _control_text("Longbow 0: 1 DMG / 2.2 s / 11 blocks\n{switch_equipment}: equipment   {attack} (hold): attack / shoot"), ["Accept Longbow 0", "Refuse"], _choose_tutorial_reward):
 				tutorial_chest.consume()
 		return
 	for button in get_tree().get_nodes_in_group("mechanism_buttons"):
 		if not is_ancestor_of(button) or not button.can_use(player): continue
-		hud.show_item_prompt(button.global_position + Vector2(0, -32), "E: Activate")
+		hud.show_item_prompt(button.global_position + Vector2(0, -32), controls.label("interact") + ": Activate")
 		if Input.is_action_just_pressed("interact"): try_mechanism(button)
 		return
 	for door in get_tree().get_nodes_in_group("secondary_doors"):
 		if not is_ancestor_of(door) or not door.can_use(player): continue
-		hud.show_item_prompt(door.global_position + Vector2(0, -48), "E: Open, %d coins" % door.coin_cost)
+		hud.show_item_prompt(door.global_position + Vector2(0, -48), "%s: Open, %d coins" % [controls.label("interact"), door.coin_cost])
 		if Input.is_action_just_pressed("interact") and not try_secondary_door(door): hud.flash_prompt_failure()
 		return
 	if gate.player_near() and not gate.opened:
@@ -298,11 +306,11 @@ func _settle_reward() -> void:
 	var destination: String = scene_file_path if next_level_scene.is_empty() else next_level_scene
 	var error: Error = progression.settle_level(bonus, destination, player.ammo if destination != scene_file_path else {})
 	if error != OK:
-		hud.set_overlay("Level complete", "Shards not saved.\nE: retry saving")
+		hud.set_overlay("Level complete", _control_text("Shards not saved.\n{interact}: retry saving"))
 		return
 	reward_settled = true
 	_update_gold_hud()
-	var action: String = "E: next level" if not next_level_scene.is_empty() else "E: replay"
+	var action: String = controls.label("interact") + (": next level" if not next_level_scene.is_empty() else ": replay")
 	hud.set_overlay("Level complete", "+%d shards saved  |  Bank %d\n%s" % [bonus, progression.banked_bonus, action])
 
 func _next_level() -> void:
@@ -311,7 +319,7 @@ func _next_level() -> void:
 	if error != OK:
 		transitioning = false
 		get_tree().paused = true
-		hud.set_overlay("Next level unavailable", "Your shards are saved.\nE: retry")
+		hud.set_overlay("Next level unavailable", _control_text("Your shards are saved.\n{interact}: retry"))
 
 func _announce_ammo(family: String, amount: int) -> void:
 	if amount > 0 and not player.dead: feedback_text.push("+%d %s" % [amount, "KNIVES" if family == "ThrowingKnives" else "ARROWS"], AMMO_TEXT)
@@ -337,6 +345,7 @@ func _on_died() -> void:
 	modal = "death"
 	resume_pending = false
 	pause_menu.close()
+	controls_menu.close()
 	if is_instance_valid(dialogue_panel): dialogue_panel.close()
 	if n1_intro_enabled:
 		if player.resurrection_active: player.finish_resurrection()
@@ -372,7 +381,7 @@ func _open_pause() -> void:
 	player.controls_enabled = false
 	get_tree().paused = true
 	hud.hide_prompt()
-	pause_menu.show_menu("Paused", "Arrows: select   E: confirm   Escape: resume", ["Resume", "Restart", "Quit to menu"])
+	pause_menu.show_menu("Paused", controls.menu_hint(), ["Resume", "Restart", "Quit to menu", "Controls"])
 
 func _close_pause() -> void:
 	if modal not in ["pause", "context", "reward"]: return
@@ -412,9 +421,16 @@ func _pause_choice(index: int) -> void:
 			get_tree().paused = false
 			progression.announced_level = ""
 			progression.change_level("res://scenes/game.tscn")
+		3:
+			modal = "controls"
+			pause_menu.close()
+			controls_menu.open()
+
+func _return_from_controls() -> void:
+	if modal == "controls": _open_pause()
 
 func _release_menu_inputs() -> void:
-	for action in ["interact", "attack", "jump", "pause", "move_left", "move_right"]:
+	for action in controls.ACTIONS:
 		Input.action_release(action)
 
 # Rewards and tutorials share the exclusive modal owner.
@@ -489,8 +505,8 @@ func _show_paid_reward(error: bool = false, selected_index: int = 0) -> void:
 	if not active_reward.offer.upgrade.is_empty():
 		reward_choices.append(active_reward.offer.upgrade)
 		options.append("Upgrade +1\n" + WeaponCatalog.label(active_reward.offer.upgrade))
-	var detail := "Left/Right: select   E: accept   Escape: refuse\nPaid. Refusal does not refund shards."
-	if error: detail = "Unable to save. E: retry   Escape: refuse\nYour previous equipment is protected."
+	var detail: String = controls.menu_hint(true) + "\nPaid. Refusal does not refund shards."
+	if error: detail = _control_text("Unable to save. {interact}: retry   {pause}: refuse\nYour previous equipment is protected.")
 	pause_menu.show_menu("Rare chest" if active_reward.kind == "rare" else "Common chest", detail, options, [], true)
 	if selected_index > 0:
 		pause_menu.selection = selected_index
@@ -538,7 +554,7 @@ func _show_n1_tutorial() -> bool:
 	for item in TUTORIALS:
 		var id: String = item[0]
 		if player.position.x < item[1] or progression.completed_dialogues.has(id) or dismissed_tutorials.has(id): continue
-		if request_context(item[2], item[3], ["Continue"], _complete_tutorial.bind(id)):
+		if request_context(item[2], _control_text(item[3]), ["Continue"], _complete_tutorial.bind(id)):
 			tutorial_id = id
 			return true
 	return false
@@ -553,7 +569,7 @@ func _tutorial_save_error(id: String) -> void:
 	if player.dead or finished or not modal.is_empty(): return
 	# This is the continuation of the context, so it can reacquire before resume.
 	resume_pending = false
-	if request_context("Tutorial not saved", "Your previous progress is protected.\nE: retry saving   Escape: return", ["Retry"], _complete_tutorial.bind(id)):
+	if request_context("Tutorial not saved", _control_text("Your previous progress is protected.\n{interact}: retry saving   {pause}: return"), ["Retry"], _complete_tutorial.bind(id)):
 		tutorial_id = id
 
 # The level owns sequence timing/persistence; the art scripts only render these states.
@@ -579,7 +595,7 @@ func _begin_resurrection() -> void:
 	# Claim this first spawn before playback; death, restart and cold Continue cannot replay it.
 	if progression.set_permanent_flag(RESURRECTION_ID) != OK:
 		modal = "resurrection_save"
-		pause_menu.show_menu("Unable to start the introduction", "Progress not saved. Your previous save is protected.\nE: retry saving", ["Retry"])
+		pause_menu.show_menu("Unable to start the introduction", _control_text("Progress not saved. Your previous save is protected.\n{interact}: retry saving"), ["Retry"])
 		return
 	pause_menu.close()
 	modal = "resurrection"
@@ -663,3 +679,8 @@ func _include_camera_height(bounds: Rect2, world_y: float, padding: float) -> Re
 	# Retain the existing lower framing unless new content extends below it.
 	if world_y > camera_bounds.end.y: bottom = maxf(bottom, world_y + padding)
 	return Rect2(Vector2(bounds.position.x, top), Vector2(bounds.size.x, bottom - top))
+
+func _control_text(text: String) -> String:
+	for action in controls.ACTIONS:
+		text = text.replace("{" + action + "}", controls.label(action))
+	return text

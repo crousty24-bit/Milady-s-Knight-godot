@@ -99,13 +99,13 @@ func run() -> void:
 	player.velocity = Vector2.ZERO
 	player.facing = 1
 	await frames()
-	var key := InputEventKey.new()
-	key.keycode = KEY_F
+	var key := InputEventMouseButton.new()
+	key.button_index = MOUSE_BUTTON_LEFT
 	key.pressed = true
 	Input.parse_input_event(key)
 	await frames(24)
-	key = InputEventKey.new()
-	key.keycode = KEY_F
+	key = InputEventMouseButton.new()
+	key.button_index = MOUSE_BUTTON_LEFT
 	key.pressed = false
 	Input.parse_input_event(key)
 	await frames(4)

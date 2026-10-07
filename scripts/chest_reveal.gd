@@ -1,4 +1,5 @@
 extends CanvasLayer
+@onready var controls = get_node("/root/Controls")
 # RUN-021 presentation (Claude): paid chest reveal between payment and the reward cards. A
 # "Treasure Found!" window waits for Open (E or a click); the chest then rattles, opens and
 # releases a widening beam of light over a crescendo, ending in a flash that uncovers the cards.
@@ -185,7 +186,7 @@ func present(chest_kind: String) -> void:
 	_rng.seed = 21018 if kind == "rare" else 21017  # same sparkle pattern on every opening
 	(_kind_icon.texture as AtlasTexture).region = Rect2(12 if kind == "rare" else 0, 0, 12, 12)
 	subtitle.text = "Rare chest" if kind == "rare" else "Common chest"
-	hint.text = "E: open"
+	hint.text = controls.label("interact") + ": open"
 	button.show()
 	for cursor in _cursors: cursor.show()
 	window.show()
@@ -199,7 +200,7 @@ func open() -> void:
 	if stage != "intro": return
 	stage = "reveal"
 	elapsed = 0.0
-	hint.text = "Space: skip"
+	hint.text = controls.label("jump") + ": skip"
 	button.hide()
 	for cursor in _cursors: cursor.hide()
 	_play(_rise)
@@ -211,7 +212,9 @@ func skip() -> void:
 
 func _on_button_input(event: InputEvent) -> void:
 	var click := event as InputEventMouseButton
-	if click != null and click.pressed and click.button_index == MOUSE_BUTTON_LEFT: open()
+	if click != null and click.pressed and click.button_index == MOUSE_BUTTON_LEFT:
+		get_viewport().set_input_as_handled()
+		if Engine.get_process_frames() > opened_frame: open()
 
 func _process(delta: float) -> void:
 	if stage.is_empty(): return

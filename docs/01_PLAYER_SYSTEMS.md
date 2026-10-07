@@ -1,5 +1,7 @@
 # Milady's Knight — Player Systems
 
+Les attributions clavier/souris et les capacités réservées sont définies dans [10_CONTROLS_KEYBINDS.md](10_CONTROLS_KEYBINDS.md). Les mentions Space/ESC historiques ci-dessous désignent les commandes Saut/Pause, personnalisables.
+
 ## système mouvement et plateforme (joueur)
 - système mouvement et plateforme (joueur) : interface 2D qui permet un déplacement vertical/horizontal
 	- jump entre d'un élément à l'autre ou libre dans l'environnement du niveau
@@ -30,10 +32,10 @@ Ce calcul règle uniquement la caméra : agrandir une zone jouable peut aussi n�
 
 ## système de combat (joueur) :
 - système de combat (joueur) :
-	- attaque mêlée simple : directionnelle continue quand la touche Attaque est maintenue (F) ; touche (hit) le mob quand à portée (RANGE) et inflige dégât au contact
-	- attaque à distance (tir) : directionnelle continue quand la touche Attaque est maintenue (F) ; touche le mob et inflige dégât au contact ; les projectiles tirés ont une trajectoire en ligne droite depuis l'emplacement initial du joueur (au moment où il a tiré) ; un projectile à une portée maximale à laquelle celui-ci disparaît s'il n'est entré en contact avec aucun mobs/éléments de terrain
+	- attaque mêlée simple : directionnelle continue quand la touche Attaque est maintenue (commande Attaque) ; touche (hit) le mob quand à portée (RANGE) et inflige dégât au contact
+	- attaque à distance (tir) : directionnelle continue quand la touche Attaque est maintenue (commande Attaque) ; touche le mob et inflige dégât au contact ; les projectiles tirés ont une trajectoire en ligne droite depuis l'emplacement initial du joueur (au moment où il a tiré) ; un projectile à une portée maximale à laquelle celui-ci disparaît s'il n'est entré en contact avec aucun mobs/éléments de terrain
 	- attaque sautée (mêlée) : le joueur peut effectuer des attaques de mêlée simple pendant un jump ou un double jump ; il ne peut pas attaquer durant un wall slide
-	- attaque d'atterissage (mêlée) : lorsque le joueur est dans les airs UNIQUEMENT APRES un double jump OU une chute de X hauteur (à définir), il peut faire une attaque d'impact à l'atterissage sur le terrain quand la touche (G) est appuyé ; ce type d'attaque permet d'infliger des dégâts de zone autour du joueur lors de l'impact (égal au dégâts de l'arme de mêlée équipée) ; l'attaque a donc une animation dédiée qui fait plonger le joueur directement vers le bas (en ligne droite) depuis son point initial dans les airs (au moment où il appuie sur la touche)
+	- attaque d'atterissage (mêlée) : lorsque le joueur est dans les airs UNIQUEMENT APRES un double jump OU une chute de X hauteur (à définir), il peut faire une attaque d'impact à l'atterissage sur le terrain quand la commande Impact est pressée ; ce type d'attaque permet d'infliger des dégâts de zone autour du joueur lors de l'impact (égal au dégâts de l'arme de mêlée équipée) ; l'attaque a donc une animation dédiée qui fait plonger le joueur directement vers le bas (en ligne droite) depuis son point initial dans les airs (au moment où il appuie sur la touche)
 	- les attaques et les dégâts infligés varient selon l'item équipé : type d'item, niveau d'item
 
 ## système de transition, pause du jeu
@@ -98,10 +100,10 @@ Ce calcul règle uniquement la caméra : agrandir une zone jouable peut aussi n�
 			- le joueur subit un dégâts suite à une collision avec un mob swarm (Possessed Skulls) : invincibilité temporaire uniquement
 	- **ATTAQUES = HIT/ COUPS**
 		- une attaque est l'action de donner des coups/hit
-		- une attaque de mêlée donne des hit répétés en continus lorsque la touche d'attaque est maintenue (hold) ; idem pour le tir ; hold (F)→ attaques (hits) répétées selon ATK SPEED de l'arme équipée
+		- une attaque de mêlée donne des hit répétés en continus lorsque la touche d'attaque est maintenue (hold) ; idem pour le tir ; maintien Attaque → attaques (hits) répétées selon ATK SPEED de l'arme équipée
 		- les attaques infligent des dégâts basés sur les DMG de l'arme équipée et de son ATK SPEED (= DPS)
 		- le système doit garantir qu’une attaque ne provoque qu’un nombre de hits prévu et ne puisse pas infliger des dégâts à chaque frame physique : l’ATK SPEED correspond à un intervalle en secondes => cette règle doit rester la référence du système de dégâts
-		- présentation de la mêlée (décision RUN-029) : les hits successifs d’une attaque maintenue enchaînent visuellement trois mouvements d’épée (taille, revers fendant, frappe à deux mains), puis reprennent au premier ; l’animation continue entre deux hits tant que F est maintenue. Chaque mouvement reste un seul hit : dégâts, ATK SPEED, fenêtre et zone de contact sont identiques
+		- présentation de la mêlée (décision RUN-029) : les hits successifs d’une attaque maintenue enchaînent visuellement trois mouvements d’épée (taille, revers fendant, frappe à deux mains), puis reprennent au premier ; l’animation continue entre deux hits tant que la commande Attaque est maintenue. Chaque mouvement reste un seul hit : dégâts, ATK SPEED, fenêtre et zone de contact sont identiques
 	- **MORT = RESET**
 		- quand les HP du joueur sont réduit à zéro : mort du joueur et reset de la progression au début du niveau.
 

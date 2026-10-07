@@ -58,6 +58,7 @@ var logo: TextureRect
 var _drawn_key: String = ""
 var _drawn_selection: int = -1
 var _last_cue: String = ""
+var _handled_frame: int = -1
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -195,6 +196,7 @@ func show_menu(title: String, detail: String, options: Array, disabled: Array = 
 	description.text = detail
 	opened = true
 	opened_frame = Engine.get_process_frames()
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	panel.show()
 	_redraw_rows()
 
@@ -356,16 +358,52 @@ func _exit_tree() -> void:
 	var player := get_tree().root.get_node_or_null("UiSfx") as AudioStreamPlayer
 	if player != null: player.stop()
 
+func _activate() -> void:
+	if selection in unavailable or choices.is_empty(): return
+	_handled_frame = Engine.get_process_frames()
+	selected.emit(selection)
+
+func _move_selection(direction: int) -> void:
+	if choices.is_empty(): return
+	for i in range(choices.size()):
+		selection = posmod(selection + direction, choices.size())
+		if selection not in unavailable: break
+	_redraw_rows()
+
+func _input(event: InputEvent) -> void:
+	if not opened: return
+	if event is InputEventMouse:
+		# All mouse presses belong to the modal, including clicks outside its rows.
+		if event is InputEventMouseButton:
+			get_viewport().set_input_as_handled()
+		if Engine.get_process_frames() <= opened_frame: return
+		for i in range(rows.get_child_count()):
+			if rows.get_child(i).get_global_rect().has_point(event.position):
+				if i not in unavailable and selection != i:
+					selection = i
+					_redraw_rows()
+				if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed and i not in unavailable:
+					if _handled_frame != Engine.get_process_frames(): _activate()
+				return
+	elif event is InputEventKey and event.pressed and not event.echo:
+		if Engine.get_process_frames() <= opened_frame: return
+		var key: int = event.keycode
+		if key not in [KEY_ESCAPE, KEY_ENTER, KEY_KP_ENTER, KEY_LEFT, KEY_RIGHT, KEY_UP, KEY_DOWN]: return
+		get_viewport().set_input_as_handled()
+		if _handled_frame == Engine.get_process_frames(): return
+		_handled_frame = Engine.get_process_frames()
+		if key == KEY_ESCAPE: cancelled.emit()
+		elif key in [KEY_ENTER, KEY_KP_ENTER]: _activate()
+		elif horizontal_choices and key in [KEY_LEFT, KEY_RIGHT]: _move_selection(1 if key == KEY_RIGHT else -1)
+		elif not horizontal_choices and key in [KEY_UP, KEY_DOWN]: _move_selection(1 if key == KEY_DOWN else -1)
+
 func _process(_delta: float) -> void:
-	if not opened or Engine.get_process_frames() <= opened_frame: return
+	if not opened or Engine.get_process_frames() <= opened_frame or _handled_frame == Engine.get_process_frames(): return
 	if Input.is_action_just_pressed("pause"):
 		cancelled.emit()
 		return
 	var direction: int = int(Input.is_action_just_pressed("move_right" if horizontal_choices else "move_down")) - int(Input.is_action_just_pressed("move_left" if horizontal_choices else "move_up"))
 	if direction != 0 and choices.size() > 0:
-		for i in range(choices.size()):
-			selection = posmod(selection + direction, choices.size())
-			if selection not in unavailable: break
-		_redraw_rows()
+		_move_selection(direction)
 	elif Input.is_action_just_pressed("interact") and selection not in unavailable:
-		selected.emit(selection)
+		_activate()

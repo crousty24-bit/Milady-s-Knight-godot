@@ -602,6 +602,8 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 **Lot J · Main agent : Claude Opus 5.5 (visuel), Codex (passe technique) · Statut : ACTIVE · Dépendances : RUN-020 DONE.**
 
+- **Complément commandes autorisé le 7 octobre :** recommandation acceptée puis implémentation locale des profils clavier + souris AZERTY/QWERTY, classique et personnalisé ; menu Controls depuis titre/pause, remappage et sauvegarde indépendante, aides dynamiques et reprise après relâchement. 767 PASS / 20 RESULT ciblés, dont 80 headless + 80 natifs sur les contrôles et deux sessions à froid ; import propre. Pas de visée au curseur ni d’implémentation des attaques spéciale/impact réservées. Ressenti à valider humainement ; ce complément ne clôture pas RUN-021 et ne remplace pas la recette globale. Détails au journal.
+
 - **Slots d'armes Claude (7 octobre) :** nom seul et badge de niveau 12×12 juste après le nom. Rendu79/79, recette 58RESULT/2842PASS en worktree isolé, quatre échecs préexistants inchangés ; validation humaine de lisibilité requise, RUN-021 reste ACTIVE.
 
 - **Seconde passe UI/HUD Claude (7 octobre) :** nom N1 « The Eidolon Vale », bouclier 24 px en haut à droite, sting −3 dB, avatar trois-quarts au cadre rond ; pop du cœur au bonus HP et gains enchaînés au-dessus du chevalier sans chevauchement. Rendu73/73, recette 57RESULT/2822PASS en worktree isolé, quatre échecs préexistants inchangés. Validation humaine de la lecture/rythme requise ; RUN-021 reste ACTIVE.

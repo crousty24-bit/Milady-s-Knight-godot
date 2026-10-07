@@ -1,4 +1,5 @@
 extends CanvasLayer
+@onready var controls = get_node("/root/Controls")
 var ammo_feedback_time: float = 0.0
 
 func set_ammo(family: String, current: int, maximum: int) -> void:
@@ -153,7 +154,7 @@ var _prompt_key := ""
 func show_prompt(world_position: Vector2, cost: int, have: int) -> void:
 	if _prompt_leaving: return
 	var enough: bool = have >= cost
-	var key := "%s|%d|%d" % [enough, cost, have if not enough else 0]
+	var key := "%s|%d|%d|%s" % [enough, cost, have if not enough else 0, controls.label("interact")]
 	if key != _prompt_key:
 		_prompt_key = key
 		_layout_prompt(enough, cost, have)
@@ -240,7 +241,12 @@ func _layout_prompt(enough: bool, cost: int, have: int) -> void:
 	$Prompt/Cap.visible = enough
 	$Prompt/CapLabel.visible = enough
 	var x: float = 5.0
-	if enough: x += 14.0 + 4.0
+	if enough:
+		$Prompt/CapLabel.text = controls.label("interact")
+		var cap_width := maxf(14.0, ceilf(_text_width($Prompt/CapLabel, $Prompt/CapLabel.text)) + 6.0)
+		$Prompt/Cap.size.x = cap_width
+		$Prompt/CapLabel.size.x = cap_width
+		x += cap_width + 4.0
 	$Prompt/Coin.position.x = x
 	x += 12.0 + 3.0
 	amount.position.x = x
@@ -308,6 +314,8 @@ const TITLE_FADE_OUT: float = 1.0
 var _title_tween: Tween
 
 func _ready() -> void:
+	controls.bindings_changed.connect(_update_control_hints)
+	_update_control_hints()
 	var band := GradientTexture2D.new()
 	band.width = 640
 	band.height = 72
@@ -353,3 +361,12 @@ func level_title_visible() -> bool:
 func _weapon_name(id: String) -> String:
 	var stats := WeaponCatalog.stats(id)
 	return str(stats.name) if not stats.is_empty() else WeaponCatalog.label(id)
+
+func _update_control_hints() -> void:
+	var key: String = controls.label("pause")
+	$PauseHint.text = "ESC" if key == "Escape" else key
+	var width := maxf(48.0, ceilf(_text_width($PauseHint, $PauseHint.text)) + 8.0)
+	$PauseCap.position.x = 632.0 - width
+	$PauseCap.size.x = width
+	$PauseHint.position.x = 636.0 - width
+	$PauseHint.size.x = width - 8.0

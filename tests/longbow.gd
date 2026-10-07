@@ -75,6 +75,8 @@ func arrow_at(pos: Vector2, direction := 1) -> Node2D:
 	arrow.setup(direction, stats.damage, stats.reach)
 	return arrow
 func run() -> void:
+	# This regression exercises the historical F/A bindings explicitly.
+	root.get_node("Controls").set_profile("classic")
 	await spawn()
 	await switch_slot()
 	check(player.active_slot == 0 and not player.has_longbow, "A without Longbow keeps melee selected")

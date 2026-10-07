@@ -359,3 +359,8 @@ Deux slots HUD verticaux (mêlée/tir) sont retenus ; les choix de récompense d
 - Avatar (seconde passe) : cadre or rond 34×34 (quatre gemmes rouges), portrait 28×28 du chevalier vu de trois-quarts face, tourné vers la droite comme le sprite, plus détaillé (visière saillante, fente, dôme, épaulières articulées, manteau rouge). Le bandeau de dialogue garde l'ancien cadre carré.
 - Bonus HP : le nouveau cœur « pop » dans la barre (grossit au-delà de sa taille avec un halo, puis se pose), jamais à l'entrée du niveau.
 - Gains annoncés au-dessus du chevalier, même style que l'ancien « +N SHARDS » : `+N SHARDS` (violet), `+N ARROWS`/`+N KNIVES` (blanc pâle), `+N HP` soin réellement appliqué (vert), `+N MAX HP` (rouge clair). File d'attente : une ligne toutes les 0,14 s dans l'ordre des événements, chaque nouvelle ligne pousse les précédentes d'une ligne entière (aucun chevauchement), durée de vie 0,85 s. Le texte des shards quitte le cadavre ; l'éclat violet et son burst y restent. Le message HUD « NO ARROWS/KNIVES » reste près du compteur.
+
+
+### Commandes clavier + souris — 7 octobre 2026
+
+Contrat actuel dans [10_CONTROLS_KEYBINDS.md](10_CONTROLS_KEYBINDS.md) : profils AZERTY/QWERTY/classique/personnalisé depuis titre et pause, choix des menus et récompenses au survol/clic ou clavier. Les aides suivent le remappage. Entrée/flèches/Échap restent des secours de navigation. La fermeture d’une modale attend le relâchement des commandes d’action et des boutons souris pour éviter une attaque ou interaction à la reprise ; cela complète la règle E/F/Espace/Échap historique ci-dessus. Les réglages persistent séparément de la progression. La présentation existante des panneaux et les travaux HUD en cours sont conservés.

@@ -781,3 +781,16 @@ Au chargement, le niveau calcule maintenant une limite verticale à partir du Te
 Pour ajouter du terrain en hauteur dans Godot, sauvegarder la scène puis relancer le niveau : la caméra s'adapte sans retoucher ses limites. Sur le nœud racine, Auto Camera Vertical Bounds active ce calcul ; Camera Vertical Padding règle sa marge. Pour un cadrage totalement manuel, désactiver ce mode et régler Camera Bounds. Ce réglage de caméra n'agrandit pas les murs/plafonds physiques WorldBounds ni le seuil mortel Void Y.
 
 Les vérifications distinguent des positions injectées pour contrôler le cadrage et un vrai trajet sur Ferry2, avec physique du joueur et déplacement de la plateforme. Des cellules supplémentaires sont ajoutées uniquement aux scènes en mémoire des tests pour vérifier les futures extensions ; aucune scène de niveau humaine n'est réécrite.
+
+
+## RUN-021 — Choisir et personnaliser les commandes
+
+Les scripts du joueur continuent de lire des actions comme `jump` ou `attack`. Une action représente l’intention, tandis qu’InputMap décide quelle touche ou quel bouton la déclenche. Le nouveau singleton `Controls` remplace ces attributions selon le profil choisi ; il n’ajoute pas de mécanique de combat. Un clic gauche maintenu produit donc exactement le maintien d’Attaque existant, avec les mêmes délais entre les coups et les mêmes tirs horizontaux.
+
+AZERTY et QWERTY occupent les mêmes positions physiques : le doigt posé sur A en QWERTY se pose sur Q en AZERTY. Le mouvement utilise cette position, tandis que les textes affichent la lettre du profil. Le clavier classique reste distinct : A y change l’équipement ; en QWERTY souris, A sert à aller à gauche. Un profil évite d’activer ces deux intentions à la fois. Le menu Controls, au titre ou dans la pause, permet de choisir un profil, réattribuer une action et revenir aux valeurs d’origine. Les conflits sont refusés ; Échap peut annuler une capture.
+
+Les préférences vont dans `user://controls.json`, séparément de la partie. Mourir ou commencer une nouvelle partie conserve donc les commandes. Le chargement vérifie tout le fichier avant d’appliquer les valeurs. Une écriture défaillante garde le profil et les attributions précédents ; le menu affiche l’erreur. Les tests utilisent leurs propres chemins et profils pour protéger les réglages réels.
+
+Un clic dans un menu est aussi reconnu par Input comme un bouton maintenu. Dire à Godot que l’interface a traité l’événement ne suffit pas à effacer cet état, car le joueur lit Input directement. Le niveau attend donc le relâchement des commandes d’action avant de lui rendre le contrôle. Les tests tiennent volontairement le clic Resume, Continue ou Accept pendant plus d’une seconde : aucune nouvelle attaque n’arrive à la reprise ; une pression suivante fonctionne. Les indications de porte, dialogue, coffre et pause suivent aussi les touches personnalisées.
+
+Les pilotes vérifient les événements clavier/souris et le rendu à 640×360, ainsi que la sauvegarde/relecture dans deux processus. Ils ne jugent pas le confort des doigts : ce dernier reste à éprouver en jouant. Clic droit et Maj sont déjà attribués aux actions spéciale/impact prévues, mais ces actions n’ont toujours pas de code gameplay.
