@@ -8,6 +8,9 @@ Outputs (assets/run021/ui/):
                                      RUN-019 pickup shield redrawn bigger, rim, quartered field, pale sigil, outline.
   ui_avatar_frame_round.png   34x34  round gold frame, dark outer/inner lines, four red gems on the diagonals;
                                      transparent window of diameter 28 at (3,3).
+  ui_tier_badges_large.png    72x12  6 cells of 12x12, weapon levels 0..5 for the HUD slots (third pass): the RUN-018
+                                     tier plates (grey/green/blue/red, 4 and 5 on the level-0 plate) with a 5x7 digit,
+                                     shown right after the weapon name, which no longer carries the level number.
   ui_portrait_knight_round.png 28x28 three-quarter view of the in-game knight (assets/run018/knight: rounded steel
                                      great helm, protruding visor with a dark slit, red mantle, steel plate), facing
                                      right like the sprite, light from the upper left; masked to the round window.
@@ -22,7 +25,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ART = os.path.normpath(os.path.join(HERE, ".."))
 sys.path.insert(0, ART)
 from pixel import Canvas, hexc, outline, save_png  # noqa: E402
-from palette import BLOOD, GOLD, OUTLINE, SKY, STEEL  # noqa: E402
+from palette import BLOOD, GOLD, MOSS, OUTLINE, SKY, STEEL, STONE  # noqa: E402
 
 ROOT = os.path.normpath(os.path.join(ART, "..", ".."))
 OUT = os.path.join(ROOT, "assets", "run021", "ui")
@@ -95,6 +98,55 @@ def shield_icon_large():
 	f = Canvas(24, 24)
 	f.blit(outline(b, OUTLINE), 1, 1)
 	return f
+
+
+# ---------------------------------------------------------------- large tier badges (12x12)
+DIGITS_5X7 = {
+	"0": [".XXX.", "X...X", "X...X", "X...X", "X...X", "X...X", ".XXX."],
+	"1": ["..X..", ".XX..", "..X..", "..X..", "..X..", "..X..", ".XXX."],
+	"2": [".XXX.", "X...X", "....X", "...X.", "..X..", ".X...", "XXXXX"],
+	"3": ["XXXX.", "....X", "....X", ".XXX.", "....X", "....X", "XXXX."],
+	"4": ["...X.", "..XX.", ".X.X.", "X..X.", "XXXXX", "...X.", "...X."],
+	"5": ["XXXXX", "X....", "XXXX.", "....X", "....X", "X...X", ".XXX."],
+}
+# (border, fill) as the RUN-018 tiers: grey / green / blue / red; the pale digit carries the information.
+TIERS = {
+	0: (STONE[5], STONE[2]),
+	1: (MOSS[3], MOSS[1]),
+	2: ((72, 118, 164, 255), (24, 40, 68, 255)),
+	3: (BLOOD[3], BLOOD[0]),
+}
+
+
+def badge_large(level):
+	border, fill = TIERS.get(level, TIERS[0])
+	c = Canvas(12, 12)
+	for y in range(12):
+		for x in range(12):
+			if x in (0, 11) and y in (0, 11):
+				continue
+			edge = x in (0, 11) or y in (0, 11)
+			inner = x in (1, 10) or y in (1, 10)
+			c.put(x, y, OUTLINE if edge else border if inner else fill)
+	glyph = DIGITS_5X7[str(level)]
+	for y in range(7):
+		for x in range(5):
+			if glyph[y][x] == "X":
+				# Dark drop shadow first, so the digit reads on every tier colour.
+				if c.get(4 + x, 3 + y) == fill:
+					c.put(4 + x, 3 + y, OUTLINE)
+	for y in range(7):
+		for x in range(5):
+			if glyph[y][x] == "X":
+				c.put(3 + x, 2 + y, STEEL[4])
+	return c
+
+
+def badge_strip():
+	strip = Canvas(72, 12)
+	for level in range(6):
+		strip.blit(badge_large(level), level * 12, 0)
+	return strip
 
 
 # ---------------------------------------------------------------- round avatar
@@ -280,6 +332,7 @@ def main():
 		"ui_effect_shield_large.png": shield_icon_large(),
 		"ui_avatar_frame_round.png": avatar_frame_round(),
 		"ui_portrait_knight_round.png": portrait_round(),
+		"ui_tier_badges_large.png": badge_strip(),
 	}
 	for name, canvas in outputs.items():
 		save_png(canvas, os.path.join(OUT, name))

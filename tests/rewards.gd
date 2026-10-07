@@ -40,7 +40,7 @@ func run() -> void:
 	progress = root.get_node("Progression")
 	progress.new_game()
 	await spawn()
-	check(not level.player.has_longbow and level.hud.get_node("Equipment/Melee").text == "> Sword 0" and level.hud.get_node("Equipment/Ranged").text == "  Empty", "fresh attempt has Sword0 and empty ranged slot")
+	check(not level.player.has_longbow and level.hud.get_node("Equipment/Melee").text == "> Sword" and level.hud.get_node("Equipment/Ranged").text == "  Empty", "fresh attempt has Sword0 and empty ranged slot")
 	await tap("switch_equipment")
 	check(level.player.active_slot == 0, "A cannot select an empty slot")
 	await enter_chest()
@@ -68,7 +68,7 @@ func run() -> void:
 	Input.action_release("interact")
 	await frames()
 	await tap("switch_equipment")
-	check(level.player.active_slot == 1 and level.hud.get_node("Equipment/Ranged").text == "> Longbow 0", "A selects ranged and updates HUD focus")
+	check(level.player.active_slot == 1 and level.hud.get_node("Equipment/Ranged").text == "> Longbow", "A selects ranged and updates HUD focus")
 	await capture("equipped")
 	var previous_gold: int = level.gold
 	level._on_collected(15)
@@ -78,7 +78,7 @@ func run() -> void:
 	level.player.die()
 	await frames(210)
 	level = current_scene
-	check(level.player.has_longbow and level.tutorial_chest.consumed and level.gold == 0 and level.bonus == 0 and level.hud.get_node("Equipment/Ranged").text == "  Longbow 0", "death clears currencies but keeps equipment and suppresses duplicate chest")
+	check(level.player.has_longbow and level.tutorial_chest.consumed and level.gold == 0 and level.bonus == 0 and level.hud.get_node("Equipment/Ranged").text == "  Longbow", "death clears currencies but keeps equipment and suppresses duplicate chest")
 	level.player.position = Vector2(176, 144)
 	level.player.velocity = Vector2.ZERO
 	await frames(6)

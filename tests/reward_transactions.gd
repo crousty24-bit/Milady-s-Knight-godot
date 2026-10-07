@@ -95,7 +95,7 @@ func run() -> void:
 	check(progress.equipment.ranged == "ThrowingKnives2" and progress.banked_shards == paid_bank and level.resume_pending, "held E accepts once and blocks gameplay until released")
 	Input.action_release("interact")
 	await frames()
-	check(level.player.equipment.ranged == "ThrowingKnives2" and level.hud.get_node("Equipment/Ranged").text == "  Throwing Knives 2", "confirmed reward updates runtime and exact HUD")
+	check(level.player.equipment.ranged == "ThrowingKnives2" and level.hud.get_node("Equipment/Ranged").text == "  Throwing Knives", "confirmed reward updates runtime and exact HUD")
 	disk = reopen()
 	check(disk.equipment.ranged == "ThrowingKnives2", "acquisition survives disk reload")
 	disk.free()

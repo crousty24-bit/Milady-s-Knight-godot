@@ -181,8 +181,8 @@ func hud_and_rewards() -> void:
 	var ranged: Label = slots.get_node("Ranged")
 	var text_width := ranged.get_theme_font("font").get_string_size(ranged.text, HORIZONTAL_ALIGNMENT_LEFT, -1, ranged.get_theme_font_size("font_size")).x
 	var badge: TextureRect = slots.get_node("RangedBadge")
-	check(ranged.text == "> Throwing Knives 3" and slots.get_node("RangedPlate").size.x >= ranged.position.x + text_width + 12.0, "ranged plate fits the exact label and its badge")
-	check(badge.visible and (badge.texture as AtlasTexture).region.position.x == 27.0 and (slots.get_node("RangedIcon").texture as AtlasTexture).region.position.x == 84.0, "Throwing Knives 3 shows its icon and the level-3 badge")
+	check(ranged.text == "> Throwing Knives" and slots.get_node("RangedPlate").size.x >= ranged.position.x + text_width + 12.0, "ranged plate fits the exact label and its badge")
+	check(badge.visible and (badge.texture as AtlasTexture).region.position.x == 36.0 and (slots.get_node("RangedIcon").texture as AtlasTexture).region.position.x == 84.0, "Throwing Knives 3 shows its icon and the level-3 badge")
 	check((slots.get_node("MeleeIcon").texture as AtlasTexture).region.position.x == 60.0 and slots.get_node("MeleePlate").size.x == slots.get_node("RangedPlate").size.x, "Halberds icon and plates share one width")
 	await capture("hud_long_labels")
 	await loadout("Sword0")

@@ -266,8 +266,9 @@ func set_equipment(active: int, ranged_owned: bool) -> void:
 	set_loadout(active, {"melee": "Sword0", "ranged": "Longbow0" if ranged_owned else ""})
 
 func set_loadout(active: int, slots: Dictionary) -> void:
-	$Equipment/Melee.text = ("> " if active == 0 else "  ") + WeaponCatalog.label(slots.melee)
-	$Equipment/Ranged.text = ("> " if active == 1 else "  ") + ("Empty" if slots.ranged.is_empty() else WeaponCatalog.label(slots.ranged))
+	# The level is carried by the badge after the name (RUN-021), not by a digit in the text.
+	$Equipment/Melee.text = ("> " if active == 0 else "  ") + _weapon_name(slots.melee)
+	$Equipment/Ranged.text = ("> " if active == 1 else "  ") + ("Empty" if slots.ranged.is_empty() else _weapon_name(slots.ranged))
 	$Equipment.set_items(str(slots.melee), str(slots.ranged))
 
 func show_item_prompt(world_position: Vector2, text: String) -> void:
@@ -348,3 +349,7 @@ func hide_level_title() -> void:
 
 func level_title_visible() -> bool:
 	return $LevelTitle.visible
+
+func _weapon_name(id: String) -> String:
+	var stats := WeaponCatalog.stats(id)
+	return str(stats.name) if not stats.is_empty() else WeaponCatalog.label(id)

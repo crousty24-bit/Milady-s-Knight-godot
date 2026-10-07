@@ -64,6 +64,21 @@ func run() -> void:
 	level._update_equipment_hud(0)
 	await frames(3)
 	check(not hud.get_node("Equipment/AmmoPlate").visible and hud.get_node("Equipment/AmmoCount").visible, "ammo count shown without its plate")
+	# Third pass: weapon name only, then a 12x12 level badge right after it.
+	level.player.configure_loadout({"melee": "Longsword1", "ranged": "Longbow2"})
+	level._update_equipment_hud(0)
+	for i in 3: await process_frame
+	for slot in [["Melee", "MeleeBadge", "> Longsword", 1], ["Ranged", "RangedBadge", "  Longbow", 2]]:
+		var label: Label = hud.get_node("Equipment/" + slot[0])
+		var badge: TextureRect = hud.get_node("Equipment/" + slot[1])
+		check(label.text == slot[2], "%s slot shows the weapon name without its level digit" % slot[0])
+		check(badge.visible and badge.size == Vector2(12, 12) and (badge.texture as AtlasTexture).region == Rect2(slot[3] * 12, 0, 12, 12), "%s slot shows the large level-%d badge" % [slot[0], slot[3]])
+		var gap: float = badge.position.x - (label.position.x + right(label) - label.position.x)
+		check(gap >= 2.0 and gap <= 6.0 and absf(badge.position.y + 6.0 - (label.position.y + 5.0)) <= 2.0, "%s badge sits right after the name" % slot[0])
+	await capture("01b-n1-slots-badges-x3", top, 3)
+	level.player.configure_loadout({"melee": "Sword0", "ranged": "Longbow0"})
+	level._update_equipment_hud(0)
+	await frames(3)
 	level.gold = 7
 	level.bonus = 4
 	progress.banked_shards = 20

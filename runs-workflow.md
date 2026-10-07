@@ -602,6 +602,8 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 **Lot J · Main agent : Claude Opus 5.5 (visuel), Codex (passe technique) · Statut : ACTIVE · Dépendances : RUN-020 DONE.**
 
+- **Slots d'armes Claude (7 octobre) :** nom seul et badge de niveau 12×12 juste après le nom. Rendu79/79, recette 58RESULT/2842PASS en worktree isolé, quatre échecs préexistants inchangés ; validation humaine de lisibilité requise, RUN-021 reste ACTIVE.
+
 - **Seconde passe UI/HUD Claude (7 octobre) :** nom N1 « The Eidolon Vale », bouclier 24 px en haut à droite, sting −3 dB, avatar trois-quarts au cadre rond ; pop du cœur au bonus HP et gains enchaînés au-dessus du chevalier sans chevauchement. Rendu73/73, recette 57RESULT/2822PASS en worktree isolé, quatre échecs préexistants inchangés. Validation humaine de la lecture/rythme requise ; RUN-021 reste ACTIVE.
 
 - **Passe UI/HUD Claude (7 octobre) :** HUD sans fonds hormis l'avatar, sans libellés, shards à côté des coins ; titrage de niveau 5 s au premier chargement avec sting CC BY ; mort centrée ; effet Magic Shield + secondes en haut à gauche. Rendu61/61 et visuels HUD 199/199 ; recette globale sans régression, quatre échecs gameplay préexistants reproduits à l'identique sur `HEAD` (routes N2 basse/haute, vitesse Bloated). Détails au journal ; validation humaine (lisibilité, sting) requise, RUN-021 reste ACTIVE.

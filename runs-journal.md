@@ -1241,3 +1241,13 @@ Rendu final `elite-native-render-arc-final` **46/46**, code0 : huit essais physi
 - Visuels `hud_visual` 11/11, `run018_equipment_visual` 68/68, `ammo_visual` 73/73, `run019_visual` 47/47.
 
 **Validation humaine restante :** lecture de l'avatar à 1× en jeu ; rythme des textes enchaînés ; ressenti du pop ; volume du sting.
+
+## RUN-021 — Slots d'armes : nom seul et badge de niveau agrandi (Claude), 7 octobre 2026
+
+**Demande :** les slots affichent le nom puis l'icône de niveau en plus gros, sans le chiffre texte (« Longsword [icône] » au lieu de « Longsword 1 [icône] »).
+
+**Réalisé (Claude Code Opus 5.5, sans sous-agent) :** `assets/run021/ui/ui_tier_badges_large.png` (72×12, six cases 12×12, chiffre 5×7 avec ombre, couleurs de rang RUN-018) généré par `tools/art/run021/hud_run021.py` ; `scripts/hud.gd` écrit le nom seul (`_weapon_name`, repli sur l'ancien libellé si l'identifiant est inconnu) ; `scripts/equipment_slots.gd` place le badge 12×12 à 4 px après le nom de chaque slot. Les cartes de récompense des coffres gardent leurs badges 9×9. Tests adaptés aux seuls libellés (`rewards`, `reward_transactions`, `run018_equipment_visual` : région du badge 27 → 36) ; `run021_hud_pass` vérifie nom sans chiffre, badge 12×12 du bon niveau et position après le nom. Spécification `docs/05` complétée.
+
+**Vérifications :** une autre session travaille en parallèle sur le remapping des touches (`controls.gd` en cours, erreur `KEY_MAX` qui empêche les niveaux de se charger dans l'arbre principal) ; recette refaite dans un worktree isolé = `HEAD` + ces seuls changements. `run021_hud_pass` **79/79**, `run018_equipment_visual` 68/68, `hud_visual` 11/11, `ammo_visual` 73/73, `run019_visual` 47/47 ; recette hors quatre échecs connus **58 RESULT / 2842 PASS / 0 échec** (47 suites, 14 sessions froides, isolation). Quatre échecs préexistants inchangés (routes N2 basse/haute, Bloated tuning/dodge). Capture `work/run021/hud-pass/01b-n1-slots-badges-x3.png`.
+
+**Validation humaine restante :** lisibilité du badge à 1× en jeu.
