@@ -155,7 +155,7 @@ position = Vector2(2672, 36)
 position = Vector2(2816, 132)
 
 [node name="Coin21" parent="Coins" unique_id=1289713486 instance=ExtResource("7")]
-position = Vector2(3185, -130)
+position = Vector2(3189, -127)
 
 [node name="Coin22" parent="Coins" unique_id=1764737970 instance=ExtResource("7")]
 position = Vector2(3216, 132)
@@ -164,7 +164,7 @@ position = Vector2(3216, 132)
 position = Vector2(3352, 68)
 
 [node name="Coin24" parent="Coins" unique_id=534565728 instance=ExtResource("7")]
-position = Vector2(3600, 132)
+position = Vector2(2704, 162)
 
 [node name="Enemies" type="Node2D" parent="." unique_id=578831716]
 process_mode = 1
