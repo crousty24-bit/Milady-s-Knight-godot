@@ -11,6 +11,7 @@ var _anim: AnimatedSprite2D
 var _audio: AudioStreamPlayer2D
 var _before := {}
 var _leaving: bool = false
+var _reveal: CanvasLayer  # level reveal window this chest waits for, if any
 
 func setup(source: Area2D, strips: Array) -> void:
 	chest = source
@@ -24,15 +25,26 @@ func _ready() -> void:
 	_anim.centered = false
 	_anim.offset = Vector2(-size.x / 2.0, -size.y)
 	add_child(_anim)
-	_anim.play()
 	_audio = AudioStreamPlayer2D.new()
 	_audio.bus = &"SFX"
 	_audio.max_polyphony = 3
 	add_child(_audio)
-	_play(art[4])
-	get_tree().create_timer(0.3, true).timeout.connect(func() -> void: if is_inside_tree() and not _leaving: _play(REVEAL_SFX))
 	var player := get_tree().get_first_node_in_group("player")
 	if player != null: _before = (player.get("equipment") as Dictionary).duplicate()
+	_start.call_deferred()  # the level presents its reveal window right after hiding the chest
+
+func _start() -> void:
+	# RUN-021: while the "Treasure Found!" window and its animation run, the world chest stays
+	# closed and silent (the window plays the opening), then shows open behind the cards.
+	if not is_instance_valid(chest): return
+	var level := chest.get_parent()
+	while level != null and level.get("chest_reveal") == null: level = level.get_parent()
+	if level != null and level.chest_reveal.stage in ["intro", "reveal"]:
+		_reveal = level.chest_reveal
+		return
+	_anim.play()
+	_play(art[4])
+	get_tree().create_timer(0.3, true).timeout.connect(func() -> void: if is_inside_tree() and not _leaving: _play(REVEAL_SFX))
 
 func _play(cue: AudioStream) -> void:
 	var level := get_tree().current_scene
@@ -45,6 +57,9 @@ func _process(_delta: float) -> void:
 	if not is_instance_valid(chest) or chest.visible:
 		queue_free()
 		return
+	if _reveal != null and _reveal.stage not in ["intro", "reveal"]:
+		_reveal = null
+		_anim.frame = _anim.sprite_frames.get_frame_count("default") - 1
 	if get_tree().paused: return
 	_leaving = true
 	var player := get_tree().get_first_node_in_group("player")

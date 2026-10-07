@@ -21,6 +21,7 @@ func run() -> void:
 		rare.offer = {"item":"Longsword1", "upgrade":""} # Deterministic offer setup only.
 		await place(rare.position)
 		await tap("interact")
+		await open_cards()
 		await tap("interact")
 		check(progress.equipment.melee == "Longsword1" and progress.banked_shards == 70, "physical paid acceptance saves equipment and bank")
 		await collect_coins()

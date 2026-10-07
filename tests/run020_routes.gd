@@ -35,6 +35,13 @@ func tap(action: String) -> void:
 	await frames(2)
 	Input.action_release(action)
 	await frames(3)
+# RUN-021: a paid chest first shows "Treasure Found!"; E presses Open and Space skips to the cards.
+func open_cards() -> void:
+	await tap("interact")
+	await tap("jump")
+	for i in 120:
+		if level.pause_menu.opened: return
+		await frames(1)
 func retreat_direction(side: float, distance: float = 18.0) -> float:
 	var edge := player.global_position + Vector2(-side * distance, 0)
 	var ground := PhysicsRayQueryParameters2D.create(edge + Vector2(0, -8), edge + Vector2(0, 16), 1)
@@ -68,6 +75,7 @@ func buy_nearby_common() -> void:
 	await tap("interact")
 	check(level.modal == "reward" and before - progress.banked_shards - level.bonus == price, "N%d real common chest pays %d earned shards" % [level.world_level, price])
 	if level.modal != "reward": return
+	await open_cards()
 	print("ROUTE actual paid offer ", level.reward_choices, " equipment=", player.equipment)
 	var choice := 0
 	var best_gain := 1.0

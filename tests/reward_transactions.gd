@@ -16,6 +16,13 @@ func tap(action: String) -> void:
 	await frames(2)
 	Input.action_release(action)
 	await frames()
+# RUN-021: a paid chest first shows "Treasure Found!"; E presses Open and Space skips to the cards.
+func open_cards() -> void:
+	await tap("interact")
+	await tap("jump")
+	for i in 120:
+		if level.pause_menu.opened: return
+		await frames(1)
 func check(ok: bool, message: String) -> void:
 	checks += 1
 	print("PASS " if ok else "FAIL ", message)
@@ -66,6 +73,7 @@ func run() -> void:
 	check(disk.banked_shards == 48 and disk.equipment.melee == "Sword0", "opening persists debit before acquisition")
 	disk.free()
 	check(not level.try_offering() and not level.open_reward_chest(level.get_node("RareChest")), "reward blocks gate and competing chest")
+	await open_cards()
 	await capture("paid-choice")
 	await tap("move_right")
 	check(level.pause_menu.selection == 1, "Right chooses the second horizontal upgrade slot")
@@ -80,6 +88,7 @@ func run() -> void:
 	chest = await near_chest()
 	chest.offer = {"item": "ThrowingKnives2", "upgrade": "Sword1"}
 	await tap("interact")
+	await open_cards()
 	var paid_bank: int = progress.banked_shards
 	Input.action_press("interact")
 	await frames(8)
@@ -94,6 +103,7 @@ func run() -> void:
 	chest = await near_chest(true)
 	chest.offer = {"item": "DarkScythe2", "upgrade": "Sword1"}
 	await tap("interact")
+	await open_cards()
 	await tap("move_right")
 	await tap("interact")
 	check(progress.equipment.melee == "Sword1" and level.player.equipment.melee == "Sword1" and level.chest_economy.counts.rare == 1 and level.chest_economy.counts.common == 0, "rare upgrade grants only +1 to captured active item")
@@ -112,6 +122,7 @@ func run() -> void:
 	await tap("interact")
 	# A current-only debit succeeds without durable bank mutation; acquisition still requires disk.
 	check(chest.paid and paused and level.bonus == 3 and progress.banked_shards == 50, "current-only opening has no bank write")
+	await open_cards()
 	await tap("interact")
 	check(paused and chest.save_failed and progress.equipment.melee == "Sword1" and level.chest_economy.counts.common == 1 and level.bonus == 3, "acquisition write failure retains offer and never repeats payment")
 	await tap("move_right")
@@ -130,6 +141,7 @@ func run() -> void:
 	check(chest.offer.item == "Halberds3", "failed opening preserves its offer for retry")
 	progress.storage_path = PATH
 	await tap("interact")
+	await open_cards()
 	await tap("interact")
 	check(progress.equipment.melee == "Halberds3" and progress.banked_shards == 46 and level.bonus == 0, "opening retry pays once and accepts original offer")
 	await spawn()

@@ -159,6 +159,13 @@ func tap(action: String) -> void:
 	Input.action_release(action)
 	await frames(3)
 
+# RUN-021: a paid chest first shows "Treasure Found!"; E presses Open and Space skips to the cards.
+func open_cards() -> void:
+	await tap("interact")
+	await tap("jump")
+	for i in 120:
+		if level.pause_menu.opened: return
+		await frames(1)
 func near(node: Node2D) -> void:
 	player.position = node.position
 	player.velocity = Vector2.ZERO
@@ -195,6 +202,7 @@ func hud_and_rewards() -> void:
 	await near(common)
 	common.offer = {"item": "BrutalAxe2", "upgrade": "Sword1"}
 	await tap("interact")
+	await open_cards()
 	check(level.modal == "reward" and level.pause_menu.horizontal_choices and level.pause_menu.rows.get_child_count() == 2, "common chest opens two horizontal cards")
 	await frames(10)
 	await capture("chest_common_choice")
@@ -208,6 +216,7 @@ func hud_and_rewards() -> void:
 	await near(rare)
 	rare.offer = {"item": "ThrowingKnives3", "upgrade": ""}
 	await tap("interact")
+	await open_cards()
 	check(level.modal == "reward" and level.pause_menu.rows.get_child_count() == 1, "rare chest without upgrade shows a single item card")
 	await frames(10)
 	await capture("chest_rare_choice")

@@ -184,3 +184,14 @@ Mesures relues par Claude sur les 37 WAV. Les `.tres` sont des `AudioStreamRando
 | `sounds/run021/sfx_level_title.wav` | `DSGNImpt_EXPLOSION-Thud_HY_PC-003.wav` (impact à t=0, −2 dB) + `MAGSpel_CAST-Teleport Downer_HY_PC-005.wav` (ton grave descendant, retard 80 ms) | 2,44 s | mix deux couches, mono 44,1 kHz 16 bits, coupe 2,5 s + fondu 0,15 s, pic −12 dBFS (`UI_PEAK_DB`) ; `tools/art/run021/prepare_audio_title.py` |
 
 Choix objectif (contenu grave/aigu mesuré, aucune prise déjà utilisée) ; joué sur le bus UI à l'apparition du nom du niveau, lecteur à −3 dB (retour humain du 7 octobre 2026 : « réduire légèrement »). Écoute humaine attendue (caractère « Dark Souls » contre sci-fi, volume face à la musique).
+
+## Révélation du coffre payant — RUN-021 (7 octobre 2026, Helton Yan, *Pixel Combat*, CC BY 4.0)
+
+| Fichier de jeu | Fichiers source | Pic | Durée | Usage |
+| --- | --- | --- | --- | --- |
+| `sounds/run021/sfx_chest_reveal_rise.wav` | `MAGSpel_CAST-Aura Up_HY_PC-002.wav` (0–2,4 s, étiré ×1,22) + `MAGSpel_CAST-Growing Strength_HY_PC-004.wav` (inversé, −5 dB) | −10 dBFS | 2,90 s | crescendo du faisceau de lumière, de l'appui sur « Open » jusqu'au flash blanc (~2,9 s) |
+| `sounds/run021/sfx_chest_reveal_burst.wav` | `DSGNTonl_SKILL IMPACT-Glistening Shimmers_HY_PC-004.wav` + `DSGNTonl_SKILL IMPACT-Magic Sparkles_HY_PC-002.wav` (−3 dB) | −9 dBFS | 1,20 s | éclat final au flash blanc, ou immédiatement si le joueur passe l'animation |
+
+Transformation : mono 44,1 kHz 16 bits, coupe −55 dB, fondu d'entrée 2 ms, normalisation de crête ; `tools/art/run021/prepare_audio_chest_reveal.py`. Montée : seule la partie ascendante d'« Aura Up » est gardée et étirée sans changer la hauteur (`atempo`), mélangée à un balayage inversé de « Growing Strength », puis une rampe de volume linéaire en dB (−34 dB à t=0, 0 dB à 2,9 s) impose le crescendo ; fondu de sortie de 30 ms (la coupure est masquée par l'éclat). Éclat : deux couches à t=0, coupe 1,2 s + fondu 0,15 s.
+
+Choix objectif (durée, enveloppe RMS, taux de passages par zéro croissant, part de grave, aucune prise déjà utilisée) ; aucun autre pack (notamment pas Minifantasy) n'est utilisé. Attribution : « Sound effects: Pixel Combat SFX by Helton Yan — CC BY 4.0 ». Écoute humaine attendue (caractère « lumière sacrée » contre sci-fi, volume face au SFX d'ouverture du coffre).

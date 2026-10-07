@@ -20,6 +20,13 @@ func tap(action: String) -> void:
 	await frames(2)
 	Input.action_release(action)
 	await frames(3)
+# RUN-021: a paid chest first shows "Treasure Found!"; E presses Open and Space skips to the cards.
+func open_cards() -> void:
+	await tap("interact")
+	await tap("jump")
+	for i in 120:
+		if level.pause_menu.opened: return
+		await frames(1)
 func spawn() -> void:
 	paused = false
 	if is_instance_valid(level):
@@ -66,6 +73,7 @@ func run() -> void:
 	await frames(4)
 	check(level.open_reward_chest(chest), "paid reward opens through real proximity")
 	await frames(3)
+	await open_cards()
 	await tap("interact")
 	check(level.player.health_units == 20 and level.player.equipment.melee == "Longsword1", "paid equipment acceptance preserves injury and applies item")
 	level.player.controls_enabled = false

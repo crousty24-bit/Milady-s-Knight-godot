@@ -16,6 +16,18 @@
 
 Space déclenche un rebond vers le côté opposé depuis un mur agrippable, même sans direction maintenue et même après consommation du double saut. Le contact mural garde une tolérance de 0,10 s après le départ : presser la direction opposée légèrement avant Space conserve le rebond. Le buffer de saut existant de 0,12 s fonctionne aussi à l’arrivée sur le mur. En l’air, ce rebond est prioritaire sur le coyote du sol. Après séparation physique, un nouveau contact permet immédiatement un autre rebond ; rester sur la touche ne déclenche pas de saut automatique. Le wall jump conserve l’interdiction de double saut jusqu’au retour au sol, ainsi que les règles de dégâts, pause et surfaces non agrippables.
 
+### Caméra et extensions verticales — RUN-021 (7 octobre 2026)
+
+Au chargement du niveau, `scripts/level.gd` conserve les limites horizontales de `Camera Bounds` et agrandit ses limites verticales à partir des cellules du `Terrain` et des deux extrémités de déplacement des Ferries sous `Platforms`. Le suivi physique lissé et le décalage de caméra `(32, -38)` sont conservés. Le cadrage inférieur existant reste inchangé tant que le contenu ne dépasse pas sa limite basse.
+
+Dans l'inspecteur du nœud racine du niveau :
+
+- `Auto Camera Vertical Bounds` (activé par défaut) adapte la caméra aux ajouts verticaux sauvegardés dans la scène, au prochain lancement.
+- `Camera Vertical Padding` (256 px par défaut) réserve une marge au-dessus du contenu ; le calcul impose également la place nécessaire à la moitié du viewport et au décalage vertical, selon le zoom au chargement.
+- `Camera Bounds` reste le rectangle minimal et la source des limites horizontales. Désactiver le mode automatique permet de définir entièrement ce rectangle à la main.
+
+Ce calcul règle uniquement la caméra : agrandir une zone jouable peut aussi nécessiter d'adapter séparément les collisions de `WorldBounds` et le seuil de chute `Void Y`. Le terrain humain n'est pas réécrit par ce système.
+
 ## système de combat (joueur) :
 - système de combat (joueur) :
 	- attaque mêlée simple : directionnelle continue quand la touche Attaque est maintenue (F) ; touche (hit) le mob quand à portée (RANGE) et inflige dégât au contact

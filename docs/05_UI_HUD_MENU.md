@@ -57,6 +57,9 @@
 ![[HUD UI BOSS FINAL.png]]
 
 - **UI/ HUD + fenêtre récompense ouverture de chest
+	- coffres payants (common/rare), RUN-021 : après le paiement (E), une fenêtre « Treasure Found! » montre le coffre fermé et un bouton **Open** (E ou clic gauche) ; Escape n'y fait rien, le refus reste possible sur les cartes
+	- Open lance l'animation (2,9 s jusqu'aux cartes, fondu 0,45 s) : secousses, ouverture du couvercle, faisceau de lumière qui s'élargit, étincelles et rayons, crescendo sonore, flash blanc puis fenêtre à deux slots ; **Espace** passe directement au flash
+	- coffre tuto gratuit (N1) : inchangé, fenêtre de choix directe
 
 ![[HUD UI FENETRE OPEN CHEST.png]]
 

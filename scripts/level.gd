@@ -2,6 +2,9 @@ extends Node2D
 @export var n1_intro_enabled: bool = false
 @export_range(1, 10) var world_level: int = 1
 @export var camera_bounds := Rect2(0, -224, 2240, 528)
+@export var auto_camera_vertical_bounds: bool = true
+@export_range(0, 2048, 1) var camera_vertical_padding: float = 256.0
+var resolved_camera_bounds: Rect2
 @export var tutorial_rewards_enabled: bool = true
 var chest_economy := ChestEconomy.new()
 var active_reward: Area2D
@@ -61,6 +64,8 @@ var finished: bool = false
 var paused: bool = false
 var closing: bool = false
 const MENU = preload("res://scripts/keyboard_menu.gd")
+const CHEST_REVEAL = preload("res://scripts/chest_reveal.gd")
+var chest_reveal: CanvasLayer
 var modal: String = ""
 var pause_menu: CanvasLayer
 var resume_pending: bool = false
@@ -86,12 +91,16 @@ func _ready() -> void:
 	add_child(pause_menu)
 	pause_menu.selected.connect(_pause_choice)
 	pause_menu.cancelled.connect(_close_pause)
-	# The authored slice owns its camera bounds and framing.
+	chest_reveal = CHEST_REVEAL.new()
+	add_child(chest_reveal)
+	chest_reveal.revealed.connect(_on_chest_revealed)
+	# Keep authored horizontal framing; include the current vertical content.
 	camera.position = Vector2(32, -38)
-	camera.limit_left = int(camera_bounds.position.x)
-	camera.limit_top = int(camera_bounds.position.y)
-	camera.limit_right = int(camera_bounds.end.x)
-	camera.limit_bottom = int(camera_bounds.end.y)
+	resolved_camera_bounds = _resolve_camera_bounds()
+	camera.limit_left = floori(resolved_camera_bounds.position.x)
+	camera.limit_top = floori(resolved_camera_bounds.position.y)
+	camera.limit_right = ceili(resolved_camera_bounds.end.x)
+	camera.limit_bottom = ceili(resolved_camera_bounds.end.y)
 	camera.process_callback = Camera2D.CAMERA2D_PROCESS_PHYSICS
 	camera.position_smoothing_enabled = true
 	camera.position_smoothing_speed = 7.0
@@ -467,8 +476,12 @@ func open_reward_chest(chest: Area2D) -> bool:
 	get_tree().paused = true
 	hud.hide_prompt()
 	_update_gold_hud()
-	_show_paid_reward()
+	# Paid: the "Treasure Found!" window and its opening animation come before the cards.
+	chest_reveal.present(chest.kind)
 	return true
+
+func _on_chest_revealed() -> void:
+	if modal == "reward" and is_instance_valid(active_reward): _show_paid_reward()
 
 func _show_paid_reward(error: bool = false, selected_index: int = 0) -> void:
 	reward_choices.assign([active_reward.offer.item])
@@ -617,3 +630,36 @@ func _set_spirit_phase(phase: String) -> void:
 	spirit_phase = phase
 	spirit_phase_progress = 1.0 if phase in ["present", "gone"] else 0.0
 	spirit_phase_changed.emit(phase)
+
+func _resolve_camera_bounds() -> Rect2:
+	var bounds := camera_bounds
+	if not auto_camera_vertical_bounds: return bounds
+	var half_view := camera.get_viewport_rect().size.y * 0.5 / maxf(absf(camera.zoom.y), 0.001)
+	var padding := maxf(camera_vertical_padding, half_view + absf(camera.position.y))
+	var terrain := get_node_or_null("Terrain") as TileMapLayer
+	if terrain != null and terrain.tile_set != null:
+		var used := terrain.get_used_rect()
+		if used.has_area():
+			# Use row origins, excluding the thickness of the last ground row.
+			var tile_size := Vector2(terrain.tile_set.tile_size)
+			var first := Vector2(used.position) * tile_size
+			var last := Vector2(used.end - Vector2i.ONE) * tile_size
+			for point in [first, Vector2(last.x, first.y), last, Vector2(first.x, last.y)]:
+				bounds = _include_camera_height(bounds, terrain.to_global(point).y, padding)
+	var platforms := get_node_or_null("Platforms")
+	if platforms != null:
+		for platform in platforms.get_children():
+			if not platform is AnimatableBody2D: continue
+			var travel: Variant = platform.get("travel")
+			var origin: Variant = platform.get("origin")
+			if travel is Vector2 and origin is Vector2:
+				for point in [origin, origin + travel]:
+					bounds = _include_camera_height(bounds, platform.get_parent().to_global(point).y, padding)
+	return bounds
+
+func _include_camera_height(bounds: Rect2, world_y: float, padding: float) -> Rect2:
+	var top := minf(bounds.position.y, world_y - padding)
+	var bottom := bounds.end.y
+	# Retain the existing lower framing unless new content extends below it.
+	if world_y > camera_bounds.end.y: bottom = maxf(bottom, world_y + padding)
+	return Rect2(Vector2(bounds.position.x, top), Vector2(bounds.size.x, bottom - top))

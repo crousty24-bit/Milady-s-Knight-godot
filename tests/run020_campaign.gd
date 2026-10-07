@@ -21,6 +21,13 @@ func tap(action: String) -> void:
 	await frames(2)
 	Input.action_release(action)
 	await frames(4)
+# RUN-021: a paid chest first shows "Treasure Found!"; E presses Open and Space skips to the cards.
+func open_cards() -> void:
+	await tap("interact")
+	await tap("jump")
+	for i in 120:
+		if level.pause_menu.opened: return
+		await frames(1)
 func spawn(path: String, isolate: bool = true) -> void:
 	paused = false
 	if is_instance_valid(level):
@@ -140,7 +147,7 @@ func run() -> void:
 			check(has_green and has_purple, "native Green and Purple Slime variants")
 		check(level.player.is_on_floor() and not level.player.dead and level.player.health_units == 30 and level.modal.is_empty(), "native first twelve physical frames preserve safe spawn")
 		check(not level.n1_intro_enabled and not level.tutorial_rewards_enabled and not is_instance_valid(level.tutorial_chest) and not is_instance_valid(level.dialogue_panel), "N2+ creates no N1 tutorial or reward")
-		check(level.camera.limit_right == int(level.camera_bounds.end.x) and level.camera.limit_left == 0 and level.camera.limit_top == -224 and level.camera.limit_bottom == 304, "camera uses authored world bounds")
+		check(level.camera.limit_right == int(level.camera_bounds.end.x) and level.camera.limit_left == 0 and level.camera.limit_top <= floori(level.camera_bounds.position.y) and level.camera.limit_bottom >= ceili(level.camera_bounds.end.y), "camera preserves authored horizontal bounds and contains authored vertical bounds")
 		check(level.hud.get_node("Gold").text.contains("/%d" % cost), "HUD displays actual exit price")
 		if index == 2:
 			check(level.get_node("Items/RareChest").kind == "rare", "authored secret chest uses rare economy and reward pool")
@@ -172,6 +179,7 @@ func run() -> void:
 	await place(common.position)
 	await tap("interact")
 	check(level.modal == "reward" and common.paid and progress.banked_shards == 90, "E opens authored common chest and debits bank10")
+	await open_cards()
 	await tap("pause")
 	check(level.modal.is_empty() and common.consumed and progress.banked_shards == 90 and progress.equipment.melee == "Sword0", "Escape refuses paid common without refund or equipment change")
 	var rare = level.get_node("Items/RareChest")
@@ -179,6 +187,7 @@ func run() -> void:
 	await place(rare.position)
 	await tap("interact")
 	check(level.modal == "reward" and rare.paid and progress.banked_shards == 60, "E rare opens reward and debits30 (modal=%s bank=%d)" % [level.modal, progress.banked_shards])
+	await open_cards()
 	await tap("interact")
 	check(progress.banked_shards == 60 and progress.equipment.melee == "Longsword1" and level.player.equipment.melee == "Longsword1", "real rare acceptance debits30 and saves equipment (modal=%s bank=%d saved=%s runtime=%s)" % [level.modal, progress.banked_shards, progress.equipment.melee, level.player.equipment.melee])
 	check(level.player.health_units == 20, "equipment acceptance preserves existing injury")

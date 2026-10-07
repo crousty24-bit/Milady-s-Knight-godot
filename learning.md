@@ -763,3 +763,21 @@ Un mob qui regarde le joueur calcule normalement s'il est à gauche ou à droite
 Changer le script d'une instance ne suffit pas toujours à changer ses valeurs : Ferry2 était encore une instance de la scène horizontale et gardait son Travel `(144,0)`. Le test exécuté avant correction confirme qu'il avançait enX malgré le script vertical. Ferry2 référence désormais la scène verticale, qui définit explicitement Travel `(0,144)` et réutilise le script commun. Les positions et le terrain humains sont conservés.
 
 DansGodot, sélectionner le Ferry lui-même, puis modifier Travel dans l'inspecteur. X non nul etY zéro donnent un déplacement horizontal ; X zéro etY non nul donnent un déplacement vertical. Y positif descend, Y négatif monte. Position est le départ, Travel le déplacement jusqu'à l'autre bout ; Period est le temps de l'aller-retour complet. On peut donc modifier la distance et la vitesse sans créer un nouveau script. Les tests vérifient le mouvement des deux variantes et le transport d'un vrai joueur en montée comme en descente.
+
+
+## RUN-021 — Une ouverture de coffre en deux temps
+
+Le paiement d'un coffre reste au même endroit dans `level.gd` : E débite les shards, le coffre est consommé et la fenêtre de récompense devient l'unique « modal » du niveau. La seule différence est l'ordre d'affichage : au lieu d'ouvrir tout de suite les deux cartes, le niveau demande à `scripts/chest_reveal.gd` de présenter le coffre. Ce `CanvasLayer` affiche « Treasure Found! » et attend Open. Quand l'animation atteint son flash, il émet le signal `revealed`, et le niveau ouvre alors la fenêtre de cartes existante, inchangée.
+
+Le jeu est en pause pendant toute la séquence ; le calque utilise donc `PROCESS_MODE_ALWAYS` pour continuer à animer et à lire le clavier. Le E qui paie arrive dans la même frame que l'ouverture de la fenêtre : un garde (`opened_frame`) l'empêche d'appuyer aussi sur Open, comme dans les menus. Le dessin passe par `_draw()` avec une transformation d'échelle 3 : le coffre et tous les effets (faisceau, étincelles, rayons) tombent sur la même grille de gros pixels. Le faisceau et le flash utilisent un mélange additif, qui éclaircit vers le blanc au lieu de voiler l'image en gris.
+
+
+## RUN-021 — La caméra suit aussi les agrandissements verticaux
+
+La caméra était toujours attachée au joueur, mais le niveau lui imposait un rectangle fixe dont le haut était à Y = −224. Avec une fenêtre de jeu haute de 360 px, son centre ne pouvait pas monter au-dessus de Y = −44 : la moitié de l'écran, 180 px, doit rester dans ce rectangle. Le nouveau terrain de N2 monte jusqu'à Y = −336 ; le joueur pouvait donc sortir par le haut de l'image pendant que la caméra restait bloquée.
+
+Au chargement, le niveau calcule maintenant une limite verticale à partir du Terrain réellement peint et des deux bouts de la course de chaque Ferry. Une marge de 256 px permet de garder le joueur et ses sauts dans le cadre ; le calcul tient également compte du zoom et du décalage vertical de la caméra. Dans le N2 actuel, le haut de la caméra passe à −592, tandis que le bas reste à 304. Les limites gauche/droite et le suivi lissé restent ceux du niveau.
+
+Pour ajouter du terrain en hauteur dans Godot, sauvegarder la scène puis relancer le niveau : la caméra s'adapte sans retoucher ses limites. Sur le nœud racine, Auto Camera Vertical Bounds active ce calcul ; Camera Vertical Padding règle sa marge. Pour un cadrage totalement manuel, désactiver ce mode et régler Camera Bounds. Ce réglage de caméra n'agrandit pas les murs/plafonds physiques WorldBounds ni le seuil mortel Void Y.
+
+Les vérifications distinguent des positions injectées pour contrôler le cadrage et un vrai trajet sur Ferry2, avec physique du joueur et déplacement de la plateforme. Des cellules supplémentaires sont ajoutées uniquement aux scènes en mémoire des tests pour vérifier les futures extensions ; aucune scène de niveau humaine n'est réécrite.
