@@ -99,3 +99,10 @@ Space déclenche un rebond vers le côté opposé depuis un mur agrippable, mêm
 Bonus unique : +1 MAX HP et +1 CURRENT HP (1/3→2/4), sauvegarde du flag avant attribution. Reset/reprise soigne au nouveau maximum. Aucun soin par acquisition d'équipement. Sept bonus possibles dans la campagne spécifiée ; les paliers N5/N8 restent RUN-023.
 
 Shield : dix secondes de gameplay, rafraîchissement à dix sans cumul, suspendu par pause/modales ; échange d'arme sans effet. Révision RUN-020 du 6 octobre : protection contre tous les dégâts (contact/mêlée, projectile/sort au sol, swarm, pièges solides, flammes et tirs de tourelles), sans réaction sur un impact bloqué. Le vide reste mortel, confirmé explicitement par l’humain. Mort/vide/reset/reprise/changement de niveau suppriment le buff. Les scènes de pickup, timers et interactions sont testés en fixture ; art/SFX et validation humaine attendus.
+
+
+## Ferries : axes et réglages dans Godot
+
+Les variantes `scenes/moving_platform.tscn` (horizontale par défaut) et `scenes/moving_platform_vertical.tscn` (verticale par défaut) utilisent le même script `scripts/moving_platform.gd`. L'axe est une valeur de scène/instance explicite, pas un changement de script. Sélectionner le node Ferry/AnimatableBody2D dans l'inspecteur, puis régler **Travel** : `(144,0)` vers la droite, `(-144,0)` vers la gauche, `(0,144)` vers le bas, `(0,-144)` vers le haut. La valeur non nulle est la distance en pixels entre les extrémités ; deux composantes non nulles donnent une diagonale.
+
+**Position** définit le point de départ ; l'autre extrémité vaut Position+Travel. **Period** est la durée positive en secondes de l'aller-retour complet :4 donne2s d'aller et2s de retour. Augmenter Period ralentit le trajet, augmenter Travel allonge sa distance. Le mouvement s'exécute en jeu, pas dans l'éditeur. DansN2, Ferry2 conserve sa position humaine et utilise maintenant la variante verticale avec Travel `(0,144)` ; Ferry1 reste horizontal. Le script vertical humain est conservé, mais il n'est plus nécessaire de remplacer le script d'une instance pour choisir son axe.

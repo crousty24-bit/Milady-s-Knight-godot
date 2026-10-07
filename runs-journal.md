@@ -1,6 +1,19 @@
 # Milady's Knight — Runs Journal
 
 
+## 7 octobre 2026 — RUN-021 : Ferry vertical N2 et variantes par Travel
+
+Demande humaine : corriger le script/Ferry vertical ajouté manuellement et rendre les variantes horizontale/verticale utilisables dansGodot. Baseline humaine relevée dans `work/run021/ferry-axis/baseline.json` avec copies avant édition. Au début, nombreux edits humains et précédents staged ; commit humain `c7080fa` constaté pendant cette passe, sans actionGit de l'agent. Aucun changement de mobs, munitions ou terrain dans ce correctif.
+
+**Cause reproduite :** Ferry2 était une instance de la scène horizontale avec remplacement du script, mais Travel restait `(144,0)` à l'exécution. Demi-période : position locale(492,9753,-318) depuis(349,-318), donc horizontal. Avant :4contrôles/2échecs attendus, `run-oPga3NPb/ferry-axis-before.log`. Premiers essais de fixture avaient manqué GODOT_BIN, eu une erreur de type et un avertissement de owner lors de l'extraction du sous-arbre ; fixture corrigée, ces essais ne sont pas revendiqués PASS.
+
+**Correction minimale :** `moving_platform_vertical.tscn` réutilise le script commun et définit Travel `(0,144)` explicitement ; Ferry2N2 instance cette variante au lieu d'une scène horizontale avec script surchargé. Origine349,-318 et parent3253,145, période4, amplitude144 et sensY positif préservés. Deux scripts originaux et scène horizontale inchangés par hashes ; script vertical humain conservé. Retour exactement à la baselineN2 par inversion des seules références/instance/script du Ferry2 : aucune autre propriété, cellule ou node humain modifié.
+
+**Preuves :** nouveau `tests/ferry_axes.gd`27/27, `run-tdAbR6Dp/ferry-axis-after-final.log` ; sous-arbre Platforms réelN2, demi-cycle vertical349,-174,0247, retour349,-317,9753, pause/reprise, deux scènes par défaut, réglagesX/Y négatif/Y positif et portage d'un vraiSlicePlayer. Régression existante `platform.gd`14/14, soit **41contrôles ciblés réussis**. Importéditeur WindowsGodot4.7.2 sans erreur, uid généré ; profils isolés et verrou `work/.godot.lock`. [Index des logs/hashes et limites](work/run021/ferry-axis/verification-index.json). Aucun rendu ou nouveau playtest humain exécuté, pas de recette globale de campagne revendiquée.
+
+Specs mouvement, learning et explication humaine actualisés ; suite ferry_axes ajoutée à la recette standard (46suites prévues, pas toutes exécutées ici). Diffcheck/syntaxe shell vérifiés. Ownership sous-agent limité au nouveau test/probe, production/docs/intégration parent ; pas de staging/commit/push/PR/merge par Codex. RUN-021 reste ouverte, anciennes limites de pilotes et validation0.3.0 inchangées.
+
+
 ## 7 octobre 2026 — RUN-021 : validation munitions et correctifs d'esquive/poursuite
 
 **Demande et état :** « Passe validée » pour la passe piques/munitions, puis correctifs BloatedN2 et Archer sur un autre étage, avec contrôle des autres profils. Validation humaine acceptée à ce niveau de précision ; elle ne transforme pas les anciens pilotes automatiques en PASS. Même branche `feature/run-020-021-campaign`, HEAD220ba7b constaté. RUN-021 reste ACTIVE avec cette nouvelle validation humaine à obtenir et les anciens pilotes non validés. Pas de clôture/promotion/commit/push/PR/merge effectué.

@@ -756,3 +756,10 @@ Les piques rétractables avaient un petit socle2px au-dessus du sol. Même sans 
 Le rectangle de Bloated sert à se déplacer sur le terrain et à recevoir les coups. Ses dégâts de contact utilisent une autre vérification de distance entre les pieds. Réduire seulement le rectangle n'aurait donc pas changé les collisions qui blessent. Sa poursuite passe de60 à48px/s : le joueur gagne de l'avance pendant son double saut. Les tests comparent les mêmes commandes avant/après, dans les deux sens, puis isolent Bloated sur le terrainN2 existant. Le bon timing reste nécessaire.
 
 Un mob qui regarde le joueur calcule normalement s'il est à gauche ou à droite. Si le joueur est juste dessous, un minuscule déplacement peut inverser ce choix à chaque frame : le mob tremble et ses petits pas entretiennent sa poursuite. Une tolérance de2px stabilise ce choix. Le cap reste aussi fixe pendant un saut ; le mob décide à nouveau sur son prochain appui. Cela ne supprime pas la recherche d'un détour praticable vers un toit.
+
+
+## RUN-021 — Un même Ferry, deux axes
+
+Changer le script d'une instance ne suffit pas toujours à changer ses valeurs : Ferry2 était encore une instance de la scène horizontale et gardait son Travel `(144,0)`. Le test exécuté avant correction confirme qu'il avançait enX malgré le script vertical. Ferry2 référence désormais la scène verticale, qui définit explicitement Travel `(0,144)` et réutilise le script commun. Les positions et le terrain humains sont conservés.
+
+DansGodot, sélectionner le Ferry lui-même, puis modifier Travel dans l'inspecteur. X non nul etY zéro donnent un déplacement horizontal ; X zéro etY non nul donnent un déplacement vertical. Y positif descend, Y négatif monte. Position est le départ, Travel le déplacement jusqu'à l'autre bout ; Period est le temps de l'aller-retour complet. On peut donc modifier la distance et la vitesse sans créer un nouveau script. Les tests vérifient le mouvement des deux variantes et le transport d'un vrai joueur en montée comme en descente.
