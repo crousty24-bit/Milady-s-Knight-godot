@@ -47,9 +47,11 @@ position = Vector2(3253, 145)
 
 [node name="Ferry" parent="Platforms" unique_id=406175210 instance=ExtResource("2_88bke")]
 process_mode = 1
-position = Vector2(-2044, -160)
+position = Vector2(-2066, -157)
 
 [node name="Backdrop" type="Node2D" parent="." unique_id=2079737940]
+z_index = -100
+z_as_relative = false
 script = ExtResource("2")
 
 [node name="Decor" type="Node2D" parent="." unique_id=2013445394]
