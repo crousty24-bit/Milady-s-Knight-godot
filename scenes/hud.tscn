@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3]
+[gd_scene load_steps=27 format=3]
 [ext_resource type="Script" path="res://scripts/hud.gd" id="1"]
 [ext_resource type="FontFile" path="res://assets/fonts/PixelOperator8.ttf" id="2"]
 [ext_resource type="Script" path="res://scripts/health_hearts.gd" id="3"]
@@ -7,14 +7,15 @@
 [ext_resource type="Texture2D" path="res://assets/sprites/ui_plate.png" id="6"]
 [ext_resource type="Texture2D" path="res://assets/sprites/ui_keycap.png" id="7"]
 [ext_resource type="Texture2D" path="res://assets/sprites/ui_avatar_frame.png" id="8"]
-[ext_resource type="Texture2D" path="res://assets/sprites/ui_portrait_knight.png" id="9"]
 [ext_resource type="Texture2D" path="res://assets/sprites/ui_shard_icon.png" id="20"]
 [ext_resource type="Texture2D" path="res://assets/sprites/ui_slot_icons.png" id="21"]
 [ext_resource type="Texture2D" path="res://assets/sprites/ui_menu_focus.png" id="22"]
 [ext_resource type="Script" path="res://scripts/equipment_slots.gd" id="23"]
 [ext_resource type="Script" path="res://scripts/shard_counter_fx.gd" id="24"]
 [ext_resource type="Texture2D" path="res://assets/run021/ammo/ui_ammo_icons.png" id="30"]
-[ext_resource type="Texture2D" path="res://assets/run021/ui/ui_effect_shield.png" id="31"]
+[ext_resource type="Texture2D" path="res://assets/run021/ui/ui_effect_shield_large.png" id="31"]
+[ext_resource type="Texture2D" path="res://assets/run021/ui/ui_avatar_frame_round.png" id="33"]
+[ext_resource type="Texture2D" path="res://assets/run021/ui/ui_portrait_knight_round.png" id="34"]
 [ext_resource type="AudioStream" path="res://assets/sounds/run021/sfx_level_title.wav" id="32"]
 [sub_resource type="AtlasTexture" id="slot_melee"]
 atlas = ExtResource("21")
@@ -42,46 +43,46 @@ Label/constants/shadow_offset_y = 1
 layer = 10
 script = ExtResource("1")
 [node name="Portrait" type="TextureRect" parent="."]
-offset_left = 12.0
-offset_top = 12.0
-offset_right = 36.0
-offset_bottom = 36.0
+offset_left = 11.0
+offset_top = 11.0
+offset_right = 39.0
+offset_bottom = 39.0
 mouse_filter = 2
-texture = ExtResource("9")
+texture = ExtResource("34")
 [node name="AvatarFrame" type="TextureRect" parent="."]
 offset_left = 8.0
 offset_top = 8.0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_right = 42.0
+offset_bottom = 42.0
 mouse_filter = 2
-texture = ExtResource("8")
+texture = ExtResource("33")
 [node name="HealthHearts" type="Control" parent="."]
-offset_left = 48.0
+offset_left = 50.0
 offset_top = 12.0
-offset_right = 108.0
+offset_right = 110.0
 offset_bottom = 24.0
 mouse_filter = 2
 script = ExtResource("3")
 [node name="Health" type="Label" parent="."]
-offset_left = 112.0
+offset_left = 114.0
 offset_top = 14.0
-offset_right = 160.0
+offset_right = 162.0
 offset_bottom = 24.0
 theme = SubResource("theme")
 text = "3"
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.941, 0.478, 0.353, 1)
 [node name="GoldIcon" type="TextureRect" parent="."]
-offset_left = 48.0
+offset_left = 50.0
 offset_top = 26.0
-offset_right = 60.0
+offset_right = 62.0
 offset_bottom = 38.0
 texture = SubResource("coin_icon")
 mouse_filter = 2
 [node name="Gold" type="Label" parent="."]
-offset_left = 63.0
+offset_left = 65.0
 offset_top = 28.0
-offset_right = 130.0
+offset_right = 132.0
 offset_bottom = 38.0
 theme = SubResource("theme")
 text = "00/12"
@@ -114,25 +115,29 @@ mouse_filter = 2
 theme_override_colors/font_color = Color(0.651, 0.682, 0.733, 1)
 [node name="ShieldEffect" type="Control" parent="."]
 visible = false
-offset_left = 140.0
-offset_top = 12.0
-offset_right = 172.0
-offset_bottom = 24.0
+offset_left = 568.0
+offset_top = 30.0
+offset_right = 632.0
+offset_bottom = 54.0
 mouse_filter = 2
 [node name="Icon" type="TextureRect" parent="ShieldEffect"]
-offset_right = 12.0
-offset_bottom = 12.0
+offset_left = 40.0
+offset_right = 64.0
+offset_bottom = 24.0
 mouse_filter = 2
 texture = ExtResource("31")
 [node name="Time" type="Label" parent="ShieldEffect"]
-offset_left = 15.0
-offset_top = 2.0
-offset_right = 32.0
-offset_bottom = 12.0
+offset_top = 3.0
+offset_right = 37.0
+offset_bottom = 21.0
 theme = SubResource("theme")
 text = "10"
 mouse_filter = 2
+horizontal_alignment = 2
 theme_override_colors/font_color = Color(0.478, 0.816, 0.941, 1)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 16
 [node name="PauseCap" type="NinePatchRect" parent="."]
 offset_left = 584.0
 offset_top = 8.0
@@ -310,6 +315,7 @@ mouse_filter = 2
 [node name="Sound" type="AudioStreamPlayer" parent="LevelTitle"]
 process_mode = 3
 stream = ExtResource("32")
+volume_db = -3.0
 bus = &"UI"
 [node name="Overlay" type="ColorRect" parent="."]
 visible = false
@@ -380,9 +386,9 @@ mouse_filter = 2
 
 [node name="Equipment" type="Control" parent="."]
 offset_left = 8.0
-offset_top = 44.0
+offset_top = 46.0
 offset_right = 208.0
-offset_bottom = 93.0
+offset_bottom = 95.0
 mouse_filter = 2
 script = ExtResource("23")
 [node name="MeleePlate" type="NinePatchRect" parent="Equipment"]

@@ -38,9 +38,17 @@ const TUTORIALS = [
 @export var void_y: float = 304.0
 @export_file("*.tscn") var next_level_scene: String = ""
 const COIN_SCENE = preload("res://scenes/coin.tscn")
+const FEEDBACK_TEXT = preload("res://scripts/feedback_text.gd")
+# Gains announced above the knight, in the functional colours of docs/05.
+const SHARD_TEXT := Color(0.753, 0.541, 0.831)
+const HEAL_TEXT := Color(0.596, 0.8, 0.345)
+const HP_BONUS_TEXT := Color(0.941, 0.478, 0.353)
+const AMMO_TEXT := Color(0.867, 0.886, 0.91)
+var feedback_text: Node2D
+var _known_max_health: float = 0.0
 # Area names announced by the HUD title card on the first load of a level (not on death/restart).
 const LEVEL_TITLES = {
-	"res://scenes/eidolon_vale.tscn": "Eidolon Vale",
+	"res://scenes/eidolon_vale.tscn": "The Eidolon Vale",
 	"res://scenes/blight_town.tscn": "Blight Town",
 	"res://scenes/black_forrest.tscn": "Black Forest",
 	"res://scenes/forbidden_graveyard.tscn": "Forbidden Graveyard",
@@ -93,7 +101,12 @@ func _ready() -> void:
 	player.initialize_ammo(progression.ammo_entry if progression.resume_scene == scene_file_path else SlicePlayer.AMMO_DEFAULTS)
 	player.ammo_changed.connect(_update_ammo_hud)
 	player.ammo_empty.connect(hud.show_ammo_empty)
-	player.ammo_collected.connect(hud.show_ammo_pickup)
+	feedback_text = FEEDBACK_TEXT.new()
+	feedback_text.name = "FeedbackText"
+	add_child(feedback_text)
+	feedback_text.target = player
+	player.ammo_collected.connect(_announce_ammo)
+	player.healed.connect(_announce_heal)
 	player.configure_bonus_health(progression.hp_bonus_count())
 	player.configure_loadout(progression.equipment)
 	player.equipment_changed.connect(_update_equipment_hud)
@@ -106,6 +119,7 @@ func _ready() -> void:
 		minor_potion.position = potion_position
 		add_child(minor_potion)
 	player.health_changed.connect(hud.set_health)
+	player.health_changed.connect(_announce_max_health)
 	player.died.connect(_on_died)
 	gate.offering_requested.connect(try_offering)
 	$ExitArea.body_entered.connect(_on_exit)
@@ -114,6 +128,7 @@ func _ready() -> void:
 			item.save_error.connect(_durable_save_error)
 	_update_gold_hud()
 	hud.set_health(player.health, player.max_health)
+	_known_max_health = player.max_health
 	_update_equipment_hud(player.active_slot)
 	hud.magic_shield_source = func() -> float: return player.magic_shield_time
 	_announce_level()
@@ -213,6 +228,7 @@ func _on_enemy_defeated(value: int, at: Vector2) -> void:
 	feedback.position = to_local(at) + Vector2(0, -12)
 	feedback.process_mode = Node.PROCESS_MODE_PAUSABLE
 	add_child(feedback)
+	feedback_text.push("+%d SHARDS" % value, SHARD_TEXT)
 
 func register_enemy(enemy: Node) -> void:
 	var id := enemy.get_instance_id()
@@ -287,6 +303,18 @@ func _next_level() -> void:
 		transitioning = false
 		get_tree().paused = true
 		hud.set_overlay("Next level unavailable", "Your shards are saved.\nE: retry")
+
+func _announce_ammo(family: String, amount: int) -> void:
+	if amount > 0 and not player.dead: feedback_text.push("+%d %s" % [amount, "KNIVES" if family == "ThrowingKnives" else "ARROWS"], AMMO_TEXT)
+
+func _announce_heal(amount: float) -> void:
+	if amount > 0.0 and not player.dead: feedback_text.push("+%s HP" % HealthUnits.format_hp(HealthUnits.from_hp(amount)), HEAL_TEXT)
+
+# An HP bonus raises the maximum (and the bar pops a new heart); never on level entry.
+func _announce_max_health(_value: float, maximum: float) -> void:
+	if maximum > _known_max_health and not player.dead:
+		feedback_text.push("+%s MAX HP" % HealthUnits.format_hp(HealthUnits.from_hp(maximum - _known_max_health)), HP_BONUS_TEXT)
+	_known_max_health = maximum
 
 func _announce_level() -> void:
 	var title: String = LEVEL_TITLES.get(scene_file_path, "")

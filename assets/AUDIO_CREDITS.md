@@ -183,4 +183,4 @@ Mesures relues par Claude sur les 37 WAV. Les `.tres` sont des `AudioStreamRando
 | --- | --- | --- | --- |
 | `sounds/run021/sfx_level_title.wav` | `DSGNImpt_EXPLOSION-Thud_HY_PC-003.wav` (impact à t=0, −2 dB) + `MAGSpel_CAST-Teleport Downer_HY_PC-005.wav` (ton grave descendant, retard 80 ms) | 2,44 s | mix deux couches, mono 44,1 kHz 16 bits, coupe 2,5 s + fondu 0,15 s, pic −12 dBFS (`UI_PEAK_DB`) ; `tools/art/run021/prepare_audio_title.py` |
 
-Choix objectif (contenu grave/aigu mesuré, aucune prise déjà utilisée) ; joué sur le bus UI à l'apparition du nom du niveau. Écoute humaine attendue (caractère « Dark Souls » contre sci-fi, volume face à la musique).
+Choix objectif (contenu grave/aigu mesuré, aucune prise déjà utilisée) ; joué sur le bus UI à l'apparition du nom du niveau, lecteur à −3 dB (retour humain du 7 octobre 2026 : « réduire légèrement »). Écoute humaine attendue (caractère « Dark Souls » contre sci-fi, volume face à la musique).

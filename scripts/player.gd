@@ -56,6 +56,8 @@ const LAND_DURATION = 0.1
 const LAND_SPEED = 160.0
 const LAND_DUST_DURATION = 0.24
 signal magic_shield_changed(remaining: float)
+# Health actually restored by heal() (potions, kill heals); presentation only.
+signal healed(amount: float)
 var magic_shield_time: float = 0.0
 var max_health_units: int = 30
 var health_units: int = 30
@@ -625,6 +627,7 @@ func heal(amount: float) -> float:
 	health_units = mini(max_health_units, health_units + HealthUnits.from_hp(amount))
 	if health_units != before:
 		health_changed.emit(health, max_health)
+		healed.emit(HealthUnits.to_hp(health_units - before))
 	return HealthUnits.to_hp(health_units - before)
 
 func die() -> void:

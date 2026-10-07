@@ -1186,3 +1186,23 @@ Rendu final `elite-native-render-arc-final` **46/46**, code0 : huit essais physi
 - Une première version du contrôle de fondu échouait sur N2–4 (minuterie de test créée juste après un gros chargement) ; une sonde par frame a montré un fondu correct en jeu, contrôle remplacé par une montée d'alpha mesurée frame à frame.
 
 **Limites / validation humaine restante :** écoute du sting (caractère, volume face à la musique) ; lisibilité du HUD sans fond en jeu réel ; le panneau de mort centré peut masquer le chevalier, conséquence assumée de la demande ; nom N1 affiché « Eidolon Vale » selon l'exemple de la demande (le tutoriel dit « The Eidolon Vale »).
+
+## RUN-021 — Seconde passe UI/HUD (Claude), 7 octobre 2026
+
+**Demande :** passe HUD précédente validée par l'humain. Corrections : nom N1 « The Eidolon Vale » ; effet Magic Shield en haut à droite, nettement plus grand ; sting du titrage un peu moins fort ; avatar vu de trois-quarts face, plus détaillé, cadre rond. Ajouts : pop du nouveau cœur à l'obtention d'un bonus HP ; textes de gains au-dessus du chevalier (munitions, bonus HP, soin, comme « +N SHARDS »), enchaînés rapidement sans superposition.
+
+**Réalisé (Claude Code Opus 5.5, sans sous-agent) :**
+- Art (`tools/art/run021/hud_run021.py`, dessin par code, palette projet) : `ui_effect_shield_large.png` 24×24 ; `ui_avatar_frame_round.png` 34×34 (anneau or biseauté, quatre gemmes) ; `ui_portrait_knight_round.png` 28×28, chevalier de trois-quarts tourné vers la droite comme le sprite RUN-018 (dôme, visière saillante, fente et reflet rouge, trous de respiration, gorgerin, épaulières articulées, manteau). L'ancien cadre carré reste utilisé par le bandeau de dialogue.
+- `scenes/hud.tscn` / `scripts/hud.gd` : avatar rond (stats décalées à x=50, slots à y=46) ; `ShieldEffect` sous ESC (icône 24 px, secondes 16 px à gauche) ; `LevelTitle/Sound` à −3 dB.
+- `scripts/health_hearts.gd` : pop des cœurs ajoutés (0→1,6→1 en 0,6 s, halo), jamais sur les premières valeurs.
+- `scripts/feedback_text.gd` (nouveau) : file au-dessus du chevalier, une ligne toutes les 0,14 s, durée 0,85 s, chaque ligne nouvelle au moins une ligne sous la précédente. `scripts/level.gd` : pousse `+N SHARDS` (le texte quitte le cadavre, `scripts/coin.gd` garde l'éclat), `+N ARROWS/KNIVES` (au lieu du texte HUD), `+N HP` (soin réellement appliqué), `+N MAX HP` (hausse du maximum), N1 « The Eidolon Vale ». `scripts/player.gd` : signal de présentation `healed(amount)` émis par `heal()`.
+- Spécification `docs/05_UI_HUD_MENU.md` et crédits mis à jour ; `tests/run021_hud_pass.gd` étendu (avatar, bouclier, volume, pop, file).
+
+**Travail parallèle constaté :** une autre session modifie en même temps coffres/caméra (`scripts/chest_reveal.gd`, `reward_chest_opened_fx.gd`, parties de `level.gd`, tests, docs). Son `chest_reveal.gd` non commité avait une erreur de compilation qui a cassé une recette lancée dans l'arbre principal (`spikes_void`). Vérification refaite dans un worktree isolé = `HEAD` (`83c32ad`) + mes seuls changements ; commit limité à mes hunks, fichiers de l'autre session laissés intacts.
+
+**Vérifications (Godot 4.7.2 Windows, worktree isolé, profils `user://` isolés) :**
+- `run021_hud_pass` **73/73** non headless (bouclier sous ESC, 24 px/16 px ; avatar rond ; −3 dB ; « The Eidolon Vale » ; pop puis retour ; kill + munitions + potion dans la même frame → `+3 SHARDS`, `+3 ARROWS`, `+0.5 HP` dans cet ordre, trois lignes ensemble, aucun chevauchement frame par frame, file vide en 1,6 s). Captures `work/run021/hud-pass/` 03, 03b, 08, 09.
+- Recette `tools/test.sh` hors quatre échecs connus (`work/run021/hud-pass/full-minus-known.sh`) : import, isolation, 43 suites et 14 sessions froides, **57 RESULT / 2822 PASS / 0 échec**, sans erreur ni fuite. Les quatre échecs préexistants (`run020_routes` basse/haute, `run021_tuning`, `run021_bloated_dodge`) restent identiques à la passe précédente et à `HEAD`.
+- Visuels `hud_visual` 11/11, `run018_equipment_visual` 68/68, `ammo_visual` 73/73, `run019_visual` 47/47.
+
+**Validation humaine restante :** lecture de l'avatar à 1× en jeu ; rythme des textes enchaînés ; ressenti du pop ; volume du sting.

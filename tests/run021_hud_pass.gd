@@ -4,7 +4,7 @@
 extends SceneTree
 const OUT := "res://work/run021/hud-pass"
 const LEVELS := {
-	"res://scenes/eidolon_vale.tscn": "Eidolon Vale",
+	"res://scenes/eidolon_vale.tscn": "The Eidolon Vale",
 	"res://scenes/blight_town.tscn": "Blight Town",
 	"res://scenes/black_forrest.tscn": "Black Forest",
 	"res://scenes/forbidden_graveyard.tscn": "Forbidden Graveyard",
@@ -55,6 +55,9 @@ func run() -> void:
 	var hud = level.hud
 	check(not hud.has_node("PanelCluster") and not hud.has_node("PanelBonus"), "stat panels removed")
 	check(hud.get_node("AvatarFrame").visible and hud.get_node("Portrait").visible, "avatar frame kept")
+	check(hud.get_node("AvatarFrame").texture.resource_path.ends_with("ui_avatar_frame_round.png") and hud.get_node("AvatarFrame").size == Vector2(34, 34), "round 34 px avatar frame")
+	check(hud.get_node("Portrait").texture.resource_path.ends_with("ui_portrait_knight_round.png") and hud.get_node("Portrait").position == Vector2(11, 11), "three-quarter portrait fills the round window")
+	check(hud.get_node("HealthHearts").position.x >= hud.get_node("AvatarFrame").get_rect().end.x + 6.0 and hud.get_node("Equipment").position.y >= hud.get_node("AvatarFrame").get_rect().end.y + 2.0, "stats and slots clear the larger frame")
 	for plate in ["MeleePlate", "RangedPlate", "AmmoPlate"]:
 		check(not hud.get_node("Equipment/" + plate).visible, plate + " hidden")
 	level.player.equipment = {"melee": "Sword0", "ranged": "Longbow0"}
@@ -94,9 +97,12 @@ func run() -> void:
 	level.player.activate_magic_shield()
 	await frames(3)
 	check(effect.visible and effect.get_node("Time").text == "10", "active shield shows its icon and 10 s")
-	check(effect.get_global_rect().position.x < 320.0 and effect.get_global_rect().end.y <= 40.0, "shield effect sits in the top-left area")
-	check(effect.position.x >= right(hud.get_node("Health")) + 4.0, "shield effect follows the exact HP without overlap")
+	var icon_rect: Rect2 = effect.get_node("Icon").get_global_rect()
+	check(icon_rect.position.x > 560.0 and icon_rect.end.x <= 632.0 and icon_rect.position.y >= hud.get_node("PauseCap").get_global_rect().end.y + 4.0 and icon_rect.end.y <= 60.0, "shield effect sits top-right under the pause key")
+	check(icon_rect.size == Vector2(24, 24) and effect.get_node("Time").get_theme_font_size("font_size") == 16, "large shield icon and timer")
+	check(effect.get_node("Time").get_global_rect().end.x <= icon_rect.position.x, "timer reads left of the icon without overlap")
 	await capture("03-shield-active-top-x3", top, 3)
+	await capture("03b-shield-active-right-x3", Rect2i(480, 0, 160, 64), 3)
 	await seconds(1.2)
 	check(effect.get_node("Time").text == "9", "shield time counts down with the gameplay timer")
 	level.player.magic_shield_time = 1.5
@@ -116,6 +122,56 @@ func run() -> void:
 	level.player.magic_shield_time = 0.0
 	hud.set_health(level.player.health, level.player.max_health)
 	await close(level)
+	# --- HP bonus pops a new heart; simultaneous gains are announced one after another above the knight.
+	level = await open("res://scenes/blight_town.tscn")
+	hud = level.hud
+	var hearts = hud.get_node("HealthHearts")
+	var queue = level.get_node("FeedbackText")
+	check(not hearts.popping() and queue.visible_texts().is_empty(), "no pop and no text on level entry")
+	await seconds(5.2)
+	level.player.configure_bonus_health(1, true)
+	await frames(1)
+	check(hearts.popping() and level.player.max_health == 4.0, "HP bonus pops the new heart")
+	for i in 6: await process_frame
+	await capture("08-heart-pop-top-x3", top, 3)
+	await seconds(0.7)
+	check(not hearts.popping(), "heart pop settles")
+	await seconds(1.0)
+	check(queue.visible_texts().is_empty(), "HP bonus line expired")
+	# Kill + ammo + potion in the same frame.
+	level.player.health_units = 20
+	level._on_enemy_defeated(3, level.player.global_position + Vector2(24, -8))
+	level.player.ammo_collected.emit("Longbow", 3)
+	level.player.heal(0.5)
+	check(queue.pending_count() == 3, "three gains queued in order")
+	var order: Array[String] = []
+	var overlap := false
+	var peak := 0
+	var elapsed := 0.0
+	var mid_captured := false
+	while elapsed < 1.6:
+		await process_frame
+		elapsed += level.get_process_delta_time()
+		for text in queue.visible_texts():
+			if not order.has(text): order.append(text)
+		var rects: Array[Rect2] = []
+		for child in queue.get_children():
+			if child is Label and child.modulate.a > 0.05:
+				rects.append(Rect2(child.position, Vector2(child.size.x, 8)))
+		peak = maxi(peak, rects.size())
+		for a in rects.size():
+			for b in range(a + 1, rects.size()):
+				if rects[a].intersects(rects[b]):
+					overlap = true
+					print("OVERLAP t=%.3f %s %s" % [elapsed, rects[a], rects[b]])
+		if rects.size() == 3 and not mid_captured:
+			mid_captured = true
+			var at := Vector2i(level.get_viewport().get_canvas_transform() * level.player.global_position)
+			await capture("09-chained-gains-x3", Rect2i(clampi(at.x - 60, 0, 520), clampi(at.y - 80, 0, 260), 120, 100), 3)
+	check(order == ["+3 SHARDS", "+3 ARROWS", "+0.5 HP"], "gains appear one after another in event order: %s" % [order])
+	check(peak == 3 and not overlap, "all three lines readable together without overlap (peak %d, overlap %s)" % [peak, overlap])
+	check(queue.visible_texts().is_empty() and queue.pending_count() == 0, "queue drains within 1.6 s")
+	await close(level)
 	# --- Title card on each campaign level: first load only, centred, 5 s with fades.
 	for path in LEVELS:
 		progress.announced_level = ""
@@ -124,7 +180,7 @@ func run() -> void:
 		var card: Control = hud.get_node("LevelTitle")
 		var label: Label = card.get_node("Name")
 		check(card.visible and label.text == LEVELS[path], "%s announces its name on first load" % LEVELS[path])
-		check(card.get_node("Sound").stream != null and card.get_node("Sound").bus == &"UI", "%s title sting on the UI bus" % LEVELS[path])
+		check(card.get_node("Sound").stream != null and card.get_node("Sound").bus == &"UI" and is_equal_approx(card.get_node("Sound").volume_db, -3.0), "%s title sting on the UI bus, 3 dB lower" % LEVELS[path])
 		var rect := label.get_global_rect()
 		check(absf(rect.get_center().x - 320.0) <= 1.0 and absf(rect.get_center().y - 176.0) <= 6.0, "%s title centred on screen" % LEVELS[path])
 		check(label.get_theme_font_size("font_size") >= 24, "%s title uses a large font" % LEVELS[path])

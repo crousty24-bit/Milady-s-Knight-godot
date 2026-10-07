@@ -82,12 +82,11 @@ func set_health(value: float, maximum: float = 3.0) -> void:
 	var hearts_in_row: int = mini(heart_count, $HealthHearts.HEARTS_PER_ROW)
 	$Health.position.x = $HealthHearts.position.x + hearts_in_row * $HealthHearts.HEART_SPACING + 4.0
 	$Health.size.x = ceilf(_text_width($Health, $Health.text)) + 2.0
-	$ShieldEffect.position.x = $Health.position.x + $Health.size.x + ROW_GAP
 	# A second heart row pushes the currencies and the equipment column down by one row.
 	var extra_rows: float = (ceili(float(heart_count) / $HealthHearts.HEARTS_PER_ROW) - 1) * $HealthHearts.ROW_SPACING
 	for node in [$GoldIcon, $ShardIcon]: node.position.y = 26.0 + extra_rows
 	for node in [$Gold, $Bonus, $BonusPending]: node.position.y = 28.0 + extra_rows
-	$Equipment.position.y = 44.0 + extra_rows
+	$Equipment.position.y = 46.0 + extra_rows
 func set_death_fade(alpha: float) -> void:
 	$DeathFade.visible = alpha > 0.0
 	var fade_color: Color = $DeathFade.color
@@ -289,7 +288,7 @@ func show_item_prompt(world_position: Vector2, text: String) -> void:
 	_place_prompt()
 
 
-# --- Active effects (docs/05): Magic Shield icon and remaining seconds, top-left after the HP. ---
+# --- Active effects (docs/05): Magic Shield icon and remaining seconds, top-right under the pause key. ---
 # The level hands over a reader of the gameplay timer; the HUD only presents it.
 var magic_shield_source: Callable
 
