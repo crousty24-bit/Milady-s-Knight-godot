@@ -23,6 +23,20 @@ const LOOKS = [
 	[Color(0.75, 0.85, 1.0, 0.55), Color(0.7, 0.85, 0.9, 1.0), Color("0a1012"), Color(0.5, 0.68, 0.6), 18, 0.35, Color("10181a")],
 	[Color(0.85, 0.78, 0.95, 0.75), Color(0.75, 0.8, 0.95, 1.0), Color("120f17"), Color(0.45, 0.66, 0.68), 20, 0.6, Color("19161f")],
 ]
+# RUN-021 N2 pass: Blight Town gets its own five-band backdrop (plague cathedral town, rampart,
+# timbered street, close facades) with separate lit-window overlays that flicker slowly.
+# N3/N4 keep the RUN-020/021 bands above.
+const N2_SKY = preload("res://assets/run021/n2/bg_n2_sky.png")
+# [band, lights, parallax x, parallax y, screen y at the reference framing]
+const N2_BANDS = [
+	[preload("res://assets/run021/n2/bg_n2_far.png"), preload("res://assets/run021/n2/bg_n2_far_lights.png"), 0.08, 0.05, 58.0],
+	[preload("res://assets/run021/n2/bg_n2_rampart.png"), preload("res://assets/run021/n2/bg_n2_rampart_lights.png"), 0.16, 0.09, 120.0],
+	[null, null, 0.2, 0.1, 140.0], # drifting haze
+	[preload("res://assets/run021/n2/bg_n2_mid.png"), preload("res://assets/run021/n2/bg_n2_mid_lights.png"), 0.3, 0.15, 104.0],
+	[preload("res://assets/run021/n2/bg_n2_near.png"), preload("res://assets/run021/n2/bg_n2_near_lights.png"), 0.42, 0.2, 170.0],
+]
+const N2_MID_GROUND = Color("191c13")
+const N2_FINAL = Color("121410")
 @export_range(2, 4) var world_level: int = 2:
 	set(value):
 		world_level = value
@@ -44,6 +58,9 @@ func _draw() -> void:
 	if camera != null and not Engine.is_editor_hint():
 		top_left = camera.get_screen_center_position() - size * 0.5
 	var dy := top_left.y - reference_top
+	if b == 0:
+		_draw_n2(top_left, size, dy, look)
+		return
 	draw_texture(SKIES[b], top_left)
 	_draw_band(CLOUDS, top_left, size, top_left.x * 0.02 + _elapsed * CLOUD_DRIFT, 14.0 - dy * 0.02, look[0])
 	_draw_band(FARS[b], top_left, size, top_left.x * 0.08, 58.0 - dy * 0.05)
@@ -60,6 +77,35 @@ func _draw() -> void:
 	var below := roundf(near_y) + near.get_height()
 	draw_rect(Rect2(top_left + Vector2(0, below), Vector2(size.x, maxf(0.0, size.y - below))), look[2])
 	# Slow motes (screen space, very dim): ash and spores, pale forest specks, spectral wisps.
+	var mote: Color = look[3]
+	for i in int(look[4]):
+		var speed := (5.0 + float(i % 5) * 1.5) * float(look[5])
+		var x := fposmod(float(i) * 97.0 + _elapsed * (3.0 + float(i % 3)) + sin(_elapsed * 0.6 + float(i)) * 8.0, size.x)
+		var y := fposmod(float(i) * 53.0 - _elapsed * speed, size.y)
+		var a := 0.18 + 0.16 * sin(_elapsed * 1.3 + float(i) * 1.7)
+		draw_rect(Rect2((top_left + Vector2(x, y)).round(), Vector2.ONE), Color(mote, a))
+func _draw_n2(top_left: Vector2, size: Vector2, dy: float, look: Array) -> void:
+	draw_texture(N2_SKY, top_left)
+	_draw_band(CLOUDS, top_left, size, top_left.x * 0.02 + _elapsed * CLOUD_DRIFT, 14.0 - dy * 0.02, look[0])
+	for i in N2_BANDS.size():
+		var band: Array = N2_BANDS[i]
+		var y: float = band[4] - dy * band[3]
+		var scroll: float = top_left.x * band[2]
+		if band[0] == null:
+			_draw_band(MIST, top_left, size, scroll + _elapsed * MIST_DRIFT, y, look[1])
+			continue
+		var texture: Texture2D = band[0]
+		_draw_band(texture, top_left, size, scroll, y)
+		# Windows and pyres breathe slowly, each band on its own phase.
+		var glow := 0.78 + 0.14 * sin(_elapsed * 1.1 + i * 1.9) + 0.08 * sin(_elapsed * 3.3 + i)
+		_draw_band(band[1], top_left, size, scroll, y, Color(1, 1, 1, glow))
+		var bottom := roundf(y) + texture.get_height()
+		if i == 3:
+			draw_rect(Rect2(top_left + Vector2(0, bottom), Vector2(size.x, maxf(0.0, size.y - bottom))), N2_MID_GROUND)
+		elif i == 4:
+			draw_rect(Rect2(top_left + Vector2(0, bottom), Vector2(size.x, maxf(0.0, size.y - bottom))), N2_FINAL)
+	_draw_motes(top_left, size, look)
+func _draw_motes(top_left: Vector2, size: Vector2, look: Array) -> void:
 	var mote: Color = look[3]
 	for i in int(look[4]):
 		var speed := (5.0 + float(i % 5) * 1.5) * float(look[5])

@@ -431,6 +431,7 @@ Chaque biome peut ajouter 1 à 2 couleurs dominantes secondaires.
 
 Exemples :
 
+	Blight Town : olive putride / brun boue, accents bile jaune-olive (proposition RUN-021, validation humaine en attente).
 	Black Forest : bleu nuit / vert froid.
 	Forbidden Graveyard : violet désaturé / cyan spectral.  
 	Haunted Caves : brun / vert maladif.  

@@ -1,5 +1,20 @@
 # Milady's Knight — Runs Journal
 
+## 8 octobre 2026 — RUN-021 : passe visuelle N2 Blight Town (Claude)
+
+Demande humaine : enrichir N2 en variété et densité (décor, accessoires, fonds, parallaxe, textures, lumières), sans toucher gameplay, mobs, pièges ni collectables, ni N3/N4. Baseline : arbre propre sur `8013064`. Main agent Claude Code Opus 5.5 ; deux sous-agents `visual_architect` Sonnet 5.5 High, réellement exécutés sur des fichiers disjoints (fonds, accessoires). Le main agent a fait le terrain, le souterrain, l'atmosphère, l'intégration des scripts et les vérifications. Aucune scène modifiée.
+
+**Constat avant :** fonds N2 en silhouettes plates, décor clairsemé, masse de sol en maçonnerie identique à N1, et la cave basse (y≈500) affichait la ligne d'horizon de la ville derrière elle. Captures : `work/run021/n2pass/before/`.
+
+**Preuves (Godot 4.7.2 Windows, `work/run021/check.sh`, verrou et profil isolé) :**
+- Import éditeur sans erreur (`n2pass-import4`) et captures natives de 16 vues N2 (`work/run021/n2pass/t4`, `t5`).
+- Rendus : `run021_backdrop_layers` 9/9, `run020_visual` 57/57, `run021_camera_bounds` 20/20.
+- Campagne : `run020_campaign` 178 contrôles, 1 échec `native family red_slime`, reproduit à l'identique sur `HEAD` dans un worktree isolé.
+- Performance : `perf_check` N2 5,56 ms moyen et 138 appels de dessin. La première mesure (10,3 ms, 4519 appels) a été corrigée par un dessin regroupé par texture.
+- N3/N4 : comparaison au pixel `HEAD`/travail, avec des écarts limités aux éléments animés.
+
+Les logs sont sous `work/test-results/` et indexés dans `work/run021/n2pass-*-results.txt`. Les détails et les limites sont dans le [manifeste](docs/RUN-021_N2_VISUAL_MANIFEST.md). Aucun parcours clavier naturel n'a été joué. La validation artistique et le playtest humain restent requis ; RUN-021 reste ACTIVE.
+
 
 ## 7 octobre 2026 — RUN-021 : Ferry vertical N2 et variantes par Travel
 
