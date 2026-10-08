@@ -94,7 +94,7 @@ Formats audio utilisés dans le projet :
 
 - **Ambient loops : Ogg Vorbis**
 
-Les SFX positionnels liés au monde utilisent une spatialisation 2D lorsque celle-ci apporte une information pertinente au joueur.
+Les SFX positionnels liés au monde utilisent une spatialisation 2D lorsque celle-ci apporte une information pertinente au joueur. Ils partagent un rayon d'écoute proche de l'écran (360 px depuis RUN-021) : une source hors écran, comme l'impact d'un projectile de tourelle lointaine, n'est pas entendue, ce qui limite la fatigue auditive.
 
 Les musiques et sons UI restent non positionnels.
 

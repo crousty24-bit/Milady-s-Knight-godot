@@ -75,6 +75,11 @@ static func fx(from: Node, strip: Texture2D, cell: Vector2i, fps: float, at: Vec
 	if effect != null: effect.process_mode = Node.PROCESS_MODE_PAUSABLE
 	return effect
 
+# Hearing radius shared by every world SFX (RUN-021 audio pass). The 640x360 view at the 1.2x camera zoom
+# shows ~533x300 px, so 360 px ends just past the screen edges: linear falloff, about -12 dB at the side
+# edges, silent beyond. Off-screen turrets, impacts and enemies no longer reach the player.
+const SFX_MAX_DISTANCE := 360.0
+
 # Positional sound left in the scene so it survives the source being freed.
 static func sound(from: Node, stream: AudioStream, at: Vector2, volume_db: float = -6.0) -> void:
 	var parent := holder(from)
@@ -82,7 +87,7 @@ static func sound(from: Node, stream: AudioStream, at: Vector2, volume_db: float
 	var player := AudioStreamPlayer2D.new()
 	player.stream = stream
 	player.volume_db = volume_db
-	player.max_distance = 480.0
+	player.max_distance = SFX_MAX_DISTANCE
 	player.bus = &"SFX"
 	player.process_mode = Node.PROCESS_MODE_PAUSABLE
 	parent.add_child(player)
@@ -95,7 +100,7 @@ static func voice(owner: Node, stream: AudioStream, volume_db: float = -6.0) -> 
 	var player := AudioStreamPlayer2D.new()
 	player.stream = stream
 	player.volume_db = volume_db
-	player.max_distance = 480.0
+	player.max_distance = SFX_MAX_DISTANCE
 	player.bus = &"SFX"
 	owner.add_child(player)
 	return player

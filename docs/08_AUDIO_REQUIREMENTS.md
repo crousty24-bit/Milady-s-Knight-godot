@@ -20,8 +20,8 @@ RUN-010 (30 septembre 2026) : les lignes cochées « Intégré » sont branchée
 
 | Nom                          | Événement déclencheur | Catégorie         | Priorité | Asset trouvé ? | Source | Format | Intégré ? |
 | ---------------------------- | --------------------- | ----------------- | -------- | -------------- | ------ | ------ | --------- |
-| `sfx_player_jump`            | Jump simple           | Player / Movement | P0       | ☑              | Helton Yan Pixel Combat (CC BY 4.0)      | WAV    | ☑         |
-| `sfx_player_double_jump`     | Double jump           | Player / Movement | P0       | ☑              | Helton Yan Pixel Combat (CC BY 4.0)      | WAV    | ☑         |
+| `sfx_player_jump`            | Jump simple           | Player / Movement | P0       | ☑              | Minifantasy Dungeon SFX, `12_human_jump_3` retouché (RUN-021 ; licence non vérifiée, risque accepté par l'humain) | WAV    | ☑         |
+| `sfx_player_double_jump`     | Double jump           | Player / Movement | P0       | ☑              | Minifantasy Dungeon SFX, `12_human_jump_2` retouché (RUN-021 ; licence non vérifiée, risque accepté par l'humain) | WAV    | ☑         |
 | `sfx_player_land`            | Atterrissage          | Player / Movement | P1       | ☐              | —      | WAV    | ☐         |
 | `sfx_player_wall_jump`       | Wall jump             | Player / Movement | P0       | ☑              | Helton Yan Pixel Combat (CC BY 4.0)      | WAV    | ☑         |
 | `sfx_player_wall_slide_loop` | Wall slide            | Player / Movement | P1       | ☐              | —      | WAV    | ☐         |
@@ -254,8 +254,8 @@ Une même famille de sons peut être pitchée/modifiée pour différencier Green
 | Nom                            | Événement déclencheur           | Catégorie          | Priorité | Asset trouvé ? | Source | Format | Intégré ? |
 | ------------------------------ | ------------------------------- | ------------------ | -------- | -------------- | ------ | ------ | --------- |
 | `sfx_spikes_hit`               | Joueur touche piques fixes      | Trap               | P0       | ☐              | —      | WAV    | ☐         |
-| `sfx_spikes_extend`            | Piques mobiles sortent          | Trap               | P1       | ☐              | —      | WAV    | ☐         |
-| `sfx_spikes_retract`           | Piques mobiles se rétractent    | Trap               | P2       | ☐              | —      | WAV    | ☐         |
+| `sfx_spikes_extend`            | Piques mobiles sortent          | Trap               | P1       | ☐              | —      | WAV    | ☐ Retiré : piques rétractables silencieuses (décision humaine RUN-021, 8 octobre 2026) |
+| `sfx_spikes_retract`           | Piques mobiles se rétractent    | Trap               | P2       | ☐              | —      | WAV    | ☐ Retiré (idem) |
 | `sfx_trapdoor_trigger`         | Joueur déclenche une trappe     | Trap               | P0       | ☐              | —      | WAV    | ☐         |
 | `sfx_trapdoor_open`            | Trappe s'ouvre                  | Trap               | P2       | ☐              | —      | WAV    | ☐         |
 | `sfx_turret_fire`              | Tourelle tire                   | Trap               | P0       | ☐              | —      | WAV    | ☐         |
@@ -408,7 +408,7 @@ Les ambiances sont principalement des boucles longues indépendantes des musique
     
 - Les SFX de télégraphie d'attaque doivent être clairement audibles et distincts des sons purement décoratifs.
     
-- Les sons liés aux ennemis, pièges et éléments du monde peuvent utiliser une spatialisation 2D.
+- Les sons liés aux ennemis, pièges et éléments du monde peuvent utiliser une spatialisation 2D. Rayon d'écoute commun de **360 px** (`Run019Art.SFX_MAX_DISTANCE`, RUN-021) : juste au-delà des bords de la vue de 533×300 px au zoom 1,2×, atténuation linéaire (environ −12 dB au bord latéral), silence au-delà.
     
 - Les sons UI, musique et feedbacks système globaux restent non positionnels.
     

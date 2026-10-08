@@ -12,8 +12,8 @@ Médias audio intégrés par RUN-010 (30 septembre 2026), révisés par RUN-014 
 
 | Fichier de jeu | Fichier source |
 | --- | --- |
-| `sounds/sfx_player_jump.wav` | `SWSH_MOVEMENT-Bamboo Whip_HY_PC-005.wav` (RUN-014 ; auparavant Retro Jump) |
-| `sounds/sfx_player_double_jump.wav` | `DSGNMisc_MOVEMENT-Whoosh Sweep_HY_PC-005.wav` (RUN-014 ; auparavant Jump Sparkle) |
+| `sounds/sfx_player_jump.wav` | `SWSH_MOVEMENT-Bamboo Whip_HY_PC-005.wav` (RUN-014 ; auparavant Retro Jump ; plus joué depuis RUN-021, remplacé par `run021/sfx_player_jump_human.wav`) |
+| `sounds/sfx_player_double_jump.wav` | `DSGNMisc_MOVEMENT-Whoosh Sweep_HY_PC-005.wav` (RUN-014 ; auparavant Jump Sparkle ; plus joué depuis RUN-021, remplacé par `run021/sfx_player_double_jump_human.wav`) |
 | `sounds/sfx_player_wall_jump.wav` | `WHSH_MOVEMENT-Simple Whoosh_HY_PC-001.wav` |
 | `sounds/sfx_melee_swing_light_01–03.wav` | `DSGNMisc_MELEE-Sword Slash_HY_PC-001–003.wav` |
 | `sounds/sfx_melee_hit_01–03.wav` | `FGHTImpt_MELEE-Gut Punch_HY_PC-003, -006, -005.wav` (RUN-014 ; auparavant Gore Pierce) |
@@ -87,7 +87,7 @@ Première itération validée. À reprendre (traité par RUN-014, en attente d'�
 
 *Shooter Synthwave Music Pack* (AlkaKrab) : la licence interdit la redistribution des pistes telles quelles et demande une autorisation de l'auteur pour un jeu open source ; non intégré (RUN-014).
 
-*Minifantasy Dungeon SFX* (Leohpaz / Krishna Palacio) convenait au style mais interdit la redistribution des fichiers ; le dépôt GitHub étant public, il n'a pas été intégré.
+*Minifantasy Dungeon SFX* (Leohpaz / Krishna Palacio) convenait au style mais interdit la redistribution des fichiers ; le dépôt GitHub étant public, il n'a pas été intégré. **Exception RUN-021 (8 octobre 2026) :** deux dérivés de saut intégrés sur décision humaine explicite, risque accepté (voir section dédiée ci-dessous).
 
 
 ## SFX équipement standard et coffres — RUN-018 (5 octobre 2026)
@@ -195,3 +195,30 @@ Choix objectif (contenu grave/aigu mesuré, aucune prise déjà utilisée) ; jou
 Transformation : mono 44,1 kHz 16 bits, coupe −55 dB, fondu d'entrée 2 ms, normalisation de crête ; `tools/art/run021/prepare_audio_chest_reveal.py`. Montée : seule la partie ascendante d'« Aura Up » est gardée et étirée sans changer la hauteur (`atempo`), mélangée à un balayage inversé de « Growing Strength », puis une rampe de volume linéaire en dB (−34 dB à t=0, 0 dB à 2,9 s) impose le crescendo ; fondu de sortie de 30 ms (la coupure est masquée par l'éclat). Éclat : deux couches à t=0, coupe 1,2 s + fondu 0,15 s.
 
 Choix objectif (durée, enveloppe RMS, taux de passages par zéro croissant, part de grave, aucune prise déjà utilisée) ; aucun autre pack (notamment pas Minifantasy) n'est utilisé. Attribution : « Sound effects: Pixel Combat SFX by Helton Yan — CC BY 4.0 ». Écoute humaine attendue (caractère « lumière sacrée » contre sci-fi, volume face au SFX d'ouverture du coffre).
+
+## Passe audio RUN-021 (8 octobre 2026) : musique N1, sauts, piques
+
+### Musique N1 Eidolon Vale
+
+- **Fichier de jeu :** `run021/audio/music_n1_eidolon_vale.ogg`, référencé par le node `Music` de `scenes/vertical_slice.tscn`, dont hérite `eidolon_vale.tscn` (choix humain). *Dreamer* n'est plus joué en N1 ; N2 et N3 le conservent.
+- **Morceau :** « Shadow of the Blood Thirsty Woodlands », auteur Pixabay `ehved2`, identifiant 250736, 1:07. La page exacte n'est pas encore reliée au fichier (aucune URL inventée).
+- **Licence :** Pixabay Content License supposée d'après le format du nom de fichier, comme les autres pistes de la bibliothèque ; page du morceau non consultée. Aucun certificat de téléchargement détenu.
+- **Source conservée :** `assets/source/run021/audio/ehved2-shadow-of-the-blood-thirsty-woodlands-250736.mp3`, copie inchangée (SHA-256 `7b5fa7d7…98307`, 2 151 653 octets, MP3 256 kb/s 44,1 kHz stéréo, 67,24 s) ; provenance dans `provenance_n1.json`.
+- **Transformation :** loudnorm −13 LUFS / TP −1,5 dBFS (source à −22,5 LUFS), coupe à 59,077 s (8 phrases de 7,385 s). Les 4,2 s de queue de réverbération qui suivent la coupe sont mixées sur le début du fichier, avec un fondu de sortie d'1 s : au bouclage, la queue continue sous la phrase suivante au lieu d'être coupée. Limiteur à −1,5 dBFS, puis Ogg Vorbis q5 44,1 kHz stéréo. Mesures : −13,9 LUFS, true peak −0,6 dBFS, LRA 3,0 LU. Import `loop=true`, `loop_offset=0`. Commandes : `work/run021/audio/prepare_n1.sh`. Le lecteur reste à −20 dB.
+- Écoute humaine attendue (raccord de boucle, extrait `work/run021/audio/excerpt_n1_loop.ogg` : 10 s avant la fin, puis 10 s après le retour au début ; niveau face aux SFX).
+
+### Saut et double saut (Minifantasy Dungeon SFX, Leohpaz)
+
+| Fichier de jeu | Fichier source | Retouche | Pic | Durée |
+| --- | --- | --- | --- | --- |
+| `sounds/run021/sfx_player_jump_human.wav` | `Minifantasy_Dungeon_SFX/12_human_jump_3.wav` (SHA-256 `fbd05030…de29`) | −1 demi-ton, passe-bas 5 kHz | −10 dBFS | 0,35 s |
+| `sounds/run021/sfx_player_double_jump_human.wav` | `Minifantasy_Dungeon_SFX/12_human_jump_2.wav` (SHA-256 `417864dd…cb88`) | +1,5 demi-ton, bande 200 Hz–6,5 kHz | −10 dBFS | 0,30 s |
+
+Pipeline `tools/prepare_audio.py` : coupe −55 dB, fondu d'entrée 2 ms, mono 44,1 kHz 16 bits, durée plafonnée avec fondu de sortie de 0,15 s, crête au niveau des sons fréquents (`REPEAT_PEAK_DB`, sous le défaut −8 dBFS). Générateur : `tools/art/run021/prepare_audio_jump.py`. Centroïde spectral moyen de 1,4 et 1,7 kHz, contre 1,7 et 3,9 kHz pour les anciens whooshes Helton Yan. Les volumes des nodes de `player.tscn` (−14 dB) et le saut mural sont inchangés.
+
+**Licence non vérifiée, risque accepté par l'humain.** Le dossier de la bibliothèque ne contient aucun fichier de licence, et les crédits notent depuis RUN-010 que la licence interdit la redistribution des fichiers. Le dépôt GitHub étant public, ces dérivés y sont redistribués. Le 8 octobre 2026, l'humain a choisi explicitement de les intégrer et de les commiter malgré cela (« Garder, je prends le risque »). Ces deux fichiers ne sont **pas** présentés comme libres de droits : ils sont à revoir lors de la recette des licences avant distribution. Les autres fichiers Minifantasy restent exclus.
+
+### Piques rétractables
+
+`run019/sfx_spikes_extend.wav` et `run019/sfx_spikes_hit.wav` ne sont plus joués (demande humaine). Les fichiers sont conservés, sans aucune référence. Le cycle se lit visuellement, et le son générique de dégât du joueur couvre le contact.
+

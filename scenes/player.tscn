@@ -2,11 +2,11 @@
 
 [ext_resource type="Script" uid="uid://c1h052sc5f087" path="res://scripts/player.gd" id="1"]
 [ext_resource type="SpriteFrames" uid="uid://wni5udyptlvu" path="res://assets/run018/knight/knight_body_frames.tres" id="2"]
-[ext_resource type="AudioStream" uid="uid://dwjiqjp0b0d6r" path="res://assets/sounds/sfx_player_jump.wav" id="3"]
+[ext_resource type="AudioStream" path="res://assets/sounds/run021/sfx_player_jump_human.wav" id="3"]
 [ext_resource type="AudioStream" path="res://assets/sounds/sfx_player_hit.tres" id="4"]
 [ext_resource type="AudioStream" path="res://assets/sounds/sfx_melee_swing_light.tres" id="5"]
 [ext_resource type="Shader" uid="uid://cficlrxya0vea" path="res://assets/shaders/hurt_flash.gdshader" id="6"]
-[ext_resource type="AudioStream" uid="uid://bsl2mntoad8ed" path="res://assets/sounds/sfx_player_double_jump.wav" id="7"]
+[ext_resource type="AudioStream" path="res://assets/sounds/run021/sfx_player_double_jump_human.wav" id="7"]
 [ext_resource type="AudioStream" uid="uid://c36ejgcl5l6rt" path="res://assets/sounds/sfx_player_wall_jump.wav" id="8"]
 [ext_resource type="AudioStream" uid="uid://br676ylqgh5l6" path="res://assets/sounds/sfx_player_death.wav" id="9"]
 [ext_resource type="SpriteFrames" uid="uid://dtrlrlv4giovc" path="res://assets/run018/knight/knight_mid_frames.tres" id="10"]

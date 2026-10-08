@@ -602,6 +602,8 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 **Lot J · Main agent : Claude Opus 5.5 (visuel), Codex (passe technique) · Statut : ACTIVE · Dépendances : RUN-020 DONE.**
 
+- **Passe audio Claude (8 octobre) :** piques rétractables silencieuses ; musique N1 « Shadow of the Blood Thirsty Woodlands » (boucle de 8 phrases) ; saut et double saut Minifantasy `12_human_jump` retouchés, intégrés sur décision humaine malgré une licence non vérifiée (dépôt public) ; rayon d'écoute commun des SFX du monde de 360 px (les impacts étaient entendus jusqu'à 2000 px). `run021_audio_pass` 28/28, 2244 PASS + 15 suites ; quatre échecs préexistants identiques sur `HEAD`. Écoute humaine requise ; RUN-021 reste ACTIVE.
+
 - **HUD/coffres Claude (8 octobre) :** cœurs sans nombre ; récompense à deux slots toujours visibles, icône 48 px, halo de sélection, seul bouton Accept (E) ; coffre centré à l'ouverture. Recette 61RESULT/2781PASS en worktree isolé ; échecs restants identiques sur `HEAD` (campagne red_slime, routes N2, Bloated, caisse N4). Validation humaine requise, RUN-021 reste ACTIVE.
 
 - **Zoom joueur validé le 8 octobre :** changement manuel à **1,2×** sur les deux axes confirmé dans `scenes/player.tscn`, playtests réalisés selon déclaration humaine. Défaut conservé jusqu'à nouvel ordre ; légère hausse de difficulté volontaire. Les prochaines passes de développement et de recette utilisent ce cadrage comme baseline, sans compensation automatique ni retour à 1×. Décision consignée dans docs/01, docs/06 et brief ; elle ne clôture pas RUN-021 ni ne valide les autres compléments en attente.

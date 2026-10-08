@@ -53,12 +53,12 @@ func run() -> void:
 	initial_spikes.initial_phase = 2.1
 	room.add_child(initial_spikes)
 	initial_spikes.set_physics_process(false)
-	check(initial_spikes._art.animation == &"extended" and not initial_spikes._voice.playing, "initial dangerous phase is settled and silent")
+	check(initial_spikes._art.animation == &"extended" and initial_spikes.find_children("*", "AudioStreamPlayer2D", true, false).is_empty(), "initial dangerous phase is settled and silent")
 	initial_spikes.cycle_time = 0.0
 	initial_spikes._update_phase()
 	initial_spikes.cycle_time = 2.1
 	initial_spikes._update_phase()
-	check(initial_spikes._art.animation == &"extend" and initial_spikes._voice.playing, "later extension plays transition and cue")
+	check(initial_spikes._art.animation == &"extend" and initial_spikes.find_children("*", "AudioStreamPlayer2D", true, false).is_empty(), "later extension plays transition, silently (RUN-021)")
 	for angle in [0.0, PI / 2.0, PI, -PI / 2.0]:
 		await reset()
 		var spikes := trap("retractable_spikes", Vector2(200, 180))
