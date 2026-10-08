@@ -608,9 +608,10 @@ spawn_offsets = Array[Vector2]([Vector2(-64, -16), Vector2(-24, -32), Vector2(24
 
 [node name="SkullSwarm7" parent="Exploration" unique_id=439935045 instance=ExtResource("24")]
 position = Vector2(2918, 80)
-zone_size = Vector2(480, 112)
-zone_offset = Vector2(0, 17)
-spawn_offsets = Array[Vector2]([Vector2(-64, -16), Vector2(-24, -32), Vector2(24, -32), Vector2(104, -16)])
+zone_size = Vector2(208, 97)
+zone_offset = Vector2(-30, 16.5)
+required_gate = NodePath("../MechanismDoor5")
+spawn_offsets = Array[Vector2]([Vector2(-102, 32), Vector2(-70, 16), Vector2(-22, 16), Vector2(42, 0)])
 
 [node name="SkullSwarm5" parent="Exploration" unique_id=1028379504 instance=ExtResource("24")]
 position = Vector2(3403, 355)
