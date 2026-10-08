@@ -20,6 +20,8 @@ Space déclenche un rebond vers le côté opposé depuis un mur agrippable, mêm
 
 ### Caméra et extensions verticales — RUN-021 (7 octobre 2026)
 
+**Zoom par défaut validé le 8 octobre 2026 : 1,2× sur les deux axes**, réglé manuellement dans `scenes/player.tscn` puis retenu après playtests humains. Il reste la référence jusqu'à nouvel ordre ; la légère hausse de difficulté liée au champ visible réduit est volontaire. Les futurs réglages et vérifications doivent conserver cette référence, sans compensation automatique de difficulté. Voir [la règle de cadrage](06_ART_BIBLE.md#relation-avec-léchelle-pixel-art).
+
 Au chargement du niveau, `scripts/level.gd` conserve les limites horizontales de `Camera Bounds` et agrandit ses limites verticales à partir des cellules du `Terrain` et des deux extrémités de déplacement des Ferries sous `Platforms`. Le suivi physique lissé et le décalage de caméra `(32, -38)` sont conservés. Le cadrage inférieur existant reste inchangé tant que le contenu ne dépasse pas sa limite basse.
 
 Dans l'inspecteur du nœud racine du niveau :

@@ -182,13 +182,15 @@ Résolution interne de référence :
 
 **640×360 px — 16:9**
 
-Avec un zoom de référence `1×`, le viewport correspond approximativement à :
+Avec le zoom par défaut **1,2×**, le viewport couvre environ **533,3×300 px** du monde, soit :
 
-**40 tiles horizontalement × 22,5 tiles verticalement.**
+**33,3 tiles horizontalement × 18,75 tiles verticalement.**
 
 Le Player Character ayant une hauteur visuelle d'environ **32 px**, il représente approximativement deux tiles de hauteur.
 
-Le zoom de référence initial sera **1×**. Toute modification de ce zoom devra être testée directement dans un niveau représentatif avant d'être adoptée.
+**Décision humaine du 8 octobre 2026 :** zoom joueur **1,2×** (`Vector2(1.2, 1.2)` sur `Player/Camera2D` dans `scenes/player.tscn`), modifié manuellement et retenu après des playtests déclarés par l'humain. Ce réglage remplace la référence initiale 1× et reste le défaut jusqu'à nouvel ordre. Le champ visible réduit augmente légèrement la difficulté : cet effet est voulu et ne doit pas être compensé automatiquement.
+
+Les prochains travaux de cadrage, lisibilité, level design, équilibrage et vérification doivent prendre **1,2×** comme référence. Toute modification de ce choix requiert une nouvelle décision humaine et des playtests ; les autres paramètres de caméra restent soumis à leurs règles de validation.
 
 #### Scaling et rendu
 

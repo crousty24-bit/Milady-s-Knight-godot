@@ -602,6 +602,8 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 **Lot J · Main agent : Claude Opus 5.5 (visuel), Codex (passe technique) · Statut : ACTIVE · Dépendances : RUN-020 DONE.**
 
+- **Zoom joueur validé le 8 octobre :** changement manuel à **1,2×** sur les deux axes confirmé dans `scenes/player.tscn`, playtests réalisés selon déclaration humaine. Défaut conservé jusqu'à nouvel ordre ; légère hausse de difficulté volontaire. Les prochaines passes de développement et de recette utilisent ce cadrage comme baseline, sans compensation automatique ni retour à 1×. Décision consignée dans docs/01, docs/06 et brief ; elle ne clôture pas RUN-021 ni ne valide les autres compléments en attente.
+
 - **Complément commandes autorisé le 7 octobre :** recommandation acceptée puis implémentation locale des profils clavier + souris AZERTY/QWERTY, classique et personnalisé ; menu Controls depuis titre/pause, remappage et sauvegarde indépendante, aides dynamiques et reprise après relâchement. 767 PASS / 20 RESULT ciblés, dont 80 headless + 80 natifs sur les contrôles et deux sessions à froid ; import propre. Pas de visée au curseur ni d’implémentation des attaques spéciale/impact réservées. Ressenti à valider humainement ; ce complément ne clôture pas RUN-021 et ne remplace pas la recette globale. Détails au journal.
 
 - **Slots d'armes Claude (7 octobre) :** nom seul et badge de niveau 12×12 juste après le nom. Rendu79/79, recette 58RESULT/2842PASS en worktree isolé, quatre échecs préexistants inchangés ; validation humaine de lisibilité requise, RUN-021 reste ACTIVE.
