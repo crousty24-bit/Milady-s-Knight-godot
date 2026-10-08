@@ -17,7 +17,7 @@ Demande humaine : « Je valide la passe visuelle sur le N2. Le bug de mémoire s
 - Durée : 90 s en fenêtre, mémoire statique stable 50,1 → 50,0 Mo, pire image 8,4 ms.
 - Performance : `perf_check` N3 5,56 ms moyen, 168 appels de dessin.
 
-Les logs sont sous `work/test-results/` et indexés dans `work/run021/n3pass-*-results.txt` et `iso-*-results.txt`. Les détails et les limites sont dans le [manifeste](docs/RUN-021_N3_VISUAL_MANIFEST.md). Aucun parcours clavier naturel n'a été joué. La validation artistique et le playtest humain restent requis ; RUN-021 reste ACTIVE.
+Les logs du checkout partagé sont sous `work/test-results/` et indexés dans `work/run021/n3pass-*-results.txt`. Les captures `HEAD` N2/N4 et les logs de la campagne `HEAD` + passe se trouvaient dans le worktree temporaire `work/wt-n3-head`, supprimé après le commit : seuls les résultats chiffrés ci-dessus en restent, et les captures du travail (`work/run021/n3pass/work_n2`, `work_n4`) sont conservées. Les détails et les limites sont dans le [manifeste](docs/RUN-021_N3_VISUAL_MANIFEST.md). Aucun parcours clavier naturel n'a été joué. La validation artistique et le playtest humain restent requis ; RUN-021 reste ACTIVE.
 
 ## 8 octobre 2026 — RUN-021 : boucle infinie du miasme N2 (crash, plus de 30 Go)
 

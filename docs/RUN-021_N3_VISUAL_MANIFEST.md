@@ -40,6 +40,7 @@ Environnement : Godot 4.7.2 Windows, `work/run021/check.sh`, verrou et profil is
 - **N2/N4 inchangés** : captures `HEAD` (worktree isolé) contre travail, 14 vues N2 et 3 vues N4.
   - 12 vues sont identiques au pixel ; les autres diffèrent de 5 à 40 pixels.
   - Ces écarts sont localisés sur les flammes de torches de la porte, le compteur et les reflets des piques. Le bruit entre deux captures de `HEAD` va jusqu'à 71 pixels.
+  - Le worktree temporaire a été supprimé après le commit, avec ses captures `HEAD` et les logs de la campagne isolée. Les chiffres sont consignés ici et au journal.
 - **Suites** : `run021_backdrop_layers` 9/9, `run020_visual` 57/57, `run021_camera_bounds` 20/20.
 - **Campagne** (`run020_campaign`, 178 contrôles) :
   - Sur `HEAD` + cette passe seule (worktree isolé) : un seul échec, `native family red_slime`, identique sur `HEAD`.
