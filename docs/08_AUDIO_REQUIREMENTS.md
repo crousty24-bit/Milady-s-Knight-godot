@@ -370,7 +370,7 @@ Les ambiances sont principalement des boucles longues indépendantes des musique
 |---|---|---|---|---|---|---|---|
 |`amb_eidolon_vale`|Niveau 1 chargé|Ambient|P1|☐|—|OGG|☐|
 |`amb_blight_town`|Niveau 2 chargé|Ambient|P1|☐|—|OGG|☐|
-|`amb_black_forrest`|Niveau 3 chargé|Ambient|P1|☐|—|OGG|☐|
+|`amb_black_forrest`|Niveau 3 chargé|Ambient|P1|☑|Synthèse originale (`run021/amb_black_forrest_v2`, RUN-021 : plus grave et ~6 LU plus discrète que la version RUN-020)|OGG|☑|
 |`amb_forbidden_graveyard`|Niveau 4 chargé|Ambient|P1|☐|—|OGG|☐|
 |`amb_haunted_caves`|Niveau 5 chargé|Ambient|P1|☐|—|OGG|☐|
 |`amb_desolands`|Niveau 6 chargé|Ambient|P1|☐|—|OGG|☐|

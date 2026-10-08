@@ -602,6 +602,8 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 **Lot J · Main agent : Claude Opus 5.5 (visuel), Codex (passe technique) · Statut : ACTIVE · Dépendances : RUN-020 DONE.**
 
+- **Seconde passe audio Claude (8 octobre) :** passe précédente validée. Le saut mural (aucun son de glissade n'existe) passe de −12 à −23 dB, sous les sauts. Nouvelle ambiance N3 originale, plus grave et plus discrète (−34,9 LUFS contre −29,1), dans l'esprit de N2. `run021_audio_pass` 33/33, mêmes quatre échecs préexistants. Écoute humaine requise ; RUN-021 reste ACTIVE.
+
 - **Passe audio Claude (8 octobre) :** piques rétractables silencieuses ; musique N1 « Shadow of the Blood Thirsty Woodlands » (boucle de 8 phrases) ; saut et double saut Minifantasy `12_human_jump` retouchés, intégrés sur décision humaine malgré une licence non vérifiée (dépôt public) ; rayon d'écoute commun des SFX du monde de 360 px (les impacts étaient entendus jusqu'à 2000 px). `run021_audio_pass` 28/28, 2244 PASS + 15 suites ; quatre échecs préexistants identiques sur `HEAD`. Écoute humaine requise ; RUN-021 reste ACTIVE.
 
 - **HUD/coffres Claude (8 octobre) :** cœurs sans nombre ; récompense à deux slots toujours visibles, icône 48 px, halo de sélection, seul bouton Accept (E) ; coffre centré à l'ouverture. Recette 61RESULT/2781PASS en worktree isolé ; échecs restants identiques sur `HEAD` (campagne red_slime, routes N2, Bloated, caisse N4). Validation humaine requise, RUN-021 reste ACTIVE.

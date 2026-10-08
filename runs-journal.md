@@ -1328,3 +1328,18 @@ Enemy25/26/27/30/28/29 ont respectivement des vitesses de 46/48/50/52/54/56 px/s
 **Limite :** le harnais headless utilise un pilote audio factice. Il prouve les flux, l'état des lecteurs et les portées, pas ce qu'on entend.
 
 **Validation humaine restante :** raccord et niveau de la musique N1 (extrait `work/run021/audio/excerpt_n1_loop.ogg`), caractère et volume des deux sauts, ressenti du rayon de 360 px en jeu (tourelles, archers, Sorcerer près du bord d'écran). Le saut mural (whoosh Helton Yan) n'a pas été demandé et reste inchangé ; c'est une reprise possible.
+
+## RUN-021 — Seconde passe audio : saut mural et ambiance N3 (Claude), 8 octobre 2026
+
+**Demande :** passe audio précédente validée. Le « wall slide » est trop fort face aux sauts : à rendre plus discret qu'eux. L'ambiance N3 est trop forte et désagréable : en faire une nouvelle, dans l'esprit de N2 mais différente et plus discrète.
+
+**Constat :** le code ne contient aucun son de glissade murale. Le seul son mural est `WallJumpSound`, joué au saut depuis un mur ; c'est lui qui est traité. RMS effectif (fichier + node) : −34,8 dB, contre −43,5 dB pour le saut et −41,4 dB pour le double saut. Ordre réel des niveaux : N2 Blight Town, N3 Black Forrest. L'ancienne N3 reposait sur un bruissement à 1,3 kHz et des grillons à 1,7–1,9 kHz (centroïde moyen 2,1 kHz, −29,1 LUFS).
+
+**Réalisé (Claude Code Opus 5.5, sans sous-agent) :**
+- `scenes/player.tscn` : node `WallJumpSound` de −12 à −23 dB, soit environ −46 dB effectifs, juste sous le saut simple. Le fichier est inchangé.
+- Nouvelle ambiance N3 originale, sans son tiers : `tools/art/run021/ambience_n3_run021.py` (primitives RUN-020). Couches : vent bas à 300 Hz, plainte autour de 150 Hz, craquements de troncs, frémissement sous 900 Hz, un hululement lointain. Source `assets/source/run021/audio/amb_black_forrest_v2.wav`, dérivé `assets/sounds/run021/amb_black_forrest_v2.ogg`, 28 s en boucle. Mesures : −34,9 LUFS, crête −17,7 dBFS, centroïde 1 023 Hz (N2 : −30,7 LUFS, 1 129 Hz). Une `ext_resource` change dans `scenes/black_forrest.tscn` ; le node reste à −8 dB. L'ancienne version est conservée sans référence.
+- `tests/run021_audio_pass.gd` passe à 33 contrôles (volume mural, flux, boucle et bus N3, lecture réelle à l'entrée du niveau). Toutes les lectures du niveau sont arrêtées avant sa libération, ce qui supprime une fuite intermittente en `--fixed-fps 60`. Crédits et `docs/08` mis à jour.
+
+**Vérifications (Godot 4.7.2 Windows, worktree isolé = `HEAD` 7d1089e + ces seuls changements ; travail parallèle de l'autre session et `forbidden_graveyard.tscn` humain exclus) :** import propre. `run021_audio_pass` **33/33**, 4 exécutions sans fuite, avec et sans `--fixed-fps 60`. `tools/test.sh` : 35 suites, **2244 PASS** jusqu'au premier échec ; ensuite les 15 suites restantes ont été lancées une par une, dont `run021_audio` 19/19. `run020_visual` : contrôles d'ambiance réussis sur N2–4, dont le passage de la fin de la boucle native. Ses 24 échecs viennent uniquement de l'enregistrement des captures (dossier `work/run020` absent du worktree). Échecs préexistants inchangés, déjà reproduits sur `HEAD` : `run020_campaign` (red_slime), `run020_routes` (2), `run021_tuning` (2), `run021_bloated_dodge` (2). Logs dans `work/run021/audio/pass2/`. Le pilote audio factice ne prouve pas ce qu'on entend.
+
+**Validation humaine restante :** équilibre saut mural / sauts en jeu ; caractère et niveau de la nouvelle N3. Extrait `work/run021/audio/excerpt_n3_old_then_new.ogg` : 12 s de l'ancienne, puis 12 s de la nouvelle.

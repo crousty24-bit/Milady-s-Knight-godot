@@ -36,6 +36,7 @@ func run() -> void:
 	music_n1()
 	jumps()
 	await jumps_play()
+	await n3_ambience()
 	await hearing_radius()
 	# Release the impact playbacks still running in the audio server before quitting.
 	for voice in world_voices(): voice.stop()
@@ -83,8 +84,27 @@ func jumps() -> void:
 		check(audio.stream != null and audio.stream.resource_path == pair[1], "%s stream = %s" % [pair[0], audio.stream.resource_path if audio.stream else "null"])
 		check(audio.stream != null and absf(audio.stream.get_length() - pair[2]) < 0.02, "%s length %.2f s" % [pair[0], audio.stream.get_length() if audio.stream else -1.0])
 		check(audio.bus == &"SFX", "%s on bus SFX" % pair[0])
-	check((player.get_node("WallJumpSound") as AudioStreamPlayer).stream.resource_path == "res://assets/sounds/sfx_player_wall_jump.wav", "WallJumpSound unchanged")
+	var wall := player.get_node("WallJumpSound") as AudioStreamPlayer
+	check(wall.stream.resource_path == "res://assets/sounds/sfx_player_wall_jump.wav", "WallJumpSound stream unchanged")
+	# Second pass: the wall cue sits under the jumps (RMS -22.8 dBFS file + node, vs -29.5 + -14 for the jump).
+	check(is_equal_approx(wall.volume_db, -23.0) and wall.volume_db < (player.get_node("JumpSound") as AudioStreamPlayer).volume_db, "WallJumpSound node at -23 dB, under the jump node")
 	player.free()
+
+func n3_ambience() -> void:
+	var level: Node = load("res://scenes/black_forrest.tscn").instantiate()
+	var ambient := level.get_node("Ambient") as AudioStreamPlayer
+	var stream := ambient.stream as AudioStreamOggVorbis
+	check(stream != null and stream.resource_path == "res://assets/sounds/run021/amb_black_forrest_v2.ogg", "N3 Ambient stream = " + (stream.resource_path if stream else "null"))
+	check(stream != null and stream.loop and absf(stream.get_length() - 28.0) < 0.01, "N3 ambience loops over 28 s")
+	check(ambient.bus == &"Ambient" and is_equal_approx(ambient.volume_db, -8.0), "N3 ambience on bus Ambient, node -8 dB unchanged")
+	root.add_child(level)
+	await frames(5)
+	check(ambient.playing, "N3 entry: ambience playing")
+	# Release every playback of the level (music, ambience, mob cues) before freeing it.
+	for type in ["AudioStreamPlayer", "AudioStreamPlayer2D"]:
+		for voice in level.find_children("*", type, true, false): voice.stop()
+	level.queue_free()
+	await frames(4)
 
 func jumps_play() -> void:
 	# Real input on a floor: the ground jump and the air jump each trigger their own new cue.

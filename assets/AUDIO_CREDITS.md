@@ -222,3 +222,12 @@ Pipeline `tools/prepare_audio.py` : coupe −55 dB, fondu d'entrée 2 ms, mono 4
 
 `run019/sfx_spikes_extend.wav` et `run019/sfx_spikes_hit.wav` ne sont plus joués (demande humaine). Les fichiers sont conservés, sans aucune référence. Le cycle se lit visuellement, et le son générique de dégât du joueur couvre le contact.
 
+### Seconde passe audio RUN-021 (8 octobre 2026) : saut mural et ambiance N3
+
+- **Saut mural :** le fichier `sounds/sfx_player_wall_jump.wav` est inchangé. Le node `WallJumpSound` de `player.tscn` passe de −12 à −23 dB (retour humain : trop fort face aux sauts). En RMS effectif, il sort à environ −46 dB, contre −43,5 dB pour le saut et −41,4 dB pour le double saut.
+- **Ambiance N3 Black Forrest :** `sounds/run021/amb_black_forrest_v2.ogg`, référencé par le node `Ambient` de `scenes/black_forrest.tscn` (node toujours à −8 dB). Synthèse originale déterministe, sans son tiers, par `tools/art/run021/ambience_n3_run021.py`, qui réutilise les primitives de `tools/art/run020/ambience_run020.py`. Source PCM mono 22,05 kHz 16 bits, 28 s, boucle `smpl` : `assets/source/run021/audio/amb_black_forrest_v2.wav` (SHA-256 `5c9f08ed…07bc0`). Dérivé Vorbis q4, boucle au début.
+  - Même esprit que N2 (retour humain) : vent bas plus sourd (coupure 300 Hz), plainte autour de 150 Hz, deux craquements de troncs plus graves, frémissement de feuilles sous 900 Hz et un hululement lointain. Le bruissement à 1,3 kHz et les grillons à 1,7–1,9 kHz de la version RUN-020 sont retirés.
+  - Mesures : −34,9 LUFS et crête −17,7 dBFS, contre −29,1 LUFS et −12,8 dBFS pour l'ancienne N3, et −30,7 LUFS pour N2. Centroïde spectral moyen de 1 023 Hz, contre 2 139 Hz pour l'ancienne et 1 129 Hz pour N2.
+  - L'ancienne version `run020/amb_black_forrest.ogg` et sa source restent conservées, sans référence.
+- Écoute humaine attendue. Extrait `work/run021/audio/excerpt_n3_old_then_new.ogg` : 12 s de l'ancienne, puis 12 s de la nouvelle, au même gain.
+
