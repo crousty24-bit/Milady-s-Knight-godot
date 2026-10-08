@@ -100,7 +100,7 @@ position = Vector2(112, 132)
 position = Vector2(200, 100)
 
 [node name="Coin03" parent="Coins" unique_id=1152441419 instance=ExtResource("7")]
-position = Vector2(357, 128)
+position = Vector2(346, 82)
 
 [node name="Coin04" parent="Coins" unique_id=1966620936 instance=ExtResource("7")]
 position = Vector2(432, 98)
@@ -115,7 +115,7 @@ position = Vector2(784, 132)
 position = Vector2(944, 132)
 
 [node name="Coin08" parent="Coins" unique_id=5210471 instance=ExtResource("7")]
-position = Vector2(1032, 100)
+position = Vector2(1227, 228)
 
 [node name="Coin09" parent="Coins" unique_id=1730367935 instance=ExtResource("7")]
 position = Vector2(1344, 16)
@@ -169,7 +169,7 @@ position = Vector2(2704, 162)
 process_mode = 1
 
 [node name="Enemy01" parent="Enemies" unique_id=942541283 instance=ExtResource("8")]
-position = Vector2(320, 144)
+position = Vector2(290, 144)
 patrol_left = -56.0
 patrol_right = 56.0
 
@@ -192,6 +192,12 @@ variant = 1
 
 [node name="Enemy03" parent="Enemies" unique_id=1153652359 instance=ExtResource("8")]
 position = Vector2(1472, 64)
+patrol_left = -24.0
+patrol_right = 24.0
+variant = 1
+
+[node name="Enemy24" parent="Enemies" unique_id=2147241765 instance=ExtResource("8")]
+position = Vector2(1381, 240)
 patrol_left = -24.0
 patrol_right = 24.0
 variant = 1
@@ -344,8 +350,8 @@ position = Vector2(3040, 80)
 rotation = 3.1415927
 
 [node name="Spikes14" parent="Hazards" unique_id=1734402434 instance=ExtResource("11")]
-position = Vector2(3251, -144)
-rotation = 3.1415927
+position = Vector2(3072, -18)
+rotation = 4.712389
 
 [node name="Spikes13" parent="Hazards" unique_id=1055177592 instance=ExtResource("11")]
 position = Vector2(3296, 144)
@@ -379,7 +385,7 @@ position = Vector2(2944, 208)
 process_mode = 1
 
 [node name="CommonChest" parent="Items" unique_id=1314341993 instance=ExtResource("14")]
-position = Vector2(1232, 240)
+position = Vector2(367, 143)
 
 [node name="CommonChest3" parent="Items" unique_id=313005999 instance=ExtResource("14")]
 position = Vector2(3066, 143)
