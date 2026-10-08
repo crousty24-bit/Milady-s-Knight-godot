@@ -1,5 +1,19 @@
 # Milady's Knight — Runs Journal
 
+## 8 octobre 2026 — RUN-021 : boucle infinie du miasme N2 (crash, plus de 30 Go)
+
+Retour humain : Godot plante toujours au lancement de `blight_town` (F6 impossible) et dépasse 30 Go de mémoire. **Cause prouvée :** dans `campaign_decor.gd`, `_draw_strip` avançait en flottants (`x += 256 - fposmod(x + scroll, 256)`). Quand `x + scroll` tombe juste sous un multiple de 256, le pas devient inférieur à la précision de `x` : `x` n'avance plus et la boucle empile sans fin des commandes de dessin. Le défaut dépend du temps : sur les 19 nappes réelles de N2, le premier blocage survient à 48,5 s de jeu (`work/run021/n2pass/reload/strip_real.gd`), puis 13 548 instants bloquants dans les 10 premières minutes. Les essais précédents, de 10 s, ne pouvaient pas l'atteindre.
+
+**Correctif :** pas entiers d'au moins 1 px, plus une garde de 64 itérations. Toutes les autres boucles `while` des trois scripts N2 ont été relues : leurs bornes sont finies.
+
+**Preuves (Godot 4.7.2) :**
+- Décor réel dessiné aux 40 premiers instants bloquants : PASS, mémoire statique stable.
+- Scène lancée en fenêtre pendant 77 s, au-delà du seuil : mémoire du processus stable entre 204 et 206 Mo, aucune erreur.
+- Rendus 9/9 et 57/57.
+- Rechargement à chaud 5/5 sur les deux scénarios.
+
+Le processus de 930 Mo observé avant le lancement du test n'appartenait pas à l'agent et n'a pas été touché.
+
 ## 8 octobre 2026 — RUN-021 : correctif rechargement à chaud de la passe N2
 
 Retour humain : à l'ouverture de `blight_town` dans l'éditeur, 639 erreurs `campaign_decor.gd:379 Invalid access of index '5'`, puis crash du débogueur. **Cause reproduite :** les scripts de présentation sont `@tool`. Le rechargement à chaud de l'éditeur a conservé `_placed` au format de l'ancien script (5 éléments) avec `_laid_out = true`, si bien que chaque redessin (10 Hz) lisait l'index 5. Les nouvelles variables typées arrivaient en outre à `null` ; une fois le placement forcé, un appel non vérifié (`_hung.clear()`) faisait planter Godot (signal 11). Les captures de la passe ne l'avaient pas vu, car elles démarrent toujours sur un processus neuf.

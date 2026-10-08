@@ -361,12 +361,19 @@ func _draw_n2_atmosphere() -> void:
 			var t: float = _time * (2.4 + k * 0.7) + float(fly[1]) + k * 2.1
 			var p := centre + Vector2(sin(t) * (5.0 + k * 2.0), sin(t * 1.7) * 3.0 - k * 2.0)
 			draw_rect(Rect2(p.round(), Vector2.ONE), Color(0.3, 0.31, 0.24, 0.9))
+# Whole pixels only: every step advances by at least 1 px (a float version stalled when
+# x + scroll landed a hair below a multiple of 256, looping forever and exhausting memory).
 func _draw_strip(x0: float, x1: float, surface_y: float, scroll: float, tint: Color) -> void:
-	var x := x0
-	while x < x1:
-		var u := fposmod(x + scroll, 256.0)
-		var w := minf(x1 - x, 256.0 - u)
-		draw_texture_rect_region(N2_MIASMA, Rect2(Vector2(x, surface_y).round(), Vector2(w, 32)), Rect2(u, 0, w, 32), tint)
+	var x := int(x0)
+	var end := int(x1)
+	var offset := int(floorf(scroll))
+	var y := roundf(surface_y)
+	var guard := 0
+	while x < end and guard < 64:
+		guard += 1
+		var u := posmod(x + offset, 256)
+		var w := mini(end - x, 256 - u)
+		draw_texture_rect_region(N2_MIASMA, Rect2(x, y, w, 32), Rect2(u, 0, w, 32), tint)
 		x += w
 func _draw() -> void:
 	if not _laid_out or _layout_version != LAYOUT_VERSION: _layout()
