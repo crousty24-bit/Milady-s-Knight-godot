@@ -364,3 +364,8 @@ Deux slots HUD verticaux (mêlée/tir) sont retenus ; les choix de récompense d
 ### Commandes clavier + souris — 7 octobre 2026
 
 Contrat actuel dans [10_CONTROLS_KEYBINDS.md](10_CONTROLS_KEYBINDS.md) : profils AZERTY/QWERTY/classique/personnalisé depuis titre et pause, choix des menus et récompenses au survol/clic ou clavier. Les aides suivent le remappage. Entrée/flèches/Échap restent des secours de navigation. La fermeture d’une modale attend le relâchement des commandes d’action et des boutons souris pour éviter une attaque ou interaction à la reprise ; cela complète la règle E/F/Espace/Échap historique ci-dessus. Les réglages persistent séparément de la progression. La présentation existante des panneaux et les travaux HUD en cours sont conservés.
+- Quatrième passe (demande humaine du 8 octobre 2026) :
+	- HUD : plus de nombre à côté des cœurs ; seuls les cœurs (demi-cœur arrondi au supérieur, D01) montrent la vie. La valeur exacte reste calculée sur le label masqué `Health`.
+	- Fenêtre de récompense des coffres payants : toujours deux slots ; sans amélioration, le second est un slot vide « No upgrade » non sélectionnable. Plus aucun texte d'aide : un seul bouton « Accept » avec la touche d'interaction courante (E par défaut), cliquable, sous les cartes ; Escape refuse toujours, sans être affiché. La carte sélectionnée porte un halo or pulsé et la carte non sélectionnée est assombrie.
+	- Carte : icône d'arme 48×48 qui occupe la majeure partie de la carte, puis nom et badge de niveau 12×12 ; « +1 » vert en haut à droite pour l'amélioration.
+	- Animation d'ouverture : le coffre (×3) est centré horizontalement et verticalement entre la ligne du type de coffre et le bouton Open.

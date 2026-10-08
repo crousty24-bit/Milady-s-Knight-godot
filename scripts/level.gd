@@ -509,12 +509,18 @@ func _on_chest_revealed() -> void:
 func _show_paid_reward(error: bool = false, selected_index: int = 0) -> void:
 	reward_choices.assign([active_reward.offer.item])
 	var options: Array = [WeaponCatalog.label(active_reward.offer.item)]
+	# Both slots always show (RUN-021 human request); without an upgrade the second one is an empty,
+	# unselectable slot. No help text: the window carries a single Accept button.
+	var unavailable: Array = []
 	if not active_reward.offer.upgrade.is_empty():
 		reward_choices.append(active_reward.offer.upgrade)
 		options.append("Upgrade +1\n" + WeaponCatalog.label(active_reward.offer.upgrade))
-	var detail: String = controls.menu_hint(true) + "\nPaid. Refusal does not refund shards."
+	else:
+		options.append("")
+		unavailable.append(1)
+	var detail: String = ""
 	if error: detail = _control_text("Unable to save. {interact}: retry   {pause}: refuse\nYour previous equipment is protected.")
-	pause_menu.show_menu("Rare chest" if active_reward.kind == "rare" else "Common chest", detail, options, [], true)
+	pause_menu.show_menu("Rare chest" if active_reward.kind == "rare" else "Common chest", detail, options, unavailable, true)
 	if selected_index > 0:
 		pause_menu.selection = selected_index
 		pause_menu._redraw_rows()

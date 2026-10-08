@@ -217,7 +217,7 @@ func hud_and_rewards() -> void:
 	rare.offer = {"item": "ThrowingKnives3", "upgrade": ""}
 	await tap("interact")
 	await open_cards()
-	check(level.modal == "reward" and level.pause_menu.rows.get_child_count() == 1, "rare chest without upgrade shows a single item card")
+	check(level.modal == "reward" and level.pause_menu.rows.get_child_count() == 2 and level.pause_menu.unavailable == [1] and level.pause_menu.selection == 0, "rare chest without upgrade keeps both slots, the empty one unselectable")
 	await frames(10)
 	await capture("chest_rare_choice")
 	await tap("pause")

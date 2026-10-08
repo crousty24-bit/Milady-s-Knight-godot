@@ -78,7 +78,8 @@ func set_health(value: float, maximum: float = 3.0) -> void:
 	var maximum_units := HealthUnits.from_hp(maximum)
 	$Health.text = HealthUnits.format_hp(current_units)
 	$HealthHearts.set_values(current_units, maximum_units)
-	# The exact value sits right after the hearts, whatever their count (one row holds five).
+	# The exact value is kept on the hidden Health label (save-error template, tests); since the
+	# third HUD pass (human request, 8 Oct 2026) only the hearts are shown.
 	var heart_count: int = ceili(float(maximum_units) / HealthUnits.PER_HP)
 	var hearts_in_row: int = mini(heart_count, $HealthHearts.HEARTS_PER_ROW)
 	$Health.position.x = $HealthHearts.position.x + hearts_in_row * $HealthHearts.HEART_SPACING + 4.0

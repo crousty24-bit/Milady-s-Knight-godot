@@ -41,6 +41,19 @@ const CARD = preload("res://assets/run018/ui/ui_reward_card.png")
 const CARD_FOCUS = preload("res://assets/run018/ui/ui_reward_card_focus.png")
 const LARGE_ICONS = preload("res://assets/run018/ui/ui_weapon_icons_large.png")
 const BADGES = preload("res://assets/run018/ui/ui_tier_badges.png")
+# RUN-021 (Claude, human request 8 Oct 2026): cards dominated by a 48 px weapon icon, then the name
+# and a 12 px level badge; both slots always shown; the selection glows; a single Accept button.
+const XL_ICONS = preload("res://assets/run021/ui/ui_weapon_icons_xl.png")
+const XL_BADGES = preload("res://assets/run021/ui/ui_tier_badges_large.png")
+const KEYCAP = preload("res://assets/sprites/ui_keycap.png")
+const XL_EMPTY := 8
+const CARD_SIZE := Vector2(124, 96)
+const GLOW_PAD := 10.0
+const UPGRADE_TEXT = Color(0.596, 0.8, 0.345)
+var footer: HBoxContainer
+var accept_label: Label
+var accept_key: Label
+var _glow: TextureRect
 const CHEST_KINDS = preload("res://assets/run018/ui/ui_chest_kind.png")
 const ICON_ORDER := ["Sword", "Longsword", "BrutalAxe", "DarkScythe", "Warhammer", "Halberds", "Longbow", "ThrowingKnives"]
 const REFUSE_SFX = preload("res://assets/sounds/run018/sfx_chest_reward_refuse.wav")
@@ -90,11 +103,34 @@ func _ready() -> void:
 		_style_label(label, 16 if label == heading else 8, GOLD_TEXT if label == heading else DIM_TEXT)
 		column.add_child(label)
 	column.add_child(rows)
+	footer = _build_footer()
+	column.add_child(footer)
 	panel.visibility_changed.connect(func() -> void: stage.visible = panel.visible)
 	selected.connect(func(_index: int) -> void: _play("confirm"))
 	cancelled.connect(func() -> void: _cancel_feedback.call_deferred(opened_frame))
 	_ensure_player.call_deferred()
 	panel.hide()
+
+func _build_footer() -> HBoxContainer:
+	var row := HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", 5)
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var cap := PanelContainer.new()
+	cap.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	cap.add_theme_stylebox_override("panel", _nine(KEYCAP, 3, Vector4(4, 2, 4, 2)))
+	cap.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	accept_key = Label.new()
+	_style_label(accept_key, 8, SHADOW)
+	accept_key.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0))
+	cap.add_child(accept_key)
+	row.add_child(cap)
+	accept_label = Label.new()
+	accept_label.text = "Accept"
+	_style_label(accept_label, 16, GOLD_TEXT)
+	row.add_child(accept_label)
+	row.hide()
+	return row
 
 func _build_title_art() -> void:
 	# Night sky, clouds, citadel and haze of the slice (scripts/backdrop.gd) at its reference framing.
@@ -184,8 +220,9 @@ func show_menu(title: String, detail: String, options: Array, disabled: Array = 
 		parent.remove_child(rows)
 		rows.queue_free()
 		rows = HBoxContainer.new() if horizontal else VBoxContainer.new()
-		rows.add_theme_constant_override("separation", 6 if horizontal else 1)
+		rows.add_theme_constant_override("separation", 12 if horizontal else 1)
 		parent.add_child(rows)
+		parent.move_child(footer, -1)  # the Accept button always closes the column
 	horizontal_choices = horizontal
 	choices.assign(options)
 	unavailable.assign(disabled)
@@ -194,6 +231,10 @@ func show_menu(title: String, detail: String, options: Array, disabled: Array = 
 		selection += 1
 	heading.text = title
 	description.text = detail
+	footer.visible = horizontal
+	if horizontal:
+		var controls := get_node_or_null("/root/Controls")
+		accept_key.text = controls.label("interact") if controls != null else "E"
 	opened = true
 	opened_frame = Engine.get_process_frames()
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
@@ -271,42 +312,69 @@ func _atlas(texture: Texture2D, region: Rect2) -> TextureRect:
 	return rect
 
 func _reward_card(i: int) -> Control:
+	var empty := choices[i].is_empty()
 	var focused := i == selection and i not in unavailable
-	var card := PanelContainer.new()
-	card.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.custom_minimum_size = Vector2(150, 0)
-	card.add_theme_stylebox_override("panel", _nine(CARD_FOCUS if focused else CARD, 8, Vector4(8, 6, 8, 7)))
-	var column := VBoxContainer.new()
-	column.add_theme_constant_override("separation", 3)
-	card.add_child(column)
 	var item := _choice_item(choices[i])
 	var stats := WeaponCatalog.stats(item)
-	var top := HBoxContainer.new()
-	top.alignment = BoxContainer.ALIGNMENT_CENTER
-	var upgrade := choices[i].begins_with("Upgrade")
-	var kind := _atlas(CHEST_KINDS, Rect2(12 if heading.text.begins_with("Rare") else 0, 0, 12, 12))
-	top.add_child(kind)
-	var tag := Label.new()
-	tag.text = "Weapon"  # the upgrade label already reads "Upgrade +1"
-	_style_label(tag, 8, GOLD_TEXT if focused else DIM_TEXT)
-	top.modulate.a = 0.0 if upgrade else 1.0
-	top.add_child(tag)
-	column.add_child(top)
-	if not stats.is_empty():
-		column.add_child(_atlas(LARGE_ICONS, Rect2(ICON_ORDER.find(item.left(-1)) * 24, 0, 24, 24)))
+	# Slot: the glow sits behind the card and spills GLOW_PAD around it.
+	var slot := Control.new()
+	slot.custom_minimum_size = CARD_SIZE
+	slot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if focused:
+		_glow = TextureRect.new()
+		_glow.texture = _glow_texture()
+		_glow.position = Vector2(-GLOW_PAD, -GLOW_PAD)
+		_glow.size = CARD_SIZE + Vector2(GLOW_PAD, GLOW_PAD) * 2.0
+		_glow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		slot.add_child(_glow)
+	var card := NinePatchRect.new()
+	card.texture = CARD_FOCUS if focused else CARD
+	for side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]: card.set_patch_margin(side, 8)
+	card.size = CARD_SIZE
+	card.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# The other slot steps back so the selection reads at a glance.
+	card.modulate = Color.WHITE if focused else Color(0.62, 0.62, 0.68)
+	slot.add_child(card)
+	var index: int = XL_EMPTY if stats.is_empty() else ICON_ORDER.find(item.left(-1))
+	var icon := _atlas(XL_ICONS, Rect2(index * 48, 0, 48, 48))
+	icon.position = Vector2(roundf((CARD_SIZE.x - 48.0) * 0.5), 12)
+	icon.size = Vector2(48, 48)
+	card.add_child(icon)
 	var line := HBoxContainer.new()
 	line.alignment = BoxContainer.ALIGNMENT_CENTER
 	line.add_theme_constant_override("separation", 4)
+	line.position = Vector2(0, 68)
+	line.size = Vector2(CARD_SIZE.x, 14)
+	line.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var label := Label.new()
-	label.text = choices[i]
-	_style_label(label, 16, GOLD_TEXT if focused else (OFF_TEXT if i in unavailable else PALE_TEXT))
+	label.text = "No upgrade" if empty else (str(stats.name) if not stats.is_empty() else choices[i])
+	_style_label(label, 8, OFF_TEXT if empty else (GOLD_TEXT if focused else PALE_TEXT))
+	label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	line.add_child(label)
 	if not stats.is_empty():
-		var badge := _atlas(BADGES, Rect2(int(stats.level) * 9, 0, 9, 9))
+		var badge := _atlas(XL_BADGES, Rect2(int(stats.level) * 12, 0, 12, 12))
 		badge.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		line.add_child(badge)
-	column.add_child(line)
-	return card
+	card.add_child(line)
+	if choices[i].begins_with("Upgrade"):
+		var plus := Label.new()
+		plus.text = "+1"
+		_style_label(plus, 16, UPGRADE_TEXT)
+		plus.position = Vector2(CARD_SIZE.x - 30, 6)
+		card.add_child(plus)
+	return slot
+
+func _glow_texture() -> GradientTexture2D:
+	var glow := GradientTexture2D.new()
+	glow.width = int(CARD_SIZE.x + GLOW_PAD * 2.0)
+	glow.height = int(CARD_SIZE.y + GLOW_PAD * 2.0)
+	glow.fill = GradientTexture2D.FILL_SQUARE
+	glow.fill_from = Vector2(0.5, 0.5)
+	glow.fill_to = Vector2(0.5, 0.0)
+	glow.gradient = Gradient.new()
+	glow.gradient.offsets = PackedFloat32Array([0.0, 0.78, 1.0])
+	glow.gradient.colors = PackedColorArray([Color(GOLD_TEXT, 0.55), Color(GOLD_TEXT, 0.4), Color(GOLD_TEXT, 0.0)])
+	return glow
 
 func _icon(texture: Texture2D, shown: bool, mirrored: bool) -> TextureRect:
 	var icon := TextureRect.new()
@@ -377,6 +445,10 @@ func _input(event: InputEvent) -> void:
 		if event is InputEventMouseButton:
 			get_viewport().set_input_as_handled()
 		if Engine.get_process_frames() <= opened_frame: return
+		if horizontal_choices and footer.get_global_rect().has_point(event.position):
+			if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+				if _handled_frame != Engine.get_process_frames(): _activate()
+			return
 		for i in range(rows.get_child_count()):
 			if rows.get_child(i).get_global_rect().has_point(event.position):
 				if i not in unavailable and selection != i:
@@ -398,6 +470,8 @@ func _input(event: InputEvent) -> void:
 		elif not horizontal_choices and key in [KEY_UP, KEY_DOWN]: _move_selection(1 if key == KEY_DOWN else -1)
 
 func _process(_delta: float) -> void:
+	if opened and horizontal_choices and is_instance_valid(_glow):
+		_glow.modulate.a = 0.7 + 0.3 * sin(Time.get_ticks_msec() * 0.005)
 	if not opened or Engine.get_process_frames() <= opened_frame or _handled_frame == Engine.get_process_frames(): return
 	if Input.is_action_just_pressed("pause"):
 		cancelled.emit()

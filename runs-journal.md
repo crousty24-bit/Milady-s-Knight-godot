@@ -1294,3 +1294,19 @@ Enemy25/26/27/30/28/29 ont respectivement des vitesses de 46/48/50/52/54/56 px/s
 **Adaptation des tests :** deux assertions caméra échouaient sur des attentes anciennes (limite basse 304 et zoom 1×). Le pilote attend maintenant la limite basse 784 issue du terrain humain et calcule le cadrage fixe au zoom courant 1,2×. Reprise 20/20, aucun changement du gameplay pour satisfaire le pilote.
 
 **Limites :** recette automatisée ciblée, pas de suite globale ni de validation humaine du ressenti du combat. RUN-021 reste dans son état actuel ; aucun push, PR ou nouvelle run lancé.
+
+## RUN-021 — HUD sans nombre de HP et fenêtre de récompense des coffres (Claude), 8 octobre 2026
+
+**Demande :** passe précédente validée. Retirer le nombre à côté des cœurs ; fenêtre de récompense : deux slots toujours visibles, plus de textes d'aide mais un seul bouton Accepter (E), carte sélectionnée en relief/halo, icône bien plus grande (icône > nom + niveau) ; coffre centré dans la fenêtre d'ouverture.
+
+**Réalisé (Claude Code Opus 5.5, sans sous-agent) :**
+- `scenes/hud.tscn` / `scripts/hud.gd` : label `Health` masqué (valeur exacte toujours calculée, modèle du message d'erreur de sauvegarde).
+- `assets/run021/ui/ui_weapon_icons_xl.png` (432×48, 8 armes + slot vide) : géométrie des icônes 24 px RUN-018 re-rastérisée nativement à ×2 par `tools/art/run021/hud_run021.py` (bords d'un pixel net, points d'accent 2×2), sans modifier le générateur RUN-018.
+- `scripts/level.gd` : sans amélioration, second slot vide indisponible ; `detail` vide hors erreur de sauvegarde (message d'erreur conservé).
+- `scripts/keyboard_menu.gd` (mode horizontal uniquement) : carte 124×96 avec icône 48×48, nom + badge 12×12, « +1 » vert pour l'amélioration, slot « No upgrade » ; halo or pulsé derrière la carte sélectionnée, l'autre assombrie ; pied « [E] Accept » (touche d'interaction courante, cliquable) toujours sous les cartes. Navigation, refus par Escape et signaux inchangés.
+- `scripts/chest_reveal.gd` : `foot()` centre le coffre ×3 (common/rare) entre la ligne du type (y 44) et Open (y 190) ; faisceau et étincelles suivent.
+- Tests : `run021_chest_reveal` (+5 contrôles : centrage common/rare, pas d'aide, Accept sous les cartes, halo), `run018_equipment_visual` et `run021_chest_reveal` passent de « une carte » à « deux slots dont le vide indisponible », `run021_hud_pass` (+1 : HP masqué). Spécification `docs/05` complétée.
+
+**Vérifications (worktrees isolés, Godot 4.7.2 Windows) :** l'humain édite en parallèle `scenes/forbidden_graveyard.tscn` (non commité, exclu). HEAD + mes changements : recette hors échecs connus **61 RESULT / 2781 PASS / 0 échec** (48 suites, 16 sessions froides, isolation) ; `run021_hud_pass` 80/80, `run021_chest_reveal` 33/33 (`--fixed-fps 60`), `run018_equipment_visual` 68/68, `hud_visual` 11/11, `run019_visual` 47/47. Échecs strictement identiques sur `HEAD` (`9573ec9`) seul : `run020_campaign` (famille red_slime), routes N2 basse/haute, Bloated tuning/dodge, `ammo_visual` (AmmoCrate02 N4) — préexistants, liés aux commits de level design/slimes, hors périmètre.
+
+**Validation humaine restante :** intensité du halo, lisibilité des cartes, placement du coffre pendant le faisceau.

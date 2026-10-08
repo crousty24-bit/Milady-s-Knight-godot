@@ -85,6 +85,7 @@ func run() -> void:
 	level._update_gold_hud()
 	await frames(2)
 	check(hud.get_node("Health").text == "3" and hud.get_node("Gold").text == "07/12", "HP and coins without words")
+	check(not hud.get_node("Health").visible, "no HP number next to the hearts (fourth pass)")
 	check(hud.get_node("Bonus").text == "24" and hud.get_node("BonusPending").text == "+4", "shards total and current gain without words")
 	for name in ["Health", "Gold", "Bonus", "BonusPending"]:
 		var text: String = hud.get_node(name).text

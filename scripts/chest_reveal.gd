@@ -29,7 +29,10 @@ const SCREEN := Vector2(640, 360)
 const WINDOW := Vector2(240, 236)
 const INSET := 6.0  # gold trim of ui_panel.png
 const PIXEL := 3.0  # the chest is shown at an integer 3x; every effect snaps to that grid
-const FOOT := Vector2(114, 176)  # chest foot, local to the art layers
+const FOOT_X := 114.0  # chest centre, local to the art layers (window centre minus the trim inset)
+# The chest is centred vertically between the kind line (bottom at 44) and the Open button (top at 190).
+const ART_TOP := 44.0
+const ART_BOTTOM := 190.0
 # Timeline in seconds from Open: two rattles, lid frames, beam, flash peak (= cards), flash fade.
 const RATTLES := [Vector2(0.12, 0.32), Vector2(0.42, 0.68)]
 const LID_AT := 0.7
@@ -285,22 +288,28 @@ func _half_width() -> int:
 func _beam_top() -> float:
 	var grow := clampf((elapsed - BEAM_AT) / BEAM_GROW, 0.0, 1.0)
 	grow = 1.0 - (1.0 - grow) * (1.0 - grow)
-	return lerpf(float(ART[kind][2]), -ceilf(FOOT.y / PIXEL), grow)
+	return lerpf(float(ART[kind][2]), -ceilf(foot().y / PIXEL), grow)
 
 func _cell(canvas: Control, x: float, y: float, w: float, h: float, color: Color) -> void:
 	canvas.draw_rect(Rect2(roundf(x), roundf(y), roundf(w), roundf(h)), color)
 
+# Chest foot for the current kind: the 3x chest is centred in the free band of the window.
+func foot() -> Vector2:
+	var height: float = ART[kind][1].y * PIXEL
+	var centre: float = (ART_TOP + ART_BOTTOM) * 0.5 - INSET
+	return Vector2(FOOT_X, roundf((centre + height * 0.5) / PIXEL) * PIXEL)
+
 func _draw_back() -> void:
 	var art: Array = ART[kind]
 	var size: Vector2i = art[1]
-	_back.draw_set_transform(FOOT, 0.0, Vector2(PIXEL, PIXEL))
+	_back.draw_set_transform(foot(), 0.0, Vector2(PIXEL, PIXEL))
 	var lit := 1.0 + 0.3 * power()
 	var x := -size.x / 2 + _rattle()
 	_back.draw_texture_rect_region(art[0], Rect2(x, -size.y, size.x, size.y), Rect2(chest_frame() * size.x, 0, size.x, size.y), Color(lit, lit, lit * 0.94))
 
 func _draw_light() -> void:
 	if stage == "intro": return
-	_light.draw_set_transform(FOOT, 0.0, Vector2(PIXEL, PIXEL))
+	_light.draw_set_transform(foot(), 0.0, Vector2(PIXEL, PIXEL))
 	var mouth: int = ART[kind][2]
 	var widest: int = ART[kind][3]
 	var p := power()

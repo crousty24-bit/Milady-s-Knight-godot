@@ -11,6 +11,10 @@ Outputs (assets/run021/ui/):
   ui_tier_badges_large.png    72x12  6 cells of 12x12, weapon levels 0..5 for the HUD slots (third pass): the RUN-018
                                      tier plates (grey/green/blue/red, 4 and 5 on the level-0 plate) with a 5x7 digit,
                                      shown right after the weapon name, which no longer carries the level number.
+  ui_weapon_icons_xl.png     432x48  9 cells of 48x48 for the chest reward cards (fourth pass): the eight RUN-018
+                                     24 px weapon drawings re-rasterised natively at 2x from their geometry (segments,
+                                     polygons, discs), so edges stay single crisp pixels; hand-placed accent dots become
+                                     2x2. Cell 8 is the empty slot (no upgrade available): dashed steel frame.
   ui_portrait_knight_round.png 28x28 three-quarter view of the in-game knight (assets/run018/knight: rounded steel
                                      great helm, protruding visor with a dark slit, red mantle, steel plate), facing
                                      right like the sprite, light from the upper left; masked to the round window.
@@ -146,6 +150,60 @@ def badge_strip():
 	strip = Canvas(72, 12)
 	for level in range(6):
 		strip.blit(badge_large(level), level * 12, 0)
+	return strip
+
+
+# ---------------------------------------------------------------- 48 px weapon icons (reward cards)
+SCALE = 2
+
+
+class _Canvas2x(Canvas):
+	"""Canvas whose direct put() calls (accent dots, the bow curve) land as SCALE x SCALE blocks,
+	while the geometric helpers below draw natively at the doubled resolution."""
+	native = False
+
+	def put(self, x, y, color):
+		if self.native:
+			Canvas.put(self, x, y, color)
+			return
+		for dy in range(SCALE):
+			for dx in range(SCALE):
+				Canvas.put(self, x * SCALE + dx, y * SCALE + dy, color)
+
+
+def _native(fn):
+	def wrapped(c, *args, **kwargs):
+		c.native = True
+		try:
+			fn(c, *args, **kwargs)
+		finally:
+			c.native = False
+	return wrapped
+
+
+def weapon_icons_xl():
+	sys.path.insert(0, os.path.join(ART, "run018"))
+	import ui_icons as r18  # noqa: E402  (RUN-018 geometry, read only)
+	k = SCALE
+	orig = {name: getattr(r18, name) for name in ("seg", "poly", "disc", "Canvas")}
+	seg, poly, disc = (_native(orig["seg"]), _native(orig["poly"]), _native(orig["disc"]))
+	r18.seg = lambda c, a, b, hw0, hw1=None, cols=None, w=None: seg(c, (a[0] * k, a[1] * k), (b[0] * k, b[1] * k), hw0 * k, None if hw1 is None else hw1 * k, cols)
+	r18.poly = lambda c, pts, cols, split=(0.28, 0.72): poly(c, [(x * k, y * k) for x, y in pts], cols, split)
+	r18.disc = lambda c, cx, cy, r, cols: disc(c, cx * k, cy * k, r * k, cols)
+	r18.Canvas = lambda w, h: _Canvas2x(w * k, h * k)
+	try:
+		cells = [r18.sword24(), r18.longsword24(), r18.axe24(), r18.scythe24(), r18.hammer24(), r18.halberd24(), r18.bow24(), r18.knives24()]
+	finally:
+		for name, value in orig.items():
+			setattr(r18, name, value)
+	empty = Canvas(48, 48)
+	for i in range(6, 42):
+		if (i // 3) % 2 == 0:
+			for (x, y) in ((i, 6), (i, 41), (6, i), (41, i)):
+				empty.put(x, y, STEEL[1])
+	strip = Canvas(48 * 9, 48)
+	for index, cell in enumerate(cells + [empty]):
+		strip.blit(cell, index * 48, 0)
 	return strip
 
 
@@ -333,6 +391,7 @@ def main():
 		"ui_avatar_frame_round.png": avatar_frame_round(),
 		"ui_portrait_knight_round.png": portrait_round(),
 		"ui_tier_badges_large.png": badge_strip(),
+		"ui_weapon_icons_xl.png": weapon_icons_xl(),
 	}
 	for name, canvas in outputs.items():
 		save_png(canvas, os.path.join(OUT, name))

@@ -84,6 +84,13 @@ func run() -> void:
 	check(reveal.stage == "intro" and reveal.visible and reveal.window.visible and reveal.button.visible, "Treasure Found! window waits on its Open button")
 	check(not level.pause_menu.opened and level.reward_choices.is_empty(), "reward cards are not shown before Open")
 	check(reveal.chest_frame() == 0 and reveal.subtitle.text == "Common chest" and reveal.hint.text == "E: open", "closed common chest, kind and key hint")
+	for chest_kind in ["common", "rare"]:
+		var saved: String = reveal.kind
+		reveal.kind = chest_kind
+		var height: float = reveal.ART[chest_kind][1].y * reveal.PIXEL
+		var middle: float = reveal.foot().y + reveal.INSET - height * 0.5
+		check(absf(middle - (reveal.ART_TOP + reveal.ART_BOTTOM) * 0.5) <= 2.0 and is_equal_approx(reveal.foot().x + reveal.INSET, reveal.WINDOW.x * 0.5), "%s chest centred in the window (middle %.1f)" % [chest_kind, middle])
+		reveal.kind = saved
 	await capture("01-intro-common")
 	await capture("01-intro-common-x2", window_rect, 2)
 	await tap("pause")
@@ -119,6 +126,9 @@ func run() -> void:
 	check(reveal.stage == "flash" and reveal._burst.playing and not reveal._rise.playing, "climax swaps the crescendo for the burst")
 	check(to_cards >= 2.7 and to_cards <= 3.4, "cards uncovered %.2f s after Open" % to_cards)
 	check(level.pause_menu.opened and level.pause_menu.horizontal_choices and level.pause_menu.rows.get_child_count() == 2, "existing two-slot reward window follows")
+	check(not level.pause_menu.description.visible and level.pause_menu.footer.visible and level.pause_menu.accept_label.text == "Accept" and level.pause_menu.accept_key.text == "E", "no help text, a single Accept (E) button")
+	check(level.pause_menu.footer.get_global_rect().position.y >= level.pause_menu.rows.get_global_rect().end.y, "Accept button sits under the cards")
+	check(is_instance_valid(level.pause_menu._glow) and level.pause_menu._glow.get_parent() == level.pause_menu.rows.get_child(level.pause_menu.selection), "selected card glows")
 	check(not reveal.window.visible and reveal._flash.color.a > 0.5, "flash covers the switch to the cards")
 	await frames(6)
 	await capture("07-flash-over-cards")
@@ -151,7 +161,7 @@ func run() -> void:
 	await until(func() -> bool: return level.pause_menu.opened, 30)
 	var skip_time := (Engine.get_process_frames() - skip_at) / 60.0
 	check(reveal.skipped and not reveal._lid.playing, "Space skipped before the lid, whose cue stays silent")
-	check(level.pause_menu.opened and level.pause_menu.rows.get_child_count() == 1 and skip_time < 0.4, "skip uncovers the single rare card in %.2f s" % skip_time)
+	check(level.pause_menu.opened and level.pause_menu.rows.get_child_count() == 2 and level.pause_menu.unavailable == [1] and skip_time < 0.4, "skip uncovers the rare card and its empty upgrade slot in %.2f s" % skip_time)
 	check(reveal._burst.playing and not reveal._rise.playing, "skip still ends on the burst")
 	await capture("10-skip-flash")
 	await until(func() -> bool: return reveal.stage.is_empty())
