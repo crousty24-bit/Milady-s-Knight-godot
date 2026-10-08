@@ -794,3 +794,11 @@ Les préférences vont dans `user://controls.json`, séparément de la partie. M
 Un clic dans un menu est aussi reconnu par Input comme un bouton maintenu. Dire à Godot que l’interface a traité l’événement ne suffit pas à effacer cet état, car le joueur lit Input directement. Le niveau attend donc le relâchement des commandes d’action avant de lui rendre le contrôle. Les tests tiennent volontairement le clic Resume, Continue ou Accept pendant plus d’une seconde : aucune nouvelle attaque n’arrive à la reprise ; une pression suivante fonctionne. Les indications de porte, dialogue, coffre et pause suivent aussi les touches personnalisées.
 
 Les pilotes vérifient les événements clavier/souris et le rendu à 640×360, ainsi que la sauvegarde/relecture dans deux processus. Ils ne jugent pas le confort des doigts : ce dernier reste à éprouver en jouant. Clic droit et Maj sont déjà attribués aux actions spéciale/impact prévues, mais ces actions n’ont toujours pas de code gameplay.
+
+## RUN-021 — Descendre dans une pièce sous la limite du vide
+
+La mort par le vide venait d'une ligne horizontale : sous y=304, le niveau tuait le joueur même s'il existait maintenant un sol plus bas. Deux rectangles permettent une exception locale dans le puits et la pièce ajoutée à N2. La ligne reste mortelle ailleurs. Les murs et le sol peints à la main n'ont pas été réécrits ; la caméra s'adapte déjà à leur hauteur.
+
+Les six Slimes de la pièce gardent leurs patrouilles gauche/droite et la détection des bords. Chacun possède désormais ses propres bornes, une vitesse entre 46 et 56 pixels par seconde et un délai variable avant un demi-tour. Le hasard désynchronise leurs déplacements, tout en les gardant dans leurs trajets. Ces options sont désactivées pour les anciens Slimes. Les six récompenses valent deux shards chacune, soit douze au total, crédités selon les règles de récompense existantes.
+
+Le test fait tomber réellement le joueur depuis le dessus de la trappe, attend son ouverture puis vérifie son arrivée vivant au fond. Il observe ensuite les déplacements et tue les six Slimes pour mesurer les shards reçus. Sept suites ciblées passent leurs 339 contrôles ; le confort et la difficulté de cette pièce restent à éprouver en jouant.

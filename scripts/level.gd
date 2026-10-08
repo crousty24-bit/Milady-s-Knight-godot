@@ -40,6 +40,8 @@ const TUTORIALS = [
 	["n1_exit", 1940.0, "Healing and the exit", "The potion restores 0.5 HP and stays if health is full.\nPay 12 coins with {interact} at the gate. Shards save at the exit."],
 ]
 @export var void_y: float = 304.0
+# Local authored rooms below the usual void boundary, in level coordinates.
+@export var void_safe_regions: Array[Rect2] = []
 @export_file("*.tscn") var next_level_scene: String = ""
 const COIN_SCENE = preload("res://scenes/coin.tscn")
 const FEEDBACK_TEXT = preload("res://scripts/feedback_text.gd")
@@ -160,8 +162,13 @@ func _ready() -> void:
 		intro_spawn_x = player.position.x
 		call_deferred("_prepare_n1_intro")
 func _physics_process(_delta: float) -> void:
-	if not paused and not finished and player.position.y > void_y:
+	if not paused and not finished and player.position.y > void_y and not _inside_void_safe_region(player.position):
 		player.take_damage(0.0, Vector2.ZERO, SlicePlayer.DamageSource.VOID)
+
+func _inside_void_safe_region(point: Vector2) -> bool:
+	for region in void_safe_regions:
+		if region.has_point(point): return true
+	return false
 
 func _process(delta: float) -> void:
 	if closing: return

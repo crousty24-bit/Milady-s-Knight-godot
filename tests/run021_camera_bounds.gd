@@ -94,7 +94,7 @@ func capture(label: String) -> void:
 
 func extensions() -> void:
 	check(level.camera.limit_left == 0 and level.camera.limit_right == 3840, "N2 horizontal authored boundaries are preserved")
-	check(level.camera.limit_top == -592 and level.camera.limit_bottom == 304, "N2 higher terrain gains headroom without changing lower framing")
+	check(level.camera.limit_top == -592 and level.camera.limit_bottom == 784, "N2 camera includes upper terrain and authored lower slime room")
 	check(level.camera_bounds == Rect2(0, -224, 3840, 528), "authored minimum bounds remain editable and unmodified")
 	check(visible_player(), "actual N2 high player body remains within viewport")
 	await pose(Vector2(3602, -305))
@@ -110,7 +110,8 @@ func extensions() -> void:
 	check(level.void_y == 304.0, "camera adaptation does not change the separate lethal fall threshold")
 	await fixture(func(scene): scene.auto_camera_vertical_bounds = false)
 	var manual := await pose(Vector2(3602, -305))
-	check(absf(manual.y + 44.0) < 1.0 and level.camera.limit_top == -224, "automatic mode can be disabled for authored fixed framing")
+	var manual_top_center: float = level.camera.limit_top + root.get_visible_rect().size.y * 0.5 / level.camera.zoom.y
+	check(absf(manual.y - manual_top_center) < 1.0 and level.camera.limit_top == -224, "automatic mode can be disabled for authored fixed framing at current zoom")
 	await fixture(func(scene):
 		var terrain: TileMapLayer = scene.get_node("Terrain")
 		terrain.position.y = -80.0
