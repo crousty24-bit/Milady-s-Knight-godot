@@ -23,7 +23,7 @@ enum Light { NONE, LANTERN, CANDLE, SPORE, FLAME, WINDOW, BILE }
 # Weights are relative; big props are rare.
 # RUN-021: more dim light sources (lanterns, spore caps, grave candles) so N2-N4 keep a few
 # warm/cold accents like the lit village of N1.
-var SETS := [
+const SETS = [
 	[
 		[preload("res://assets/sprites/prop_house.png"), 2, Light.NONE],
 		[preload("res://assets/sprites/prop_house_ruined.png"), 3, Light.NONE],
@@ -76,14 +76,14 @@ var SETS := [
 ]
 # N1 props are slightly tinted toward the biome; new RUN-020 props are drawn untinted.
 # N2 wall props (drawn for a wall on their left, mirrored otherwise): [texture, weight, anchor y].
-var N2_WALL := [
+const N2_WALL = [
 	[preload(N2P + "wall_pipe.png"), 3, 4],
 	[preload(N2P + "wall_sign.png"), 2, 2],
 	[preload(N2P + "wall_rot.png"), 4, 15],
 	[preload(N2P + "wall_chains.png"), 3, 2],
 ]
 # N2 ceiling props (top-centre anchor): [texture, weight, light offset or null].
-var N2_CEILING := [
+const N2_CEILING = [
 	[preload(N2P + "hang_cage.png"), 2, null],
 	[preload(N2P + "hang_rags.png"), 3, null],
 	[preload(N2P + "hang_lamp_bile.png"), 2, Vector2(5, 29)],
@@ -116,10 +116,16 @@ const SMALL_PROP = 20
 # Secret walls and doors (Exploration) and the gate get a wide berth.
 @export var avoid_margins := {"Enemies": 12.0, "Hazards": 20.0, "Items": 24.0, "Exploration": 64.0, "GoldGate": 64.0, "ExitArea": 24.0}
 var _placed: Array = [] # [texture, foot, tinted, light, phase, extra lights]
-var _hung: Array = [] # N2: [texture, top-left, mirrored, light point or null, phase]
-var _miasma: Array = [] # N2: [x0, x1, surface y]
-var _flies: Array = [] # N2: [centre, phase]
+# N2 state is untyped on purpose: an editor hot reload leaves newly added members null, and a
+# typed container would then be called unchecked (crash). _layout() reassigns them.
+var _hung = [] # N2: [texture, top-left, mirrored, light point or null, phase]
+var _miasma = [] # N2: [x0, x1, surface y]
+var _flies = [] # N2: [centre, phase]
 var _laid_out := false
+# Bumped when the layout entry format changes. An editor hot reload keeps the old member values
+# (_placed built by the previous script, _laid_out true); a version mismatch forces a fresh layout.
+const LAYOUT_VERSION = 2
+var _layout_version = 0
 var _time := 0.0
 var _since_draw := 0.0
 func _process(delta: float) -> void:
@@ -145,11 +151,12 @@ func _obstacles() -> Array:
 			if child is Node2D: points.append([to_local(child.global_position), float(margins[key])])
 	return points
 func _layout() -> void:
-	_placed.clear()
-	_hung.clear()
-	_miasma.clear()
-	_flies.clear()
+	_placed = []
+	_hung = []
+	_miasma = []
+	_flies = []
 	_laid_out = true
+	_layout_version = LAYOUT_VERSION
 	var terrain: TileMapLayer = get_parent().get_node_or_null("Terrain")
 	if terrain == null: return
 	var b := clampi(world_level, 2, 4) - 2
@@ -362,7 +369,7 @@ func _draw_strip(x0: float, x1: float, surface_y: float, scroll: float, tint: Co
 		draw_texture_rect_region(N2_MIASMA, Rect2(Vector2(x, surface_y).round(), Vector2(w, 32)), Rect2(u, 0, w, 32), tint)
 		x += w
 func _draw() -> void:
-	if not _laid_out: _layout()
+	if not _laid_out or _layout_version != LAYOUT_VERSION: _layout()
 	var b := clampi(world_level, 2, 4) - 2
 	# N2: the village props drift toward rot colours near the exit (level_width).
 	for item in _placed:
@@ -376,7 +383,7 @@ func _draw() -> void:
 			Light.LANTERN: _light(foot + Vector2(5, -38), Light.LANTERN, item[4])
 			Light.CANDLE: _light(foot + Vector2(0, -9), Light.CANDLE, item[4])
 			Light.SPORE: _light(foot + Vector2(0, -5), Light.SPORE, item[4])
-		if b == 0 and not item[5].is_empty():
+		if b == 0 and item.size() > 5 and not item[5].is_empty():
 			_draw_n2_extra(tex, foot, item[5], item[4])
 	if b == 0:
 		_draw_n2_hung()

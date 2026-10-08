@@ -38,36 +38,47 @@ var terrain: TileMapLayer
 # N2 only: world-space back walls behind enclosed spaces (cellars, shafts, the void under the
 # town), drawn by a child below platforms and decor (z -60) but above the parallax backdrop,
 # so underground views no longer show the town skyline. Built from the authored Terrain.
-var _underground: Node2D
-var _rooms: Array[Vector2i] = []
-var _room_tops: Dictionary = {}
-var _deep: Array[Vector2i] = []
-var _deep_bottom := 0.0
-var _span := Vector2.ZERO
-var _cellar: Array = [] # [texture, top-left, candle point or null]
-var _deep_set := {}
+# Untyped on purpose: an editor hot reload leaves newly added members null; typed containers
+# would then be called unchecked and crash. _build_underground() reassigns all of them.
+var _underground = null
+var _rooms = []
+var _room_tops = {}
+var _deep = []
+var _deep_bottom = 0.0
+var _span = Vector2.ZERO
+var _cellar = [] # [texture, top-left, candle point or null]
+var _deep_set = {}
 # N2: true when a cell belongs to the solid-earth void under the town (Decor hangs nothing there).
 func is_deep(cell: Vector2i) -> bool:
+	if not (_deep_set is Dictionary) or not (_deep_bottom is float): return false
 	return _deep_set.has(cell) or (_deep_bottom > 0.0 and cell.y * 16 >= _deep_bottom)
 func _ready() -> void:
 	terrain = get_parent().get_node_or_null("Terrain")
 	if terrain != null:
 		terrain.changed.connect(_on_terrain_changed)
-	if world_level == 2:
+	_ensure_underground()
+	queue_redraw()
+# Also called from _draw: an editor hot reload of this @tool script skips _ready.
+func _ensure_underground() -> void:
+	if world_level != 2 or is_instance_valid(_underground) or not is_inside_tree(): return
+	_underground = get_node_or_null("N2Underground")
+	if _underground == null:
 		_underground = Node2D.new()
 		_underground.name = "N2Underground"
 		_underground.z_index = -60
-		_underground.draw.connect(_draw_underground)
 		add_child(_underground)
-		_build_underground()
-	queue_redraw()
+	if not _underground.draw.is_connected(_draw_underground):
+		_underground.draw.connect(_draw_underground)
+	_build_underground()
 func _on_terrain_changed() -> void:
 	queue_redraw()
-	if _underground != null: _build_underground()
+	if is_instance_valid(_underground): _build_underground()
 func _build_underground() -> void:
-	_rooms.clear()
-	_room_tops.clear()
-	_deep.clear()
+	_rooms = []
+	_room_tops = {}
+	_deep = []
+	_deep_set = {}
+	_cellar = []
 	if not is_instance_valid(terrain): return
 	var rect := terrain.get_used_rect()
 	var x0 := rect.position.x - 2
@@ -135,7 +146,6 @@ func _build_underground() -> void:
 				_rooms.append_array(component)
 				for c in component:
 					if open.has(c + Vector2i.UP): _room_tops[c] = true
-	_deep_set.clear()
 	for c in _deep: _deep_set[c] = true
 	_furnish_cellars(solid)
 	_span = Vector2(x0 * 16, x1 * 16)
@@ -144,7 +154,7 @@ func _build_underground() -> void:
 # Cellar dressing on the back wall: a bricked-up arch in the middle of each wide room floor,
 # candle niches toward its ends and a cage hanging from the ceiling. Background only.
 func _furnish_cellars(solid: Dictionary) -> void:
-	_cellar.clear()
+	_cellar = []
 	var room := {}
 	for c in _rooms: room[c] = true
 	var floors := {}
@@ -176,6 +186,7 @@ func _furnish_cellars(solid: Dictionary) -> void:
 			if y - cy >= 5:
 				_cellar.append([HANG_CAGE, Vector2(cx * 16 + 8 - 8, cy * 16), null])
 func _draw_underground() -> void:
+	if not (_deep is Array and _rooms is Array and _cellar is Array and _room_tops is Dictionary): return
 	var origin := terrain.position if is_instance_valid(terrain) else Vector2.ZERO
 	for cell in _deep:
 		var p := origin + Vector2(cell * 16)
@@ -243,6 +254,7 @@ func _n2_decal(cell: Vector2i, mask: int, material: int, depth: int, used: Dicti
 	return -1
 func _draw() -> void:
 	if not is_instance_valid(terrain): return
+	if world_level == 2 and not is_instance_valid(_underground): _ensure_underground.call_deferred()
 	var atlas: Texture2D = [CAMPAIGN, FOREST, STONE][clampi(world_level, 2, 4) - 2]
 	var theme := 0
 	var biome := world_level - 2

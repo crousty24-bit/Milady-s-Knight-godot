@@ -1,5 +1,21 @@
 # Milady's Knight — Runs Journal
 
+## 8 octobre 2026 — RUN-021 : correctif rechargement à chaud de la passe N2
+
+Retour humain : à l'ouverture de `blight_town` dans l'éditeur, 639 erreurs `campaign_decor.gd:379 Invalid access of index '5'`, puis crash du débogueur. **Cause reproduite :** les scripts de présentation sont `@tool`. Le rechargement à chaud de l'éditeur a conservé `_placed` au format de l'ancien script (5 éléments) avec `_laid_out = true`, si bien que chaque redessin (10 Hz) lisait l'index 5. Les nouvelles variables typées arrivaient en outre à `null` ; une fois le placement forcé, un appel non vérifié (`_hung.clear()`) faisait planter Godot (signal 11). Les captures de la passe ne l'avaient pas vu, car elles démarrent toujours sur un processus neuf.
+
+**Correctif :** version de placement (`LAYOUT_VERSION`) qui force un nouveau placement après rechargement ; lecture tolérante de l'index 5 ; état N2 non typé et réaffecté (sans `.clear()`) ; tables d'accessoires en `const` ; gardes dans `is_deep` et le dessin souterrain ; nœud `N2Underground` recréé (sans doublon) quand `_ready` est sauté.
+
+**Preuves (Godot 4.7.2, `work/run021/check.sh`) :**
+- Test `work/run021/n2pass/reload/hot_reload.gd` : scripts réels de `8013064` puis de `495f9b3`, rechargés à chaud par `GDScript.reload(true)`.
+  - Avant correctif : 6 erreurs identiques au retour humain, puis segfault sur le premier correctif.
+  - Après correctif : 5/5 sur chaque scénario.
+- Scène lancée en fenêtre sur 600 images, aucune erreur.
+- Rendus 9/9 et 57/57, perf N2 5,56 ms.
+- Captures : différences au niveau du bruit, hors bandeau de titre.
+
+Après mise à jour, recharger la scène dans l'éditeur (ou le redémarrer) reste conseillé.
+
 ## 8 octobre 2026 — RUN-021 : passe visuelle N2 Blight Town (Claude)
 
 Demande humaine : enrichir N2 en variété et densité (décor, accessoires, fonds, parallaxe, textures, lumières), sans toucher gameplay, mobs, pièges ni collectables, ni N3/N4. Baseline : arbre propre sur `8013064`. Main agent Claude Code Opus 5.5 ; deux sous-agents `visual_architect` Sonnet 5.5 High, réellement exécutés sur des fichiers disjoints (fonds, accessoires). Le main agent a fait le terrain, le souterrain, l'atmosphère, l'intégration des scripts et les vérifications. Aucune scène modifiée.
