@@ -4,6 +4,7 @@ signal swarm_started
 signal swarm_cleared
 const SKULL = preload("res://scenes/possessed_skull.tscn")
 @export var zone_size: Vector2 = Vector2(480, 240)
+@export var zone_offset: Vector2 = Vector2.ZERO
 @export var spawn_offsets: Array[Vector2] = [Vector2(-80, -50), Vector2(-40, -70), Vector2(40, -70), Vector2(80, -50)]
 var rewarded_slots: Array[bool] = [false, false, false, false]
 var skulls: Array[Node2D] = []
@@ -11,7 +12,7 @@ var occupied: bool = false
 
 func _physics_process(_delta: float) -> void:
 	var player := get_tree().get_first_node_in_group("player") as SlicePlayer
-	var inside := is_instance_valid(player) and not player.dead and Rect2(-zone_size / 2, zone_size).has_point(to_local(player.global_position))
+	var inside := is_instance_valid(player) and not player.dead and Rect2(zone_offset - zone_size / 2, zone_size).has_point(to_local(player.global_position))
 	if inside and not occupied:
 		occupied = true
 		_spawn()
