@@ -537,6 +537,7 @@ kind = "rare"
 [node name="HpBonus" parent="Items" unique_id=2034774637 instance=ExtResource("22")]
 position = Vector2(655, 48)
 bonus_id = "n4_hp_01"
+required_secret = NodePath("../../Exploration/SecretWall")
 
 [node name="CommonChest" parent="Items" unique_id=1372991776 instance=ExtResource("20")]
 position = Vector2(1824, 240)
@@ -546,6 +547,7 @@ position = Vector2(3310, 240)
 
 [node name="CommonChest2" parent="Items" unique_id=1012944610 instance=ExtResource("20")]
 position = Vector2(704, 64)
+required_secret = NodePath("../../Exploration/SecretWall")
 
 [node name="MagicShield" parent="Items" unique_id=2081475821 instance=ExtResource("23")]
 position = Vector2(2048, 132)
@@ -586,6 +588,7 @@ process_mode = 1
 [node name="SecretWall" parent="Exploration" unique_id=233777594 instance=ExtResource("18")]
 position = Vector2(568, 64)
 secret_id = "n4_secret_01"
+cover_rect = Rect2(-8, -48, 176, 64)
 
 [node name="CoinDoor" parent="Exploration" unique_id=1428974206 instance=ExtResource("21")]
 position = Vector2(1544, 48)

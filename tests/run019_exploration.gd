@@ -82,6 +82,7 @@ func run() -> void:
 	check(not ray_at(160).is_empty(), "failed secret still blocks physical ray")
 	progress.storage_path = SAVE
 	check(wall.receive_player_attack(1.0, MELEE) and not wall.save_failed, "secret melee retry saves and reveals")
+	await create_timer(wall.fade_duration + 0.1, false).timeout
 	await frames()
 	check(ray_at(160).is_empty() and not wall.receive_player_attack(1.0, SHOT), "revealed wall removes collision and ignores duplicate hits")
 	var reload_wall = item("secret_wall", Vector2(200,200), "fixture-wall")

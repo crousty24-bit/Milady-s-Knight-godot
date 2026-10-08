@@ -279,7 +279,7 @@ Une même famille de sons peut être pitchée/modifiée pour différencier Green
 |`sfx_button_activate`|Bouton / mécanisme utilisé|Mechanism|P0|☐|—|WAV|☐|
 |`sfx_mechanism_move`|Mécanisme / porte actionnée|Mechanism|P1|☐|—|WAV|☐|
 |`sfx_secret_wall_hit`|Coup porté sur un passage secret|Secret|P1|☐|—|WAV|☐|
-|`sfx_secret_reveal`|Mur secret disparaît|Secret|P0|☐|—|WAV|☐|
+|`sfx_secret_reveal`|Mur et cache secrète révélés|Secret|P0|☑|`assets/sounds/run019/sfx_secret_reveal.wav`|WAV|☑|
 |`sfx_secret_discovered`|Salle secrète révélée|Secret|P1|☐|—|WAV|☐|
 
 ---
@@ -417,3 +417,8 @@ Les ambiances sont principalement des boucles longues indépendantes des musique
 - La colonne `Source` doit idéalement contenir le nom du pack ou de la bibliothèque ainsi que son URL dans la documentation réelle du projet.
 
 ---
+
+
+### Secret Wall — RUN-021, contrat du 8 octobre 2026
+
+Un seul `sfx_secret_reveal` accompagne le début du fondu de 0,6 s et l'effritement du mur. Son RUN-019 existant conservé : pas de son avant découverte, de doublon au cours du fondu ou de replay après chargement d'un secret acquis. L'échec de sauvegarde ne joue pas le SFX. Analyse Claude : WAV mono44,1kHz/16bits,1,024s ; décroissance déjà vers−40dB à0,65s, sans écrêtage. Aucun nouveau son ni nouvelle source externe. Cette analyse et les tests de lecture ne remplacent pas l'écoute humaine en jeu.

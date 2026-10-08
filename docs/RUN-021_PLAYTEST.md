@@ -69,3 +69,13 @@ La passe piques/munitions est validée humainement. Ce complément demande son p
 - Faire poursuivre une élite vers un petit toit accessible : le détour et le saut doivent rester actifs malgré l'alignement vertical. Vérifier aussi un joueur qui croise le mob pendant son saut.
 
 Le contrat Claude complémentaire existant est [RUN-021_CLAUDE_HANDOFF_03.md](RUN-021_CLAUDE_HANDOFF_03.md), livré pour les props/HUD de munitions. Les correctifs ci-dessus sont techniques et ne demandent pas de nouveau livrable artistique.
+
+
+### Secret Wall N4 — complément du 8 octobre
+
+- Depuis un état où `n4_secret_01` n'est pas découvert, approcher le mur : cache, HP et CommonChest2 invisibles, maçonnerie continue sans halo ni couture révélatrice.
+- Frapper : effritement et un seul SFX, révélation en0,6s, passage solide jusqu'à la fin puis franchissable. Vérifier la discrétion et le confort sonore en mouvement ; les attaques supplémentaires ne rejouent rien.
+- Mettre en pause au milieu : le fondu s'arrête puis reprend. Vérifier que le coffre et le HP deviennent accessibles après l'ouverture.
+- Après mort/reprise : cache immédiatement visible sans révélation rejouée. Une sauvegarde ayant déjà découvert le secret commence naturellement dans cet état.
+
+Recette technique :793contrôles ciblés réussis et captures natives. Trois échecs du test Swarm4 existent aussi sur la baseline et ne sont pas corrigés par ce complément. Ces résultats ne constituent pas une validation humaine de RUN-021.

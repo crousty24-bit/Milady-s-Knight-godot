@@ -221,7 +221,7 @@ New Game et le repli de reprise utilisent N1 ; les sauvegardes v2 qui pointaient
 
 Scènes disponibles pour piques rétractables, trappes, tourelles et plantes, avec phases/directions configurables et physique vérifiée en fixtures. Les pieds doivent être dans la largeur supérieure de la trappe pour la déclencher ; un chevauchement latéral ne suffit pas. Piques rentrées sans dégâts, base2px ; trappe ouverte jusqu'au reset. Les nouveaux cycles suivent le temps de gameplay et se suspendent en pause.
 
-Secrets par mêlée ou tir du joueur, sans traverser d'autre obstacle, flag durable avant ouverture/fondu ; sauvegarde échouée visible au HUD et retry possible. Bonus HP unique durable. Plaques/boutons/portes restent des états de tentative : plaque par contact supérieur ou tir joueur, bouton par E ; `secondary_door.coin_locked=false` réserve l'accès au mécanisme, `true` au paiement de coins géré une seule fois par le niveau. Ni tirs ennemis ni mêlée n'activent une plaque.
+Secrets par mêlée ou tir du joueur, sans traverser d'autre obstacle, flag durable avant ouverture/fondu ; sauvegarde échouée visible au HUD et retry possible. Contrat Secret Wall approuvé le 8 octobre (RUN-021) : la cache entière est masquée par une maçonnerie raccordée au terrain ; disparition du masque sur 0,6 s avec effritement et un seul SFX au début. Passage et interactions des récompenses accessibles à la fin du fondu ; la pause suspend la transition. Après mort/reprise/rechargement, un secret acquis est immédiatement ouvert et visible sans rejouer l'effet. Échec de sauvegarde : cache et collision conservées, aucun effet ; New Game remet le secret fermé. Bonus HP unique durable. Plaques/boutons/portes restent des états de tentative : plaque par contact supérieur ou tir joueur, bouton par E ; `secondary_door.coin_locked=false` réserve l'accès au mécanisme, `true` au paiement de coins géré une seule fois par le niveau. Ni tirs ennemis ni mêlée n'activent une plaque.
 
 `tests/fixtures/run019_systems.tscn` est une fixture de recette, pas Forbidden Graveyard. N2–4, leurs sorties18/25/32 et leurs budgets optionnels réels restent RUN-020. Art/SFX requis et validation humaine encore attendus ; aucun niveau humain régénéré.
 
@@ -232,10 +232,15 @@ N1 mène à `scenes/blight_town.tscn`, puis `black_forrest.tscn` et `forbidden_g
 
 N2 introduit Red/Bloated, piques rétractables et trappe. N3 ajoute Warrior/Archer, plante et tourelle. N4 ajoute Sorcerer/Chud et swarm4. Les profils/rewards RUN-018–019 restent inchangés. Les sorties ont une cloison haute et le passage N4 lié au bouton traverse une cloison : les portes font partie du chemin, sans saut au-dessus prévu.
 
-N4 : salle secrète x560–784 (mur id`n4_secret_01`, potion majeure et rare chest) ; branche optionnelle x1296–1520 (porte4 coins et bonus HP id`n4_hp_01`). Les40 coins couvrent32 de sortie +4 de branche avec4 de marge. Bouton x2640 et porte x2808 obligatoires, sans paiement. Les acquisitions durables survivent aux tentatives ; les mécanismes et portes reviennent fermés.
+Placement initial RUN-020 (historique) : N4, salle secrète x560–784 (mur id`n4_secret_01`, potion majeure et rare chest) ; branche optionnelle x1296–1520 (porte4 coins et bonus HP id`n4_hp_01`). Les40 coins couvrent32 de sortie +4 de branche avec4 de marge. Bouton x2640 et porte x2808 obligatoires, sans paiement. Les acquisitions durables survivent aux tentatives ; les mécanismes et portes reviennent fermés.
 
 Le parcours réel N1–4 et les transactions sur ces scènes sont exercés séparément. Difficulté/rythme restent à valider humainement ; [guide de playtest](RUN-020_PLAYTEST.md), preuves exactes au journal. Fonds/accessoires et ambiances livrés via Claude, [manifeste](RUN-020_ASSET_MANIFEST.md) ; la passe globale RUN-021 reste à venir.
 
 ## Reprise après playtest RUN-020, 6 octobre 2026
 
 Les dimensions/layouts ci-dessus décrivent la première passe livrée, jugée trop pauvre et linéaire par l’humain. Ils ne sont pas un gabarit final accepté. N4 est la meilleure référence relative mais reste insuffisant. La recomposition N2–4, les nouveaux gabarits et placements sont confiés à Claude dans [le contrat de reprise](RUN-020_CLAUDE_HANDOFF_02.md). Codex ne modifie pas le terrain ni les placements lors de la passe technique. Les coûts de sortie restent18/25/32 ; seule la zone de détection de swarm est élargie à480×240.
+
+
+### RUN-021 — Cache masquée du N4 (8 octobre 2026)
+
+La scène humaine actuelle fait foi : mur à (568,64), cavité derrière à x576–720/y32–64, bonus HP à (655,48) et CommonChest2 à (704,64). La potion majeure et RareChest sont désormais hors de cette cache. Ces placements et les récompenses sont conservés. Un masque éditable associé au mur inclut plafond et sol pour éviter des contours révélateurs. Les références `required_secret` du bonus HP et du coffre interdisent toute acquisition ou ouverture avant `passage_open`. Les récompenses sans référence gardent leur comportement habituel. Contrat et ownership : [RUN-021_SECRET_WALL_CONTRACT.md](RUN-021_SECRET_WALL_CONTRACT.md).

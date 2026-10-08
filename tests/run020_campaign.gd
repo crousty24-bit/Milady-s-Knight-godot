@@ -108,7 +108,8 @@ func reveal_secret(occlusion: bool = false) -> void:
 	else:
 		level.player.attack_cooldown = 0.0
 		await tap("attack")
-	await frames(30)
+	# Keep transaction probes outside the 0.6 s entrance reveal.
+	await create_timer(secret.fade_duration + 0.1, false).timeout
 	check(secret.opened and progress.permanent_flags.get("secret:n4_secret_01", false), "actual weapon reveals authored secret and commits durable flag")
 	level.player.controls_enabled = false
 func run() -> void:

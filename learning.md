@@ -814,3 +814,16 @@ Comme pour N2, un rectangle local permet de descendre sous l'ancien seuil de vid
 SkullSwarm7 surveillait un rectangle plus large que la pièce : le joueur pouvait le déclencher depuis l'extérieur. Son rectangle suit maintenant l'intérieur, et son activation exige aussi que MechanismDoor5 soit ouverte. Ouvrir la porte seul ne suffit pas ; le joueur doit entrer. Les autres Swarms n'ont pas cette condition supplémentaire, car leur référence de Gate reste vide.
 
 Les quatre points d'apparition sont dans la pièce et hors des murs. À la sortie, les survivants disparaissent ; à la réentrée, seuls les slots non tués reviennent, avec les mêmes règles de shards qu'avant. Le pilote vérifie le blocage et le franchissement physique de la porte, les deux conditions d'activation, les quatre côtés extérieurs et les récompenses après une sortie/réentrée. Trois suites passent 152 contrôles automatisés ; le ressenti de la pièce reste à valider en jouant.
+
+
+## RUN-021 — Cacher une salle derrière un Secret Wall
+
+Le mur secret était solide, mais le coffre et le bonus HP derrière étaient déjà visibles. Le nouveau masque dessine des pierres par-dessus toute la cavité. Il reprend les tuiles voisines, avec les mêmes couleurs et les mêmes variations. Il couvre aussi le plafond et le sol : leurs anciennes arêtes auraient laissé deviner une pièce vide. Le vrai terrain reste intact ; le masque ne change pas les collisions.
+
+Une attaque commence par sauvegarder la découverte. Si la sauvegarde échoue, le mur et le masque restent en place et aucun son de révélation n'est joué. Si elle réussit, les pierres deviennent progressivement transparentes pendant0,6seconde, accompagnées de l'effritement et d'un seul SFX. À la fin, le passage devient traversable et les récompenses sont disponibles. La pause arrête le fondu.
+
+Le code distingue donc « secret découvert » et « passage accessible ». Pendant le fondu, le premier est vrai, le second reste faux. Cette distinction empêche une deuxième attaque de rejouer le son et bloque le coffre ou le bonus HP jusqu'à la fin. Les objets qui ne sont liés à aucun secret continuent de fonctionner normalement.
+
+Après une mort ou une reprise, la sauvegarde indique déjà que le secret a été trouvé : la pièce apparaît directement et le passage est ouvert. Il ne faut pas rejouer la découverte à chaque chargement. New Game efface ce flag et remet le secret fermé. Si ta partie actuelle l'avait déjà découvert, elle conservera donc la cache ouverte.
+
+Les tests ont exercé les vraies attaques, le blocage physique, les récompenses, la pause et trois processus de sauvegarde/reprise/reset. Les captures montrent la maçonnerie fermée, le milieu du fondu et la pièce ouverte au zoom1,2×. Les793contrôles ciblés passent ; la suite globale rencontre trois échecs Swarm déjà présents sans cette modification. Ces vérifications ne remplacent pas ton essai de la difficulté à trouver le secret ni ton écoute du SFX en jeu.
