@@ -1,0 +1,414 @@
+[
+ {
+  "file": "ancient_trunk.png",
+  "w": 56,
+  "h": 128,
+  "kind": "ground",
+  "anchor": [
+   28,
+   128
+  ],
+  "lights": [],
+  "weight": 2,
+  "big": true
+ },
+ {
+  "file": "gnarled_oak.png",
+  "w": 74,
+  "h": 96,
+  "kind": "ground",
+  "anchor": [
+   37,
+   96
+  ],
+  "lights": [],
+  "weight": 2,
+  "big": true
+ },
+ {
+  "file": "fir_a.png",
+  "w": 42,
+  "h": 94,
+  "kind": "ground",
+  "anchor": [
+   21,
+   94
+  ],
+  "lights": [],
+  "weight": 5,
+  "big": false
+ },
+ {
+  "file": "fir_b.png",
+  "w": 46,
+  "h": 84,
+  "kind": "ground",
+  "anchor": [
+   23,
+   84
+  ],
+  "lights": [],
+  "weight": 5,
+  "big": false
+ },
+ {
+  "file": "dead_birch.png",
+  "w": 28,
+  "h": 80,
+  "kind": "ground",
+  "anchor": [
+   14,
+   80
+  ],
+  "lights": [],
+  "weight": 3,
+  "big": false
+ },
+ {
+  "file": "root_arch.png",
+  "w": 48,
+  "h": 26,
+  "kind": "ground",
+  "anchor": [
+   24,
+   26
+  ],
+  "lights": [],
+  "weight": 3,
+  "big": false
+ },
+ {
+  "file": "fallen_log.png",
+  "w": 56,
+  "h": 12,
+  "kind": "ground",
+  "anchor": [
+   28,
+   12
+  ],
+  "lights": [],
+  "weight": 4,
+  "big": false
+ },
+ {
+  "file": "fern_a.png",
+  "w": 22,
+  "h": 14,
+  "kind": "ground",
+  "anchor": [
+   11,
+   14
+  ],
+  "lights": [],
+  "weight": 5,
+  "big": false
+ },
+ {
+  "file": "fern_b.png",
+  "w": 22,
+  "h": 14,
+  "kind": "ground",
+  "anchor": [
+   11,
+   14
+  ],
+  "lights": [],
+  "weight": 5,
+  "big": false
+ },
+ {
+  "file": "mushroom_cluster.png",
+  "w": 18,
+  "h": 12,
+  "kind": "ground",
+  "anchor": [
+   9,
+   12
+  ],
+  "lights": [
+   {
+    "pos": [
+     8,
+     5
+    ],
+    "type": "fungus"
+   }
+  ],
+  "weight": 4,
+  "big": false
+ },
+ {
+  "file": "standing_stone.png",
+  "w": 20,
+  "h": 40,
+  "kind": "ground",
+  "anchor": [
+   10,
+   40
+  ],
+  "lights": [],
+  "weight": 2,
+  "big": false
+ },
+ {
+  "file": "cairn.png",
+  "w": 20,
+  "h": 22,
+  "kind": "ground",
+  "anchor": [
+   10,
+   22
+  ],
+  "lights": [],
+  "weight": 3,
+  "big": false
+ },
+ {
+  "file": "stag_totem.png",
+  "w": 26,
+  "h": 58,
+  "kind": "ground",
+  "anchor": [
+   13,
+   58
+  ],
+  "lights": [],
+  "weight": 2,
+  "big": false
+ },
+ {
+  "file": "charcoal_camp.png",
+  "w": 62,
+  "h": 38,
+  "kind": "ground",
+  "anchor": [
+   31,
+   38
+  ],
+  "lights": [
+   {
+    "pos": [
+     50,
+     29
+    ],
+    "type": "flame"
+   }
+  ],
+  "weight": 1,
+  "big": false
+ },
+ {
+  "file": "forest_shrine.png",
+  "w": 20,
+  "h": 44,
+  "kind": "ground",
+  "anchor": [
+   10,
+   44
+  ],
+  "lights": [
+   {
+    "pos": [
+     9,
+     11
+    ],
+    "type": "candle"
+   }
+  ],
+  "weight": 1,
+  "big": false
+ },
+ {
+  "file": "root_stump.png",
+  "w": 32,
+  "h": 22,
+  "kind": "ground",
+  "anchor": [
+   16,
+   22
+  ],
+  "lights": [],
+  "weight": 4,
+  "big": false
+ },
+ {
+  "file": "owl_snag.png",
+  "w": 16,
+  "h": 32,
+  "kind": "ground",
+  "anchor": [
+   8,
+   32
+  ],
+  "lights": [],
+  "weight": 2,
+  "big": false
+ },
+ {
+  "file": "moss_boulder.png",
+  "w": 30,
+  "h": 20,
+  "kind": "ground",
+  "anchor": [
+   15,
+   20
+  ],
+  "lights": [],
+  "weight": 4,
+  "big": false
+ },
+ {
+  "file": "wall_roots.png",
+  "w": 18,
+  "h": 48,
+  "kind": "wall",
+  "anchor": [
+   0,
+   24
+  ],
+  "lights": [],
+  "weight": 4,
+  "big": false
+ },
+ {
+  "file": "wall_fungus.png",
+  "w": 22,
+  "h": 30,
+  "kind": "wall",
+  "anchor": [
+   0,
+   8
+  ],
+  "lights": [
+   {
+    "pos": [
+     6,
+     4
+    ],
+    "type": "fungus"
+   }
+  ],
+  "weight": 3,
+  "big": false
+ },
+ {
+  "file": "wall_moss.png",
+  "w": 16,
+  "h": 38,
+  "kind": "wall",
+  "anchor": [
+   0,
+   10
+  ],
+  "lights": [],
+  "weight": 4,
+  "big": false
+ },
+ {
+  "file": "wall_ivy.png",
+  "w": 18,
+  "h": 44,
+  "kind": "wall",
+  "anchor": [
+   0,
+   2
+  ],
+  "lights": [],
+  "weight": 3,
+  "big": false
+ },
+ {
+  "file": "hang_roots.png",
+  "w": 22,
+  "h": 42,
+  "kind": "ceiling",
+  "anchor": [
+   11,
+   0
+  ],
+  "lights": [],
+  "weight": 4,
+  "big": false
+ },
+ {
+  "file": "hang_moss.png",
+  "w": 18,
+  "h": 36,
+  "kind": "ceiling",
+  "anchor": [
+   9,
+   0
+  ],
+  "lights": [],
+  "weight": 4,
+  "big": false
+ },
+ {
+  "file": "hang_charm.png",
+  "w": 14,
+  "h": 32,
+  "kind": "ceiling",
+  "anchor": [
+   7,
+   0
+  ],
+  "lights": [],
+  "weight": 2,
+  "big": false
+ },
+ {
+  "file": "hang_lantern_hunter.png",
+  "w": 14,
+  "h": 38,
+  "kind": "ceiling",
+  "anchor": [
+   7,
+   0
+  ],
+  "lights": [
+   {
+    "pos": [
+     7,
+     23
+    ],
+    "type": "flame"
+   }
+  ],
+  "weight": 1,
+  "big": false
+ },
+ {
+  "file": "root_hollow.png",
+  "w": 52,
+  "h": 52,
+  "kind": "underground",
+  "anchor": [
+   26,
+   52
+  ],
+  "lights": [],
+  "weight": 2,
+  "big": true
+ },
+ {
+  "file": "fungus_niche.png",
+  "w": 26,
+  "h": 28,
+  "kind": "underground",
+  "anchor": [
+   13,
+   28
+  ],
+  "lights": [
+   {
+    "pos": [
+     13,
+     19
+    ],
+    "type": "fungus"
+   }
+  ],
+  "weight": 2,
+  "big": false
+ }
+]

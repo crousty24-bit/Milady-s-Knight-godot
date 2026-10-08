@@ -1,5 +1,24 @@
 # Milady's Knight — Runs Journal
 
+## 8 octobre 2026 — RUN-021 : passe visuelle N3 Black Forest (Claude)
+
+Demande humaine : « Je valide la passe visuelle sur le N2. Le bug de mémoire semble corrigé après vérifications et playtest : l'éditeur ne crash plus. Réalise maintenant le même type de passe visuelle pour N3. » La validation humaine de la passe N2 et du correctif mémoire est consignée à ce niveau de précision. Baseline : arbre propre sur `f1bbccd`. Main agent Claude Code Opus 5.5 ; deux sous-agents `visual_architect` Sonnet 5.5 High, réellement exécutés sur des fichiers disjoints (fonds, accessoires). Le main agent a fait le terrain, le souterrain, l'atmosphère, l'intégration des scripts, une retouche de la lune et les vérifications. Aucune scène modifiée.
+
+**Constat avant :** fonds N3 en silhouettes de sapins plates, terre brune uniforme, décor clairsemé (une souche carrée proche des caisses de munitions), et la grotte basse (y≈200–270) montrait le ciel et la forêt derrière elle. Captures : `work/run021/n3pass/before/`.
+
+**Modification humaine pendant la passe :** `scenes/forbidden_graveyard.tscn` a été modifiée à 22:25 (porte, pièces et crânes déplacés, `SkullSwarm8` ajouté). Elle a été laissée intacte et exclue du commit. Elle explique un second échec de `run020_campaign` dans le checkout partagé (`physical E opens exit within optional spending budget`), absent sur `HEAD` + cette passe seule.
+
+**Preuves (Godot 4.7.2 Windows, `work/run021/check.sh`, verrou et profil isolé) :**
+- Import éditeur sans erreur (`n3pass-import3`) ; 15 vues N3 natives avant/après (`work/run021/n3pass/{before,t4}`, planches `ba_*.png`).
+- N2/N4 : captures `--fixed-fps 60` de `HEAD` (worktree `work/wt-n3-head`) contre le travail. 12 vues sur 17 sont identiques au pixel. Les autres diffèrent de 5 à 40 pixels, uniquement sur des torches, un compteur et des reflets de piques, sous le bruit `HEAD`/`HEAD` (71).
+- Rendus : `run021_backdrop_layers` 9/9, `run020_visual` 57/57, `run021_camera_bounds` 20/20.
+- Campagne : `run020_campaign` 178 contrôles. Sur `HEAD` + la passe seule, un échec `native family red_slime`, préexistant et identique sur `HEAD`. Dans le checkout partagé, un second échec dû à l'édition N4 ci-dessus.
+- Rechargement à chaud : N3 6/6 depuis les scripts de `HEAD`, avec un calque souterrain recréé une seule fois ; N2 5/5. Un premier essai N3 échouait à cause du test lui-même : `set_script` remettait `world_level` à 2. Corrigé dans le test, aucun défaut de production.
+- Durée : 90 s en fenêtre, mémoire statique stable 50,1 → 50,0 Mo, pire image 8,4 ms.
+- Performance : `perf_check` N3 5,56 ms moyen, 168 appels de dessin.
+
+Les logs sont sous `work/test-results/` et indexés dans `work/run021/n3pass-*-results.txt` et `iso-*-results.txt`. Les détails et les limites sont dans le [manifeste](docs/RUN-021_N3_VISUAL_MANIFEST.md). Aucun parcours clavier naturel n'a été joué. La validation artistique et le playtest humain restent requis ; RUN-021 reste ACTIVE.
+
 ## 8 octobre 2026 — RUN-021 : boucle infinie du miasme N2 (crash, plus de 30 Go)
 
 Retour humain : Godot plante toujours au lancement de `blight_town` (F6 impossible) et dépasse 30 Go de mémoire. **Cause prouvée :** dans `campaign_decor.gd`, `_draw_strip` avançait en flottants (`x += 256 - fposmod(x + scroll, 256)`). Quand `x + scroll` tombe juste sous un multiple de 256, le pas devient inférieur à la précision de `x` : `x` n'avance plus et la boucle empile sans fin des commandes de dessin. Le défaut dépend du temps : sur les 19 nappes réelles de N2, le premier blocage survient à 48,5 s de jeu (`work/run021/n2pass/reload/strip_real.gd`), puis 13 548 instants bloquants dans les 10 premières minutes. Les essais précédents, de 10 s, ne pouvaient pas l'atteindre.

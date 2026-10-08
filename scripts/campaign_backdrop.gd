@@ -25,18 +25,32 @@ const LOOKS = [
 ]
 # RUN-021 N2 pass: Blight Town gets its own five-band backdrop (plague cathedral town, rampart,
 # timbered street, close facades) with separate lit-window overlays that flicker slowly.
-# N3/N4 keep the RUN-020/021 bands above.
+# RUN-021 N3 pass: Black Forest gets the same structure (far crags and kilns, fir ridge, trunk
+# forest, moonbeams, giant near trunks). N4 keeps the RUN-020/021 bands above.
 const N2_SKY = preload("res://assets/run021/n2/bg_n2_sky.png")
-# [band, lights, parallax x, parallax y, screen y at the reference framing]
-const N2_BANDS = [
-	[preload("res://assets/run021/n2/bg_n2_far.png"), preload("res://assets/run021/n2/bg_n2_far_lights.png"), 0.08, 0.05, 58.0],
-	[preload("res://assets/run021/n2/bg_n2_rampart.png"), preload("res://assets/run021/n2/bg_n2_rampart_lights.png"), 0.16, 0.09, 120.0],
-	[null, null, 0.2, 0.1, 140.0], # drifting haze
-	[preload("res://assets/run021/n2/bg_n2_mid.png"), preload("res://assets/run021/n2/bg_n2_mid_lights.png"), 0.3, 0.15, 104.0],
-	[preload("res://assets/run021/n2/bg_n2_near.png"), preload("res://assets/run021/n2/bg_n2_near_lights.png"), 0.42, 0.2, 170.0],
-]
 const N2_MID_GROUND = Color("191c13")
 const N2_FINAL = Color("121410")
+# [band, lights, parallax x, parallax y, screen y at the reference framing, fill below or null]
+const N2_BANDS = [
+	[preload("res://assets/run021/n2/bg_n2_far.png"), preload("res://assets/run021/n2/bg_n2_far_lights.png"), 0.08, 0.05, 58.0, null],
+	[preload("res://assets/run021/n2/bg_n2_rampart.png"), preload("res://assets/run021/n2/bg_n2_rampart_lights.png"), 0.16, 0.09, 120.0, null],
+	[null, null, 0.2, 0.1, 140.0, null], # drifting haze
+	[preload("res://assets/run021/n2/bg_n2_mid.png"), preload("res://assets/run021/n2/bg_n2_mid_lights.png"), 0.3, 0.15, 104.0, N2_MID_GROUND],
+	[preload("res://assets/run021/n2/bg_n2_near.png"), preload("res://assets/run021/n2/bg_n2_near_lights.png"), 0.42, 0.2, 170.0, N2_FINAL],
+]
+const N3_SKY = preload("res://assets/run021/n3/bg_n3_sky.png")
+const N3_MID_GROUND = Color("0d151a")
+const N3_FINAL = Color("0a0e11")
+# Moonbeams have no lights overlay (BEAMS marker): they breathe slowly as a whole.
+const BEAMS = "beams"
+const N3_BANDS = [
+	[preload("res://assets/run021/n3/bg_n3_far.png"), preload("res://assets/run021/n3/bg_n3_far_lights.png"), 0.08, 0.05, 58.0, null],
+	[preload("res://assets/run021/n3/bg_n3_ridge.png"), preload("res://assets/run021/n3/bg_n3_ridge_lights.png"), 0.16, 0.09, 120.0, null],
+	[null, null, 0.2, 0.1, 140.0, null], # drifting haze
+	[preload("res://assets/run021/n3/bg_n3_mid.png"), preload("res://assets/run021/n3/bg_n3_mid_lights.png"), 0.3, 0.15, 104.0, N3_MID_GROUND],
+	[preload("res://assets/run021/n3/bg_n3_beams.png"), BEAMS, 0.3, 0.15, 40.0, null],
+	[preload("res://assets/run021/n3/bg_n3_near.png"), preload("res://assets/run021/n3/bg_n3_near_lights.png"), 0.42, 0.2, 170.0, N3_FINAL],
+]
 @export_range(2, 4) var world_level: int = 2:
 	set(value):
 		world_level = value
@@ -59,7 +73,10 @@ func _draw() -> void:
 		top_left = camera.get_screen_center_position() - size * 0.5
 	var dy := top_left.y - reference_top
 	if b == 0:
-		_draw_n2(top_left, size, dy, look)
+		_draw_layers(N2_SKY, N2_BANDS, top_left, size, dy, look)
+		return
+	if b == 1:
+		_draw_layers(N3_SKY, N3_BANDS, top_left, size, dy, look)
 		return
 	draw_texture(SKIES[b], top_left)
 	_draw_band(CLOUDS, top_left, size, top_left.x * 0.02 + _elapsed * CLOUD_DRIFT, 14.0 - dy * 0.02, look[0])
@@ -84,26 +101,29 @@ func _draw() -> void:
 		var y := fposmod(float(i) * 53.0 - _elapsed * speed, size.y)
 		var a := 0.18 + 0.16 * sin(_elapsed * 1.3 + float(i) * 1.7)
 		draw_rect(Rect2((top_left + Vector2(x, y)).round(), Vector2.ONE), Color(mote, a))
-func _draw_n2(top_left: Vector2, size: Vector2, dy: float, look: Array) -> void:
-	draw_texture(N2_SKY, top_left)
+# N2/N3 layered backdrop: sky, N1 clouds, then the bands in order (see N2_BANDS).
+func _draw_layers(sky: Texture2D, bands: Array, top_left: Vector2, size: Vector2, dy: float, look: Array) -> void:
+	draw_texture(sky, top_left)
 	_draw_band(CLOUDS, top_left, size, top_left.x * 0.02 + _elapsed * CLOUD_DRIFT, 14.0 - dy * 0.02, look[0])
-	for i in N2_BANDS.size():
-		var band: Array = N2_BANDS[i]
+	for i in bands.size():
+		var band: Array = bands[i]
 		var y: float = band[4] - dy * band[3]
 		var scroll: float = top_left.x * band[2]
 		if band[0] == null:
 			_draw_band(MIST, top_left, size, scroll + _elapsed * MIST_DRIFT, y, look[1])
 			continue
 		var texture: Texture2D = band[0]
+		if band[1] is String:
+			# Moonbeams: a very slow swell, never fully gone.
+			_draw_band(texture, top_left, size, scroll, y, Color(1, 1, 1, 0.7 + 0.2 * sin(_elapsed * 0.35) + 0.1 * sin(_elapsed * 0.9 + 1.0)))
+			continue
 		_draw_band(texture, top_left, size, scroll, y)
-		# Windows and pyres breathe slowly, each band on its own phase.
+		# Windows, pyres, kilns and fireflies breathe slowly, each band on its own phase.
 		var glow := 0.78 + 0.14 * sin(_elapsed * 1.1 + i * 1.9) + 0.08 * sin(_elapsed * 3.3 + i)
 		_draw_band(band[1], top_left, size, scroll, y, Color(1, 1, 1, glow))
-		var bottom := roundf(y) + texture.get_height()
-		if i == 3:
-			draw_rect(Rect2(top_left + Vector2(0, bottom), Vector2(size.x, maxf(0.0, size.y - bottom))), N2_MID_GROUND)
-		elif i == 4:
-			draw_rect(Rect2(top_left + Vector2(0, bottom), Vector2(size.x, maxf(0.0, size.y - bottom))), N2_FINAL)
+		if band[5] != null:
+			var bottom := roundf(y) + texture.get_height()
+			draw_rect(Rect2(top_left + Vector2(0, bottom), Vector2(size.x, maxf(0.0, size.y - bottom))), band[5])
 	_draw_motes(top_left, size, look)
 func _draw_motes(top_left: Vector2, size: Vector2, look: Array) -> void:
 	var mote: Color = look[3]
