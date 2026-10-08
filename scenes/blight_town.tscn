@@ -63,6 +63,7 @@ z_as_relative = false
 script = ExtResource("2")
 
 [node name="Decor" type="Node2D" parent="." unique_id=2013445394]
+z_index = -1
 script = ExtResource("3")
 level_width = 3840.0
 

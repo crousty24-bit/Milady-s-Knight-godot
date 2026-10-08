@@ -57,6 +57,7 @@ script = ExtResource("2")
 world_level = 3
 
 [node name="Decor" type="Node2D" parent="." unique_id=84573138]
+z_index = -1
 script = ExtResource("3")
 world_level = 3
 level_width = 4320.0
