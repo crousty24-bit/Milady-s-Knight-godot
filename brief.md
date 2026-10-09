@@ -69,13 +69,13 @@ Les détails complets restent dans `docs/`.
 
 Les preuves techniques et leurs limites sont consignées dans [runs-journal.md](runs-journal.md) ; la roadmap et les critères de clôture sont dans [runs-workflow.md](runs-workflow.md).
 
-### Version publiée et branche en revue
+### Version publiée et cible
 
-**La version publiée reste 0.2.0, avec le jalon N1 validé.** La branche `feature/run-020-021-campaign` porte les travaux de campagne N1–N4 et la cible de production 0.3.0. La cible ne constitue pas une promotion de version. Le 9 octobre, l’humain a validé toutes les dernières passes Codex et Claude. L’audit global de la branche est en cours et la PR vers `develop` est demandée ; la clôture formelle des runs et les résultats consolidés de la revue seront consignés à son issue.
+**La version publiée est 0.3.0 (campagne N1–N4) ; la version cible est 0.4.0.** Le 9 octobre 2026, l’humain a validé toutes les dernières passes Codex et Claude de RUN-020–021 ; l’audit global de `develop` a été exécuté puis `develop` a été fusionnée dans `main` dans les deux sens. La cible 0.4.0 (capacités, légendaires, N5–N10, boss et conclusion) n’est pas lancée : RUN-022 est la prochaine run.
 
 Le dépôt compte 29 identifiants de run. Les décisions de statut, de version et de clôture doivent suivre `runs-workflow.md` ; les jalons historiques ci-dessous décrivent des étapes antérieures et ne remplacent pas l’état courant.
 
-### Systèmes présents sur la branche campagne
+### Systèmes présents dans la version 0.3.0
 
 - **Campagne N1–N4 :** Eidolon Vale, Blight Town, Black Forest et Forbidden Graveyard sont reliés par leurs sorties. Les niveaux sont conçus à la main et comprennent des routes verticales, ennemis, pièges, coffres, mécanismes et récompenses.
 - **Combat et équipement :** armes de mêlée et à distance, huit armes standard, deux slots, munitions de Longbow et Throwing Knives, caisses et tonneaux de ravitaillement. Le stock courant est transmis au niveau suivant ; mort et reprise restaurent le stock d’entrée du niveau.
@@ -88,8 +88,9 @@ Le viewport est **640×360**, terrain sur grille 16×16. **Zoom joueur de réfé
 ### Historique des jalons publiés
 
 - **0.1.0**, clôturée localement le 2 octobre 2026 : socle et première passe de production. Détails et limites dans le journal.
-- **0.2.0**, publiée après validation du jalon N1 : RUN-015–017 et RUN-029 livrées. La recette documentée au 3 octobre est historique et ne représente pas l’état de la branche campagne.
-- **Cible 0.3.0 :** campagne N1–N4 et systèmes associés. Elle n’est pas déclarée publiée par cette mise à jour documentaire.
+- **0.2.0**, publiée après validation du jalon N1 : RUN-015–017 et RUN-029 livrées. La recette documentée au 3 octobre est historique.
+- **0.3.0**, publiée le 9 octobre 2026 : RUN-018–021, campagne N1–N4, économie, armes standard, munitions, commandes remappables, Secret Walls et passes visuelles/audio validées par l’humain.
+- **Cible 0.4.0 :** capacités, légendaires, N5–N10, boss et conclusion (RUN-022–026, BACKLOG).
 
 Les médias hérités dont les sources ou licences restent à établir doivent être clarifiés avant distribution. Voir le journal pour le périmètre de provenance déjà établi et les limites des validations.
 

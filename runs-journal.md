@@ -1532,3 +1532,13 @@ Enemy26 `(1614,64)`, Enemy27 `(1666,64)`, Enemy11 `(1706,48)` et Enemy05 `(1680,
 **Ferries :** `ferry_axes` conservait le trajet144px/4s alors que la scène verticale partagée validée est400px/6s. Quatre échecs reproduits ; attentes N2 et durées de phase actualisées, contrôle générique d’axe conservé sans fixer une amplitude arbitraire. Les six tests de portage dans les deux scènes et trois directions restent inchangés. Le contrôle caméra final repart de la pose d’origine et suit le cycle réel ; les fixtures intermédiaires tentant un téléport àmi-course ont été abandonnées, sans changement de production.
 
 **Fichier inutilisé supprimé :** `scripts/moving_platform_vertical.gd` et son `.uid`, doublon de `moving_platform.gd` ne différant que par la valeur par défaut de Travel. Aucune référence au chemin ou à son UID trouvée dans le dépôt ; `moving_platform_vertical.tscn` utilise déjà le script partagé avec ses propriétés400px/6s. La scène verticale et les niveaux restent conservés, ainsi que les tests de portage des deux scènes.
+
+## Audit global de develop et promotion 0.3.0, 9 octobre 2026
+
+**Contexte :** audit demandé depuis `develop` (clean, 64 commits d’avance et 1 de retard sur `main`) avant promotion de la version publiée à 0.3.0 et ouverture de la cible 0.4.0. Godot 4.7.2 stable (console Windows via WSL).
+
+**Recette :** import, isolation `user://`, puis 54 suites sur 55 et les 22 sessions à froid : **3 273 contrôles réussis, 0 échec**, aucun `SCRIPT ERROR`/fuite. La commande `tools/test.sh` s’arrête à `run020_routes` (`set -e`) ; les suites suivantes, la variante haute et les sessions à froid ont donc été lancées séparément avec la même liste.
+
+**Échec restant (non résolu) :** pilote `run020_routes`, variantes basse et haute. Les waypoints datent du 7 octobre alors que l’humain a retouché Blight Town le 8 octobre. Un réalignement borné à `tests/run020_routes.gd` (sans toucher aux scènes, sans téléportation ni affaiblissement d’assertion) corrige la chute de la plateforme 1344/1428, le coffre déplacé, les piques rétractables et le tunnel, mais le pilote meurt encore vers x≈3205 face à l’élite Enemy10 (5 PV), avec 17–18 pièces : 1 FAIL sur 7 contrôles. N3/N4 ne sont donc pas exercés par ce pilote. Cause : limite du bot (pas d’esquive suffisante), pas un défaut de gameplay démontré ; les parcours N1–N4 ont été validés par playtest humain le 9 octobre. À reprendre dans une run dédiée (soin/PV d’élite à décider par l’humain ou pilote plus évolué). Ce n’est pas déclaré réussi.
+
+**Documentation :** `README.md`, `brief.md`, `runs-workflow.md` alignés : version publiée 0.3.0, cible 0.4.0, RUN-021 DONE, garde-fous de scope mis à jour (remappage clavier/souris et saut mural déjà livrés).

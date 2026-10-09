@@ -2,9 +2,9 @@
 
 ## Statut de cette planification
 
-**9 octobre 2026 — Version publiée : 0.2.0 ; périmètre de branche : 0.3.0 (RUN-018–021).** L’humain valide toutes les dernières passes Codex et Claude et déclare RUN-020–021 terminées. Audit final, correction des contrôles obsolètes et recette globale en cours sur `feature/run-020-021-campaign`, avant la PR demandée vers `develop`. Les checkpoints datés ci-dessous sont historiques ; le journal conserve leurs preuves et limites. Aucune fusion ni nouvelle run lancée.
+**9 octobre 2026 — Version publiée : 0.3.0 ; version cible : 0.4.0.** RUN-018–021 sont DONE : l’humain a validé toutes les dernières passes Codex et Claude de RUN-020–021 le 9 octobre. L’audit global de `develop` a été exécuté (recette Godot 4.7.2 consignée au journal) avant la promotion de la version publiée de 0.2.0 à 0.3.0 et la fusion `develop` → `main`. Les checkpoints datés ci-dessous sont historiques ; le journal conserve leurs preuves et limites.
 
-La roadmap conserve **29 identifiants** et la cible **0.5.0 beta** : dix niveaux conçus à la main, objectif de 1–2 heures restant à mesurer. Les lots RUN-022–028 restent BACKLOG. Les statuts techniques de clôture seront consolidés après la recette de cet audit.
+La roadmap conserve **29 identifiants** et la cible **0.5.0 beta** : dix niveaux conçus à la main, objectif de 1–2 heures restant à mesurer. La prochaine cible est **0.4.0** (RUN-022–026, BACKLOG, non lancée). RUN-027–028 restent BACKLOG.
 
 ## Audit vérifié de la base
 
@@ -128,7 +128,7 @@ Aucune valeur non définie ci-dessous n’est implicitement décidée par la roa
 | D09 | `02`/`09` : 3/5 DMG du Boss non attribués à chaque attaque ; accélération d’attaque enrage non chiffrée ; départ immédiat versus dialogue et spawn AFK sûr ; état de fin/Continue après Karla. | Contrat Boss 0.4, avant l’arène. |
 | D10 | `06`/`11`/`13` : comparaison 16/32, gabarits/packs/licences, mapping final des skins et animations ; vocabulaire à harmoniser (Black Forest/Forest, Ancien/Ancient, Fire/Dire Gauntlet). Plateformes distribuées, matériel et budget de performance non définis. | Échantillon 0.1, noms avant contenu, variantes 0.5, export 0.5. |
 
-Autres garde-fous de scope : pas de génération procédurale, checkpoints intra-niveau, sélection de sauvegardes, remapping, support souris/manette ou exploration après Karla. Les offrandes ne doivent pas être confondues avec les paiements de portes. Aucun add-on ni grande réarchitecture n’est nécessaire par défaut.
+Autres garde-fous de scope : pas de génération procédurale, checkpoints intra-niveau, sélection de sauvegardes, support manette, visée au curseur ou exploration après Karla. Le remappage clavier + souris et les profils AZERTY/QWERTY/classique/personnalisé, livrés en avance dans RUN-021 (complément du 7 octobre), sont acquis et ne sont pas à refaire. Les offrandes ne doivent pas être confondues avec les paiements de portes. Aucun add-on ni grande réarchitecture n’est nécessaire par défaut.
 
 ## Règles d’exécution et de clôture
 
@@ -230,9 +230,9 @@ Références de la révision du workflow du **22 septembre 2026** : recommandati
 | Cible | Résultat | Runs | Orchestrateur principal |
 | --- | --- | --- | --- |
 | **0.1.0 clôturée** | Socle validé ; compléments visuels et audio réalisés | 001–014 et 029 DONE | Historique conservé ; Claude Opus 5.5 pour les compléments |
-| **0.2.0 actuelle** | N1 complet, menus, tutoriel, tir et reprise validés | 015–017 DONE | Codex GPT-6.1 Sol Medium |
-| **0.3.0** | Économie et équipement standard, bestiaire et exploration N2–4 | 018–021 : 4 lots | Codex GPT-6.1 Sol Medium ; Claude Opus 5.5 pour 021 |
-| **0.4.0** | Capacités, légendaires, N5–10, Boss et conclusion | 022–026 : 5 lots | Codex GPT-6.1 Sol Medium ; Claude Opus 5.5 pour 025 |
+| **0.2.0 publiée** | N1 complet, menus, tutoriel, tir et reprise validés | 015–017 DONE | Codex GPT-6.1 Sol Medium |
+| **0.3.0 publiée** | Économie et équipement standard, bestiaire et exploration N2–4 | 018–021 DONE : 4 lots | Codex GPT-6.1 Sol Medium ; Claude Opus 5.5 pour 021 |
+| **0.4.0 cible actuelle** | Capacités, légendaires, N5–10, Boss et conclusion | 022–026 : 5 lots | Codex GPT-6.1 Sol Medium ; Claude Opus 5.5 pour 025 |
 | **0.5.0 beta** | Présentation finale, équilibrage, recette et exports | 027–028 : 2 lots | Claude Opus 5.5 pour 027 ; Codex GPT-6.1 Sol Medium pour 028 |
 
 **Total actuel : 19 runs DONE + 10 lots BACKLOG = 29 identifiants**, sous la limite de 30. Les trois passes 012–014 ont été retenues et réalisées ; RUN-029 ajoute la seconde passe visuelle demandée explicitement. Les identifiants futurs restent inchangés. Le plan conserve tous les systèmes, les dix niveaux, les recettes et les validations artistiques/humaines.
@@ -516,7 +516,7 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 ## Version 0.3.0 — Économie, bestiaire et exploration N2–4
 
-**Statut : RUN-018–020 DONE ; RUN-021 VERIFY après reprise de navigation des élites du 7 octobre ; jalon non validé.** **Prérequis :** 0.2.0 validée (satisfait) ; D01, D02, D04, D06, D07 selon les systèmes.
+**Statut : RUN-018–021 DONE ; jalon 0.3.0 validé par l’humain le 9 octobre 2026 et publié (fusion `develop` → `main`).** **Prérequis :** 0.2.0 validée (satisfait) ; D01, D02, D04, D06, D07 selon les systèmes.
 
 **Repères documentaires :** 01, 02, 03, 04, 05, 06, 07, 08, 13 dans `docs/`.
 
@@ -591,7 +591,9 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 ### RUN-021 — Cohérence visuelle N1–4 et validation 0.3.0
 
-**Lot J · Main agent : Claude Opus 5.5 (visuel), Codex (passe technique) · Statut : ACTIVE · Dépendances : RUN-020 DONE.**
+**Lot J · Main agent : Claude Opus 5.5 (visuel), Codex (passe technique) · Statut : DONE · Dépendances : RUN-020 DONE.**
+
+- **Clôture (9 octobre 2026) :** l’humain valide toutes les dernières passes Codex et Claude (visuels N2–N4, HUD/coffres, audio, commandes, munitions/piques, Secret Walls et indices, mobs, caméra) et déclare RUN-020–021 terminées. L’audit global de `develop` (import, isolation, 55 suites, 22 sessions à froid) est consigné au journal avec ses limites ; la revue Jev consultative n’a pas été relancée pour cette clôture. Les compléments livrés en avance sur la roadmap initiale sont : profils de commandes et remappage clavier/souris, munitions/caisses/tonneaux, Secret Walls avec indices et tutoriels, séquence de révélation des coffres payants, titrage de niveau et refonte HUD, saut mural (rebond) avec tolérance de contact, ferries verticaux et limites de caméra calculées. RUN-022 les prend comme acquis.
 
 - **Indices et tutoriels Secret Wall (9 octobre) :** révélation précédente validée explicitement après playtest. Nouveau complément demandé : Claude livre trois styles réutilisables (glow discret, fissures, teinte), N4 choisit les fissures. Première approche à64px avec ligne de vue : `A Strange Wall` ; après la fin du fondu : `Hidden Secrets`. Fenêtres anglaises existantes, acquittements durables par partie, reprise des erreurs de sauvegarde, New Game réinitialise. [Contrat et ownership](docs/RUN-021_SECRET_WALL_HINTS_CONTRACT.md). Nouvelle présentation et introduction à valider humainement ; RUN-021 reste ACTIVE.
 
@@ -649,7 +651,7 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 ## Version 0.4.0 — Capacités et campagne complète N5–10
 
-**Statut : BACKLOG, non lancée.** **Prérequis :** 0.3.0 validée ; D01, D02, D04, D06–D09 avant les comportements concernés.
+**Statut : BACKLOG, cible actuelle, non lancée.** **Prérequis :** 0.3.0 validée (satisfait le 9 octobre 2026) ; D01, D02, D04, D06–D09 avant les comportements concernés.
 
 **Repères documentaires :** 01, 02, 03, 04, 05, 06, 07, 08, 09, 13 dans `docs/`.
 
@@ -670,7 +672,9 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 ### RUN-022 — Verticalité, capacités et consommables spéciaux
 
-**Lot K · Main agent : Codex GPT-6.1 Sol Medium · Statut : BACKLOG · Dépendances : RUN-021 ; 0.3.0 validée.**
+**Lot K · Main agent : Codex GPT-6.1 Sol Medium · Statut : BACKLOG · Dépendances : RUN-021 DONE ; 0.3.0 validée (satisfait).**
+
+- **Acquis anticipé :** le rebond mural (Space depuis un mur agrippable, tolérance de contact) existe déjà depuis RUN-021 ; RUN-022 ne couvre que la grimpe, l’attaque d’atterrissage, les flammes, Rage, Fire Gauntlet et les cooldowns visibles.
 
 - **Résultat / scope :** Grimpe, attaque d’atterrissage, flammes, Rage, Fire Gauntlet et cooldowns visibles ; tests isolés puis combinés sur terrain vertical.
 - **Décisions avant implémentation dépendante :** D02/D07 : contraintes de grimpe, seuil/rayon slam, cumul/rafraîchissement buffs et cooldowns.
@@ -751,4 +755,4 @@ Identifiant pris après la dernière réserve pour ne pas renuméroter les lots 
 
 ## Point d’arrêt
 
-Validation humaine de toutes les dernières passes RUN-020–021 reçue le **9 octobre 2026**. Audit final et livraison vers `develop` autorisés. RUN-022–028 restent BACKLOG ; la fusion et la promotion de version sont distinctes de cette PR.
+**9 octobre 2026 :** 0.3.0 publiée (RUN-018–021 DONE) après audit global et validation humaine. La version cible est **0.4.0** ; RUN-022 est la prochaine run, à lancer sur une nouvelle branche `feature/*` créée depuis `develop`, après arbitrage des décisions D02/D07 (grimpe, slam, buffs). RUN-022–028 restent BACKLOG.

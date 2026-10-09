@@ -16,6 +16,7 @@ var dodge_ticks := 0
 var dodging := false
 var dodge_direction := 0.0
 var upper_route := false
+var edge_guard := false
 var supply_goal: float = NAN
 var supply_goal_y: float = 0.0
 func _initialize() -> void: call_deferred("run")
@@ -185,7 +186,7 @@ func step(direction: float, combat := true) -> void:
 				if player.attack_time > 0.0 or player.attack_cooldown <= 0.05:
 					direction = side if closest_gap > striking_gap or player.facing != int(side) else 0.0
 				else:
-					direction = side if closest_gap > striking_gap + 1.0 else (-side if closest_gap < striking_gap - 1.0 else 0.0)
+					direction = side if closest_gap > striking_gap + 1.0 else ((retreat_direction(side) if edge_guard else -side) if closest_gap < striking_gap - 1.0 else 0.0)
 			if closest_gap < striking_gap + 5.0 and (player.attack_time > 0.0 or player.attack_cooldown <= 0.05):
 				Input.action_press("attack")
 		if closest is SliceSlime and closest_gap < (38.0 if player.active_slot == 1 else 20.0) and player.is_on_floor() and not dodging:
@@ -333,6 +334,26 @@ func n2_authored_tunnel() -> void:
 	if not entered:
 		route_failed = true
 		return
+	# The human-added retractable spikes at X3216 share this corridor: cross them
+	# only at the start of their safe window (read-only look at the trap's timer).
+	await walk(3180, false)
+	var corridor_spikes := level.get_node("Hazards/RetractableSpikes10")
+	for _tick in 600:
+		if route_failed: return
+		if fposmod(corridor_spikes.cycle_time, 3.0) > 0.05 and fposmod(corridor_spikes.cycle_time, 3.0) < 0.5: break
+		await step(0, false)
+	await walk(3262, false)
+	# Drop only as the Red guard below leaves the landing spot at X3216, so the
+	# rebound never lands on its patrol edge (it turns at X3221).
+	var landing_guard := level.get_node("Enemies/Enemy11")
+	for _tick in 600:
+		if route_failed: return
+		if landing_guard.position.x < 3228.0: break
+		await step(0, false)
+	for _tick in 600: # Then let it walk back toward the shaft: the fall takes ~195 frames.
+		if route_failed: return
+		if landing_guard.position.x > 3250.0: break
+		await step(0, false)
 	# Follow the right face down the shaft, then rebound to the left as
 	# the body clears the beam ends, avoiding the fixed spikes below.
 	await walk(3292, false)
@@ -349,7 +370,7 @@ func n2_authored_tunnel() -> void:
 	for _tick in 180:
 		if route_failed: return
 		if player.is_on_floor() and player.position.y > 100: break
-		await step(signf(3216 - player.position.x) if absf(3216 - player.position.x) >= 2 else 0, false)
+		await step(signf(3216 - player.position.x) if absf(3216 - player.position.x) >= 2 else 0, player.position.y > 60)
 	await collect_coin("Coin22")
 	print("ROUTE authored tunnel exit at=", player.position)
 
@@ -360,11 +381,20 @@ func route(number: int) -> void:
 			await cross(156, 200)
 			await walk(300)
 			await jump(352)
+			await buy_nearby_common() # The human moved the first common chest here (X367).
 			# The human-authored overhang ends at X400. Launch after the
 			# body clears its ceiling, before the spikes begin at X416.
 			await cross(406, 480)
 			await walk(592)
-			await cross(742, 810) # Human-added retractable spikes at X784.
+			# Human-added retractable spikes at X784: walk through them at the start of
+			# their safe window (read-only look at the timer), picking up Coin06 on foot.
+			await walk(742)
+			var floor_spikes := level.get_node("Hazards/RetractableSpikes5")
+			for _tick in 600:
+				if route_failed: return
+				if fposmod(floor_spikes.cycle_time, 3.0) < 0.4: break
+				await step(0)
+			await walk(826)
 			await cross(826, 908)
 			await collect_coin("Coin07") # Return on foot after any contact dodge.
 			await cross(982, 1032)
@@ -380,11 +410,18 @@ func route(number: int) -> void:
 				await walk(1216)
 				await cross(1250, 1344)
 				await jump(1344)
+				# Clear the rampart's Purple from the 1344 platform; landing at its
+				# left edge beside the patrol knocks the body off into the lower lane.
+				# Carry the blade: its short reach keeps the landing beside the patrol from
+				# triggering a long retreat dodge back over the gap.
+				if player.active_slot == 1: await tap("switch_equipment")
+				edge_guard = true # Never back off the rampart's open left edge.
 				await jump(1428)
 				for _tick in 900:
 					if route_failed: return
 					if level.get_node("Enemies/Enemy03").dead: break
 					await step(0)
+				edge_guard = false
 				await walk(1472)
 				await cross(1504, 1584)
 			else:
@@ -423,8 +460,28 @@ func route(number: int) -> void:
 			await cross(2736, 2820)
 			await cross(2858, 2950)
 			await walk(2976)
+			# Clear the guard beside the pillar before the combat-free climb.
+			for _tick in 600:
+				if route_failed: return
+				if level.get_node("Enemies/Enemy08").dead: break
+				await step(0)
 			await n2_authored_tunnel()
 			await walk(3216)
+			# Spikes13 (X3296) closes the floor here: hop over it before the elite.
+			await walk(3200)
+			# Deal with the Red guard that patrols the landing from beyond its patrol edge.
+			for guard_name in ["Enemy11"]:
+				for _tick in 900:
+					var guard := level.get_node_or_null("Enemies/" + guard_name)
+					if route_failed: return
+					if guard == null or guard.dead: break
+					await step(0)
+			await walk(3240)
+			for _tick in 900: # Let the elite come to the floor lane and fall to the bow first.
+				if route_failed: return
+				if level.get_node("Enemies/Enemy10").dead: break
+				await step(0)
+			await cross(3266, 3340)
 			# Stay on the lower approach while fighting the pursuing elite;
 			# climbing its optional perch would suppress combat during ascent.
 			await walk(3600)

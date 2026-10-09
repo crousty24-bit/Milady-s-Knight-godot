@@ -1,17 +1,17 @@
 # Milady's Knight
 
 ![Godot](https://img.shields.io/badge/Godot-4.7.2-478CBF?logo=godot-engine&logoColor=white)
-![Version publiée](https://img.shields.io/badge/Version%20publi%C3%A9e-0.2.0-blue)
+![Version publiée](https://img.shields.io/badge/Version%20publi%C3%A9e-0.3.0-blue)
 ![Language](https://img.shields.io/badge/Language-GDScript-478CBF)
 ![Status](https://img.shields.io/badge/Status-Playable%20Prototype-f0ad4e)
 
 **Milady's Knight** est un action-platformer 2D en pixel-art Dark Fantasy, développé pour devenir une démo de dix niveaux conçus à la main. Le joueur incarne **The Ashen Knight**, traverse le royaume corrompu et rejoint Darkveil Dungeon pour vaincre **Lupikal The Doombringer** et libérer **Princess Karla**. La durée visée est de 1 à 2 heures, à confirmer par playtests.
 
-## Version et état de la branche
+## Version et état
 
-**0.2.0 reste la dernière version publiée et le jalon N1 validé.** La branche `feature/run-020-021-campaign` étend le jeu à la campagne N1–N4 et prépare le contenu de la cible 0.3.0. L’humain a validé toutes les dernières passes Codex et Claude le 9 octobre 2026. L’audit global de la branche est en cours et une PR vers `develop` a été demandée ; le statut final des runs et les résultats consolidés de l’audit seront consignés après cette revue. Cette demande ne promeut pas la version publiée.
+**0.3.0 est la version publiée (9 octobre 2026) : campagne N1–N4. La version cible est 0.4.0** (capacités, armes légendaires, N5–N10, boss Lupikal et conclusion avec Karla). RUN-018–021 sont DONE ; RUN-022 est la prochaine run, non lancée.
 
-La branche contient les niveaux fixes Eidolon Vale, Blight Town, Black Forest et Forbidden Graveyard, leurs transitions, ennemis, pièges, récompenses et zones d’exploration. Elle inclut notamment les armes standard et leurs munitions, les réserves persistantes entre niveaux, les commandes AZERTY/QWERTY/classique/personnalisées avec remappage clavier et souris, le HUD d’équipement et de munitions, ainsi que les Secret Walls avec indices et révélation. Les détails fonctionnels et les limites de vérification sont dans [brief.md](brief.md), [runs-journal.md](runs-journal.md) et les spécifications de [docs/](docs/README.md).
+Le jeu contient les niveaux fixes Eidolon Vale, Blight Town, Black Forest et Forbidden Graveyard, leurs transitions, ennemis, pièges, récompenses et zones d’exploration. Il inclut les armes standard et leurs munitions, les réserves persistantes entre niveaux, les commandes AZERTY/QWERTY/classique/personnalisées avec remappage clavier et souris, le HUD d’équipement et de munitions, le saut mural et les Secret Walls avec indices et révélation. Les détails fonctionnels et les limites de vérification sont dans [brief.md](brief.md), [runs-journal.md](runs-journal.md) et les spécifications de [docs/](docs/README.md).
 
 Le viewport est **640×360**, sur une grille de terrain 16×16. La démo finale vise dix niveaux, les capacités et armes légendaires, un boss et une conclusion. Le plan des lots et ses critères d’acceptation font autorité dans [runs-workflow.md](runs-workflow.md).
 
@@ -37,7 +37,7 @@ La suite disponible se lance avec Bash, `rg`, `timeout` et `mktemp` :
 GODOT_BIN=/chemin/vers/godot ./tools/test.sh
 ```
 
-La dernière recette consolidée publiée documentée ici reste celle du jalon **0.2.0 (3 octobre 2026)** : 640 contrôles, dont 631 contrôles de jeu, huit contrôles à froid et une vérification d’isolation, plus des rendus N1 et cinématiques. Elle ne décrit pas la branche campagne actuelle. Les preuves de la branche et leurs limites figurent dans [runs-journal.md](runs-journal.md) ; l’audit global demandé est en cours.
+Dernière recette (audit du 9 octobre 2026, Godot 4.7.2) : import, isolation, 54 suites sur 55 et 22 sessions à froid, soit 3 273 contrôles réussis sans échec. **Limite connue :** le pilote automatique de parcours `run020_routes` (N1→N4 aux entrées réelles) échoue encore face à l’élite de fin de N2 et n’exerce donc pas N3/N4 ; les parcours ont été validés en playtest humain. Détails dans [runs-journal.md](runs-journal.md).
 
 ## Sources de vérité
 
