@@ -1,5 +1,7 @@
 # RUN-021 — Vérification humaine après passe technique
 
+**Validation globale reçue le 9 octobre 2026 :** l’humain valide toutes les dernières passes Codex et Claude et déclare RUN-020–021 terminées. Les demandes d’essai ci-dessous décrivent les étapes antérieures ; elles restent un guide de régression, sans constituer une liste détaillée des actions réellement effectuées par l’humain. Recette finale et clôture : voir `runs-journal.md`. L’humain autorise aussi le report non bloquant des anciens pilotes `run020_routes` (bas/haut), qui ne suivent plus les placements actuels ; leurs échecs restent visibles et seront signalés dans la PR.
+
 Le visuel Claude et l’ajout de la musique N4 sont validés humainement le6octobre. Cette fiche concerne les nouveaux correctifs Codex et la sélection SFX restante ; les tests moteur ne valent pas playtest humain. Utiliser les scènes actuelles conservées et la chaîne menu→N1→N4, sans rejouer de générateur ni effacer une sauvegarde humaine pour tester.
 
 | Point | Changement à juger |

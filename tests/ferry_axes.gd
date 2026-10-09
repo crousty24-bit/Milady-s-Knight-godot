@@ -25,13 +25,13 @@ func run() -> void:
 	var ferry2: AnimatableBody2D = platforms.get_node("Ferry2")
 	var start := ferry2.position
 	print("PROBE Ferry travel=", ferry.travel, " Ferry2 travel=", ferry2.travel, " start=", start)
-	await frames(120)
+	await frames(ceili(ferry2.period * Engine.physics_ticks_per_second * 0.5))
 	print("PROBE Ferry2 half-period position=", ferry2.position, " elapsed=", ferry2.elapsed)
 	check(ferry.travel == Vector2(144, 0), "N2 first Ferry keeps horizontal travel")
-	check(ferry2.travel == Vector2(0, 144), "N2 second Ferry has explicit vertical travel matching authored intent")
+	check(ferry2.travel == Vector2(0, 400) and is_equal_approx(ferry2.period, 6.0), "N2 second Ferry has explicit vertical travel matching authored intent")
 	check(ferry.get_script() == load("res://scripts/moving_platform.gd") and ferry2.get_script() == ferry.get_script(), "N2 both ferries use unchanged shared movement script")
 	check(absf(ferry2.position.x-start.x) < 0.1 and absf(ferry2.position.y-start.y-ferry2.travel.y) < 0.2, "N2 second Ferry reaches vertical endpoint after half-period")
-	await frames(120)
+	await frames(ceili(ferry2.period * Engine.physics_ticks_per_second * 0.5))
 	print("PROBE Ferry2 full-period position=", ferry2.position, " elapsed=", ferry2.elapsed)
 	check(ferry2.position.distance_to(start) < 0.2, "N2 second Ferry returns to authored origin after full-period")
 	var before_pause := ferry2.position
@@ -46,7 +46,7 @@ func run() -> void:
 	await frames(3)
 	for scene in ["moving_platform", "moving_platform_vertical"]:
 		var platform: AnimatableBody2D = load("res://scenes/%s.tscn" % scene).instantiate()
-		check((not is_zero_approx(platform.travel.x) and is_zero_approx(platform.travel.y)) if scene == "moving_platform" else (platform.travel == Vector2(0, 144)), "%s scene default selects its named axis" % scene)
+		check((not is_zero_approx(platform.travel.x) and is_zero_approx(platform.travel.y)) if scene == "moving_platform" else (is_zero_approx(platform.travel.x) and not is_zero_approx(platform.travel.y)), "%s scene default selects its named axis" % scene)
 		platform.free()
 		for direction in [Vector2(64, 0), Vector2(0, -64), Vector2(0, 64)]:
 			await check_carrier(scene, direction)

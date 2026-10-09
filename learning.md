@@ -844,3 +844,12 @@ Claude a dessiné trois petits indices : fissures, glow et teinte. Ils se superp
 L'introduction est activée seulement sur ce mur. Le niveau mesure la distance au joueur et lance un rayon physique vers l'entrée : être juste au-dessus derrière un plafond ne suffit pas à ouvrir le message. Après un coup, un signal distinct annonce que le fondu est terminé et le passage accessible ; c'est à ce moment que l'explication peut apparaître.
 
 Les fenêtres utilisent les menus existants. Continue sauvegarde leur acquittement dans `completed_dialogues`, donc une reprise de partie ne recommence pas l'explication. New Game remet ces informations à zéro ; Escape suit la règle habituelle des tutoriels et ferme seulement pour la tentative. Les tests exercent aussi la sauvegarde échouée, sa reprise et les commandes maintenues. La nouvelle discrétion des indices et le confort de ces fenêtres restent à apprécier en jouant.
+
+
+## RUN-020–021 — Audit de raccordement du 9 octobre 2026
+
+Un test peut devenir faux lorsque le niveau est édité à la main : il faut comparer son attente au contrat accepté et à la scène actuelle avant de modifier le jeu. Ici, N4 contient désormais Bloated à la place du Red Slime attendu par l’ancien contrôle. Le test du ferry doit suivre une montée complète calculée avec sa période actuelle, puis mesurer le cadrage ; un nombre de frames hérité d’un ancien trajet ne décrit plus le même mouvement. Les contrôles du mur secret attendent la fin du fondu et l’ouverture physique, et le tutoriel N1 vérifie les touches réellement attribuées.
+
+Le Swarm4 avait en revanche un défaut de placement : sa zone commençait un pixel trop haut et deux crânes touchaient le plafond à l’apparition. Le correctif ne change que trois valeurs de son instance ; le terrain reste identique. Le test vérifie les deux côtés de la limite (335 exclu, 336 inclus), les volumes physiques des crânes et l’absence de récompense dupliquée à la réentrée.
+
+Enfin, Godot distingue un événement consommé par un menu et l’état global d’une action dans Input. Un clic hors du menu pouvait encore être lu comme « interact » si ce bouton était remappé. Le menu marque maintenant la frame comme traitée même hors des choix, tout en conservant les vrais clics sur les lignes. Le nouveau test reproduit le défaut avant correction et couvre interaction, navigation et pause attribuées à la souris. Les résultats de recette et leurs limites sont consignés dans le journal.

@@ -52,7 +52,9 @@ func run() -> void:
 			player.position = Vector2(swarm.position.x, 416)
 			await frames(2)
 			check(not swarm.occupied and swarm.skulls.is_empty(), "deep swarm does not activate on corridor above its shaft")
-		var activation_y: float = 513 if name == "SkullSwarm6" else 400
+		# The two corridor swarms start at y=336; test the exact included edge
+		# after rejecting y=335, while retaining each skull's full-shape query.
+		var activation_y: float = 513 if name == "SkullSwarm6" else 336
 		player.position = Vector2(swarm.position.x, activation_y)
 		await frames(2)
 		check(swarm.occupied and swarm.skulls.size() == 4, "%s spawns four skulls in its lower zone" % name)

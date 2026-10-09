@@ -24,7 +24,7 @@
 		- **niveau 3** - *Black Forest* : forêt dense, de nuit ; niveau basique, difficulté standard ; dominante horizontale avec embranchements et variations de hauteur (retour humain RUN-020 : forte linéarité rejetée)
 			- ennemis : Green, Purple et Red Slime ; Skeleton Warrior et Skeleton Archer
 		- **niveau 4** - *Forbidden Graveyard* : cimetière hantée ; niveau basique, difficulté standard un peu plus élevée ; dominante horizontale avec embranchements et variations de hauteur (retour humain RUN-020 : forte linéarité rejetée)
-			- ennemis : Red Slime, Skeleton Warrior, Skeleton Archer, Blight Sorcerer et Possessed Skulls + mob élite Chud Blob
+			- ennemis : Bloated Slime, Skeleton Warrior, Skeleton Archer, Blight Sorcerer et Possessed Skulls + mob élite Chud Blob (composition de la scène humaine validée le 9 octobre 2026 ; remplace le Red Slime de la planification initiale)
 		- **niveau 5** - *Haunted Caves* : les catacombs du cimetière ; niveau avancée, difficulté plus élevée (gap significatif) ; axé sur l'horizontalité et la verticalité, bien moins linéaire
 			- ennemis : Skeleton Warrior, Skeleton Archer, Blight Sorcerer et Possessed Skulls
 		- **niveau 6** - *Desolands* : contrée montagneuse désertique ;  niveau avancée, difficulté plus élevée ; axé sur l'horizontalité et la verticalité, bien moins linéaire

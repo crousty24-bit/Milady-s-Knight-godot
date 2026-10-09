@@ -124,8 +124,9 @@ func run() -> void:
 	await capture("exploration-closed")
 	button.activate()
 	secret.receive_player_attack(0.5, SlicePlayer.DamageSource.CONTACT_MELEE)
-	await frames(30)
-	check(button.active and secondary.opened and secret.opened and secret.get_node("Shape").disabled, "rendered mechanisms and reveal match gameplay state")
+	await create_timer(secret.fade_duration + 0.1, false).timeout
+	await frames(2) # Flush the collision change deferred after the fade completes.
+	check(button.active and secondary.opened and secret.opened and secret.passage_open and secret.get_node("Shape").disabled, "rendered mechanisms and reveal match gameplay state")
 	await capture("exploration-open")
 	room.queue_free()
 	await frames(4)

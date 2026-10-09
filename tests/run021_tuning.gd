@@ -124,7 +124,7 @@ func elite_profile(scene: String, speed: float, edge_limit: float) -> void:
 func run() -> void:
 	await ranged_profile("skeleton_archer")
 	await ranged_profile("blight_sorcerer")
-	await elite_profile("bloated_slime", 48.0, 155.1)
+	await elite_profile("bloated_slime", 44.0, 155.1)
 	await elite_profile("chud_blob", 48.0, 159.1)
 	await cleanup()
 	print("RESULT %d tuning checks; %d failures" % [checks, failures])

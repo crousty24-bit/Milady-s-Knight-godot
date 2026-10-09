@@ -42,7 +42,7 @@ func run() -> void:
 	for voice in world_voices(): voice.stop()
 	room.queue_free()
 	await frames(4)
-	print("RESULT %d/%d" % [checks - failures, checks])
+	print("RESULT %d audio checks; %d failures" % [checks, failures])
 	quit(1 if failures else 0)
 
 func spikes_are_silent() -> void:

@@ -228,6 +228,43 @@ func capture(label: String) -> void:
 	root.get_texture().get_image().save_png("res://work/controls/" + label + ".png")
 	await process_frame
 
+func modal_mouse_bindings() -> void:
+	await destroy_scene()
+	var menu = load("res://scripts/keyboard_menu.gd").new()
+	root.add_child(menu)
+	var selected: Array[int] = []
+	var cancelled: Array[bool] = []
+	menu.selected.connect(func(index: int): selected.append(index))
+	menu.cancelled.connect(func(): cancelled.append(true))
+	for action in ["interact", "move_down", "pause"]:
+		release_all()
+		controls.set_profile("classic")
+		check(controls.rebind(action, mouse_event(MOUSE_BUTTON_MIDDLE)) == OK, "%s accepts modal mouse regression binding" % action)
+		menu.show_menu("Mouse modal", "Choose", ["First", "Second"])
+		await frames(5)
+		selected.clear()
+		cancelled.clear()
+		mouse(MOUSE_BUTTON_MIDDLE, true)
+		await frames(2)
+		check(selected.is_empty() and cancelled.is_empty() and menu.selection == 0, "outside modal click mapped to %s cannot confirm, navigate or cancel" % action)
+		mouse(MOUSE_BUTTON_MIDDLE, false)
+		await frames(2)
+		check(selected.is_empty() and cancelled.is_empty() and menu.selection == 0, "outside modal mouse release mapped to %s stays consumed" % action)
+		await click_row(menu, 1)
+		check(selected == [1], "left row click still selects exactly once with %s mapped to mouse" % action)
+		menu.close()
+	controls.set_profile("classic")
+	controls.rebind("interact", key_event(KEY_Y))
+	menu.show_menu("Keyboard modal", "Choose", ["First", "Second"])
+	await frames(5)
+	selected.clear()
+	await tap(KEY_ENTER)
+	await tap(KEY_Y)
+	check(selected == [0, 0], "fallback Enter and remapped interaction key each confirm once")
+	menu.close()
+	menu.queue_free()
+	await frames(3)
+
 func menus_and_modals() -> void:
 	controls.set_profile("qwerty")
 	var progress = root.get_node("Progression")
@@ -357,6 +394,7 @@ func run() -> void:
 	await presets_and_remapping()
 	persistence()
 	await gameplay()
+	await modal_mouse_bindings()
 	await menus_and_modals()
 	release_all()
 	print("RESULT ", checks, " controls checks; ", failures, " failures")

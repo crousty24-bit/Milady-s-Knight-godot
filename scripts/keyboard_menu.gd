@@ -441,13 +441,16 @@ func _move_selection(direction: int) -> void:
 func _input(event: InputEvent) -> void:
 	if not opened: return
 	if event is InputEventMouse:
-		# All mouse presses belong to the modal, including clicks outside its rows.
+		var already_handled := _handled_frame == Engine.get_process_frames()
+		# Consuming the event alone does not consume Input's mapped action state.
+		# Block action polling even when a mouse button misses every menu row.
 		if event is InputEventMouseButton:
 			get_viewport().set_input_as_handled()
+			_handled_frame = Engine.get_process_frames()
 		if Engine.get_process_frames() <= opened_frame: return
 		if horizontal_choices and footer.get_global_rect().has_point(event.position):
 			if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-				if _handled_frame != Engine.get_process_frames(): _activate()
+				if not already_handled: _activate()
 			return
 		for i in range(rows.get_child_count()):
 			if rows.get_child(i).get_global_rect().has_point(event.position):
@@ -455,7 +458,7 @@ func _input(event: InputEvent) -> void:
 					selection = i
 					_redraw_rows()
 				if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed and i not in unavailable:
-					if _handled_frame != Engine.get_process_frames(): _activate()
+					if not already_handled: _activate()
 				return
 	elif event is InputEventKey and event.pressed and not event.echo:
 		if Engine.get_process_frames() <= opened_frame: return

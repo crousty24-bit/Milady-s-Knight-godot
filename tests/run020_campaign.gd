@@ -119,7 +119,8 @@ func run() -> void:
 	progress.storage_path = SAVE
 	progress.persistence_enabled = true
 	check(progress.new_game() == OK, "isolated campaign save initializes")
-	var populations = [["slime", "red_slime", "bloated_slime"], ["slime", "red_slime", "skeleton_warrior", "skeleton_archer"], ["red_slime", "skeleton_warrior", "skeleton_archer", "blight_sorcerer", "chud_blob"]]
+	# Validated N4 layout uses Bloated Slime alongside the undead families.
+	var populations = [["slime", "red_slime", "bloated_slime"], ["slime", "red_slime", "skeleton_warrior", "skeleton_archer"], ["bloated_slime", "skeleton_warrior", "skeleton_archer", "blight_sorcerer", "chud_blob"]]
 	for index in LEVELS.size():
 		await spawn(LEVELS[index], false)
 		var cost: int = [18,25,32][index]

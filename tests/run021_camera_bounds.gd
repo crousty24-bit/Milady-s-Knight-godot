@@ -130,14 +130,20 @@ func riding() -> void:
 	await fixture(func(scene):
 		var ferry: AnimatableBody2D = scene.get_node("Platforms/Ferry2")
 		scene.get_node("Player").position = ferry.get_parent().to_global(ferry.position) + Vector2(0, -3), true)
+	# Ride from the authored initial pose, then sample the descent above the floor.
 	await frames(115)
 	var ferry: AnimatableBody2D = level.get_node("Platforms/Ferry2")
 	var low: Vector2 = level.camera.get_screen_center_position()
 	var low_player: Vector2 = level.player.global_position
-	check(level.player.is_on_floor(), "real player rides authored Ferry2 at its lower endpoint")
-	await frames(120)
+	check(level.player.is_on_floor(), "real player rides authored Ferry2 before its lower turning point")
+	# Follow a complete ascent using the platform's actual period, rather than
+	# frame counts from its former shorter trajectory. Bound the wait on failure.
+	for i in ceili(ferry.period * Engine.physics_ticks_per_second):
+		if ferry.elapsed >= ferry.period: break
+		await frames(1)
 	var high: Vector2 = level.camera.get_screen_center_position()
 	print("RIDE camera=", low, " -> ", high, " player=", low_player, " -> ", level.player.global_position)
+	check(ferry.elapsed >= ferry.period and absf(ferry.global_position.y - ferry.get_parent().to_global(ferry.origin).y) < 1.0, "real ferry completes ascent to its upper turning point")
 	check(level.player.is_on_floor() and absf(level.player.global_position.y - ferry.global_position.y + 3.0) < 1.0, "real ascending Ferry2 carries the player without pose injection during movement")
 	check(high.y < low.y - 100.0 and visible_player(), "smoothed camera follows the real ascending ferry and keeps player visible")
 	check(absf(high.y - level.player.global_position.y + 38.0) < 10.0, "ascending ferry retains normal framing with bounded smoothing lag")

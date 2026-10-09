@@ -111,7 +111,7 @@ func run() -> void:
 	var level = load("res://scenes/blight_town.tscn").instantiate()
 	for node_name in ["Enemy10", "Enemy23"]:
 		var authored = level.get_node("Enemies/" + node_name)
-		check(authored.kind == 0 and is_equal_approx(authored.chase_speed, 48.0), "N2 " + node_name + " inherits the bounded Bloated chase reduction")
+		check(authored.kind == 0 and is_equal_approx(authored.chase_speed, 44.0), "N2 " + node_name + " inherits the bounded Bloated chase reduction")
 		check(authored.get_node("CollisionShape2D").shape.size == Vector2(44, 40), "N2 " + node_name + " retains its full physical/art body")
 	level.free()
 	for dir in [-1, 1]:

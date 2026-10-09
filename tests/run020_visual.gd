@@ -46,7 +46,11 @@ func run() -> void:
 	progress.new_game()
 	progress.acquire_equipment("ranged", "Longbow0")
 	for index in 3:
+		progress.announced_level = PATHS[index] # Keep the title card out of biome evidence.
 		level = load(PATHS[index]).instantiate()
+		# The dedicated secret_wall_intro suite owns modal/tutorial coverage.
+		# These captures compare the closed/open wall without pausing its fade.
+		if index == 2: level.get_node("Exploration/SecretWall").intro_enabled = false
 		root.add_child(level)
 		current_scene = level
 		await frames(6)
@@ -69,8 +73,9 @@ func run() -> void:
 			await snapshot("n4-secret-closed", level.get_node("Exploration/SecretWall").position + Vector2(-28, 0))
 			level.get_node("Exploration/SecretWall").receive_player_attack(1, SlicePlayer.DamageSource.CONTACT_MELEE)
 			paused = false
-			await frames(40)
-			await snapshot("n4-secret-open", level.get_node("Items/MajorPotion").position + Vector2(-40, 12))
+			await create_timer(level.get_node("Exploration/SecretWall").fade_duration + 0.1, false).timeout
+			check(level.get_node("Exploration/SecretWall").passage_open, "N4 capture waits for the revealed passage")
+			await snapshot("n4-secret-open", level.get_node("Exploration/SecretWall").position + Vector2(-28, 0))
 			await snapshot("n4-mechanism", level.get_node("Exploration/MechanismButton").position)
 		await close_scene()
 	print("RESULT %d render checks; %d failures" % [checks,failures])
