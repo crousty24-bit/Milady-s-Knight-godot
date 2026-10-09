@@ -12,10 +12,13 @@
 # always stay in front.
 # RUN-021 N3 pass: Black Forest gets its own props (tools/art/run021/n3/props_n3.py) with the same
 # wall/ceiling placement, camp fire and shrine lights, fungus glows, a cold ground fog and
-# fireflies. N4 keeps its RUN-020/021 decor unchanged.
+# fireflies.
+# RUN-021 N4 pass: Forbidden Graveyard gets its own props (tools/art/run021/n4/props_n4.py) with the
+# same wall/ceiling placement, cold spectral grave candles and lamps, a low grave mist with slow
+# plumes and a few drifting will-o'-wisps.
 extends Node2D
 func _enter_tree() -> void:
-	if world_level == 2 or world_level == 3: z_index = -1
+	if world_level >= 2 and world_level <= 4: z_index = -1
 const GLOW = preload("res://assets/sprites/prop_glow.png")
 const N2_GLOW = preload("res://assets/run021/n2/n2_glow.png")
 const N2_MIASMA = preload("res://assets/run021/n2/n2_miasma.png")
@@ -23,7 +26,9 @@ const FLAME = preload("res://assets/sprites/prop_flame.png")
 const N2P = "res://assets/run021/n2/props/"
 const N3P = "res://assets/run021/n3/props/"
 const N3_FOG = preload("res://assets/run021/n3/n3_fog.png")
-enum Light { NONE, LANTERN, CANDLE, SPORE, FLAME, WINDOW, BILE, FUNGUS, SHRINE }
+const N4_MIST = preload("res://assets/run021/n4/n4_mist.png")
+const N4P = "res://assets/run021/n4/props/"
+enum Light { NONE, LANTERN, CANDLE, SPORE, FLAME, WINDOW, BILE, FUNGUS, SHRINE, SPECTRAL, SPECTRAL_LAMP }
 # Per biome: [texture, weight, light, optional [[offset from the prop's top-left, light], ...]].
 # Weights are relative; big props are rare.
 # RUN-021: more dim light sources (lanterns, spore caps, grave candles) so N2-N4 keep a few
@@ -84,16 +89,31 @@ const SETS = [
 		[preload(N3P + "moss_boulder.png"), 3, Light.NONE],
 	],
 	[
-		[preload("res://assets/run020/forbidden_graveyard_mausoleum.png"), 1, Light.NONE],
-		[preload("res://assets/run020/forbidden_graveyard_willow.png"), 2, Light.NONE],
-		[preload("res://assets/run020/forbidden_graveyard_cross.png"), 3, Light.NONE],
-		[preload("res://assets/run020/forbidden_graveyard_fence.png"), 3, Light.NONE],
-		[preload("res://assets/run020/forbidden_graveyard_candle.png"), 5, Light.CANDLE],
-		[preload("res://assets/sprites/prop_grave_a.png"), 4, Light.NONE],
-		[preload("res://assets/sprites/prop_grave_b.png"), 4, Light.NONE],
-		[preload("res://assets/sprites/prop_grave_c.png"), 4, Light.NONE],
-		[preload("res://assets/sprites/prop_bones.png"), 2, Light.NONE],
-		[preload("res://assets/sprites/prop_tree_dead_a.png"), 2, Light.NONE],
+		# RUN-021 N4: the RUN-020 cross and grave candle stay; mausoleum, willow, fence, N1 graves,
+		# bones and dead tree give way to the N4 set (light points from props_n4.json).
+		[preload("res://assets/run020/forbidden_graveyard_cross.png"), 2, Light.NONE],
+		[preload("res://assets/run020/forbidden_graveyard_candle.png"), 3, Light.CANDLE],
+		[preload(N4P + "headstone_round.png"), 5, Light.NONE],
+		[preload(N4P + "headstone_gothic.png"), 4, Light.NONE],
+		[preload(N4P + "headstone_cracked.png"), 4, Light.NONE],
+		[preload(N4P + "headstone_sunken.png"), 4, Light.NONE],
+		[preload(N4P + "raven_headstone.png"), 1, Light.NONE],
+		[preload(N4P + "cross_celtic.png"), 3, Light.NONE],
+		[preload(N4P + "mausoleum_small.png"), 2, Light.NONE],
+		[preload(N4P + "mausoleum_big.png"), 1, Light.NONE],
+		[preload(N4P + "obelisk.png"), 2, Light.NONE],
+		[preload(N4P + "column_broken.png"), 3, Light.NONE],
+		[preload(N4P + "angel_statue.png"), 1, Light.NONE],
+		[preload(N4P + "tomb_chest.png"), 3, Light.NONE],
+		[preload(N4P + "grave_mound.png"), 3, Light.NONE],
+		[preload(N4P + "yew.png"), 3, Light.NONE],
+		[preload(N4P + "willow_dead.png"), 2, Light.NONE],
+		[preload(N4P + "railing.png"), 3, Light.NONE],
+		[preload(N4P + "candles_cold.png"), 2, Light.NONE, [[Vector2(5, 6), Light.SPECTRAL], [Vector2(10, 4), Light.SPECTRAL]]],
+		[preload(N4P + "candles_warm.png"), 1, Light.NONE, [[Vector2(5, 5), Light.SHRINE], [Vector2(11, 7), Light.SHRINE]]],
+		[preload(N4P + "lantern_post.png"), 1, Light.NONE, [[Vector2(12, 15), Light.SPECTRAL_LAMP]]],
+		[preload(N4P + "wreath_stake.png"), 2, Light.NONE],
+		[preload(N4P + "skull_pile.png"), 1, Light.NONE],
 	],
 ]
 # N1 props are slightly tinted toward the biome; new RUN-020 props are drawn untinted.
@@ -126,6 +146,19 @@ const N3_CEILING = [
 	[preload(N3P + "hang_lantern_hunter.png"), 1, Vector2(7, 23)],
 ]
 const N3_COBWEB = COBWEB
+# N4 wall and ceiling props (same formats); N2's cobweb is reused in the crypts.
+const N4_WALL = [
+	[preload(N4P + "wall_niche.png"), 3, 3],
+	[preload(N4P + "wall_vine_dead.png"), 4, 2],
+	[preload(N4P + "wall_chain_ring.png"), 3, 4],
+	[preload(N4P + "wall_plaque_skull.png"), 2, 10],
+]
+const N4_CEILING = [
+	[preload(N4P + "hang_chains.png"), 4, null],
+	[preload(N4P + "hang_censer.png"), 1, Vector2(10, 28)],
+	[preload(N4P + "hang_roots_n4.png"), 3, null],
+	[preload(N4P + "hang_banner.png"), 2, null],
+]
 # N3: the ancient trunk is cut at its top edge; it only stands where terrain closes above it.
 const N3_CANOPY_PROP = "ancient_trunk.png"
 # Props that attract flies.
@@ -143,7 +176,7 @@ const TINTS = [Color(0.92, 0.9, 0.84), Color(0.78, 0.86, 0.94), Color(0.84, 0.8,
 		queue_redraw()
 # Mean gap between props, in px; lower is denser. The forest is denser than the town.
 @export_range(24.0, 240.0) var spacing := 72.0
-const SPACING_SCALE = [0.75, 0.45, 0.8]
+const SPACING_SCALE = [0.75, 0.45, 0.55]
 const MIN_RUN = 4
 # Thin floating ledges (fewer solid rows below than this) only host props up to SMALL_PROP px
 # high, so houses, trees or mausoleums never stand on a rampart slab or a branch.
@@ -160,10 +193,11 @@ var _hung = [] # N2: [texture, top-left, mirrored, light point or null, phase]
 var _miasma = [] # N2: [x0, x1, surface y]
 var _flies = [] # N2: [centre, phase]
 var _fireflies = [] # N3: [centre, phase, radius]
+var _wisps = [] # N4: [centre, phase, drift]
 var _laid_out := false
 # Bumped when the layout entry format changes. An editor hot reload keeps the old member values
 # (_placed built by the previous script, _laid_out true); a version mismatch forces a fresh layout.
-const LAYOUT_VERSION = 3
+const LAYOUT_VERSION = 4
 var _layout_version = 0
 var _time := 0.0
 var _since_draw := 0.0
@@ -178,8 +212,8 @@ func _hash(a: int, b: int, salt: int) -> int:
 func _obstacles() -> Array:
 	var points := []
 	var margins: Dictionary = avoid_margins.duplicate()
-	# N2/N3: keep decor clear of the breakable ammo crates/barrels so they stay identifiable.
-	if world_level == 2 or world_level == 3: margins["AmmoSupplies"] = 28.0
+	# N2-N4: keep decor clear of the breakable ammo crates/barrels so they stay identifiable.
+	if world_level >= 2 and world_level <= 4: margins["AmmoSupplies"] = 28.0
 	for key in margins:
 		var node := get_parent().get_node_or_null(NodePath(String(key)))
 		if node == null: continue
@@ -195,6 +229,7 @@ func _layout() -> void:
 	_miasma = []
 	_flies = []
 	_fireflies = []
+	_wisps = []
 	_laid_out = true
 	_layout_version = LAYOUT_VERSION
 	var terrain: TileMapLayer = get_parent().get_node_or_null("Terrain")
@@ -243,21 +278,24 @@ func _layout() -> void:
 			var fits := _fits(tex, cursor, surface, used, y)
 			if fits and tex.resource_path.get_file() == N3_CANOPY_PROP: fits = _canopy_above(tex, cursor, used, y)
 			if fits and _clear(foot, w, tex.get_height(), obstacles):
-				var tinted: bool = not tex.resource_path.begins_with("res://assets/run020/") and not tex.resource_path.begins_with(N3P)
+				var tinted: bool = not tex.resource_path.begins_with("res://assets/run020/") and not tex.resource_path.begins_with(N3P) and not tex.resource_path.begins_with(N4P)
 				_placed.append([tex, foot, tinted, entry[2], float(h % 100) * 0.1, entry[3] if entry.size() > 3 else []])
 				if b == 0 and tex.resource_path.get_file() in N2_ROT:
 					_flies.append([foot + Vector2(0, -tex.get_height() - 6), float(h % 50) * 0.37])
 				cursor += w + spacing * SPACING_SCALE[b] * (0.5 + float(h % 97) / 97.0)
 			else:
 				cursor += 16.0
-		if b <= 1:
-			_collect_miasma(xs, y)
+		_collect_miasma(xs, y)
 		if b == 1:
 			_collect_fireflies(xs, y, obstacles)
+		if b == 2:
+			_collect_wisps(xs, y, obstacles)
 	if b == 0:
 		_layout_n2_hung(used, obstacles, N2_WALL, N2_CEILING, COBWEB)
 	elif b == 1:
 		_layout_n2_hung(used, obstacles, N3_WALL, N3_CEILING, N3_COBWEB)
+	else:
+		_layout_n2_hung(used, obstacles, N4_WALL, N4_CEILING, COBWEB)
 # N3: a few firefly swarms over long runs, one every ~10 cells, kept clear of gameplay nodes.
 func _collect_fireflies(xs: Array, y: int, obstacles: Array) -> void:
 	var start := 0
@@ -272,7 +310,22 @@ func _collect_fireflies(xs: Array, y: int, obstacles: Array) -> void:
 						_fireflies.append([centre, float(h % 100) * 0.13, 10.0 + float(h % 9)])
 					x += 8 + h % 6
 			start = i
-# N2: miasma strips over runs of at least 8 surface cells (N3: ground fog).
+# N4: a few will-o'-wisps over long runs, one every ~16 cells, kept well clear of gameplay nodes
+# so a dim drifting light is never taken for a projectile or a skull.
+func _collect_wisps(xs: Array, y: int, obstacles: Array) -> void:
+	var start := 0
+	for i in range(1, xs.size() + 1):
+		if i == xs.size() or xs[i] != xs[i - 1] + 1:
+			if i - start >= 10:
+				var x := int(xs[start]) + 4
+				while x < int(xs[i - 1]) - 3:
+					var h := _hash(x, y, 31)
+					var centre := Vector2(x * 16 + 8, y * 16 - 18 - h % 22)
+					if h % 2 == 0 and _clear(centre + Vector2(0, 30), 64.0, 72.0, obstacles):
+						_wisps.append([centre, float(h % 100) * 0.17, 6.0 + float(h % 7)])
+					x += 14 + h % 8
+			start = i
+# N2: miasma strips over runs of at least 8 surface cells (N3: ground fog, N4: grave mist).
 func _collect_miasma(xs: Array, y: int) -> void:
 	var start := 0
 	for i in range(1, xs.size() + 1):
@@ -405,6 +458,18 @@ func _draw_prop_lights(tex: Texture2D, foot: Vector2, lights: Array, phase: floa
 			Light.FUNGUS:
 				# Cold fungus light: slow pulse, kept greyer than healing green.
 				_n2_glow(point, Color(0.62, 0.82, 0.72), 0.16 + 0.06 * sin(_time * 0.9 + phase))
+			Light.SPECTRAL:
+				# N4 grave candle: a pale cold 1 px flame over the painted wick, faint cold glow.
+				_n2_glow(point, Color(0.56, 0.72, 0.8), 0.14 + 0.06 * flicker)
+				draw_rect(Rect2((point + Vector2(0, -2)).round(), Vector2(1, 2)), Color(0.72, 0.85, 0.9, 0.7 * flicker))
+			Light.SPECTRAL_LAMP:
+				_spectral_lamp(point, phase)
+# N4 lantern or censer: a cold flame in the glass, a slow-breathing cold glow.
+func _spectral_lamp(point: Vector2, phase: float) -> void:
+	var flicker := 0.8 + 0.2 * sin(_time * 5.0 + phase) * sin(_time * 2.3 + phase * 2.0)
+	_n2_glow(point, Color(0.56, 0.72, 0.8), 0.24 + 0.06 * sin(_time * 1.1 + phase))
+	draw_rect(Rect2((point + Vector2(-1, -2)).round(), Vector2(2, 3)), Color(0.66, 0.8, 0.86, 0.6 * flicker))
+	draw_rect(Rect2((point + Vector2(0, -1)).round(), Vector2(1, 1)), Color(0.82, 0.9, 0.92, 0.8 * flicker))
 func _draw_n2_hung() -> void:
 	for item in _hung:
 		var tex: Texture2D = item[0]
@@ -418,6 +483,8 @@ func _draw_n2_hung() -> void:
 			var point: Vector2 = item[3]
 			if tex.resource_path.ends_with("hang_lamp_bile.png"):
 				_n2_glow(point, Color(0.72, 0.74, 0.4), 0.3 + 0.07 * sin(_time * 1.3 + item[4]))
+			elif tex.resource_path.ends_with("hang_censer.png"):
+				_spectral_lamp(point, item[4])
 			else:
 				_light(point, Light.LANTERN, item[4])
 func _draw_n2_atmosphere() -> void:
@@ -454,6 +521,26 @@ func _draw_n3_atmosphere() -> void:
 			draw_rect(Rect2(p.round(), Vector2.ONE), Color(0.74, 0.88, 0.8, 0.9 * a))
 			for d in [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]:
 				draw_rect(Rect2((p + d).round(), Vector2.ONE), Color(0.55, 0.75, 0.66, 0.25 * a))
+# N4: grave mist hugging the ground (two slow layers, opposite drift) and will-o'-wisps: a
+# faint cold glow with a 1 px core that drifts slowly and fades in and out.
+func _draw_n4_atmosphere() -> void:
+	for strip in _miasma:
+		for layer in 2:
+			var speed := 1.6 if layer == 0 else -1.1
+			var alpha := 0.11 if layer == 0 else 0.07
+			_draw_strip(N4_MIST, strip[0], strip[1], strip[2] - 30.0 + layer * 3.0, _time * speed + layer * 89.0, Color(0.66, 0.68, 0.84, alpha))
+	for wisp in _wisps:
+		var centre: Vector2 = wisp[0]
+		var phase: float = wisp[1]
+		var drift: float = wisp[2]
+		var on := sin(_time * 0.42 + phase)
+		if on <= 0.1: continue
+		var a := (on - 0.1) / 0.9
+		var p := centre + Vector2(sin(_time * 0.23 + phase) * drift * 2.0, sin(_time * 0.51 + phase * 2.0) * drift * 0.6)
+		_n2_glow(p, Color(0.56, 0.72, 0.8), 0.13 * a)
+		draw_rect(Rect2(p.round(), Vector2.ONE), Color(0.74, 0.86, 0.9, 0.75 * a))
+		for d in [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]:
+			draw_rect(Rect2((p + d).round(), Vector2.ONE), Color(0.55, 0.7, 0.78, 0.22 * a))
 # Whole pixels only: every step advances by at least 1 px (a float version stalled when
 # x + scroll landed a hair below a multiple of 256, looping forever and exhausting memory).
 func _draw_strip(texture: Texture2D, x0: float, x1: float, surface_y: float, scroll: float, tint: Color) -> void:
@@ -483,7 +570,7 @@ func _draw() -> void:
 			Light.LANTERN: _light(foot + Vector2(5, -38), Light.LANTERN, item[4])
 			Light.CANDLE: _light(foot + Vector2(0, -9), Light.CANDLE, item[4])
 			Light.SPORE: _light(foot + Vector2(0, -5), Light.SPORE, item[4])
-		if b <= 1 and item.size() > 5 and not item[5].is_empty():
+		if item.size() > 5 and not item[5].is_empty():
 			_draw_prop_lights(tex, foot, item[5], item[4])
 	if b == 0:
 		_draw_n2_hung()
@@ -491,3 +578,6 @@ func _draw() -> void:
 	elif b == 1:
 		_draw_n2_hung()
 		_draw_n3_atmosphere()
+	else:
+		_draw_n2_hung()
+		_draw_n4_atmosphere()

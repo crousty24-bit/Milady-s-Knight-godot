@@ -1,7 +1,7 @@
 @tool
 # Backdrop of N2-N4 (RUN-020), same structure as backdrop.gd: a sky fixed to the screen,
-# drifting N1 clouds and haze tinted per biome, three parallax scenery bands (far, mid, near;
-# the near band is RUN-021) and a few slow motes. Purely visual and low-contrast; drawn behind
+# drifting N1 clouds and haze tinted per biome, parallax scenery bands (five per biome since the
+# RUN-021 passes, below) and a few slow motes. Purely visual and low-contrast; drawn behind
 # Decor, Terrain and gameplay.
 extends Node2D
 func _enter_tree() -> void:
@@ -12,12 +12,8 @@ func _enter_tree() -> void:
 
 const CLOUDS = preload("res://assets/sprites/bg_clouds.png")
 const MIST = preload("res://assets/sprites/bg_mist.png")
-const SKIES = [preload("res://assets/run020/bg_blight_town_sky.png"), preload("res://assets/run020/bg_black_forrest_sky.png"), preload("res://assets/run020/bg_forbidden_graveyard_sky.png")]
-const FARS = [preload("res://assets/run020/bg_blight_town_far.png"), preload("res://assets/run020/bg_black_forrest_far.png"), preload("res://assets/run020/bg_forbidden_graveyard_far.png")]
-const MIDS = [preload("res://assets/run020/bg_blight_town_mid.png"), preload("res://assets/run020/bg_black_forrest_mid.png"), preload("res://assets/run020/bg_forbidden_graveyard_mid.png")]
-const NEARS = [preload("res://assets/run021/bg_blight_town_near.png"), preload("res://assets/run021/bg_black_forrest_near.png"), preload("res://assets/run021/bg_forbidden_graveyard_near.png")]
-# Per biome: cloud tint, haze tint, colour below the near band (its last row), mote colour, mote count,
-# mote rise speed, ground colour of the mid band (fills behind the near band).
+# Per biome: cloud tint, haze tint, colour below the near band (unused since the N2-N4 passes), mote
+# colour, mote count, mote rise speed, ground colour of the mid band (unused since the passes).
 const LOOKS = [
 	[Color(0.95, 0.92, 0.82, 0.8), Color(0.82, 0.8, 0.62, 1.0), Color("111317"), Color(0.55, 0.52, 0.3), 22, 1.0, Color("1b1e22")],
 	[Color(0.75, 0.85, 1.0, 0.55), Color(0.7, 0.85, 0.9, 1.0), Color("0a1012"), Color(0.5, 0.68, 0.6), 18, 0.35, Color("10181a")],
@@ -26,7 +22,11 @@ const LOOKS = [
 # RUN-021 N2 pass: Blight Town gets its own five-band backdrop (plague cathedral town, rampart,
 # timbered street, close facades) with separate lit-window overlays that flicker slowly.
 # RUN-021 N3 pass: Black Forest gets the same structure (far crags and kilns, fir ridge, trunk
-# forest, moonbeams, giant near trunks). N4 keeps the RUN-020/021 bands above.
+# forest, moonbeams, giant near trunks).
+# RUN-021 N4 pass: Forbidden Graveyard gets the same structure too (necropolis hill and basilica,
+# crypt rows and ossuary chapel, graveyard slope, faint spectral veils, close tombstones), with
+# grave candles, crypt doorways and wisps on the light overlays. The earlier RUN-020/021 bands
+# (assets/run020/bg_*.png, assets/run021/bg_*_near.png) are no longer drawn; files are kept.
 const N2_SKY = preload("res://assets/run021/n2/bg_n2_sky.png")
 const N2_MID_GROUND = Color("191c13")
 const N2_FINAL = Color("121410")
@@ -50,6 +50,19 @@ const N3_BANDS = [
 	[preload("res://assets/run021/n3/bg_n3_mid.png"), preload("res://assets/run021/n3/bg_n3_mid_lights.png"), 0.3, 0.15, 104.0, N3_MID_GROUND],
 	[preload("res://assets/run021/n3/bg_n3_beams.png"), BEAMS, 0.3, 0.15, 40.0, null],
 	[preload("res://assets/run021/n3/bg_n3_near.png"), preload("res://assets/run021/n3/bg_n3_near_lights.png"), 0.42, 0.2, 170.0, N3_FINAL],
+]
+const N4_SKY = preload("res://assets/run021/n4/bg_n4_sky.png")
+const N4_MID_GROUND = Color("100f18")
+const N4_FINAL = Color("0a090f")
+# Spectral veils breathe as a whole like the N3 moonbeams (String marker instead of lights).
+const VEILS = "veils"
+const N4_BANDS = [
+	[preload("res://assets/run021/n4/bg_n4_far.png"), preload("res://assets/run021/n4/bg_n4_far_lights.png"), 0.08, 0.05, 58.0, null],
+	[preload("res://assets/run021/n4/bg_n4_ridge.png"), preload("res://assets/run021/n4/bg_n4_ridge_lights.png"), 0.16, 0.09, 120.0, null],
+	[null, null, 0.2, 0.1, 140.0, null], # drifting haze
+	[preload("res://assets/run021/n4/bg_n4_mid.png"), preload("res://assets/run021/n4/bg_n4_mid_lights.png"), 0.3, 0.15, 104.0, N4_MID_GROUND],
+	[preload("res://assets/run021/n4/bg_n4_wisps.png"), VEILS, 0.3, 0.15, 40.0, null],
+	[preload("res://assets/run021/n4/bg_n4_near.png"), preload("res://assets/run021/n4/bg_n4_near_lights.png"), 0.42, 0.2, 170.0, N4_FINAL],
 ]
 @export_range(2, 4) var world_level: int = 2:
 	set(value):
@@ -78,30 +91,8 @@ func _draw() -> void:
 	if b == 1:
 		_draw_layers(N3_SKY, N3_BANDS, top_left, size, dy, look)
 		return
-	draw_texture(SKIES[b], top_left)
-	_draw_band(CLOUDS, top_left, size, top_left.x * 0.02 + _elapsed * CLOUD_DRIFT, 14.0 - dy * 0.02, look[0])
-	_draw_band(FARS[b], top_left, size, top_left.x * 0.08, 58.0 - dy * 0.05)
-	_draw_band(MIST, top_left, size, top_left.x * 0.2 + _elapsed * MIST_DRIFT, 140.0 - dy * 0.1, look[1])
-	var mid: Texture2D = MIDS[b]
-	var mid_y := 104.0 - dy * 0.15
-	_draw_band(mid, top_left, size, top_left.x * 0.3, mid_y)
-	# The mid band's ground continues down behind the near band, which fades into the final fill.
-	var bottom := roundf(mid_y) + mid.get_height()
-	draw_rect(Rect2(top_left + Vector2(0, bottom), Vector2(size.x, maxf(0.0, size.y - bottom))), look[6])
-	var near: Texture2D = NEARS[b]
-	var near_y := 170.0 - dy * 0.2
-	_draw_band(near, top_left, size, top_left.x * 0.42, near_y)
-	var below := roundf(near_y) + near.get_height()
-	draw_rect(Rect2(top_left + Vector2(0, below), Vector2(size.x, maxf(0.0, size.y - below))), look[2])
-	# Slow motes (screen space, very dim): ash and spores, pale forest specks, spectral wisps.
-	var mote: Color = look[3]
-	for i in int(look[4]):
-		var speed := (5.0 + float(i % 5) * 1.5) * float(look[5])
-		var x := fposmod(float(i) * 97.0 + _elapsed * (3.0 + float(i % 3)) + sin(_elapsed * 0.6 + float(i)) * 8.0, size.x)
-		var y := fposmod(float(i) * 53.0 - _elapsed * speed, size.y)
-		var a := 0.18 + 0.16 * sin(_elapsed * 1.3 + float(i) * 1.7)
-		draw_rect(Rect2((top_left + Vector2(x, y)).round(), Vector2.ONE), Color(mote, a))
-# N2/N3 layered backdrop: sky, N1 clouds, then the bands in order (see N2_BANDS).
+	_draw_layers(N4_SKY, N4_BANDS, top_left, size, dy, look)
+# N2-N4 layered backdrop: sky, N1 clouds, then the bands in order (see N2_BANDS).
 func _draw_layers(sky: Texture2D, bands: Array, top_left: Vector2, size: Vector2, dy: float, look: Array) -> void:
 	draw_texture(sky, top_left)
 	_draw_band(CLOUDS, top_left, size, top_left.x * 0.02 + _elapsed * CLOUD_DRIFT, 14.0 - dy * 0.02, look[0])
@@ -114,7 +105,7 @@ func _draw_layers(sky: Texture2D, bands: Array, top_left: Vector2, size: Vector2
 			continue
 		var texture: Texture2D = band[0]
 		if band[1] is String:
-			# Moonbeams: a very slow swell, never fully gone.
+			# Moonbeams (N3) and spectral veils (N4): a very slow swell, never fully gone.
 			_draw_band(texture, top_left, size, scroll, y, Color(1, 1, 1, 0.7 + 0.2 * sin(_elapsed * 0.35) + 0.1 * sin(_elapsed * 0.9 + 1.0)))
 			continue
 		_draw_band(texture, top_left, size, scroll, y)

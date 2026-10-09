@@ -1,5 +1,23 @@
 # Milady's Knight — Runs Journal
 
+## 9 octobre 2026 — RUN-021 : passe visuelle N4 Forbidden Graveyard (Claude)
+
+Demande humaine : « Réalise le même type de passe visuelle que tu as fait pour N2, N3, cette fois-ci pour N4. » Baseline : arbre propre sur `a77af5f`. Main agent Claude Code Opus 5.5 ; deux sous-agents `visual_architect` Sonnet 5.5 High, réellement exécutés sur des fichiers disjoints (fonds, accessoires). Le main agent a fait le terrain, le souterrain, l'atmosphère, l'intégration des scripts, l'adaptation du masque du mur secret et les vérifications. Aucune scène modifiée.
+
+**Constat avant :** fonds N4 en trois bandes plates et grande lune cyan, maçonnerie identique à N1, décor clairsemé, et les cryptes sous la dalle (y≈320–560) comme le couloir de sortie bas montraient le cimetière et le ciel derrière elles. Captures : `work/run021/n4pass/before/`.
+
+**Travail parallèle pendant la passe :** une autre session (indices et introduction du mur secret) a modifié la scène N4, `level.gd`, `secret_wall.gd`, des tests et des documents, puis a commité `4a51873`. Aucun de ses fichiers n'a été touché ; elle a pris cette passe N4 comme base protégée. Pendant son travail, la scène N4 a brièvement échoué au chargement (ressource pas encore écrite), et ses fenêtres apparaissaient dans les captures du checkout partagé : la recette finale a donc été faite dans un worktree isolé `work/wt-n4-head` (`HEAD` `4a51873` + les seuls fichiers de la passe).
+
+**Preuves (Godot 4.7.2 Windows, `work/run021/check.sh`, verrou et profil isolé) :**
+- Import éditeur sans erreur (`n4pass-import2`, `v2-import`) ; 17 vues N4 natives avant/après (`work/run021/n4pass/{before,final}`, planches `ba_*.png`). Trois vues « avant » prises par erreur après les premières modifications ont été jetées et refaites depuis `HEAD`.
+- N2/N3 : 29 vues `--fixed-fps 60`, scripts de `HEAD` contre ceux de la passe. 14 identiques au pixel, les autres de 7 à 147 pixels sur des éléments animés ; bruit `HEAD`/`HEAD` N3 jusqu'à 194. Une première comparaison sans `--fixed-fps` (jusqu'à 8864 pixels, le long des nappes animées) n'est pas retenue comme preuve.
+- Suites sur `4a51873` + passe : `run021_backdrop_layers` 9/9, `run020_visual` 57/57, `secret_wall_reveal` 39/39, phases à froid 5/5, 4/4, 10/10 dans un même profil (un premier essai avec un profil par phase échouait par construction et n'est pas retenu), `secret_wall_intro` 38/38, `run019_exploration` 27/27, `run019_integration` 42/42, pilote de rendu des indices 21/21.
+- Échecs préexistants, reproduits à l'identique avec les scripts de `HEAD` : `run020_campaign` 178 avec `native family red_slime` ; `run021_camera_bounds` 20 avec deux échecs du ferry ascendant ; `run019_visual` 47 avec `rendered mechanisms and reveal match gameplay state` (30 images d'attente pour un fondu de 0,6 s).
+- Mur secret : pilote natif `work/secret-wall/render.gd` 16/16 sur `a77af5f` + passe, fermé/ouvert inspectés au zoom sans couture ; sur `4a51873`, ce pilote antérieur à la fenêtre d'introduction dépasse son délai (non lié à la passe).
+- Rechargement à chaud N4 7/7 depuis les scripts de `HEAD`, calque souterrain recréé une seule fois. Durée : 90 s en fenêtre, mémoire statique stable à 54,6 Mo, pire image 9,6 ms. Performance : `perf_check` N4 5,56 ms moyen, 224 appels de dessin.
+
+Les logs du checkout partagé sont sous `work/test-results/` (index `work/run021/n4pass-*-results.txt`) ; ceux du worktree isolé, supprimé après le commit, sont copiés dans `work/run021/n4pass/wt-logs/<label>/`. Les détails et les limites sont dans le [manifeste](docs/RUN-021_N4_VISUAL_MANIFEST.md). Aucun parcours clavier naturel n'a été joué. La validation artistique et le playtest humain restent requis ; RUN-021 reste ACTIVE.
+
 ## 8 octobre 2026 — RUN-021 : passe visuelle N3 Black Forest (Claude)
 
 Demande humaine : « Je valide la passe visuelle sur le N2. Le bug de mémoire semble corrigé après vérifications et playtest : l'éditeur ne crash plus. Réalise maintenant le même type de passe visuelle pour N3. » La validation humaine de la passe N2 et du correctif mémoire est consignée à ce niveau de précision. Baseline : arbre propre sur `f1bbccd`. Main agent Claude Code Opus 5.5 ; deux sous-agents `visual_architect` Sonnet 5.5 High, réellement exécutés sur des fichiers disjoints (fonds, accessoires). Le main agent a fait le terrain, le souterrain, l'atmosphère, l'intégration des scripts, une retouche de la lune et les vérifications. Aucune scène modifiée.

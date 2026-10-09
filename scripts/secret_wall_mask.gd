@@ -2,10 +2,12 @@
 # hidden cavity were solid rock, so the cache, its rewards and their effects read as plain wall.
 # Presentation only: no collision, save, gameplay or sound. The parent wall owns the reveal and
 # fades this node through its own modulate:a.
-# Rendering mirrors the N4 path of campaign_terrain_skin.gd (terrain_stone.png theme 0, same
-# exposure columns, world-grid phases, DEPTH_SHADE, tufts and vines) on the real cells plus the
-# rectangle filled as fake solid cells, so the cover meets the surrounding skin without a seam
-# and hides the cavity lips (ceiling underside, floor top, inner faces) that would betray it.
+# Rendering mirrors the level's TerrainSkin on the real cells plus the rectangle filled as fake
+# solid cells, so the cover meets the surrounding skin without a seam and hides the cavity lips
+# (ceiling underside, floor top, inner faces) that would betray it. RUN-021 N4 pass: with an N4
+# skin the tiles come from its cell_layers() (cemetery masonry, foundation, grave earth, pillars);
+# elsewhere (fixtures) the original terrain_stone.png theme 0 path below is kept. Tufts and vines
+# are the same campaign strips in both cases.
 class_name SecretWallMask
 extends Node2D
 const STONE = preload("res://assets/sprites/terrain_stone.png")
@@ -42,23 +44,23 @@ func _draw() -> void:
 	for y in range(first.y, last.y + 1):
 		for x in range(first.x, last.x + 1):
 			used[Vector2i(x, y)] = true
-	var depths := _depths(used)
+	var skin := _n4_skin()
+	var depths: Dictionary = skin.layout_depths(used) if skin != null else _depths(used)
+	var pillars: Dictionary = skin.layout_pillars(used) if skin != null else {}
 	draw_set_transform_matrix(to_self)
-	for y in range(first.y, last.y + 1):
-		for x in range(first.x, last.x + 1):
-			var cell := Vector2i(x, y)
-			var shade: float = DEPTH_SHADE[depths[cell]]
-			var tint := Color(shade, shade, shade)
-			var row := THEME * 18 + posmod(cell.y, 3) * 6 + posmod(cell.x, 6)
-			var dest := Rect2(Vector2(cell * CELL), Vector2(CELL, CELL))
-			var mask := _exposure(used, cell)
-			# The skin still draws the real tile underneath: where its exposure differs, lay that
-			# tile first at the cover's shade so its edge pixels cannot show through ours.
-			if real.has(cell):
-				var real_mask := _exposure(real, cell)
-				if real_mask != mask:
-					_clipped(STONE, dest, Rect2(real_mask * CELL, row * CELL, CELL, CELL), area, tint)
-			_clipped(STONE, dest, Rect2(mask * CELL, row * CELL, CELL, CELL), area, tint)
+	if skin != null:
+		for y in range(first.y, last.y + 1):
+			for x in range(first.x, last.x + 1):
+				var cell := Vector2i(x, y)
+				var dest := Rect2(Vector2(cell * CELL), Vector2(CELL, CELL))
+				# Same rule as the stone path: where the real exposure differs, lay the real tile first.
+				if real.has(cell) and _exposure(real, cell) != _exposure(used, cell):
+					for layer in skin.cell_layers(cell, real, depths, pillars):
+						_clipped(layer[0], dest, layer[1], area, layer[2])
+				for layer in skin.cell_layers(cell, used, depths, pillars):
+					_clipped(layer[0], dest, layer[1], area, layer[2])
+	else:
+		_draw_stone(first, last, real, used, depths, area)
 	# Decorations of every cell that reaches into the area, decided on the filled layout and
 	# clipped to it: the parts inside match the skin, cavity tufts and strands disappear.
 	for y in range(first.y - 3, last.y + 2):
@@ -74,6 +76,28 @@ func _draw() -> void:
 			if _hash(cell, 2) % 100 >= 55: continue
 			var p := Vector2(cell * CELL)
 			_clipped(VINES, Rect2(p + Vector2(0, 15), Vector2(16, 24)), Rect2((_hash(cell, 3) % 8) * 16, BIOME * 24, 16, 24), area, Color(0.8, 0.8, 0.8))
+# Original N4 cover (terrain_stone.png theme 0), kept for skins without cell_layers (fixtures).
+func _draw_stone(first: Vector2i, last: Vector2i, real: Dictionary, used: Dictionary, depths: Dictionary, area: Rect2) -> void:
+	for y in range(first.y, last.y + 1):
+		for x in range(first.x, last.x + 1):
+			var cell := Vector2i(x, y)
+			var shade: float = DEPTH_SHADE[depths[cell]]
+			var tint := Color(shade, shade, shade)
+			var row := THEME * 18 + posmod(cell.y, 3) * 6 + posmod(cell.x, 6)
+			var dest := Rect2(Vector2(cell * CELL), Vector2(CELL, CELL))
+			var mask := _exposure(used, cell)
+			# The skin still draws the real tile underneath: where its exposure differs, lay that
+			# tile first at the cover's shade so its edge pixels cannot show through ours.
+			if real.has(cell):
+				var real_mask := _exposure(real, cell)
+				if real_mask != mask:
+					_clipped(STONE, dest, Rect2(real_mask * CELL, row * CELL, CELL, CELL), area, tint)
+			_clipped(STONE, dest, Rect2(mask * CELL, row * CELL, CELL, CELL), area, tint)
+# The level's TerrainSkin when it skins N4 (cell_layers), else null.
+func _n4_skin() -> Node:
+	var skin := terrain.get_parent().get_node_or_null("TerrainSkin")
+	if skin != null and skin.has_method("cell_layers") and int(skin.get("world_level")) == 4: return skin
+	return null
 # Draws the part of `dest` inside `area` (1:1 texel scale, so pixels stay on the grid).
 func _clipped(tex: Texture2D, dest: Rect2, src: Rect2, area: Rect2, tint := Color.WHITE) -> void:
 	var cut := dest.intersection(area)

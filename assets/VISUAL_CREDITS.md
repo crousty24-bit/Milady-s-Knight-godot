@@ -133,3 +133,7 @@ Les PNG de `assets/run021/n2/` et `assets/run021/n2/props/` (fonds et lumières 
 ## Générés pour le projet — RUN-021 passe visuelle N3 (8 octobre 2026)
 
 Les PNG de `assets/run021/n3/` et `assets/run021/n3/props/` (fonds, lumières et faisceaux Black Forest, atlas de terrain, terre profonde, mur de fond souterrain, décalques, brouillard, 28 accessoires) sont originaux. Ils sont générés par `tools/art/run021/n3/*.py` (sources conservées, déterministes) avec `pixel.py`, les palettes et utilitaires du projet en lecture seule. Aucun asset tiers ni génération d'image par IA. Contribution Claude Code Opus 5.5 avec deux sous-agents Sonnet 5.5 ; [manifeste N3](../docs/RUN-021_N3_VISUAL_MANIFEST.md). Validation artistique humaine attendue.
+
+## Générés pour le projet — RUN-021 passe visuelle N4 (9 octobre 2026)
+
+Les PNG de `assets/run021/n4/` et `assets/run021/n4/props/` (fonds, lumières et voiles spectraux Forbidden Graveyard, atlas de terrain, terre de tombes, mur de fond des cryptes, décalques, brume, 32 accessoires) sont originaux. Ils sont générés par `tools/art/run021/n4/*.py` (sources conservées, déterministes) avec `pixel.py`, les palettes et utilitaires du projet en lecture seule. Aucun asset tiers ni génération d'image par IA. Contribution Claude Code Opus 5.5 avec deux sous-agents Sonnet 5.5 ; [manifeste N4](../docs/RUN-021_N4_VISUAL_MANIFEST.md). Validation artistique humaine attendue.

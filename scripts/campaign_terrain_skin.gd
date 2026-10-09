@@ -8,7 +8,11 @@
 #   N3 Black Forest: run021/n3/terrain_black_forest_n3.png (RUN-021 N3 pass): forest floor
 #   under the readable moss rim, a root layer, then deep cold earth drawn from a seamless
 #   world-space texture; narrow tall columns are skinned as bark (giant trunks and roots).
-#   N4 Forbidden Graveyard: terrain_stone.png theme 0, unchanged, so the RUN-019 secret wall matches.
+#   N4 Forbidden Graveyard: run021/n4/terrain_forbidden_graveyard_n4.png (RUN-021 N4 pass): cold
+#   cemetery masonry above the ground line and as the surface course below it, a foundation
+#   course sinking into grave earth (seamless world-space texture), crypt pillars for narrow tall
+#   columns, rare plaques/carvings/bones. cell_layers() is shared with the secret wall cover
+#   (secret_wall_mask.gd) so the hidden cache keeps matching the skin.
 extends Node2D
 const STONE = preload("res://assets/sprites/terrain_stone.png")
 const CAMPAIGN = preload("res://assets/run020/terrain_campaign.png")
@@ -43,6 +47,19 @@ const N3_BARK_SHADE = 0.92
 # A column at most this many cells wide and at least N3_BARK_HEIGHT tall is bark.
 const N3_BARK_WIDTH = 3
 const N3_BARK_HEIGHT = 5
+# N4 (RUN-021 N4 pass): same structure, see tools/art/run021/n4/terrain_n4.py.
+const N4_TILES = preload("res://assets/run021/n4/terrain_forbidden_graveyard_n4.png")
+const N4_EARTH = preload("res://assets/run021/n4/n4_earth.png")
+const N4_DECALS = preload("res://assets/run021/n4/n4_terrain_decals.png")
+const N4_BACK = preload("res://assets/run021/n4/n4_backwall.png")
+const N4_NICHE = preload("res://assets/run021/n4/props/crypt_niche.png")
+const N4_OSSUARY = preload("res://assets/run021/n4/props/ossuary_wall.png")
+const N4_LOCULI = preload("res://assets/run021/n4/props/loculi_grid.png")
+const N4_CHAINS = preload("res://assets/run021/n4/props/hang_chains.png")
+# Cold candle of loculi_grid.png, in PNG pixels (props_n4.json).
+const N4_LOCULI_LIGHT = Vector2(7, 25)
+# N4: masonry above the ground line (mausoleum blocks, the tower), earth only below it.
+const N4_GROUND_ROW = 10
 const N2_CLOSING = 2
 const N2_BELOW_ROWS = 22
 # N2: earth only under the street line (cell row 10, y 160) so raised blocks stay masonry.
@@ -66,9 +83,9 @@ var _deep_bottom = 0.0
 var _span = Vector2.ZERO
 var _cellar = [] # [texture, top-left, candle point or null]
 var _deep_set = {}
-# N2/N3: levels with the generated underground back walls.
+# N2-N4: levels with the generated underground back walls.
 func _has_underground() -> bool:
-	return world_level == 2 or world_level == 3
+	return world_level >= 2 and world_level <= 4
 # N2: true when a cell belongs to the solid-earth void under the town (Decor hangs nothing there).
 func is_deep(cell: Vector2i) -> bool:
 	if not (_deep_set is Dictionary) or not (_deep_bottom is float): return false
@@ -82,7 +99,7 @@ func _ready() -> void:
 # Also called from _draw: an editor hot reload of this @tool script skips _ready.
 func _ensure_underground() -> void:
 	if not _has_underground() or is_instance_valid(_underground) or not is_inside_tree(): return
-	var node_name := "N2Underground" if world_level == 2 else "N3Underground"
+	var node_name: String = ["N2Underground", "N3Underground", "N4Underground"][world_level - 2]
 	_underground = get_node_or_null(node_name)
 	if _underground == null:
 		_underground = Node2D.new()
@@ -117,6 +134,11 @@ func _build_underground() -> void:
 			for dx in range(-N2_CLOSING, N2_CLOSING + 1):
 				var g := cell + Vector2i(dx, dy)
 				if g.y >= N2_GROUND_ROW or solid.has(g): grown[g] = true
+	# N4: the exit corridor opens onto the right edge of the grid; below the ground line the
+	# columns outside the terrain count as closed, so the sky cannot run down them into it.
+	if world_level == 4:
+		for y in range(N2_GROUND_ROW, y1):
+			for x in [x0, x0 + 1, x1 - 2, x1 - 1]: grown[Vector2i(x, y)] = true
 	var sky := {}
 	var stack: Array[Vector2i] = []
 	for x in range(x0, x1):
@@ -143,6 +165,11 @@ func _build_underground() -> void:
 			var c := Vector2i(x, y)
 			if not solid.has(c): open[c] = true
 	# Enclosed components: a room if bounded, deep earth if it reaches the grid border.
+	# N4: the crypts under the graveyard open onto the void below them; there, only cells with
+	# no terrain anywhere below (the bottomless drop) stay deep, the rest are crypt rooms.
+	var lowest := {}
+	if world_level == 4:
+		for cell: Vector2i in solid: lowest[cell.x] = maxi(int(lowest.get(cell.x, cell.y)), cell.y)
 	var seen := {}
 	for y in range(y0, y1):
 		for x in range(x0, x1):
@@ -162,7 +189,14 @@ func _build_underground() -> void:
 					if solid.has(n) or open.has(n) or seen.has(n): continue
 					seen[n] = true
 					component.append(n)
-			if deep:
+			if deep and world_level == 4:
+				for c in component:
+					if c.y < int(lowest.get(c.x, y0 - 1)):
+						_rooms.append(c)
+						if open.has(c + Vector2i.UP): _room_tops[c] = true
+					else:
+						_deep.append(c)
+			elif deep:
 				_deep.append_array(component)
 			else:
 				_rooms.append_array(component)
@@ -170,6 +204,7 @@ func _build_underground() -> void:
 					if open.has(c + Vector2i.UP): _room_tops[c] = true
 	for c in _deep: _deep_set[c] = true
 	if world_level == 3: _furnish_burrows(solid)
+	elif world_level == 4: _furnish_crypts(solid)
 	else: _furnish_cellars(solid)
 	_span = Vector2(x0 * 16, x1 * 16)
 	_deep_bottom = y1 * 16.0
@@ -244,16 +279,55 @@ func _furnish_burrows(solid: Dictionary) -> void:
 			while room.has(Vector2i(cx, cy - 1)): cy -= 1
 			if y - cy >= 5:
 				_cellar.append([N3_HANG, Vector2(cx * 16 + 8 - N3_HANG.get_width() / 2, cy * 16), null])
+# N4: the same dressing in the crypts: a sarcophagus niche or an ossuary wall in the middle of
+# each wide floor, burial loculi with a cold candle toward its ends and chains hanging from the
+# ceiling. Background only (the ossuary skulls stay on the dark back wall, never in play).
+func _furnish_crypts(solid: Dictionary) -> void:
+	_cellar = []
+	var room := {}
+	for c in _rooms: room[c] = true
+	var floors := {}
+	for c: Vector2i in _rooms:
+		if solid.has(c + Vector2i.DOWN):
+			if not floors.has(c.y): floors[c.y] = []
+			floors[c.y].append(c.x)
+	for y: int in floors:
+		var xs: Array = floors[y]
+		xs.sort()
+		var start := 0
+		for i in range(1, xs.size() + 1):
+			if i < xs.size() and xs[i] == xs[i - 1] + 1: continue
+			var x0: int = xs[start]
+			var x1: int = xs[i - 1] + 1
+			start = i
+			if x1 - x0 < 6: continue
+			var floor_y := float(y * 16 + 16)
+			var mid := (x0 + x1) * 8.0
+			var centre: Texture2D = N4_OSSUARY if _hash(Vector2i(x0, y), 5) % 2 else N4_NICHE
+			if room.has(Vector2i(int(mid / 16.0), y - 2)):
+				_cellar.append([centre, Vector2(mid - centre.get_width() * 0.5, floor_y - centre.get_height()).round(), null])
+			for q in [0.2, 0.8]:
+				var nx := roundf(lerpf(x0 * 16.0, x1 * 16.0, q))
+				if room.has(Vector2i(int(nx / 16.0), y - 2)) and room.has(Vector2i(int(nx / 16.0), y - 3)):
+					var at := Vector2(nx - roundf(N4_LOCULI.get_width() * 0.5), floor_y - 8 - N4_LOCULI.get_height())
+					_cellar.append([N4_LOCULI, at, at + N4_LOCULI_LIGHT])
+			# Chains hanging from the ceiling above the centre piece's left side.
+			var cx := int((mid - 40.0) / 16.0)
+			var cy := y
+			while room.has(Vector2i(cx, cy - 1)): cy -= 1
+			if y - cy >= 5:
+				_cellar.append([N4_CHAINS, Vector2(cx * 16 + 8 - N4_CHAINS.get_width() / 2, cy * 16), null])
 func _draw_underground() -> void:
 	if not (_deep is Array and _rooms is Array and _cellar is Array and _room_tops is Dictionary): return
 	var origin := terrain.position if is_instance_valid(terrain) else Vector2.ZERO
 	var n3 := world_level == 3
-	var back: Texture2D = N3_BACK if n3 else N2_BACK
+	var n4 := world_level == 4
+	var back: Texture2D = N4_BACK if n4 else N3_BACK if n3 else N2_BACK
 	for cell in _deep:
 		var p := origin + Vector2(cell * 16)
 		_underground.draw_texture_rect_region(back, Rect2(p, Vector2(16, 16)), Rect2(posmod(int(p.x), 96), 48 + posmod(int(p.y), 48), 16, 16))
 	# Everything below the grid is deep ground too (camera margins).
-	_underground.draw_rect(Rect2(origin + Vector2(_span.x, _deep_bottom), Vector2(_span.y - _span.x, 2048)), Color("0d0e11") if n3 else Color("0f0f0c"))
+	_underground.draw_rect(Rect2(origin + Vector2(_span.x, _deep_bottom), Vector2(_span.y - _span.x, 2048)), Color("0d0c10") if n4 else Color("0d0e11") if n3 else Color("0f0f0c"))
 	for cell in _rooms:
 		var p := origin + Vector2(cell * 16)
 		# Fade the wall where a shaft opens onto the sky.
@@ -263,7 +337,10 @@ func _draw_underground() -> void:
 		_underground.draw_texture(item[0], origin + item[1], Color(0.8, 0.8, 0.78))
 		if item[2] != null:
 			var point: Vector2 = origin + item[2]
-			if n3:
+			if n4:
+				# Cold spectral candle of the crypt niches.
+				_underground.draw_texture(N2_GLOW, (point - Vector2(32, 32)).round(), Color(0.55, 0.72, 0.78, 0.26))
+			elif n3:
 				# Cold fungus light, slower and fainter than the N2 cellar candles.
 				_underground.draw_texture(N2_GLOW, (point - Vector2(32, 32)).round(), Color(0.62, 0.82, 0.72, 0.28))
 			else:
@@ -364,6 +441,55 @@ func _n3_decal(cell: Vector2i, mask: int, material: int) -> int:
 	if h % 29 == 0: return 5
 	if h % 37 == 1: return 4
 	return -1
+# N4 material: 0 cemetery masonry, 1 foundation course, 2 grave earth, 3 crypt pillar.
+func _n4_material(cell: Vector2i, depth: int, pillars: Dictionary) -> int:
+	if pillars.has(cell): return 3
+	if cell.y < N4_GROUND_ROW: return 0
+	if depth >= 3: return 2
+	return 1 if depth == 2 else 0
+# N4 decal column in n4_terrain_decals.png, or -1. Rare, never on a walkable rim or pillar.
+func _n4_decal(cell: Vector2i, mask: int, material: int, depth: int) -> int:
+	var h := _scatter(cell, 27) % 1000
+	if material == 2:
+		if h % 97 == 0: return 0
+		if h % 71 == 1: return 1
+		if h % 109 == 2: return 2
+		if h % 83 == 5: return 3
+		return -1
+	if material != 0 or mask != 0 or depth < 1: return -1
+	if h % 113 == 0: return 4
+	if h % 157 == 1: return 5
+	if h % 101 == 2: return 6
+	if h % 139 == 3: return 7
+	return -1
+# N4: what the skin draws for one cell, in order: [texture, source rect, tint] (earth underlay,
+# tile, decal), in Terrain coordinates. `used`, `depths` and `pillars` describe the layout to
+# skin; the secret wall cover passes its filled layout so the hidden cavity reads as masonry.
+func cell_layers(cell: Vector2i, used: Dictionary, depths: Dictionary, pillars: Dictionary) -> Array:
+	var p := Vector2(cell * 16)
+	var mask := 0
+	if not used.has(cell + Vector2i.UP): mask |= 1
+	if not used.has(cell + Vector2i.RIGHT): mask |= 2
+	if not used.has(cell + Vector2i.DOWN): mask |= 4
+	if not used.has(cell + Vector2i.LEFT): mask |= 8
+	var depth: int = depths[cell]
+	var material := _n4_material(cell, depth, pillars)
+	var shade: float = N3_BARK_SHADE if material == 3 else N3_DEPTH_SHADE[depth]
+	var tint := Color(shade, shade, shade)
+	var layers := []
+	if material == 1 or material == 2:
+		layers.append([N4_EARTH, Rect2(posmod(int(p.x), 256), posmod(int(p.y), 128), 16, 16), tint])
+	var row := material * 18 + posmod(cell.y, 3) * 6 + posmod(cell.x, 6)
+	layers.append([N4_TILES, Rect2(mask * 16, row * 16, 16, 16), tint])
+	var decal := _n4_decal(cell, mask, material, depth)
+	if decal >= 0:
+		layers.append([N4_DECALS, Rect2(decal * 16, 0, 16, 16), tint])
+	return layers
+# Public helpers for the secret wall cover (same depth and pillar rules as the skin).
+func layout_depths(used: Dictionary) -> Dictionary:
+	return _depths(used)
+func layout_pillars(used: Dictionary) -> Dictionary:
+	return _bark_cells(used)
 func _draw() -> void:
 	if not is_instance_valid(terrain): return
 	if _has_underground() and not is_instance_valid(_underground): _ensure_underground.call_deferred()
@@ -380,7 +506,9 @@ func _draw() -> void:
 	var n2_tiles: Array = []
 	var n2_decals: Array = []
 	var lit_mycelium: Array[Vector2] = []
-	var bark := _bark_cells(used) if biome == 1 else {}
+	var bark := _bark_cells(used) if biome == 1 or biome == 2 else {}
+	var n4_layers := {N4_EARTH: [], N4_TILES: [], N4_DECALS: []}
+	var lit_ghosts: Array[Vector2] = []
 	for cell: Vector2i in used:
 		var p := terrain.position + Vector2(cell * 16)
 		# Exposure mask: 1 open above, 2 right, 4 below, 8 left.
@@ -421,6 +549,14 @@ func _draw() -> void:
 			if mask & 1: surfaces.append(cell)
 			if mask & 4 and cell.y < 18: overhangs.append(cell)
 			continue
+		if biome == 2:
+			# Collected per texture like N2/N3 (one batch each), from the shared cell_layers().
+			for layer in cell_layers(cell, used, depths, bark):
+				n4_layers[layer[0]].append([Rect2(p, Vector2(16, 16)), layer[1], layer[2]])
+				if layer[0] == N4_DECALS and layer[1].position.x == 48.0: lit_ghosts.append(p + Vector2(8, 9))
+			if mask & 1: surfaces.append(cell)
+			if mask & 4 and cell.y < 18: overhangs.append(cell)
+			continue
 		var row := theme * 18 + posmod(cell.y, 3) * 6 + posmod(cell.x, 6)
 		draw_texture_rect_region(atlas, Rect2(p, Vector2(16, 16)), Rect2(mask * 16, row * 16, 16, 16), tint)
 		if mask & 1: surfaces.append(cell)
@@ -431,6 +567,11 @@ func _draw() -> void:
 	for item in n2_earth: draw_texture_rect_region(earth_tex, item[0], item[1], item[2])
 	for item in n2_tiles: draw_texture_rect_region(tiles_tex, item[0], item[1], item[2])
 	for item in n2_decals: draw_texture_rect_region(decals_tex, item[0], item[1], item[2])
+	for tex: Texture2D in [N4_EARTH, N4_TILES, N4_DECALS]:
+		for item in n4_layers[tex]: draw_texture_rect_region(tex, item[0], item[1], item[2])
+	# N4: faint cold light from a few ghost-light fungus clusters in the grave earth.
+	for point in lit_ghosts:
+		draw_texture(N2_GLOW, (point - Vector2(32, 32)).round(), Color(0.55, 0.72, 0.78, 0.1))
 	# N3: faint cold light from a few mycelium clusters in the deep earth.
 	for point in lit_mycelium:
 		draw_texture(N2_GLOW, (point - Vector2(32, 32)).round(), Color(0.62, 0.82, 0.72, 0.1))

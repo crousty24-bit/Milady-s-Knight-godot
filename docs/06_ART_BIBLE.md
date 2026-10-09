@@ -433,7 +433,7 @@ Exemples :
 
 	Blight Town : olive putride / brun boue, accents bile jaune-olive (proposition RUN-021, validation humaine en attente).
 	Black Forest : bleu nuit / vert froid, lune froide et lucioles blanc menthe ; chaleur rare (charbonniers, sanctuaire) (passe RUN-021, validation humaine en attente).
-	Forbidden Graveyard : violet désaturé / cyan spectral.  
+	Forbidden Graveyard : violet désaturé / cyan spectral grisé (toujours sombre, faible alpha), lune gris-violet ; lumières froides des bougies et feux follets, chaleur rare (bougies de deuil) (passe RUN-021, validation humaine en attente).  
 	Haunted Caves : brun / vert maladif.  
 	Desolands : ocre / rouge poussière.  
 	Fallen Temple : violet corruption / rouge sombre.  
