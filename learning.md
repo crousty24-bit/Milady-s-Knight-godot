@@ -827,3 +827,11 @@ Le code distingue donc « secret découvert » et « passage accessible ». Pend
 Après une mort ou une reprise, la sauvegarde indique déjà que le secret a été trouvé : la pièce apparaît directement et le passage est ouvert. Il ne faut pas rejouer la découverte à chaque chargement. New Game efface ce flag et remet le secret fermé. Si ta partie actuelle l'avait déjà découvert, elle conservera donc la cache ouverte.
 
 Les tests ont exercé les vraies attaques, le blocage physique, les récompenses, la pause et trois processus de sauvegarde/reprise/reset. Les captures montrent la maçonnerie fermée, le milieu du fondu et la pièce ouverte au zoom1,2×. Les793contrôles ciblés passent ; la suite globale rencontre trois échecs Swarm déjà présents sans cette modification. Ces vérifications ne remplacent pas ton essai de la difficulté à trouver le secret ni ton écoute du SFX en jeu.
+
+## RUN-021 — Sortie de N4 sous l'ancien seuil de vide
+
+La Gate finale et la sortie ont été placées sous y=304. Une exception locale permet d'y descendre, tandis que la caméra suit maintenant l'extension jusqu'à x=5152. Le test vérifie aussi les collisions : retirer la mort ne suffisait pas, car le dernier couloir avait seulement 16 pixels entre plafond et sol, pour un corps joueur de 18 pixels. Onze tiles de la rangée inférieure du plafond ont été retirées ; le passage mesure maintenant 32 pixels et le personnage peut atteindre réellement la zone de sortie.
+
+`period=4.0` signifie que Ferry6 réalise un cycle complet en quatre secondes : deux secondes pour aller à l'autre extrémité, deux pour revenir. La valeur est définie sur cette instance ; les réglages manuels de la scène source et des autres ferries sont conservés. Les quatre ennemis de la salle CoinDoor utilisent une récompense locale de deux shards, soit huit au total. Les autres ennemis continuent d'utiliser la table de leur type.
+
+Le pilote mesure le cycle du ferry, tue les quatre ennemis pour vérifier leurs gains, ouvre la Gate avec son coût réel et traverse les collisions jusqu'à l'ExitArea. Trois suites passent 161 contrôles. Les positions de départ sont injectées et les combats isolés ; le parcours complet et son ressenti restent à vérifier en jouant.

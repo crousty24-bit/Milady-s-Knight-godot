@@ -11,6 +11,8 @@ const HP = [5.0, 2.0, 2.0, 2.0, 10.0]
 const DAMAGE = [1.5, 0.5, 0.5, 0.5, 2.0]
 const REWARDS = [5, 1, 1, 1, 5]
 @export var kind: Kind = Kind.WARRIOR
+# -1 uses the reward associated with the enemy kind.
+@export_range(-1, 1000000, 1) var bonus_reward_override: int = -1
 @export var patrol_left: float = -40.0
 @export var patrol_right: float = 40.0
 @export var patrol_speed: float = 24.0
@@ -51,7 +53,7 @@ func _ready() -> void:
 	origin_x = global_position.x
 	max_health_units = HealthUnits.from_hp(HP[kind])
 	health_units = max_health_units
-	bonus_reward = REWARDS[kind]
+	bonus_reward = bonus_reward_override if bonus_reward_override >= 0 else REWARDS[kind]
 	set_meta("healing_profile", "elite" if kind in [Kind.BLOATED, Kind.CHUD] else "ordinary")
 	_build_art()
 	add_to_group("enemies")
