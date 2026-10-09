@@ -159,6 +159,13 @@ func tap(action: String) -> void:
 	Input.action_release(action)
 	await frames(3)
 
+# RUN-021: a paid chest first shows "Treasure Found!"; E presses Open and Space skips to the cards.
+func open_cards() -> void:
+	await tap("interact")
+	await tap("jump")
+	for i in 120:
+		if level.pause_menu.opened: return
+		await frames(1)
 func near(node: Node2D) -> void:
 	player.position = node.position
 	player.velocity = Vector2.ZERO
@@ -174,8 +181,8 @@ func hud_and_rewards() -> void:
 	var ranged: Label = slots.get_node("Ranged")
 	var text_width := ranged.get_theme_font("font").get_string_size(ranged.text, HORIZONTAL_ALIGNMENT_LEFT, -1, ranged.get_theme_font_size("font_size")).x
 	var badge: TextureRect = slots.get_node("RangedBadge")
-	check(ranged.text == "> Throwing Knives 3" and slots.get_node("RangedPlate").size.x >= ranged.position.x + text_width + 12.0, "ranged plate fits the exact label and its badge")
-	check(badge.visible and (badge.texture as AtlasTexture).region.position.x == 27.0 and (slots.get_node("RangedIcon").texture as AtlasTexture).region.position.x == 84.0, "Throwing Knives 3 shows its icon and the level-3 badge")
+	check(ranged.text == "> Throwing Knives" and slots.get_node("RangedPlate").size.x >= ranged.position.x + text_width + 12.0, "ranged plate fits the exact label and its badge")
+	check(badge.visible and (badge.texture as AtlasTexture).region.position.x == 36.0 and (slots.get_node("RangedIcon").texture as AtlasTexture).region.position.x == 84.0, "Throwing Knives 3 shows its icon and the level-3 badge")
 	check((slots.get_node("MeleeIcon").texture as AtlasTexture).region.position.x == 60.0 and slots.get_node("MeleePlate").size.x == slots.get_node("RangedPlate").size.x, "Halberds icon and plates share one width")
 	await capture("hud_long_labels")
 	await loadout("Sword0")
@@ -195,6 +202,7 @@ func hud_and_rewards() -> void:
 	await near(common)
 	common.offer = {"item": "BrutalAxe2", "upgrade": "Sword1"}
 	await tap("interact")
+	await open_cards()
 	check(level.modal == "reward" and level.pause_menu.horizontal_choices and level.pause_menu.rows.get_child_count() == 2, "common chest opens two horizontal cards")
 	await frames(10)
 	await capture("chest_common_choice")
@@ -208,7 +216,8 @@ func hud_and_rewards() -> void:
 	await near(rare)
 	rare.offer = {"item": "ThrowingKnives3", "upgrade": ""}
 	await tap("interact")
-	check(level.modal == "reward" and level.pause_menu.rows.get_child_count() == 1, "rare chest without upgrade shows a single item card")
+	await open_cards()
+	check(level.modal == "reward" and level.pause_menu.rows.get_child_count() == 2 and level.pause_menu.unavailable == [1] and level.pause_menu.selection == 0, "rare chest without upgrade keeps both slots, the empty one unselectable")
 	await frames(10)
 	await capture("chest_rare_choice")
 	await tap("pause")

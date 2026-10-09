@@ -20,6 +20,13 @@ func tap(action: String) -> void:
 	await frames(2)
 	Input.action_release(action)
 	await frames(3)
+# RUN-021: a paid chest first shows "Treasure Found!"; E presses Open and Space skips to the cards.
+func open_cards() -> void:
+	await tap("interact")
+	await tap("jump")
+	for i in 120:
+		if level.pause_menu.opened: return
+		await frames(1)
 func spawn() -> void:
 	paused = false
 	if is_instance_valid(level):
@@ -66,6 +73,7 @@ func run() -> void:
 	await frames(4)
 	check(level.open_reward_chest(chest), "paid reward opens through real proximity")
 	await frames(3)
+	await open_cards()
 	await tap("interact")
 	check(level.player.health_units == 20 and level.player.equipment.melee == "Longsword1", "paid equipment acceptance preserves injury and applies item")
 	level.player.controls_enabled = false
@@ -84,9 +92,7 @@ func run() -> void:
 		player.health_units = 40
 		player.attack_cancelled = false
 		player.take_damage(0.5, Vector2(90, -180), source)
-		check(player.health_units == 35 and player.invulnerability > 0.0, "shield does not protect trap source%d" % source)
-		if source == SlicePlayer.DamageSource.TRAP_PROJECTILE:
-			check(player.attack_cancelled and player.hit_stun_time == 0.0, "turret interrupts without stun")
+		check(player.health_units == 40 and player.invulnerability == 0.0 and not player.attack_cancelled and player.knockback_time == 0.0, "shield blocks trap source%d and reactions" % source)
 	player.velocity = Vector2.ZERO
 	player.knockback_time = 0.0
 	player.invulnerability = 0.0
@@ -105,6 +111,9 @@ func run() -> void:
 	paused = false
 	await frames(610)
 	check(player.magic_shield_time == 0.0, "shield expires after ten active seconds")
+	player.invulnerability = 0.0
+	player.take_damage(0.5, Vector2.ZERO, SlicePlayer.DamageSource.TRAP_PROJECTILE)
+	check(player.health_units == 35 and player.attack_cancelled and player.invulnerability > 0.0, "turret damage and interruption resume after shield expires")
 	player.activate_magic_shield()
 	player.take_damage(0.0, Vector2.ZERO, SlicePlayer.DamageSource.VOID)
 	check(player.dead and player.magic_shield_time == 0.0, "void remains fatal under shield and clears buff")

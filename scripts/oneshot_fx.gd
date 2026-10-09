@@ -35,6 +35,7 @@ static func spawn(parent: Node, strip: Texture2D, frame_size: Vector2i, fps: flo
 		var player := AudioStreamPlayer2D.new()
 		player.stream = sound
 		player.volume_db = volume_db
+		player.max_distance = Run019Art.SFX_MAX_DISTANCE
 		player.bus = &"SFX"
 		fx.add_child(player)
 		player.play()

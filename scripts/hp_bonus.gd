@@ -2,6 +2,7 @@ extends Area2D
 signal collected
 signal save_error(error: int)
 @export var bonus_id: String = ""
+@export var required_secret: NodePath = NodePath()
 var used: bool = false
 var save_failed: bool = false
 var progression: Node
@@ -12,13 +13,13 @@ func _ready() -> void:
 	if progression != null and not bonus_id.is_empty() and progression.has_hp_bonus(bonus_id):
 		_consume()
 func _physics_process(_delta: float) -> void:
-	if used: return
+	if used or not _secret_available(): return
 	for body in get_overlapping_bodies():
 		if body is SlicePlayer and not body.dead:
 			collect(body)
 			return
 func collect(player: SlicePlayer) -> bool:
-	if used or player == null or player.dead: return false
+	if used or player == null or player.dead or not _secret_available(): return false
 	var error: int = ERR_INVALID_PARAMETER
 	if progression != null and not bonus_id.is_empty():
 		# A duplicate cannot increase current health a second time.
@@ -35,6 +36,10 @@ func collect(player: SlicePlayer) -> bool:
 	_consume()
 	collected.emit()
 	return true
+func _secret_available() -> bool:
+	if required_secret.is_empty(): return true
+	var secret := get_node_or_null(required_secret)
+	return secret != null and secret.get("passage_open") == true
 func _consume() -> void:
 	used = true
 	hide()

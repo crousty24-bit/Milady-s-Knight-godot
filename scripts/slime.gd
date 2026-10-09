@@ -8,6 +8,10 @@ const PURPLE_PATROL_SPEED = 34.0
 const RED_PATROL_SPEED = 38.0
 @export var patrol_left: float = -40.0
 @export var patrol_right: float = 40.0
+@export_range(0.0, 200.0, 1.0) var patrol_speed: float = 0.0
+@export_enum("Left:-1", "Right:1") var initial_direction: int = -1
+# Zero preserves regular patrols; configured slimes turn at varying intervals.
+@export var patrol_turn_interval := Vector2.ZERO
 @export var variant: Kind = Kind.GREEN
 @export_range(0, 1000000, 1) var bonus_reward: int = 1
 var max_health_units: int = 10
@@ -18,6 +22,7 @@ var max_health: float:
 	get: return HealthUnits.to_hp(max_health_units)
 var direction: int = -1
 var origin_x: float
+var patrol_turn_time: float = 0.0
 const KNOCKBACK_DURATION = 0.12
 const SPLASH = preload("res://assets/sprites/vfx_slime_splash.png")
 const HIT_SPRAY = preload("res://assets/sprites/vfx_slime_hit.png")
@@ -32,6 +37,8 @@ var dead: bool = false
 
 func _ready() -> void:
 	origin_x = position.x
+	direction = initial_direction
+	_reset_patrol_turn_time()
 	max_health_units = 10 if variant == Kind.GREEN else 20
 	health_units = max_health_units
 	if variant == Kind.RED: sprite.sprite_frames = Run019Art.frames(RED_SHEET, Vector2i(24, 24), RED_ANIMS)
@@ -48,6 +55,10 @@ func _ready() -> void:
 func _base_tint() -> Color:
 	return Color.WHITE
 
+func _reset_patrol_turn_time() -> void:
+	if patrol_turn_interval.x > 0.0:
+		patrol_turn_time = randf_range(patrol_turn_interval.x, maxf(patrol_turn_interval.x, patrol_turn_interval.y))
+
 func _base_animation() -> StringName:
 	return &"purple" if variant == Kind.PURPLE else (&"red" if variant == Kind.RED else &"green")
 
@@ -56,12 +67,18 @@ func _physics_process(delta: float) -> void:
 	knockback_time = maxf(0.0, knockback_time - delta)
 	velocity.y = minf(velocity.y + 760.0 * delta, 400.0)
 	if knockback_time <= 0.0:
+		if patrol_turn_interval.x > 0.0 and is_on_floor():
+			patrol_turn_time -= delta
+			if patrol_turn_time <= 0.0:
+				direction *= -1
+				_reset_patrol_turn_time()
 		if position.x < origin_x + patrol_left: direction = 1
 		if position.x > origin_x + patrol_right: direction = -1
 		$EdgeRay.position.x = direction * 10
 		$EdgeRay.force_raycast_update()
 		if is_on_wall() or (is_on_floor() and not $EdgeRay.is_colliding()): direction *= -1
-		velocity.x = direction * (PURPLE_PATROL_SPEED if variant == Kind.PURPLE else (RED_PATROL_SPEED if variant == Kind.RED else GREEN_PATROL_SPEED))
+		var speed := patrol_speed if patrol_speed > 0.0 else (PURPLE_PATROL_SPEED if variant == Kind.PURPLE else (RED_PATROL_SPEED if variant == Kind.RED else GREEN_PATROL_SPEED))
+		velocity.x = direction * speed
 	move_and_slide()
 	sprite.flip_h = direction > 0
 	# Recoil frames only while the knockback lasts (tools/art/slime_art.py).

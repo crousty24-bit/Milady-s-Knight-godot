@@ -192,7 +192,7 @@ def haft(t, s, dark=False):
 
 def brutal_axe():
 	"""Short wooden haft, iron butt cap, heavy single bit on the leading edge, small poll."""
-	st = Strip("BrutalAxe", 3.0, 2.5, 12, 19.2, 0, 8)
+	st = Strip("BrutalAxe", 3.0, 2.5, 12, 19.2, 0, 9)  # head covers the whole bit (column 14 must not repeat on the haft)
 	L = st.length
 
 	def p(t, s, lit, c):

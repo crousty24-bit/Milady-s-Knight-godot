@@ -45,7 +45,7 @@ func run() -> void:
 	await frames(2)
 	await capture("02-half-hp-top", top, 3)
 	level.hud.set_health(0.5, 3.0)
-	check(hud.get_node("Health").text == "HP 0.5", "exact half HP text")
+	check(hud.get_node("Health").text == "0.5", "exact half HP text")
 	await capture("02-half-hp-top-0.5", top, 3)
 	hud.set_health(3.0, 3.0)
 	level.hud.set_bonus(1234567, 23)

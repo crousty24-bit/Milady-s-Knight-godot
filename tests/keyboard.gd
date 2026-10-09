@@ -17,6 +17,10 @@ func check(ok: bool, label: String) -> void:
 	print("PASS " if ok else "FAIL ", label)
 	if not ok: failures += 1
 func run() -> void:
+	# Keep the original physical-key regression on the supported classic profile.
+	var controls = root.get_node("Controls")
+	controls.persistence_enabled = false
+	check(controls.set_profile("classic") == OK, "classic profile selected for keyboard regression")
 	var level = load("res://scenes/vertical_slice.tscn").instantiate()
 	root.add_child(level)
 	current_scene = level

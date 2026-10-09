@@ -69,22 +69,39 @@ run_check() {
 
 run_check import 180 --headless --editor --import --quit
 run_check user-data-path 30 --headless --script res://tests/user_data_path.gd
-for suite in movement physics mobility combat platform boundaries keyboard integration bonus routes backtracking damage_profiles damage_protection spikes_void death_transition audio progression_v2 menus longbow rewards dialogue_panel resurrection_player n1_cinematics n1_flow chest_economy standard_weapons reward_transactions run019_enemies run019_traps run019_exploration run019_integration; do
+for suite in movement physics mobility combat platform boundaries keyboard controls integration bonus routes backtracking damage_profiles damage_protection spikes_void n2_slime_room n4_lower_zone swarm_gated_room n4_exit_rewards death_transition audio progression_v2 menus longbow rewards dialogue_panel resurrection_player n1_cinematics n1_flow chest_economy standard_weapons reward_transactions run019_enemies run019_traps run019_exploration run019_integration run020_campaign run020_routes run021_tuning run021_audio run021_audio_pass run021_chase run021_elite_navigation run021_flight run021_wall_jump retractable_walk ammunition ammo_props run021_vertical_pursuit run021_bloated_dodge ferry_axes run021_camera_bounds secret_wall_reveal secret_wall_intro; do
   suite_timeout=90
-  if [[ "$suite" == standard_weapons ]]; then suite_timeout=180; fi
-  if [[ "$suite" == run019_exploration || "$suite" == run019_integration ]]; then
+  if [[ "$suite" == standard_weapons || "$suite" == run020_campaign || "$suite" == run020_routes || "$suite" == run021_elite_navigation ]]; then suite_timeout=180; fi
+  if [[ "$suite" == secret_wall_intro || "$suite" == secret_wall_reveal || "$suite" == run019_exploration || "$suite" == run019_integration || "$suite" == run020_campaign || "$suite" == run021_audio ]]; then
     run_check "$suite" "$suite_timeout" --headless --script "res://tests/$suite.gd"
   else
     run_check "$suite" "$suite_timeout" --headless --fixed-fps 60 --script "res://tests/$suite.gd"
   fi
 done
+# Exercise the upper variant too. In edited N2 both variants use the upper
+# causeway and tunnel; the default retains the lower vault. N3/N4 test both forks.
+run_check run020-routes-upper 180 --headless --fixed-fps 60 --script res://tests/run020_routes.gd -- upper
 # Cold closure uses the real clock so gameplay and audio shutdown share the same timing.
 run_check n1-cold-prepare 90 --headless --script res://tests/n1_cold_session.gd -- prepare
 run_check n1-cold-reopen 90 --headless --script res://tests/n1_cold_session.gd -- reopen
 run_check equipment-cold-open 90 --headless --script res://tests/equipment_cold_session.gd -- open
 run_check equipment-cold-accept 90 --headless --script res://tests/equipment_cold_session.gd -- accept
 run_check equipment-cold-finish 90 --headless --script res://tests/equipment_cold_session.gd -- finish
+run_check secret-wall-intro-cold-prepare 90 --headless --script res://tests/secret_wall_intro.gd -- prepare
+run_check secret-wall-intro-cold-reopen 90 --headless --script res://tests/secret_wall_intro.gd -- reopen
+run_check secret-wall-intro-cold-reset 90 --headless --script res://tests/secret_wall_intro.gd -- reset
+run_check secret-wall-cold-prepare 90 --headless --script res://tests/secret_wall_reveal.gd -- prepare
+run_check secret-wall-cold-reopen 90 --headless --script res://tests/secret_wall_reveal.gd -- reopen
+run_check secret-wall-cold-reset 90 --headless --script res://tests/secret_wall_reveal.gd -- reset
 run_check run019-cold-prepare 90 --headless --script res://tests/run019_cold_session.gd -- prepare
 run_check run019-cold-reopen 90 --headless --script res://tests/run019_cold_session.gd -- reopen
 run_check run019-cold-reset 90 --headless --script res://tests/run019_cold_session.gd -- reset
-printf '31 suites et huit sessions à froid terminées ; isolation user:// vérifiée. Logs : %s\n' "$results_dir"
+run_check run020-cold-prepare 90 --headless --script res://tests/run020_cold_session.gd -- prepare
+run_check run020-cold-reopen 90 --headless --script res://tests/run020_cold_session.gd -- reopen
+run_check run020-cold-reset 90 --headless --script res://tests/run020_cold_session.gd -- reset
+run_check ammo-cold-prepare 90 --headless --script res://tests/ammo_cold_session.gd -- prepare
+run_check ammo-cold-reopen 90 --headless --script res://tests/ammo_cold_session.gd -- reopen
+run_check ammo-cold-reset 90 --headless --script res://tests/ammo_cold_session.gd -- reset
+run_check controls-cold-prepare 90 --headless --script res://tests/controls_cold_session.gd -- prepare
+run_check controls-cold-reopen 90 --headless --script res://tests/controls_cold_session.gd -- reopen
+printf '55 suites et vingt-deux sessions à froid terminées ; isolation user:// vérifiée. Logs : %s\n' "$results_dir"

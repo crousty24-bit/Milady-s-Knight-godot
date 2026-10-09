@@ -1,5 +1,7 @@
 # RUN-018 — Contrat proposé avant implémentation
 
+> **Révision RUN-020 :** Les tables historiques de portée/cadence des armes de tir standard sont remplacées par la passe de rééquilibrage demandée lors du playtest RUN-020 du 6 octobre. Voir [les valeurs actuelles](RUN-020_PLAYTEST_REVIEW.md#tir--première-passe-technique-à-playtester). Les autres règles restent inchangées.
+
 **5 octobre 2026 — Contrat validé intégralement par l’humain (« Je valide le contrat »), tables et exception de paiement comprises.**
 Branche : `feature/run-018-standard-equipment`, issue de `develop` propre `6bb15b4`.
 RUN-017 DONE et 0.2.0 validée ; `develop` est ancêtre de `main` et leurs arbres sont identiques lors du lancement.
@@ -53,7 +55,7 @@ Les prix N5–9 sont une table préparatoire ; le budget réel des niveaux sera 
 
 Tirages indépendants du type d’arme, du niveau et de l’upgrade, RNG injectable pour tests reproductibles.
 
-- Niveaux common : 0/1/2/3 = 40/30/20/10 %.
+- Niveaux common au contrat RUN-018 : 0/1/2/3 = 40/30/20/10 %. **Remplacé en RUN-021 le 6 octobre 2026 sur demande humaine : drops directs0/1/2 = 40/30/30 %, aucun drop direct3.** La proposition séparée d’upgrade reste à5 % et peut monter une arme2→3.
 - Niveaux rare : 2/3 = 70/30 %. Pas de case Legendary ou Fire Gauntlet tant que non implémentés.
 - Chance de proposer aussi l’upgrade de l’arme active : common 5 %, rare 15 %, uniquement si niveau inférieur à 3. L’arme active est capturée à l’ouverture ; le jeu est suspendu jusqu’au choix.
 

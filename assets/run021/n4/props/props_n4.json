@@ -1,0 +1,472 @@
+[
+ {
+  "file": "headstone_round.png",
+  "w": 14,
+  "h": 20,
+  "kind": "ground",
+  "anchor": [
+   7,
+   20
+  ],
+  "lights": [],
+  "weight": 5,
+  "big": false
+ },
+ {
+  "file": "headstone_gothic.png",
+  "w": 14,
+  "h": 27,
+  "kind": "ground",
+  "anchor": [
+   7,
+   27
+  ],
+  "lights": [],
+  "weight": 4,
+  "big": false
+ },
+ {
+  "file": "headstone_cracked.png",
+  "w": 18,
+  "h": 21,
+  "kind": "ground",
+  "anchor": [
+   9,
+   21
+  ],
+  "lights": [],
+  "weight": 4,
+  "big": false
+ },
+ {
+  "file": "headstone_sunken.png",
+  "w": 22,
+  "h": 19,
+  "kind": "ground",
+  "anchor": [
+   11,
+   19
+  ],
+  "lights": [],
+  "weight": 4,
+  "big": false
+ },
+ {
+  "file": "raven_headstone.png",
+  "w": 16,
+  "h": 27,
+  "kind": "ground",
+  "anchor": [
+   8,
+   27
+  ],
+  "lights": [],
+  "weight": 1,
+  "big": false
+ },
+ {
+  "file": "cross_celtic.png",
+  "w": 22,
+  "h": 32,
+  "kind": "ground",
+  "anchor": [
+   11,
+   32
+  ],
+  "lights": [],
+  "weight": 3,
+  "big": false
+ },
+ {
+  "file": "mausoleum_small.png",
+  "w": 60,
+  "h": 76,
+  "kind": "ground",
+  "anchor": [
+   30,
+   76
+  ],
+  "lights": [],
+  "weight": 2,
+  "big": false
+ },
+ {
+  "file": "mausoleum_big.png",
+  "w": 94,
+  "h": 112,
+  "kind": "ground",
+  "anchor": [
+   47,
+   112
+  ],
+  "lights": [],
+  "weight": 1,
+  "big": true
+ },
+ {
+  "file": "obelisk.png",
+  "w": 18,
+  "h": 60,
+  "kind": "ground",
+  "anchor": [
+   9,
+   60
+  ],
+  "lights": [],
+  "weight": 2,
+  "big": false
+ },
+ {
+  "file": "column_broken.png",
+  "w": 20,
+  "h": 35,
+  "kind": "ground",
+  "anchor": [
+   10,
+   35
+  ],
+  "lights": [],
+  "weight": 3,
+  "big": false
+ },
+ {
+  "file": "angel_statue.png",
+  "w": 26,
+  "h": 42,
+  "kind": "ground",
+  "anchor": [
+   13,
+   42
+  ],
+  "lights": [],
+  "weight": 1,
+  "big": false
+ },
+ {
+  "file": "tomb_chest.png",
+  "w": 40,
+  "h": 13,
+  "kind": "ground",
+  "anchor": [
+   20,
+   13
+  ],
+  "lights": [],
+  "weight": 3,
+  "big": false
+ },
+ {
+  "file": "grave_mound.png",
+  "w": 32,
+  "h": 26,
+  "kind": "ground",
+  "anchor": [
+   16,
+   26
+  ],
+  "lights": [],
+  "weight": 3,
+  "big": false
+ },
+ {
+  "file": "yew.png",
+  "w": 40,
+  "h": 68,
+  "kind": "ground",
+  "anchor": [
+   20,
+   68
+  ],
+  "lights": [],
+  "weight": 3,
+  "big": false
+ },
+ {
+  "file": "willow_dead.png",
+  "w": 60,
+  "h": 78,
+  "kind": "ground",
+  "anchor": [
+   30,
+   78
+  ],
+  "lights": [],
+  "weight": 2,
+  "big": true
+ },
+ {
+  "file": "railing.png",
+  "w": 40,
+  "h": 16,
+  "kind": "ground",
+  "anchor": [
+   20,
+   16
+  ],
+  "lights": [],
+  "weight": 4,
+  "big": false
+ },
+ {
+  "file": "candles_cold.png",
+  "w": 24,
+  "h": 15,
+  "kind": "ground",
+  "anchor": [
+   12,
+   15
+  ],
+  "lights": [
+   {
+    "pos": [
+     5,
+     6
+    ],
+    "type": "candle_cold"
+   },
+   {
+    "pos": [
+     10,
+     4
+    ],
+    "type": "candle_cold"
+   }
+  ],
+  "weight": 2,
+  "big": false
+ },
+ {
+  "file": "candles_warm.png",
+  "w": 24,
+  "h": 15,
+  "kind": "ground",
+  "anchor": [
+   12,
+   15
+  ],
+  "lights": [
+   {
+    "pos": [
+     5,
+     5
+    ],
+    "type": "candle_warm"
+   },
+   {
+    "pos": [
+     11,
+     7
+    ],
+    "type": "candle_warm"
+   }
+  ],
+  "weight": 1,
+  "big": false
+ },
+ {
+  "file": "lantern_post.png",
+  "w": 20,
+  "h": 46,
+  "kind": "ground",
+  "anchor": [
+   10,
+   46
+  ],
+  "lights": [
+   {
+    "pos": [
+     12,
+     15
+    ],
+    "type": "flame_cold"
+   }
+  ],
+  "weight": 1,
+  "big": false
+ },
+ {
+  "file": "wreath_stake.png",
+  "w": 20,
+  "h": 32,
+  "kind": "ground",
+  "anchor": [
+   10,
+   32
+  ],
+  "lights": [],
+  "weight": 2,
+  "big": false
+ },
+ {
+  "file": "skull_pile.png",
+  "w": 28,
+  "h": 14,
+  "kind": "ground",
+  "anchor": [
+   14,
+   14
+  ],
+  "lights": [],
+  "weight": 2,
+  "big": false
+ },
+ {
+  "file": "wall_niche.png",
+  "w": 18,
+  "h": 32,
+  "kind": "wall",
+  "anchor": [
+   0,
+   3
+  ],
+  "lights": [],
+  "weight": 3,
+  "big": false
+ },
+ {
+  "file": "wall_vine_dead.png",
+  "w": 20,
+  "h": 46,
+  "kind": "wall",
+  "anchor": [
+   0,
+   2
+  ],
+  "lights": [],
+  "weight": 4,
+  "big": false
+ },
+ {
+  "file": "wall_chain_ring.png",
+  "w": 14,
+  "h": 46,
+  "kind": "wall",
+  "anchor": [
+   0,
+   4
+  ],
+  "lights": [],
+  "weight": 3,
+  "big": false
+ },
+ {
+  "file": "wall_plaque_skull.png",
+  "w": 20,
+  "h": 24,
+  "kind": "wall",
+  "anchor": [
+   0,
+   10
+  ],
+  "lights": [],
+  "weight": 2,
+  "big": false
+ },
+ {
+  "file": "hang_chains.png",
+  "w": 18,
+  "h": 40,
+  "kind": "ceiling",
+  "anchor": [
+   9,
+   0
+  ],
+  "lights": [],
+  "weight": 4,
+  "big": false
+ },
+ {
+  "file": "hang_censer.png",
+  "w": 20,
+  "h": 44,
+  "kind": "ceiling",
+  "anchor": [
+   10,
+   0
+  ],
+  "lights": [
+   {
+    "pos": [
+     10,
+     28
+    ],
+    "type": "flame_cold"
+   }
+  ],
+  "weight": 1,
+  "big": false
+ },
+ {
+  "file": "hang_roots_n4.png",
+  "w": 26,
+  "h": 44,
+  "kind": "ceiling",
+  "anchor": [
+   13,
+   0
+  ],
+  "lights": [],
+  "weight": 3,
+  "big": false
+ },
+ {
+  "file": "hang_banner.png",
+  "w": 24,
+  "h": 50,
+  "kind": "ceiling",
+  "anchor": [
+   12,
+   0
+  ],
+  "lights": [],
+  "weight": 2,
+  "big": false
+ },
+ {
+  "file": "crypt_niche.png",
+  "w": 38,
+  "h": 36,
+  "kind": "underground",
+  "anchor": [
+   19,
+   36
+  ],
+  "lights": [],
+  "weight": 2,
+  "big": false
+ },
+ {
+  "file": "ossuary_wall.png",
+  "w": 42,
+  "h": 36,
+  "kind": "underground",
+  "anchor": [
+   21,
+   36
+  ],
+  "lights": [],
+  "weight": 2,
+  "big": false
+ },
+ {
+  "file": "loculi_grid.png",
+  "w": 40,
+  "h": 40,
+  "kind": "underground",
+  "anchor": [
+   20,
+   40
+  ],
+  "lights": [
+   {
+    "pos": [
+     7,
+     25
+    ],
+    "type": "candle_cold"
+   }
+  ],
+  "weight": 2,
+  "big": false
+ }
+]

@@ -1,0 +1,24 @@
+{
+  "asset": "Shadow of the Blood Thirsty Woodlands",
+  "artist": "ehved2 (Pixabay user, from the file name)",
+  "pixabay_id": "250736",
+  "selection": "human request of 2026-10-08 (RUN-021 audio pass): replace the N1 music with this library track",
+  "official_page": "not linked: only the Pixabay file name is known; the exact page still has to be attached (none invented)",
+  "licence": "Pixabay Content License (assumed from the Pixabay file-name format, same as the other library tracks; page not consulted)",
+  "licence_summary_url": "https://pixabay.com/service/license-summary/",
+  "download_certificate": "none held; none invented. Only the local copy listed below exists.",
+  "local_origin": "/mnt/c/Users/allen/OneDrive/Images/assets_ressources/Mildays-knight/Music/ehved2-shadow-of-the-blood-thirsty-woodlands-250736.mp3 (read-only library, copied unchanged)",
+  "file": "ehved2-shadow-of-the-blood-thirsty-woodlands-250736.mp3",
+  "sha256": "7b5fa7d75ab244d6b20586cb0379e6312b9a5e3bd321c54af403da195fe98307",
+  "size_bytes": 2151653,
+  "ffprobe": {"codec": "mp3", "sample_rate": 44100, "channels": 2, "bit_rate": 256000, "duration_s": 67.239156, "id3_tags": "none"},
+  "measured": {"integrated_lufs": -22.5, "true_peak_dbfs": -6.5, "lra_lu": 4.5, "structure": "8 phrases of ~7.385 s (attacks at 0.025, 7.40, 15.02, 22.21, 29.64, 36.94, 44.29, 51.72 s), then a reverb tail fading from 59 s to silence at 63.1 s"},
+  "derivative": {
+    "file": "assets/run021/audio/music_n1_eidolon_vale.ogg",
+    "command_script": "work/run021/audio/prepare_n1.sh",
+    "loop_start_s": 0.0, "loop_end_s": 59.077,
+    "wrapped_tail_s": 4.2,
+    "measured": {"integrated_lufs": -13.9, "true_peak_dbfs": -0.6, "lra_lu": 3.0, "duration_s": 59.077},
+    "sha256": "5a53f97f86b31c31c3b037a1ff364c6a6b5496638d481288aee3b7b31efd603a"
+  }
+}

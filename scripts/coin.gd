@@ -26,17 +26,7 @@ func _ready() -> void:
 		(func() -> void: OneShotFx.spawn(world, SHARD_BURST, Vector2i(20, 20), 18.0, at)).call_deferred()
 		$Sound.stream = SHARD_SFX
 		$Sound.play()
-		var label := Label.new()
-		label.text = "+%d SHARDS" % bonus_feedback
-		label.add_theme_color_override("font_color", Color(0.753, 0.541, 0.831))
-		label.add_theme_color_override("font_shadow_color", Color(0.09, 0.075, 0.106))
-		label.add_theme_constant_override("shadow_offset_x", 1)
-		label.add_theme_constant_override("shadow_offset_y", 1)
-		label.add_theme_font_override("font", preload("res://assets/fonts/PixelOperator8.ttf"))
-		label.add_theme_font_size_override("font_size", 8)
-		label.position = Vector2(-20, -18)
-		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		add_child(label)
+		# The "+N SHARDS" text joins the level queue above the knight (RUN-021) so lines never overlap.
 		var tween := create_tween().set_parallel()
 		tween.tween_property(self, "position:y", position.y - 18.0, 0.65)
 		tween.tween_property(self, "modulate:a", 0.0, 0.3).set_delay(0.35)

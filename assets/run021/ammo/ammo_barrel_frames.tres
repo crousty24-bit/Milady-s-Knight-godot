@@ -1,0 +1,66 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://prc3c7vmc73l"]
+
+[ext_resource type="Texture2D" uid="uid://cnj1r3mvbxngr" path="res://assets/run021/ammo/prop_barrel.png" id="1"]
+[ext_resource type="Texture2D" uid="uid://bydyewik7d3ol" path="res://assets/run021/ammo/prop_barrel_break.png" id="2"]
+
+[sub_resource type="AtlasTexture" id="break_0"]
+atlas = ExtResource("2")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="break_1"]
+atlas = ExtResource("2")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="break_2"]
+atlas = ExtResource("2")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="break_3"]
+atlas = ExtResource("2")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="break_4"]
+atlas = ExtResource("2")
+region = Rect2(128, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="break_5"]
+atlas = ExtResource("2")
+region = Rect2(160, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="intact_0"]
+atlas = ExtResource("1")
+region = Rect2(0, 0, 32, 32)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("break_0")
+}, {
+"duration": 1.0,
+"texture": SubResource("break_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("break_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("break_3")
+}, {
+"duration": 1.0,
+"texture": SubResource("break_4")
+}, {
+"duration": 1.0,
+"texture": SubResource("break_5")
+}],
+"loop": 0,
+"name": &"break",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("intact_0")
+}],
+"loop": 0,
+"name": &"intact",
+"speed": 1.0
+}]

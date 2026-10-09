@@ -182,13 +182,15 @@ Résolution interne de référence :
 
 **640×360 px — 16:9**
 
-Avec un zoom de référence `1×`, le viewport correspond approximativement à :
+Avec le zoom par défaut **1,2×**, le viewport couvre environ **533,3×300 px** du monde, soit :
 
-**40 tiles horizontalement × 22,5 tiles verticalement.**
+**33,3 tiles horizontalement × 18,75 tiles verticalement.**
 
 Le Player Character ayant une hauteur visuelle d'environ **32 px**, il représente approximativement deux tiles de hauteur.
 
-Le zoom de référence initial sera **1×**. Toute modification de ce zoom devra être testée directement dans un niveau représentatif avant d'être adoptée.
+**Décision humaine du 8 octobre 2026 :** zoom joueur **1,2×** (`Vector2(1.2, 1.2)` sur `Player/Camera2D` dans `scenes/player.tscn`), modifié manuellement et retenu après des playtests déclarés par l'humain. Ce réglage remplace la référence initiale 1× et reste le défaut jusqu'à nouvel ordre. Le champ visible réduit augmente légèrement la difficulté : cet effet est voulu et ne doit pas être compensé automatiquement.
+
+Les prochains travaux de cadrage, lisibilité, level design, équilibrage et vérification doivent prendre **1,2×** comme référence. Toute modification de ce choix requiert une nouvelle décision humaine et des playtests ; les autres paramètres de caméra restent soumis à leurs règles de validation.
 
 #### Scaling et rendu
 
@@ -429,8 +431,9 @@ Chaque biome peut ajouter 1 à 2 couleurs dominantes secondaires.
 
 Exemples :
 
-	Black Forest : bleu nuit / vert froid.  
-	Forbidden Graveyard : violet désaturé / cyan spectral.  
+	Blight Town : olive putride / brun boue, accents bile jaune-olive (proposition RUN-021, validation humaine en attente).
+	Black Forest : bleu nuit / vert froid, lune froide et lucioles blanc menthe ; chaleur rare (charbonniers, sanctuaire) (passe RUN-021, validation humaine en attente).
+	Forbidden Graveyard : violet désaturé / cyan spectral grisé (toujours sombre, faible alpha), lune gris-violet ; lumières froides des bougies et feux follets, chaleur rare (bougies de deuil) (passe RUN-021, validation humaine en attente).  
 	Haunted Caves : brun / vert maladif.  
 	Desolands : ocre / rouge poussière.  
 	Fallen Temple : violet corruption / rouge sombre.  
@@ -741,3 +744,7 @@ La variété visuelle sert donc l'immersion et l'identité des niveaux sans comp
 
 
 ---
+
+## Ordre de dessin des fonds — RUN-021
+
+Les scripts de fond N1 et N2–4 imposent `z_index = -100` et `z_as_relative = false`, dans l’éditeur comme en jeu. Leurs dessins couvrent le viewport : les placer derrière les objets évite de masquer un ferry ou un autre élément ajouté avant le fond dans l’arbre de scène. Les objets de jeu ordinaires gardent leur profondeur existante ; leur emplacement dans l’arbre n’est plus une condition de visibilité face au fond. La ligne rouge horizontale de l’éditeur représente l’axe Y=0 et n’est pas une limite d’affichage en jeu.

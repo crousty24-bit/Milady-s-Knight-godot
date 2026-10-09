@@ -15,6 +15,13 @@ func tap(action: String) -> void:
 	await frames(2)
 	Input.action_release(action)
 	await frames()
+# RUN-021: a paid chest first shows "Treasure Found!"; E presses Open and Space skips to the cards.
+func open_cards() -> void:
+	await tap("interact")
+	await tap("jump")
+	for i in 120:
+		if level.pause_menu.opened: return
+		await frames(1)
 func check(ok: bool, message: String) -> void:
 	checks += 1
 	print("PASS " if ok else "FAIL ", message)
@@ -58,6 +65,7 @@ func run() -> void:
 			var chest: Area2D = await enter_common()
 			chest.offer = {"item": "ThrowingKnives2", "upgrade": ""}
 			await tap("interact")
+			await open_cards()
 			await tap("interact")
 			check(progress.equipment.ranged == "ThrowingKnives2" and progress.banked_shards == 43, "cold acquisition commits once after new attempt payment")
 			level.bonus = 7

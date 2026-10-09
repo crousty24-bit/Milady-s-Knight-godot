@@ -2,8 +2,8 @@ extends Node2D
 signal impacted(at: Vector2, enemy: bool)
 
 const DAMAGE = 1.0
-const RANGE = 20.0 * 16.0
-# Technical travel speed: 320 px/s; the full range takes one active second.
+const RANGE = 11.0 * 16.0
+# Technical travel speed: 320 px/s; base Longbow range takes 0.55 active seconds.
 const SPEED = 320.0
 const COLLISION_MASK = 1 | 4 | 16
 var damage: float = DAMAGE

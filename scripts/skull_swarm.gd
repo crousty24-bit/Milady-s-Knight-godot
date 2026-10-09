@@ -1,9 +1,11 @@
-# N4 zone: exactly four stable slots, no replacement until exit/reentry.
+# N4 zone: four stable slots per attempt; only undefeated slots return on reentry.
 extends Node2D
 signal swarm_started
 signal swarm_cleared
 const SKULL = preload("res://scenes/possessed_skull.tscn")
-@export var zone_size: Vector2 = Vector2(240, 160)
+@export var zone_size: Vector2 = Vector2(480, 240)
+@export var zone_offset: Vector2 = Vector2.ZERO
+@export_node_path("Node2D") var required_gate: NodePath
 @export var spawn_offsets: Array[Vector2] = [Vector2(-80, -50), Vector2(-40, -70), Vector2(40, -70), Vector2(80, -50)]
 var rewarded_slots: Array[bool] = [false, false, false, false]
 var skulls: Array[Node2D] = []
@@ -11,7 +13,7 @@ var occupied: bool = false
 
 func _physics_process(_delta: float) -> void:
 	var player := get_tree().get_first_node_in_group("player") as SlicePlayer
-	var inside := is_instance_valid(player) and not player.dead and Rect2(-zone_size / 2, zone_size).has_point(to_local(player.global_position))
+	var inside := is_instance_valid(player) and not player.dead and _gate_is_open() and Rect2(zone_offset - zone_size / 2, zone_size).has_point(to_local(player.global_position))
 	if inside and not occupied:
 		occupied = true
 		_spawn()
@@ -20,16 +22,22 @@ func _physics_process(_delta: float) -> void:
 		_despawn_art()
 		_clear()
 
+func _gate_is_open() -> bool:
+	if required_gate.is_empty(): return true
+	var gate := get_node_or_null(required_gate)
+	return gate != null and gate.get("opened") == true
+
 func _spawn() -> void:
 	for slot in range(4):
+		if rewarded_slots[slot]: continue
 		var skull = SKULL.instantiate()
-		skull.bonus_reward = 0 if rewarded_slots[slot] else 1
+		skull.bonus_reward = 1
 		skull.position = spawn_offsets[slot] if slot < spawn_offsets.size() else Vector2((slot - 1.5) * 32, -48)
 		# Connect before ready/level registration so eligibility is claimed first.
 		skull.defeated.connect(_slot_defeated.bind(slot))
 		add_child(skull)
 		skulls.append(skull)
-	swarm_started.emit()
+	if not skulls.is_empty(): swarm_started.emit()
 
 func _slot_defeated(_bonus: int, _at: Vector2, slot: int) -> void:
 	rewarded_slots[slot] = true

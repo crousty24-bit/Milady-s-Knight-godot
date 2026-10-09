@@ -1,5 +1,8 @@
 extends Node
+@onready var controls = get_node("/root/Controls")
 const MENU = preload("res://scripts/keyboard_menu.gd")
+const CONTROLS_MENU = preload("res://scripts/controls_menu.gd")
+var controls_menu: CanvasLayer
 var menu: CanvasLayer
 var screen: String = "main"
 const MENU_MUSIC = preload("res://assets/music/music_slice_dark_fantasy_lofi.ogg")
@@ -19,11 +22,14 @@ func _ready() -> void:
 	add_child(menu)
 	menu.selected.connect(_select)
 	menu.cancelled.connect(_cancel)
+	controls_menu = CONTROLS_MENU.new()
+	add_child(controls_menu)
+	controls_menu.closed.connect(_main)
 	_main()
 
 func _main() -> void:
 	screen = "main"
-	var detail := "Arrows: select   E: confirm   Escape: back"
+	var detail: String = controls.menu_hint()
 	if progression.legacy_pending:
 		detail = "Legacy save found. Continue offers migration."
 	elif progression.storage_error != OK:
@@ -46,7 +52,8 @@ func _select(index: int) -> void:
 					elif progression.has_save: _continue()
 				2:
 					screen = "controls"
-					menu.show_menu("Controls", "Arrows: move / menu selection\nSpace: jump / double jump / next dialogue phrase\nF (hold): attack / shoot   E: interact / confirm\nA: equipment   G: landing attack\nR (hold): Dragon Slayer special\nEscape: close / back / pause", ["Back"])
+					menu.close()
+					controls_menu.open()
 				3: get_tree().quit()
 		"new":
 			if index == 1: _new_game()

@@ -3,6 +3,11 @@
 # (far citadel, viaduct of arches, haze, near ruined forest) plus a few slow ash motes.
 # Purely visual and low-contrast; drawn behind Kingdom and Terrain.
 extends Node2D
+func _enter_tree() -> void:
+	# Keep this full-screen drawing behind gameplay regardless of sibling order.
+	z_as_relative = false
+	z_index = -100
+
 const SKY = preload("res://assets/sprites/bg_sky.png")
 const CLOUDS = preload("res://assets/sprites/bg_clouds.png")
 const FAR = preload("res://assets/sprites/bg_far.png")

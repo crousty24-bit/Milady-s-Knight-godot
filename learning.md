@@ -658,3 +658,198 @@ Le test des piques a révélé une différence entre charger un état et passer 
 La run est validée humainement le 5 octobre 2026 avec une limite explicite : les nouveaux mobs n’ont pas été essayés directement en debug, faute de scène de test accessible. Les fixtures automatisées et le pilote de rendu les exercent ; cela ne devient pas un essai humain. L’ouverture de PR vers develop est autorisée séparément, sans fusion ni lancement de RUN-020.
 
 La revue Jev et l’inspection des preuves sont terminées ; [PR #22](https://github.com/crousty24-bit/Milady-s-Knight-godot/pull/22) est ouverte vers develop. RUN-019 est DONE avec la limite humaine consignée ; les placements N2–4 restent à construire dans RUN-020.
+
+
+## RUN-020 — Une campagne de quatre niveaux
+
+N2, N3 et N4 sont maintenant des scènes fixes éditables. Leur générateur est un outil d’auteur : le jeu charge les fichiers `.tscn`, sans fabriquer de niveau aléatoire. N1 conserve son terrain humain ; seule sa sortie mène désormais à N2. Chaque scène indique son numéro, son cadrage, sa population et son coût de sortie. Le HUD affiche ce coût au lieu de supposer12 pour tous les niveaux. Le coffre gratuit et la potion tutorielle de N1 ne sont pas recréés ailleurs.
+
+Les coins appartiennent à la tentative et financent les sorties18/25/32. Les40 coins de N4 permettent de payer la porte optionnelle4 puis la sortie32. Les coffres utilisent la banque de shards ; leur dépense ne réduit pas ce budget de coins. Le secret et le bonus HP de N4 utilisent les flags durables déjà construits en RUN-019. Une mort réinitialise les portes et mécanismes, mais conserve leurs acquisitions durables.
+
+Un parcours automatique traverse réellement N1–4 au clavier, obtient le Longbow en N1, ramasse les coins par contact et paie les sorties. Il ne téléporte pas le joueur et ne supprime pas les ennemis. D’autres tests déplacent explicitement des fixtures pour isoler achats, refus, secret, HP et reprise ; ils servent à vérifier les transactions, pas la difficulté naturelle. Trois processus distincts contrôlent la persistance après fermeture du jeu. Le jugement humain sur rythme et difficulté reste nécessaire.
+
+Deux erreurs de construction ont été détectées : les données TileMap doivent commencer par leur en-tête de version ; sans lui, le terrain était illisible et le joueur tombait. Un paramètre nommé `kind` dans le générateur capturait aussi le type du coffre : le rare chest restait common. Les contrôles physiques et économiques ont révélé ces défauts puis vérifié les corrections. Le parcours a également révélé un accès typé à un projectile déjà libéré lors du tir suivant ; supprimer les références invalides avant le nouveau tir corrige ce cas sans changer les dégâts.
+
+Claude Opus5.5 et son sous-agent Sonnet5.5 ont produit les fonds, terrains, accessoires et ambiances sur des fichiers distincts. Les scripts de présentation dessinent autour du terrain existant sans créer de collision. Les générateurs Python restent les sources des images ; les WAV sources sont conservés séparément des OGG bouclés utilisés en jeu. Une capture rendue vérifie la lisibilité et le raccord ; elle ne permet pas de prétendre à une écoute humaine ni de valider un choix artistique. Les preuves chiffrées finales sont au journal, et le parcours humain est décrit dans `docs/RUN-020_PLAYTEST.md`.
+
+## RUN-020 — Ce que le playtest a changé (6 octobre 2026)
+
+Les tests de parcours initiaux montraient que les niveaux étaient franchissables ; ils ne pouvaient pas montrer qu’ils étaient intéressants. Le retour humain distingue précisément les deux : déplacements et progression fonctionnent, mais le contenu et les choix de route sont insuffisants. La refonte des parcours et des silhouettes élites est donc réservée au contrat Claude ; elle n’est pas présentée comme réalisée ici.
+
+L’aggro utilise maintenant deux rectangles : un pour repérer le joueur, un un peu plus grand pour conserver sa cible. Quand le joueur disparaît derrière un obstacle ou sort du second rectangle, un compteur attend deux secondes avant d’abandonner. Cela évite les changements immédiats au bord de la zone. La visibilité reste nécessaire pour commencer une attaque, et la mort du joueur coupe immédiatement la poursuite. Les tests exercent réellement le temps, les rayons contre le terrain et la pause.
+
+La swarm avait déjà quatre emplacements logiques pour limiter les récompenses. Auparavant, un emplacement déjà payé pouvait recréer un crâne sans récompense à chaque réentrée. La correction utilise aussi cet état pour empêcher la recréation du crâne tué. Il reste au maximum quatre adversaires à vaincre par tentative ; seuls les survivants reviennent après une sortie. Une nouvelle tentative réinitialise les quatre emplacements. Le Sorcier ne commande pas cette zone : il utilise ses propres attaques.
+
+Le Shield est contrôlé au point commun où le joueur reçoit les dégâts. En remplaçant la liste de sources protégées par une protection générale, pièges et tirs de tourelle utilisent exactement la même règle. Le retour intervient avant le recul et l’interruption, donc un coup bloqué ne provoque aucune de ces réactions. Le vide reste traité avant le bouclier : tomber hors de la carte tue, conformément au choix humain. Les tests de collision confirment aussi que les obstacles restent solides et que leur danger revient à la fin du buff.
+
+Réduire la cadence signifie ici augmenter le nombre de secondes entre deux tirs. Longbow0 passe à2s et192px, couteaux0 à1,3s et112px. Le catalogue continue à fournir les statistiques de chaque niveau ; les projectiles reçoivent leur portée réelle et sont supprimés au premier impact ou à la limite. Les tests d’armes vérifient les instants de tir et les cibles de part et d’autre de cette limite, pas seulement les nombres du catalogue. Le tutoriel doit annoncer les mêmes valeurs. L’équilibrage du ressenti reste une question de playtest, même lorsque ces vérifications passent.
+
+Les munitions restent une idée retenue pour un contrat ultérieur. Ni inventaire, ni drop, ni caisse, ni règle de sauvegarde pour cette idée n’a été implémenté dans cette passe.
+
+## RUN-020 — Reprise des parcours et collisions des élites
+
+Claude a remplacé les couloirs initiaux par deux fourches dans chaque niveau, avec une route haute et une route basse qui se rejoignent. Les scènes sont toujours fixes ; le générateur d’auteur écrit leurs fichiers, sans génération pendant la partie. Les tests d’interactions prennent désormais leurs repères depuis les objets de la scène : déplacer le bouton ou le bonus HP ne laisse plus une ancienne coordonnée cachée dans le test. Les captures couvrent les deux étages ; seules les entrées de mouvement du pilote peuvent prouver un parcours physique.
+
+Une silhouette visible, une collision de terrain et une portée d’attaque remplissent trois rôles différents. Les nouveaux dessins d’élites rendaient le petit corps20×22 insuffisant : les coups pouvaient traverser leur partie haute et le chevalier pénétrait dans Bloated avant de recevoir le contact. Le rectangle de masse devient44×40 pour Bloated et36×40 pour Chud ; les pieds restent au même point. Les sondes de bord avancent avec la demi-largeur pour garder ce corps sur le terrain. Les pointes, l’arme et les contours animés ne sont pas tous inclus dans la collision.
+
+Bloated reçoit un seuil horizontal de contact30px et garde une bande verticale18px entre les pieds, la visibilité et l’aggro. Chud conserve sa portée et sa préparation de mêlée. Enfin, le sprite du joueur passe au premier plan des acteurs : le dessin peut encore se chevaucher, mais le chevalier reste visible. Les contrôles ciblés vérifient les deux côtés du seuil, la hauteur, les bords et le volume interrogé par les armes. Le jugement sur la lisibilité et la difficulté appartient encore au playtest humain.
+
+Le pilote a révélé un raccord impossible sous l’arche N4 : la marche accolée au plafond laissait16px de hauteur pour un corps18px. Retirer une colonne de deux tuiles au bout de la marche laisse le chevalier descendre vers le passage bas. C’est une correction locale du terrain et de son générateur.
+
+
+## Clôture RUN-020 et préparation RUN-021
+
+L’humain accepte RUN-020 en l’état. Cela clôt le résultat testé de cette run, sans affirmer que la taille des niveaux et l’équilibrage sont définitifs. Ses remarques deviennent des travaux identifiés de RUN-021 : cohérence visuelle Claude, animation Archer et audio, puis ajustements de portée/cadence et de poursuite par Codex. Aucune valeur de gameplay n’a changé pendant ce lancement.
+
+Un niveau édité manuellement devient la référence à préserver. Un générateur ancien ne connaît pas les décisions prises dans l’éditeur : le rejouer peut détruire ce travail, même si les tests attendent son ancien résultat. On conserve donc les scènes et les changements humains, puis on adapte les tests. Une review ou un audit observe et décrit ; elle n’autorise pas à effacer ou refaire le terrain.
+
+Le clip de l’Archer sert de point de départ à la reproduction, pas de preuve de cause. Il faut observer l’animation et son état dans Godot pour distinguer un dessin mal cadré d’un changement d’état de mouvement. Les contrats de RUN-021 demandent cette preuve et définissent à quel moment Claude remet le fichier partagé à Codex. La production et sa validation restent à effectuer.
+
+
+## RUN-021 — Sentinelles et portée des tireurs
+
+Les bornes d’une patrouille décrivent un intervalle autour du point de départ. Lorsque ses deux bornes sont égales, marcher fait immédiatement sortir de cet intervalle, puis repartir dans l’autre sens : l’Archer se retournait sans arrêt sur place. Le correctif traite cette configuration comme une sentinelle. Il conserve l’orientation hors aggro, mais peut encore regarder le joueur, tirer, tomber ou reculer après un coup. Les niveaux et leurs perchoirs sont conservés ; on corrige le comportement qui interprète leurs données.
+
+La détection, la distance de déclenchement et le trajet d’une attaque sont différents. Les tireurs repèrent désormais plus loin et commencent leurs attaques à240px. Au premier relais, l’Archer restait immobile en aggro ; sa flèche conserve sa vitesse et sa durée, tandis que Sorcerer annonce toujours un point au sol figé. On teste les positions juste avant et après chaque limite ainsi que les murs, plutôt que de vérifier seulement une valeur exportée.
+
+Les élites poursuivent plus vite et le tir joueur devient légèrement plus lent et plus court. Les tests mesurent la distance réellement parcourue et les intervalles entre tirs, puis la recette doit exercer les routes avec ces changements combinés. La difficulté et le ressenti restent à valider humainement. Le raccord de musique N4 existant est réutilisé ; les candidats SFX préparés ne sont pas présentés comme des sons déjà retenus ou branchés.
+
+
+## RUN-021 — Poursuite et franchissement des obstacles
+
+La patrouille et la poursuite utilisent maintenant des décisions différentes. Hors aggro, les mobs terrestres gardent leurs limites et leur protection aux bords. En poursuite, Warrior, Archer, Sorcerer, Bloated et Chud cherchent un appui derrière ou sur l’obstacle et sautent si leur corps entier peut passer. Green, Purple et Red conservent leur comportement. La portée de détection, la visibilité et le délai de perte d’aggro ne changent pas : un mur peut encore faire perdre la cible après deux secondes.
+
+Une sonde au niveau des pieds ne suffit pas pour une élite large. Le contrôle utilise son rectangle de collision complet, puis vérifie l’espace de montée et le passage au-dessus de l’obstacle. La recherche locale accepte une marche de72px et un appui inférieur jusqu’à64px ; elle refuse un mur trop haut, un plafond trop bas et un vide sans appui accessible. Le saut conserve les collisions physiques. Ce franchissement local ne calcule pas un itinéraire global entre plusieurs étages. Les Skulls font un détour perpendiculaire à leur direction de poursuite autour d’un corps solide, avec un changement de côté si le premier passage se ferme.
+
+L’Archer avance à22px/s quand la cible est hors portée ou momentanément masquée, puis se stabilise au sol pour tirer dans sa portée de240px avec une ligne de vue libre. Les attaques terrestres ne démarrent plus en plein saut, ce qui permet de terminer la trajectoire. Les coffres et les objets ramassables sont déjà des zones d’interaction, sans corps solide : il n’est pas nécessaire de désactiver les collisions des mobs pour les traverser.
+
+Le coffre common tire désormais son objet directement parmi les niveaux0,1,2 avec des probabilités40,30,30 %. Les anciens10 % de niveau3 rejoignent le niveau2. Une amélioration est une proposition distincte : elle garde sa chance de5 % et peut encore faire passer une arme de2 à3. Le rare, les prix et la sauvegarde des choix restent inchangés.
+
+## RUN-021 — Redescente des élites, profondeur du fond et saut mural
+
+Un corps physique reste légèrement au-dessus du sol à cause de sa marge de collision. Une sonde descendante de64px pouvait donc manquer un sol situé64,075px sous les pieds d’une élite perchée : elle voyait un vide et s’arrêtait. La sonde inclut maintenant cette marge, et la limite de descente rejoint la limite de montée à72px. Un saut vers un appui vérifié réarme aussi la tolérance d’occlusion si la cible reste dans le rectangle de maintien. Cela permet de terminer le franchissement sans oublier le joueur au milieu ; sortir de portée conserve la perte après2s. Les tests physiques répètent montée, descente et retour pour les deux élites, au lieu de vérifier seulement leur arrivée au-dessus du bloc.
+
+Le ferry N2 existait et bougeait, mais le fond se dessinait ensuite par-dessus lui. À profondeur égale, l’ordre des nœuds compte. Les deux scripts de fond imposent désormais une profondeur absolue−100 dans l’éditeur et en jeu : un objet ordinaire placé avant eux reste devant le fond. La ligne rouge horizontale de l’éditeur est simplement l’axeY=0. Une comparaison rendue entre objet visible et caché peut prouver son apparition réelle à l’écran ; tester uniquement sa position ou sa propriété `visible` ne suffisait pas.
+
+Pour le wall jump, presser une direction et Space n’arrive pas toujours sur la même image physique. Le joueur garde donc le dernier contact mural pendant0,10s après le départ. Cette courte tolérance permet encore le rebond si la direction opposée arrive légèrement avant Space. Le rebond consomme cette mémoire, et un nouveau contact devient utilisable après séparation physique. Le buffer existant fonctionne également juste avant l’arrivée au mur. Le double saut reste verrouillé après un wall jump jusqu’au sol : la correction de fluidité ne réarme pas une charge aérienne. Les tests couvrent les deux côtés, plusieurs décalages entre entrées, le retour au mur et l’expiration de la tolérance ; le ressenti reste à essayer humainement.
+
+## RUN-021 — Pourquoi la plateforme suspendue bloquait encore l’élite
+
+Les tests précédents prouvaient les allers-retours sur des blocs pleins. Une plateforme suspendue pose un autre problème : une sonde verticale partant au-dessus du toit peut voir son dessus, alors que le mob se trouve déjà dessous. Tenter de sauter à cet endroit est impossible, car son corps touche le plafond. Une sonde depuis les pieds distingue maintenant le sol inférieur du toit et permet de marcher dessous quand ce passage conduit au joueur.
+
+Dans le N2, le passage fait48px de haut pour un corps d’élite de40px. Les piques à sa sortie réduisent cette hauteur à36px : le mob ne peut pas physiquement sauter par-dessous. Il cherche donc un bord dégagé en reculant sur des appuis sûrs, puis saute sur le toit et redescend. La recherche reste locale et bornée à144px ; elle ne traverse ni vide ni mur. Le recul est un déplacement réel, pas une affectation de position.
+
+Une cible peut rester cachée par le toit pendant la traversée. Un déplacement réellement effectué sur un appui vers elle, ou le long du détour vérifié, renouvelle alors la courte tolérance d’occlusion. Rester immobile contre un obstacle ne suffit pas ; sortir de portée conserve la perte après2s. Les nouveaux scénarios distinguent passage libre, sortie fermée, cible sur le toit, plusieurs phases de patrouille, changement de côté, mort, pause et terrain infranchissable. Cette couverture évite de confondre un seul saut réussi avec une poursuite complète.
+
+
+## RUN-021 — Un stock courant et un stock d’entrée
+
+Le joueur possède deux petits compteurs : flèches et couteaux. Un projectile créé enlève une unité du compteur correspondant. Ramasser un item en ajoute jusqu’au plafond ; ce qui ne rentre pas reste au sol. Les caisses et tonneaux peuvent être cassés à l’épée : il reste donc un moyen de se ravitailler quand le compteur vaut zéro. Leurs collisions reçoivent les attaques sans bloquer la marche.
+
+Le jeu garde séparément une photo des stocks à l’entrée du niveau. Pendant l’essai, seuls les compteurs du joueur changent. À la mort ou au restart, il recharge cette photo. Lors d’une sortie réussie, il prend une nouvelle photo des stocks restants et l’enregistre avec le niveau suivant. Ainsi N2 terminé avec2flèches donne2flèches à l’entrée de N3 ; en ramasser5 puis mourir dans N3 ramène à2. Les achats et autres sauvegardes intermédiaires utilisent toujours la photo d’entrée : ils ne permettent pas de conserver le loot d’une tentative ratée.
+
+Les piques rétractables avaient un petit socle2px au-dessus du sol. Même sans pointes actives, ce rebord gênait la marche. Le socle est désormais encastré : sa surface arrive au plan de pose, et il reste présent pour les pièges suspendus. Le comportement des pointes et leur danger restent ceux du cycle existant.
+
+
+## RUN-021 — Donner une marge à l'esquive et stabiliser une poursuite
+
+Le rectangle de Bloated sert à se déplacer sur le terrain et à recevoir les coups. Ses dégâts de contact utilisent une autre vérification de distance entre les pieds. Réduire seulement le rectangle n'aurait donc pas changé les collisions qui blessent. Sa poursuite passe de60 à48px/s : le joueur gagne de l'avance pendant son double saut. Les tests comparent les mêmes commandes avant/après, dans les deux sens, puis isolent Bloated sur le terrainN2 existant. Le bon timing reste nécessaire.
+
+Un mob qui regarde le joueur calcule normalement s'il est à gauche ou à droite. Si le joueur est juste dessous, un minuscule déplacement peut inverser ce choix à chaque frame : le mob tremble et ses petits pas entretiennent sa poursuite. Une tolérance de2px stabilise ce choix. Le cap reste aussi fixe pendant un saut ; le mob décide à nouveau sur son prochain appui. Cela ne supprime pas la recherche d'un détour praticable vers un toit.
+
+
+## RUN-021 — Un même Ferry, deux axes
+
+Changer le script d'une instance ne suffit pas toujours à changer ses valeurs : Ferry2 était encore une instance de la scène horizontale et gardait son Travel `(144,0)`. Le test exécuté avant correction confirme qu'il avançait enX malgré le script vertical. Ferry2 référence désormais la scène verticale, qui définit explicitement Travel `(0,144)` et réutilise le script commun. Les positions et le terrain humains sont conservés.
+
+DansGodot, sélectionner le Ferry lui-même, puis modifier Travel dans l'inspecteur. X non nul etY zéro donnent un déplacement horizontal ; X zéro etY non nul donnent un déplacement vertical. Y positif descend, Y négatif monte. Position est le départ, Travel le déplacement jusqu'à l'autre bout ; Period est le temps de l'aller-retour complet. On peut donc modifier la distance et la vitesse sans créer un nouveau script. Les tests vérifient le mouvement des deux variantes et le transport d'un vrai joueur en montée comme en descente.
+
+
+## RUN-021 — Une ouverture de coffre en deux temps
+
+Le paiement d'un coffre reste au même endroit dans `level.gd` : E débite les shards, le coffre est consommé et la fenêtre de récompense devient l'unique « modal » du niveau. La seule différence est l'ordre d'affichage : au lieu d'ouvrir tout de suite les deux cartes, le niveau demande à `scripts/chest_reveal.gd` de présenter le coffre. Ce `CanvasLayer` affiche « Treasure Found! » et attend Open. Quand l'animation atteint son flash, il émet le signal `revealed`, et le niveau ouvre alors la fenêtre de cartes existante, inchangée.
+
+Le jeu est en pause pendant toute la séquence ; le calque utilise donc `PROCESS_MODE_ALWAYS` pour continuer à animer et à lire le clavier. Le E qui paie arrive dans la même frame que l'ouverture de la fenêtre : un garde (`opened_frame`) l'empêche d'appuyer aussi sur Open, comme dans les menus. Le dessin passe par `_draw()` avec une transformation d'échelle 3 : le coffre et tous les effets (faisceau, étincelles, rayons) tombent sur la même grille de gros pixels. Le faisceau et le flash utilisent un mélange additif, qui éclaircit vers le blanc au lieu de voiler l'image en gris.
+
+
+## RUN-021 — La caméra suit aussi les agrandissements verticaux
+
+La caméra était toujours attachée au joueur, mais le niveau lui imposait un rectangle fixe dont le haut était à Y = −224. Avec une fenêtre de jeu haute de 360 px, son centre ne pouvait pas monter au-dessus de Y = −44 : la moitié de l'écran, 180 px, doit rester dans ce rectangle. Le nouveau terrain de N2 monte jusqu'à Y = −336 ; le joueur pouvait donc sortir par le haut de l'image pendant que la caméra restait bloquée.
+
+Au chargement, le niveau calcule maintenant une limite verticale à partir du Terrain réellement peint et des deux bouts de la course de chaque Ferry. Une marge de 256 px permet de garder le joueur et ses sauts dans le cadre ; le calcul tient également compte du zoom et du décalage vertical de la caméra. Dans le N2 actuel, le haut de la caméra passe à −592, tandis que le bas reste à 304. Les limites gauche/droite et le suivi lissé restent ceux du niveau.
+
+Pour ajouter du terrain en hauteur dans Godot, sauvegarder la scène puis relancer le niveau : la caméra s'adapte sans retoucher ses limites. Sur le nœud racine, Auto Camera Vertical Bounds active ce calcul ; Camera Vertical Padding règle sa marge. Pour un cadrage totalement manuel, désactiver ce mode et régler Camera Bounds. Ce réglage de caméra n'agrandit pas les murs/plafonds physiques WorldBounds ni le seuil mortel Void Y.
+
+Les vérifications distinguent des positions injectées pour contrôler le cadrage et un vrai trajet sur Ferry2, avec physique du joueur et déplacement de la plateforme. Des cellules supplémentaires sont ajoutées uniquement aux scènes en mémoire des tests pour vérifier les futures extensions ; aucune scène de niveau humaine n'est réécrite.
+
+
+## RUN-021 — Choisir et personnaliser les commandes
+
+Les scripts du joueur continuent de lire des actions comme `jump` ou `attack`. Une action représente l’intention, tandis qu’InputMap décide quelle touche ou quel bouton la déclenche. Le nouveau singleton `Controls` remplace ces attributions selon le profil choisi ; il n’ajoute pas de mécanique de combat. Un clic gauche maintenu produit donc exactement le maintien d’Attaque existant, avec les mêmes délais entre les coups et les mêmes tirs horizontaux.
+
+AZERTY et QWERTY occupent les mêmes positions physiques : le doigt posé sur A en QWERTY se pose sur Q en AZERTY. Le mouvement utilise cette position, tandis que les textes affichent la lettre du profil. Le clavier classique reste distinct : A y change l’équipement ; en QWERTY souris, A sert à aller à gauche. Un profil évite d’activer ces deux intentions à la fois. Le menu Controls, au titre ou dans la pause, permet de choisir un profil, réattribuer une action et revenir aux valeurs d’origine. Les conflits sont refusés ; Échap peut annuler une capture.
+
+Les préférences vont dans `user://controls.json`, séparément de la partie. Mourir ou commencer une nouvelle partie conserve donc les commandes. Le chargement vérifie tout le fichier avant d’appliquer les valeurs. Une écriture défaillante garde le profil et les attributions précédents ; le menu affiche l’erreur. Les tests utilisent leurs propres chemins et profils pour protéger les réglages réels.
+
+Un clic dans un menu est aussi reconnu par Input comme un bouton maintenu. Dire à Godot que l’interface a traité l’événement ne suffit pas à effacer cet état, car le joueur lit Input directement. Le niveau attend donc le relâchement des commandes d’action avant de lui rendre le contrôle. Les tests tiennent volontairement le clic Resume, Continue ou Accept pendant plus d’une seconde : aucune nouvelle attaque n’arrive à la reprise ; une pression suivante fonctionne. Les indications de porte, dialogue, coffre et pause suivent aussi les touches personnalisées.
+
+Les pilotes vérifient les événements clavier/souris et le rendu à 640×360, ainsi que la sauvegarde/relecture dans deux processus. Ils ne jugent pas le confort des doigts : ce dernier reste à éprouver en jouant. Clic droit et Maj sont déjà attribués aux actions spéciale/impact prévues, mais ces actions n’ont toujours pas de code gameplay.
+
+## RUN-021 — Descendre dans une pièce sous la limite du vide
+
+La mort par le vide venait d'une ligne horizontale : sous y=304, le niveau tuait le joueur même s'il existait maintenant un sol plus bas. Deux rectangles permettent une exception locale dans le puits et la pièce ajoutée à N2. La ligne reste mortelle ailleurs. Les murs et le sol peints à la main n'ont pas été réécrits ; la caméra s'adapte déjà à leur hauteur.
+
+Les six Slimes de la pièce gardent leurs patrouilles gauche/droite et la détection des bords. Chacun possède désormais ses propres bornes, une vitesse entre 46 et 56 pixels par seconde et un délai variable avant un demi-tour. Le hasard désynchronise leurs déplacements, tout en les gardant dans leurs trajets. Ces options sont désactivées pour les anciens Slimes. Les six récompenses valent deux shards chacune, soit douze au total, crédités selon les règles de récompense existantes.
+
+Le test fait tomber réellement le joueur depuis le dessus de la trappe, attend son ouverture puis vérifie son arrivée vivant au fond. Il observe ensuite les déplacements et tue les six Slimes pour mesurer les shards reçus. Sept suites ciblées passent leurs 339 contrôles ; le confort et la difficulté de cette pièce restent à éprouver en jouant.
+
+## RUN-021 — Séparer les étages des Swarms de N4
+
+Le déclencheur d'un Swarm est un rectangle autour de son node, et non un rayon qui tient compte des murs. Avec une hauteur de 240 pixels, un Swarm posé à y=355 surveillait aussi y=235 : il apparaissait donc quand le joueur marchait sur l'étage à y=240. Les trois Swarms de l'extension basse ont maintenant des rectangles moins hauts, décalés vers le bas, sans déplacer leurs nodes. Les deux Swarms du couloir activent entre y=336 et y=448 ; celui des passages profonds entre y=448 et y=592. Leurs points d'apparition sont placés dans l'espace libre entre les dalles et les colonnes.
+
+Comme pour N2, un rectangle local permet de descendre sous l'ancien seuil de vide dans cette extension. Le terrain manuel est conservé. Les chutes hors de la zone autorisée ou sous son fond restent mortelles. Les tests utilisent le vrai terrain et observent les déclencheurs en déplaçant les pieds du joueur d'un étage à l'autre ; les chutes jusqu'aux deux plateformes utilisent sa physique réelle. Ils vérifient aussi qu'une sortie/réentrée du Swarm ne permet pas de gagner deux fois la récompense d'un crâne déjà tué. Les quatre suites ciblées passent 208 contrôles ; le combat dans la nouvelle zone reste à éprouver en jouant.
+
+## RUN-021 — Un Swarm déclenché par l'entrée dans une pièce ouverte
+
+SkullSwarm7 surveillait un rectangle plus large que la pièce : le joueur pouvait le déclencher depuis l'extérieur. Son rectangle suit maintenant l'intérieur, et son activation exige aussi que MechanismDoor5 soit ouverte. Ouvrir la porte seul ne suffit pas ; le joueur doit entrer. Les autres Swarms n'ont pas cette condition supplémentaire, car leur référence de Gate reste vide.
+
+Les quatre points d'apparition sont dans la pièce et hors des murs. À la sortie, les survivants disparaissent ; à la réentrée, seuls les slots non tués reviennent, avec les mêmes règles de shards qu'avant. Le pilote vérifie le blocage et le franchissement physique de la porte, les deux conditions d'activation, les quatre côtés extérieurs et les récompenses après une sortie/réentrée. Trois suites passent 152 contrôles automatisés ; le ressenti de la pièce reste à valider en jouant.
+
+
+## RUN-021 — Cacher une salle derrière un Secret Wall
+
+Le mur secret était solide, mais le coffre et le bonus HP derrière étaient déjà visibles. Le nouveau masque dessine des pierres par-dessus toute la cavité. Il reprend les tuiles voisines, avec les mêmes couleurs et les mêmes variations. Il couvre aussi le plafond et le sol : leurs anciennes arêtes auraient laissé deviner une pièce vide. Le vrai terrain reste intact ; le masque ne change pas les collisions.
+
+Une attaque commence par sauvegarder la découverte. Si la sauvegarde échoue, le mur et le masque restent en place et aucun son de révélation n'est joué. Si elle réussit, les pierres deviennent progressivement transparentes pendant0,6seconde, accompagnées de l'effritement et d'un seul SFX. À la fin, le passage devient traversable et les récompenses sont disponibles. La pause arrête le fondu.
+
+Le code distingue donc « secret découvert » et « passage accessible ». Pendant le fondu, le premier est vrai, le second reste faux. Cette distinction empêche une deuxième attaque de rejouer le son et bloque le coffre ou le bonus HP jusqu'à la fin. Les objets qui ne sont liés à aucun secret continuent de fonctionner normalement.
+
+Après une mort ou une reprise, la sauvegarde indique déjà que le secret a été trouvé : la pièce apparaît directement et le passage est ouvert. Il ne faut pas rejouer la découverte à chaque chargement. New Game efface ce flag et remet le secret fermé. Si ta partie actuelle l'avait déjà découvert, elle conservera donc la cache ouverte.
+
+Les tests ont exercé les vraies attaques, le blocage physique, les récompenses, la pause et trois processus de sauvegarde/reprise/reset. Les captures montrent la maçonnerie fermée, le milieu du fondu et la pièce ouverte au zoom1,2×. Les793contrôles ciblés passent ; la suite globale rencontre trois échecs Swarm déjà présents sans cette modification. Ces vérifications ne remplacent pas ton essai de la difficulté à trouver le secret ni ton écoute du SFX en jeu.
+
+## RUN-021 — Sortie de N4 sous l'ancien seuil de vide
+
+La Gate finale et la sortie ont été placées sous y=304. Une exception locale permet d'y descendre, tandis que la caméra suit maintenant l'extension jusqu'à x=5152. Le test vérifie aussi les collisions : retirer la mort ne suffisait pas, car le dernier couloir avait seulement 16 pixels entre plafond et sol, pour un corps joueur de 18 pixels. Onze tiles de la rangée inférieure du plafond ont été retirées ; le passage mesure maintenant 32 pixels et le personnage peut atteindre réellement la zone de sortie.
+
+`period=4.0` signifie que Ferry6 réalise un cycle complet en quatre secondes : deux secondes pour aller à l'autre extrémité, deux pour revenir. La valeur est définie sur cette instance ; les réglages manuels de la scène source et des autres ferries sont conservés. Les quatre ennemis de la salle CoinDoor utilisent une récompense locale de deux shards, soit huit au total. Les autres ennemis continuent d'utiliser la table de leur type.
+
+Le pilote mesure le cycle du ferry, tue les quatre ennemis pour vérifier leurs gains, ouvre la Gate avec son coût réel et traverse les collisions jusqu'à l'ExitArea. Trois suites passent 161 contrôles. Les positions de départ sont injectées et les combats isolés ; le parcours complet et son ressenti restent à vérifier en jouant.
+
+
+## RUN-021 — Donner un indice au mur secret et expliquer sa découverte
+
+Claude a dessiné trois petits indices : fissures, glow et teinte. Ils se superposent seulement à l'entrée du mur ; la salle reste entièrement couverte. Un fichier `SecretWallStyle` garde les textures, couleurs et intensités. Dans l'Inspector du mur, `hint_style` permet de choisir un fichier existant ou sa copie avec des couleurs adaptées à un autre biome. Le premier mur N4 utilise `n4_cracks.tres`.
+
+L'introduction est activée seulement sur ce mur. Le niveau mesure la distance au joueur et lance un rayon physique vers l'entrée : être juste au-dessus derrière un plafond ne suffit pas à ouvrir le message. Après un coup, un signal distinct annonce que le fondu est terminé et le passage accessible ; c'est à ce moment que l'explication peut apparaître.
+
+Les fenêtres utilisent les menus existants. Continue sauvegarde leur acquittement dans `completed_dialogues`, donc une reprise de partie ne recommence pas l'explication. New Game remet ces informations à zéro ; Escape suit la règle habituelle des tutoriels et ferme seulement pour la tentative. Les tests exercent aussi la sauvegarde échouée, sa reprise et les commandes maintenues. La nouvelle discrétion des indices et le confort de ces fenêtres restent à apprécier en jouant.
+
+
+## RUN-020–021 — Audit de raccordement du 9 octobre 2026
+
+Un test peut devenir faux lorsque le niveau est édité à la main : il faut comparer son attente au contrat accepté et à la scène actuelle avant de modifier le jeu. Ici, N4 contient désormais Bloated à la place du Red Slime attendu par l’ancien contrôle. Le test du ferry doit suivre une montée complète calculée avec sa période actuelle, puis mesurer le cadrage ; un nombre de frames hérité d’un ancien trajet ne décrit plus le même mouvement. Les contrôles du mur secret attendent la fin du fondu et l’ouverture physique, et le tutoriel N1 vérifie les touches réellement attribuées.
+
+Le Swarm4 avait en revanche un défaut de placement : sa zone commençait un pixel trop haut et deux crânes touchaient le plafond à l’apparition. Le correctif ne change que trois valeurs de son instance ; le terrain reste identique. Le test vérifie les deux côtés de la limite (335 exclu, 336 inclus), les volumes physiques des crânes et l’absence de récompense dupliquée à la réentrée.
+
+Enfin, Godot distingue un événement consommé par un menu et l’état global d’une action dans Input. Un clic hors du menu pouvait encore être lu comme « interact » si ce bouton était remappé. Le menu marque maintenant la frame comme traitée même hors des choix, tout en conservant les vrais clics sur les lignes. Le nouveau test reproduit le défaut avant correction et couvre interaction, navigation et pause attribuées à la souris. Les résultats de recette et leurs limites sont consignés dans le journal.

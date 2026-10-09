@@ -53,12 +53,12 @@ func run() -> void:
 	initial_spikes.initial_phase = 2.1
 	room.add_child(initial_spikes)
 	initial_spikes.set_physics_process(false)
-	check(initial_spikes._art.animation == &"extended" and not initial_spikes._voice.playing, "initial dangerous phase is settled and silent")
+	check(initial_spikes._art.animation == &"extended" and initial_spikes.find_children("*", "AudioStreamPlayer2D", true, false).is_empty(), "initial dangerous phase is settled and silent")
 	initial_spikes.cycle_time = 0.0
 	initial_spikes._update_phase()
 	initial_spikes.cycle_time = 2.1
 	initial_spikes._update_phase()
-	check(initial_spikes._art.animation == &"extend" and initial_spikes._voice.playing, "later extension plays transition and cue")
+	check(initial_spikes._art.animation == &"extend" and initial_spikes.find_children("*", "AudioStreamPlayer2D", true, false).is_empty(), "later extension plays transition, silently (RUN-021)")
 	for angle in [0.0, PI / 2.0, PI, -PI / 2.0]:
 		await reset()
 		var spikes := trap("retractable_spikes", Vector2(200, 180))
@@ -90,7 +90,10 @@ func run() -> void:
 			await frames(1)
 			if blocked: break
 		await frames()
-		check(blocked and player.health_units == 25, "extended solid points deal half HP through Shield at rotation %.2f" % angle)
+		check(blocked and player.health_units == 30 and player.velocity == Vector2.ZERO and player.knockback_time == 0.0, "Shield blocks extended points damage/recoil while keeping solidity at rotation %.2f" % angle)
+		player.magic_shield_time = 0.0
+		await frames()
+		check(player.health_units == 25, "extended solid points deal half HP when Shield ends at rotation %.2f" % angle)
 		check(player.velocity.dot(normal) > 170 and player.hit_stun_time == 0.0, "rotated solid trap recoil/profile %.2f" % angle)
 		player.dead = true
 		var hp: int = player.health_units
@@ -171,7 +174,10 @@ func run() -> void:
 	await frames()
 	hit = player.move_and_collide(Vector2(50, 0))
 	await frames()
-	check(hit != null and player.health_units == 20, "plant blocks movement and deals one HP through Shield")
+	check(hit != null and player.health_units == 30 and player.knockback_time == 0, "plant remains solid but Shield blocks its damage and recoil")
+	player.magic_shield_time = 0.0
+	await frames()
+	check(player.health_units == 20, "plant damage resumes after Shield ends while still touching")
 	check(player.knockback_time > 0 and player.hit_stun_time == 0, "plant uses solid trap response")
 
 	await reset()
@@ -181,7 +187,11 @@ func run() -> void:
 	await frames()
 	var projectile := shot(Vector2(40, 151), Vector2.RIGHT, 12000.0)
 	await frames(2)
-	check(not is_instance_valid(projectile) and player.health_units == 20, "fast turret projectile swept hit deals one HP through Shield")
+	check(not is_instance_valid(projectile) and player.health_units == 30 and not player.attack_cancelled and player.invulnerability == 0.0, "Shield absorbs fast turret projectile without damage or interruption")
+	player.magic_shield_time = 0.0
+	projectile = shot(Vector2(40, 151), Vector2.RIGHT, 12000.0)
+	await frames(2)
+	check(not is_instance_valid(projectile) and player.health_units == 20, "fast turret hit deals one HP after Shield ends")
 	check(player.attack_cancelled and player.hit_stun_time == 0 and player.knockback_time == 0, "turret projectile interrupts without recoil/hit stun")
 	await reset()
 	player = player_at(Vector2(100, 160))

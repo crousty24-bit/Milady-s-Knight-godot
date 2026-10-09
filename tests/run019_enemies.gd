@@ -33,8 +33,14 @@ func solid(at: Vector2, size: Vector2) -> StaticBody2D:
 	return body
 func fixture(at: Vector2 = Vector2(150, 200), floor_width: float = 600.0) -> void:
 	if is_instance_valid(room):
+		paused = true
+		for audio_type in ["AudioStreamPlayer", "AudioStreamPlayer2D"]:
+			for emitter in room.find_children("*", audio_type, true, false): emitter.stop()
+		# --fixed-fps advances timers faster than the independent audio thread.
+		OS.delay_msec(300)
 		room.queue_free()
 		await frames(2)
+	paused = false
 	room = RegisteredRoom.new()
 	root.add_child(room)
 	current_scene = room
@@ -53,7 +59,60 @@ func reward_received(value: int, _at: Vector2) -> void:
 	reward += value
 	deaths += 1
 
+func stationary_patrol() -> void:
+	await fixture(Vector2(1000, 200))
+	player.set_physics_process(false)
+	var archer = mob("skeleton_archer")
+	archer.patrol_left = 0.0
+	archer.patrol_right = 0.0
+	await frames(2)
+	var start_x: float = archer.position.x
+	var initial_direction: int = archer.direction
+	var turns := 0
+	var moving_frames := 0
+	for i in range(60):
+		await frames(1)
+		if archer.direction != initial_direction: turns += 1
+		initial_direction = archer.direction
+		if absf(archer.velocity.x) > 0.01: moving_frames += 1
+	print("OBSERVATION stationary archer: turns=%d moving_frames=%d" % [turns, moving_frames])
+	check(turns == 0 and moving_frames == 0 and is_equal_approx(archer.position.x, start_x), "zero-width patrol holds position and facing for every physics frame")
+	check(archer.get("_art").animation == &"idle", "stationary archer uses idle instead of walking in place")
+	player.position = Vector2(180, 200)
+	await frames(3)
+	check(archer.aggro and archer.direction == 1 and archer.pending_attack == &"arrow", "stationary archer acquires and faces player with normal arrow windup")
+	await frames(20)
+	check(archer.active_attacks.size() == 1, "stationary archer still releases its arrow")
+	player.position = Vector2(1000, 200)
+	await frames(130)
+	var retained_direction: int = archer.direction
+	start_x = archer.position.x
+	await frames(30)
+	check(not archer.aggro and archer.direction == retained_direction and is_equal_approx(archer.position.x, start_x), "aggro loss returns to stationary patrol with stable facing")
+	archer.take_damage(0.2, Vector2(-60, 0))
+	await frames(3)
+	check(archer.position.x < start_x and archer.knockback_time > 0, "stationary patrol preserves damage recoil")
+	await frames(30)
+	start_x = archer.position.x
+	await frames(30)
+	check(archer.velocity.x == 0 and is_equal_approx(archer.position.x, start_x) and archer.direction == retained_direction, "stationary patrol does not walk back or turn after recoil")
+	archer.patrol_left = 10.0
+	archer.patrol_right = -10.0
+	await frames(10)
+	check(archer.velocity.x == 0 and archer.direction == retained_direction, "invalid negative-width patrol also stays stationary")
+
+	await fixture(Vector2(1000, 200))
+	player.set_physics_process(false)
+	archer = mob("skeleton_archer")
+	archer.patrol_left = -8.0
+	archer.patrol_right = 8.0
+	await frames(5)
+	check(archer.velocity.x < 0 and archer.position.x < archer.origin_x, "positive-width archer patrol still walks")
+	await frames(25)
+	check(archer.direction == 1 and archer.velocity.x > 0, "positive-width patrol still turns at its left boundary")
+
 func run() -> void:
+	await stationary_patrol()
 	await fixture(Vector2(300, 200))
 	var profiles := [["red_slime", 2.0, 1], ["bloated_slime", 5.0, 5], ["skeleton_warrior", 2.0, 1], ["skeleton_archer", 2.0, 1], ["blight_sorcerer", 2.0, 1], ["chud_blob", 10.0, 5], ["possessed_skull", 1.0, 1]]
 	for profile in profiles:
@@ -70,23 +129,56 @@ func run() -> void:
 		check(deaths == 1 and reward == profile[2], "%s unique defeat" % profile[0])
 		await frames(20)
 
-	await fixture(Vector2(160, 200))
+	await fixture(Vector2(330, 200))
+	player.set_physics_process(false)
 	var warrior = mob("skeleton_warrior")
+	warrior.chase_speed = 0
+	warrior.patrol_speed = 0
 	await frames(2)
 	check(room.get("registered").has(warrior), "dynamic ground enemy registers with level ancestor")
-	check(warrior.aggro and warrior.velocity.x > 0, "warrior sees rectangle and pursues")
+	check(warrior.aggro, "warrior acquires visible player at 230px")
+	player.position = Vector2(380, 200)
+	await frames(3)
+	check(warrior.aggro and warrior.aggro_lost_time == 0.0, "exit envelope retains visible player at 280px without countdown")
+	player.position = Vector2(160, 200)
 	var wall := solid(Vector2(132, 160), Vector2(12, 80))
-	await frames(2)
-	check(not warrior.aggro, "terrain occludes aggro immediately")
+	await frames(60)
+	check(warrior.aggro, "brief terrain occlusion retains aggro")
+	paused = true
+	var paused_loss: float = warrior.aggro_lost_time
+	await frames(10)
+	check(warrior.aggro_lost_time == paused_loss, "pause freezes aggro loss countdown")
+	paused = false
 	wall.queue_free()
 	await frames(2)
-	check(warrior.aggro, "aggro reacquired after occlusion removed")
-	player.position = Vector2(360, 200)
+	check(warrior.aggro and warrior.aggro_lost_time == 0.0, "restored visibility resets loss countdown")
+	wall = solid(Vector2(132, 160), Vector2(12, 80))
+	await frames(125)
+	check(not warrior.aggro, "continuous occlusion loses aggro after two seconds")
+	await frames(3)
+	check(not warrior.aggro, "terrain blocks fresh aggro acquisition")
+	wall.queue_free()
+	player.position = Vector2(380, 200)
 	await frames(2)
-	check(not warrior.aggro, "rectangle exit loses aggro")
+	check(not warrior.aggro, "exit envelope cannot acquire a fresh player at 280px")
+	player.position = Vector2(160, 200)
+	await frames(2)
+	check(warrior.aggro, "aggro reacquired within acquisition rectangle")
+	player.position = Vector2(600, 200)
+	await frames(60)
+	check(warrior.aggro, "rectangle exit retains aggro during grace period")
+	await frames(65)
+	check(not warrior.aggro, "continuous exit loses aggro after two seconds")
 	warrior.position = Vector2(170, 200)
+	warrior.patrol_speed = 24
 	await frames(2)
 	check(warrior.velocity.x < 0, "loss returns toward original patrol segment without teleport")
+	player.position = Vector2(200, 200)
+	await frames(2)
+	check(warrior.aggro, "living player reacquired before death")
+	player.dead = true
+	await frames(2)
+	check(not warrior.aggro and warrior.pending_attack == &"", "player death bypasses aggro grace immediately")
 
 	await fixture(Vector2(130, 200))
 	warrior = mob("skeleton_warrior", Vector2(110, 200))
@@ -105,10 +197,12 @@ func run() -> void:
 
 	await fixture(Vector2(130, 200))
 	warrior = mob("skeleton_warrior", Vector2(110, 200))
+	warrior.windup_duration = 3.0
 	await frames(2)
-	player.position = Vector2(350, 200)
-	await frames(25)
-	check(warrior.pending_attack == &"" and player.health_units == 30, "aggro loss cancels unreleased melee")
+	player.set_physics_process(false)
+	player.position = Vector2(600, 200)
+	await frames(125)
+	check(not warrior.aggro and warrior.pending_attack == &"" and player.health_units == 30, "delayed aggro loss cancels unreleased melee")
 
 	await fixture(Vector2(160, 200), 120)
 	warrior = mob("skeleton_warrior", Vector2(145, 200))
@@ -124,9 +218,10 @@ func run() -> void:
 	check(archer.aggro and archer.velocity.x == 0 and archer.windup_time > 0, "archer stationary with visible windup")
 	await frames(19)
 	check(archer.active_attacks.size() == 1, "archer releases a projectile")
-	player.position = Vector2(390, 200)
-	await frames(2)
-	check(not archer.aggro and is_instance_valid(archer.active_attacks[0]), "released arrow persists through lost aggro")
+	player.set_physics_process(false)
+	player.position = Vector2(600, 200)
+	await frames(125)
+	check(not archer.aggro and is_instance_valid(archer.active_attacks[0]), "released arrow persists through delayed aggro loss")
 	var attack = archer.active_attacks[0]
 	archer.take_damage(20, Vector2.ZERO)
 	check(attack.spent and not attack.is_physics_processing(), "source death disables projectile before deferred deletion")
@@ -137,13 +232,24 @@ func run() -> void:
 	archer = mob("skeleton_archer")
 	await frames(65)
 	check(player.health_units == 25 and player.knockback_time == 0 and player.hit_stun_time == 0, "enemy projectile hits half HP without recoil/hit-stun")
+	# A real impact frees the source-owned projectile, leaving a stale typed array
+	# entry until the next release. Exercise that lifecycle without queue_free or
+	# calling the release method: the same living archer must fire again naturally.
+	var spent_arrow = archer.active_attacks[0]
+	check(not is_instance_valid(spent_arrow), "first physical impact leaves freed projectile reference for pruning")
+	await frames(55)
+	check(archer.active_attacks.size() == 1 and is_instance_valid(archer.active_attacks[0]), "subsequent real archer release prunes freed reference and owns new projectile")
+	await frames(30)
+	check(player.health_units == 20, "second real projectile still reaches player after stale reference pruning")
 
 	await fixture(Vector2(180, 200))
 	archer = mob("skeleton_archer")
 	await frames(21)
 	wall = solid(Vector2(150, 180), Vector2(8, 40))
+	archer.cooldown = 0.0
 	await frames(45)
 	check(player.health_units == 30, "released arrow blocked by subsequently added terrain")
+	check(archer.aggro and archer.pending_attack == &"" and archer.active_attacks.size() == 1, "occlusion grace retains aggro without starting new ranged attacks")
 
 	await fixture(Vector2(180, 200))
 	var sorcerer = mob("blight_sorcerer")
@@ -171,9 +277,12 @@ func run() -> void:
 	player.position = Vector2(230, 200)
 	await frames(20)
 	check(attack.global_position == fixed_point, "announced ground point never follows moving player")
-	player.position = Vector2(380, 200)
-	await frames(2)
-	check(not sorcerer.aggro and is_instance_valid(attack), "committed zone survives aggro loss")
+	# Freeze the committed warning to inspect ownership after the longer grace.
+	attack.set_physics_process(false)
+	player.set_physics_process(false)
+	player.position = Vector2(800, 200)
+	await frames(125)
+	check(not sorcerer.aggro and is_instance_valid(attack), "committed zone survives delayed aggro loss")
 	sorcerer.take_damage(20, Vector2.ZERO)
 	await frames(2)
 	check(not is_instance_valid(attack), "source death cancels pending ground zone")
@@ -196,17 +305,53 @@ func run() -> void:
 	var bloated = mob("bloated_slime", Vector2(100, 200))
 	await frames(2)
 	check(player.health_units == 15 and bloated.get_meta("healing_profile") == "elite", "bloated contact deals 1.5 HP and elite metadata")
+	for gap in [31.0, 29.0]:
+		await fixture(Vector2(100 + gap, 200))
+		player.set_physics_process(false)
+		bloated = mob("bloated_slime", Vector2(100, 200))
+		bloated.chase_speed = 0
+		bloated.patrol_speed = 0
+		await frames(3)
+		check(player.health_units == (30 if gap == 31.0 else 15), "Bloated contact boundary at %.0fpx follows visual core" % gap)
+	await fixture(Vector2(125, 178))
+	player.set_physics_process(false)
+	bloated = mob("bloated_slime", Vector2(100, 200))
+	bloated.chase_speed = 0
+	bloated.patrol_speed = 0
+	await frames(3)
+	check(player.health_units == 30, "Bloated horizontal contact does not damage a player above its feet band")
+	for elite_scene in ["bloated_slime", "chud_blob"]:
+		await fixture(Vector2(300, 200), 120)
+		var elite = mob(elite_scene, Vector2(120, 200))
+		await frames(100)
+		check(elite.is_on_floor() and elite.position.x <= 157.0 - elite.get_node("CollisionShape2D").shape.size.x * 0.5, "%s wider body stops before unsupported edge (pos=%s floor=%s)" % [elite_scene, elite.position, elite.is_on_floor()])
+		# Intersect the actual upper/outer core, formerly outside the 20x22 body.
+		var point_query := PhysicsPointQueryParameters2D.new()
+		point_query.position = elite.global_position + Vector2(15, -30)
+		point_query.collision_mask = 4
+		var hits := elite.get_world_2d().direct_space_state.intersect_point(point_query)
+		check(hits.size() == 1 and hits[0].collider == elite, "%s upper outer core receives weapon physics queries" % elite_scene)
+	await fixture(Vector2(140, 200))
+	bloated = mob("bloated_slime", Vector2(100, 200))
+	bloated.set_physics_process(false) # Isolate weapon reach from contact/chase.
+	player.controls_enabled = true
+	player.facing = -1
+	Input.action_press("attack")
+	await frames(2)
+	Input.action_release("attack")
+	await frames(30)
+	check(bloated.health == 4.5, "real Sword0 input hits Bloated outer core for 0.5HP from 40px without body penetration (HP=%s)" % bloated.health)
 	await fixture(Vector2(120, 200))
 	var chud = mob("chud_blob", Vector2(100, 200))
 	await frames(23)
 	check(player.health_units == 10 and chud.get_meta("healing_profile") == "elite", "Chud melee deals 2 HP and elite metadata")
 
-	await fixture(Vector2(100, 200))
+	await fixture(Vector2(330, 200))
 	var zone = load("res://scenes/skull_swarm.tscn").instantiate()
 	zone.position = Vector2(100, 160)
 	room.add_child(zone)
 	await frames(2)
-	check(zone.skulls.size() == 4 and zone.get_child_count() == 4, "swarm creates four stable slots")
+	check(zone.skulls.size() == 4 and zone.get_child_count() == 4, "extended zone creates four stable slots at 230px from center")
 	paused = true
 	var skull_point: Vector2 = zone.skulls[0].global_position
 	await frames(5)
@@ -226,26 +371,33 @@ func run() -> void:
 	await frames(2)
 	player.position = Vector2(100, 200)
 	await frames(2)
-	check(zone.skulls.size() == 4, "reentry spawns four again")
-	for skull in zone.skulls:
-		skull.defeated.connect(reward_received)
-		skull.take_damage(1, Vector2.ZERO)
-	await frames(3)
-	check(reward == 4 and deaths == 8, "reentry kills pay zero after stable slots exhausted")
+	check(zone.skulls.size() == 0 and zone.get_child_count() == 0, "reentry cannot respawn four defeated slots")
+	check(reward == 4 and deaths == 4, "exhausted slots preserve four kills and four shard budget")
 	zone.reset_attempt()
 	await frames(2)
 	check(zone.skulls.size() == 4 and not zone.rewarded_slots.has(true), "attempt reset restores four slot eligibility")
+	zone.skulls[1].take_damage(1, Vector2.ZERO)
+	await frames(3)
+	check(zone.rewarded_slots == [false, true, false, false], "partial kill defeats only its stable slot")
 	player.position = Vector2(350, 200)
 	await frames(3)
 	check(zone.get_child_count() == 0 and reward == 4, "exit despawns survivors without rewards")
 	player.position = Vector2(100, 200)
 	await frames(2)
+	check(zone.skulls.size() == 3 and zone.get_child_count() == 3 and zone.rewarded_slots[1], "partial reentry restores only three surviving slots")
 	player.take_damage(0, Vector2.ZERO, SlicePlayer.DamageSource.VOID)
 	await frames(3)
 	check(zone.get_child_count() == 0 and not zone.occupied, "player death clears swarm immediately")
 
+	# Keep emitters alive while the audio server drains stopped random streams;
+	# sleeping only after queue_free cannot protect their playback teardown.
+	paused = true
+	for audio_type in ["AudioStreamPlayer", "AudioStreamPlayer2D"]:
+		for emitter in root.find_children("*", audio_type, true, false): emitter.stop()
+	OS.delay_msec(300)
 	room.queue_free()
 	await frames(3)
+	paused = false
 	OS.delay_msec(300)
 	print("RESULT ", checks, " RUN019 enemy checks; ", failures, " failures")
 	quit(failures)

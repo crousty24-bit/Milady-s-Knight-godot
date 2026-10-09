@@ -9,8 +9,8 @@ const BASES: Dictionary = {
 	"DarkScythe": [2.0, 2.5, 1.5, "melee", "Dark Scythe"],
 	"Warhammer": [1.5, 1.5, 0.8, "melee", "Warhammer"],
 	"Halberds": [1.0, 1.5, 2.0, "melee", "Halberds"],
-	"Longbow": [1.0, 1.5, 20.0, "ranged", "Longbow"],
-	"ThrowingKnives": [0.5, 1.0, 10.0, "ranged", "Throwing Knives"],
+	"Longbow": [1.0, 2.2, 11.0, "ranged", "Longbow"],
+	"ThrowingKnives": [0.5, 1.4, 6.5, "ranged", "Throwing Knives"],
 }
 
 static func stats(id: String) -> Dictionary:
@@ -24,7 +24,7 @@ static func stats(id: String) -> Dictionary:
 	return {
 		"damage": float(base[0]) + 0.5 * level,
 		"interval": float(base[1]) - 0.1 * level,
-		"reach": (float(base[2]) + (1.0 if ranged else 0.1) * level) * (16.0 if ranged else 24.0),
+		"reach": (float(base[2]) + (0.5 if ranged else 0.1) * level) * (16.0 if ranged else 24.0),
 		"slot": base[3], "name": base[4], "level": level,
 	}
 

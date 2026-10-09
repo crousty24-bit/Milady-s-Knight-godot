@@ -63,9 +63,9 @@ func run() -> void:
 	var hud = load("res://scenes/hud.tscn").instantiate()
 	room.add_child(hud)
 	hud.set_health(2.5, 3.0)
-	check(hud.get_node("Health").text == "HP 2.5" and hud.get_node("HealthHearts").displayed_half_hearts() == 5, "HUD shows exact half HP and five filled half-hearts")
+	check(hud.get_node("Health").text == "2.5" and hud.get_node("HealthHearts").displayed_half_hearts() == 5, "HUD shows exact half HP and five filled half-hearts")
 	hud.set_health(0.2, 3.0)
-	check(hud.get_node("Health").text == "HP 0.2" and hud.get_node("HealthHearts").displayed_half_hearts() == 1, "sub-half HP stays exact in text and rounds up to a visible half-heart")
+	check(hud.get_node("Health").text == "0.2" and hud.get_node("HealthHearts").displayed_half_hearts() == 1, "sub-half HP stays exact in text and rounds up to a visible half-heart")
 
 	var slime: SliceSlime = load("res://scenes/slime.tscn").instantiate()
 	slime.position = Vector2(300, 200)

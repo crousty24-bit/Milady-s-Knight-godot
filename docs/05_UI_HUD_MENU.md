@@ -43,7 +43,7 @@
 	- affichage dynamique avec animation lors du changements d'état des HP joueur : perte d'HP, gain HP
 	- affichage dynamique avec animation lors de mise à jour des gold coin et des shards
 	- slot équipement actif : focus visuel clair et distinct
-	- affichage des effets consommables dans coin supérieur droit : icon + durée restante d'effet du Magic Shield et/ou du Rage Drink
+	- affichage des effets consommables dans coin supérieur droit, sous la touche pause (confirmé par l'humain le 7 octobre 2026 après un essai en haut à gauche) : grande icon + durée restante d'effet du Magic Shield et/ou du Rage Drink
 	- le cooldown pour capacité arme légendaire (Dragon Slayer) + cooldown utilisation Fire Gauntlet : une jauge translucide se rempli progressivement dans le slot de l'arme pour signifier le cooldown = lorsque jauge a rempli le slot => cooldown passé et utilisation possible
 		- il faut prévoir une petite animation lorsque la jauge de cooldown est passée pour marquer visuellement au joueur que la capacité/utilisation est disponible
 
@@ -57,6 +57,9 @@
 ![[HUD UI BOSS FINAL.png]]
 
 - **UI/ HUD + fenêtre récompense ouverture de chest
+	- coffres payants (common/rare), RUN-021 : après le paiement (E), une fenêtre « Treasure Found! » montre le coffre fermé et un bouton **Open** (E ou clic gauche) ; Escape n'y fait rien, le refus reste possible sur les cartes
+	- Open lance l'animation (2,9 s jusqu'aux cartes, fondu 0,45 s) : secousses, ouverture du couvercle, faisceau de lumière qui s'élargit, étincelles et rayons, crescendo sonore, flash blanc puis fenêtre à deux slots ; **Espace** passe directement au flash
+	- coffre tuto gratuit (N1) : inchangé, fenêtre de choix directe
 
 ![[HUD UI FENETRE OPEN CHEST.png]]
 
@@ -342,3 +345,34 @@ Flèches haut/bas pour les menus, E pour confirmer, Escape pour fermer/revenir p
 Le menu ouvre New Game / Continue / Controls / Quit. Continue est indisponible sans sauvegarde lisible ; une v1 propose migration avec Cancel sélectionné par défaut. New Game avec un fichier existant exige confirmation, Cancel sélectionné par défaut, puis conservation de l'original avant remplacement. Pause propose Resume / Restart / Quit to menu ; restart et retour menu sont immédiats. Fermeture système termine le jeu et abandonne la tentative sans annuler les acquisitions/débits déjà durables.
 
 Deux slots HUD verticaux (mêlée/tir) sont retenus ; les choix de récompense dans un coffre restent horizontaux. La réalisation des slots/rewards vient en RUN-016. La présentation des menus et les assets/audio requis restent la contribution Claude ; le panneau fonctionnel de Codex ne vaut pas validation artistique.
+
+
+## Passe HUD RUN-021 — demande humaine du 7 octobre 2026
+
+- Seul l'avatar garde un cadre. HP, coins, shards, slots d'armes et munitions s'affichent sans panneau ni plaque de fond ; lisibilité assurée par l'ombre portée du texte et les contours des icônes.
+- Aucun libellé texte : les icônes nomment les valeurs (plus de « HP », « COINS », « SHARDS », « reserve/bank/current »). HP exact après les cœurs ; coins `07/12` (ou `07  OPEN` une fois la porte payée) ; shards juste à droite des coins, sur la même ligne : total puis gain courant non sauvegardé `+N` en ton atténué.
+- Slot actif : marqueur `>`, texte or et icône pleine ; slot inactif : icône légèrement atténuée.
+- Slots d'armes (troisième passe, 7 octobre 2026) : icône d'arme, nom seul (`Longsword`, sans chiffre de niveau), puis badge de niveau 12×12 juste après le nom (chiffre 5×7, couleurs de rang RUN-018 : gris 0, vert 1, bleu 2, rouge 3). Les cartes de récompense des coffres gardent leurs libellés et badges RUN-018.
+- Effet Magic Shield (seconde passe) : icône bouclier 24×24 en haut à droite sous ESC, secondes restantes en police 16 px à sa gauche, arrondies au supérieur ; clignote pendant les 2 dernières secondes comme l'aura. Une seconde rangée de cœurs décale coins/shards et slots d'une rangée.
+- Titrage de niveau (style Dark Souls) au premier chargement d'un niveau : nom centré (police 24 px), fondu d'entrée 1 s, maintien 3 s, fondu de sortie 1 s (5 s au total), sting sur le bus UI. Pas de nouveau titrage après mort ou restart ; relancé après retour au menu ou replay d'un niveau terminé. Noms : The Eidolon Vale, Blight Town, Black Forest, Forbidden Graveyard. Sting à −3 dB sur le bus UI. Une fenêtre système (mort, fin de niveau) masque le titre.
+- Message de mort centré à l'écran (le panneau n'est plus remonté dans le tiers supérieur).
+- Avatar (seconde passe) : cadre or rond 34×34 (quatre gemmes rouges), portrait 28×28 du chevalier vu de trois-quarts face, tourné vers la droite comme le sprite, plus détaillé (visière saillante, fente, dôme, épaulières articulées, manteau rouge). Le bandeau de dialogue garde l'ancien cadre carré.
+- Bonus HP : le nouveau cœur « pop » dans la barre (grossit au-delà de sa taille avec un halo, puis se pose), jamais à l'entrée du niveau.
+- Gains annoncés au-dessus du chevalier, même style que l'ancien « +N SHARDS » : `+N SHARDS` (violet), `+N ARROWS`/`+N KNIVES` (blanc pâle), `+N HP` soin réellement appliqué (vert), `+N MAX HP` (rouge clair). File d'attente : une ligne toutes les 0,14 s dans l'ordre des événements, chaque nouvelle ligne pousse les précédentes d'une ligne entière (aucun chevauchement), durée de vie 0,85 s. Le texte des shards quitte le cadavre ; l'éclat violet et son burst y restent. Le message HUD « NO ARROWS/KNIVES » reste près du compteur.
+
+
+### Commandes clavier + souris — 7 octobre 2026
+
+Contrat actuel dans [10_CONTROLS_KEYBINDS.md](10_CONTROLS_KEYBINDS.md) : profils AZERTY/QWERTY/classique/personnalisé depuis titre et pause, choix des menus et récompenses au survol/clic ou clavier. Les aides suivent le remappage. Entrée/flèches/Échap restent des secours de navigation. La fermeture d’une modale attend le relâchement des commandes d’action et des boutons souris pour éviter une attaque ou interaction à la reprise ; cela complète la règle E/F/Espace/Échap historique ci-dessus. Les réglages persistent séparément de la progression. La présentation existante des panneaux et les travaux HUD en cours sont conservés.
+- Quatrième passe (demande humaine du 8 octobre 2026) :
+	- HUD : plus de nombre à côté des cœurs ; seuls les cœurs (demi-cœur arrondi au supérieur, D01) montrent la vie. La valeur exacte reste calculée sur le label masqué `Health`.
+	- Fenêtre de récompense des coffres payants : toujours deux slots ; sans amélioration, le second est un slot vide « No upgrade » non sélectionnable. Plus aucun texte d'aide : un seul bouton « Accept » avec la touche d'interaction courante (E par défaut), cliquable, sous les cartes ; Escape refuse toujours, sans être affiché. La carte sélectionnée porte un halo or pulsé et la carte non sélectionnée est assombrie.
+	- Carte : icône d'arme 48×48 qui occupe la majeure partie de la carte, puis nom et badge de niveau 12×12 ; « +1 » vert en haut à droite pour l'amélioration.
+	- Animation d'ouverture : le coffre (×3) est centré horizontalement et verticalement entre la ligne du type de coffre et le bouton Open.
+
+
+## Introduction des Secret Walls — RUN-021, 9 octobre 2026
+
+Seul le premier mur N4 active cette introduction. Une première fenêtre contextuelle se déclenche à64px du centre de l'entrée avec ligne de vue physique dégagée : **A Strange Wall**, `There's something strange about this wall...`, bouton Continue. Elle n'apparaît pas depuis l'étage à travers un plafond. Après révélation ET fin du fondu0,6s : **Hidden Secrets**, `The world is full of secrets. Many lie hidden behind walls. Keep your eyes open.`, bouton Continue.
+
+Ces fenêtres réutilisent le modal existant, sa pause et sa garde de relâchement des commandes. Elles attendent un autre modal et ne s'affichent pas pendant une mort, une pause ou une fin de niveau. Continue enregistre `secret_wall_hint` ou `secret_wall_tutorial` dans `completed_dialogues` ; l'échec de sauvegarde propose le retry existant. Escape ferme pour la tentative sans acquittement durable. New Game efface ces acquittements. Une reprise du secret déjà ouvert ne rejoue aucun indice ni fondu ; l'explication jamais acquittée peut apparaître à l'approche de l'entrée ouverte. Une révélation à distance avant l'indice conduit directement à l'explication, après l'animation.

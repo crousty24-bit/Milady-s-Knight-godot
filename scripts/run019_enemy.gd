@@ -11,11 +11,15 @@ const HP = [5.0, 2.0, 2.0, 2.0, 10.0]
 const DAMAGE = [1.5, 0.5, 0.5, 0.5, 2.0]
 const REWARDS = [5, 1, 1, 1, 5]
 @export var kind: Kind = Kind.WARRIOR
+# -1 uses the reward associated with the enemy kind.
+@export_range(-1, 1000000, 1) var bonus_reward_override: int = -1
 @export var patrol_left: float = -40.0
 @export var patrol_right: float = 40.0
 @export var patrol_speed: float = 24.0
 @export var chase_speed: float = 48.0
-@export var aggro_size: Vector2 = Vector2(240, 96)
+@export var aggro_size: Vector2 = Vector2(480, 96)
+@export var aggro_exit_margin: Vector2 = Vector2(80, 32)
+@export_range(0.0, 5.0, 0.1) var aggro_loss_delay: float = 2.0
 @export var melee_range: float = 28.0
 @export var ranged_range: float = 140.0
 @export_range(0.05, 5.0, 0.05) var windup_duration: float = 0.3
@@ -32,6 +36,7 @@ var max_health: float:
 var bonus_reward: int
 var dead: bool = false
 var aggro: bool = false
+var aggro_lost_time: float = 0.0
 var direction: int = -1
 var origin_x: float
 var knockback_time: float = 0.0
@@ -41,12 +46,14 @@ var pending_attack: StringName = &""
 var attack_target: Vector2
 var target: SlicePlayer
 var active_attacks: Array[Node2D] = []
+var chase_detour_dir: int = 0
+var chase_detour_x: float = 0.0
 
 func _ready() -> void:
 	origin_x = global_position.x
 	max_health_units = HealthUnits.from_hp(HP[kind])
 	health_units = max_health_units
-	bonus_reward = REWARDS[kind]
+	bonus_reward = bonus_reward_override if bonus_reward_override >= 0 else REWARDS[kind]
 	set_meta("healing_profile", "elite" if kind in [Kind.BLOATED, Kind.CHUD] else "ordinary")
 	_build_art()
 	add_to_group("enemies")
@@ -65,54 +72,238 @@ func _clear_line(to: Vector2) -> bool:
 	ray.exclude = [get_rid()]
 	return get_world_2d().direct_space_state.intersect_ray(ray).is_empty()
 
-func _sees_player() -> bool:
+func _sees_player(retaining: bool = false) -> bool:
 	if not is_instance_valid(target) or target.dead: return false
 	var center := global_position + Vector2(0, -12)
 	var point := target.global_position + Vector2(0, -12)
-	return Rect2(center - aggro_size / 2.0, aggro_size).has_point(point) and _clear_line(point)
+	var size := aggro_size + aggro_exit_margin * 2.0 if retaining else aggro_size
+	return Rect2(center - size / 2.0, size).has_point(point) and _clear_line(point)
 
 func _safe_direction(dir: int) -> bool:
 	var feet := global_position
-	var wall := PhysicsRayQueryParameters2D.create(feet + Vector2(0, -8), feet + Vector2(dir * 14, -8), 1)
-	var ground := PhysicsRayQueryParameters2D.create(feet + Vector2(dir * 14, -8), feet + Vector2(dir * 14, 16), 1)
+	# Probe beyond the actual body, including the wider RUN-020 elites.
+	var half_width: float = $CollisionShape2D.shape.size.x * 0.5
+	var front := dir * maxf(14.0, half_width + 4.0)
+	var wall := PhysicsRayQueryParameters2D.create(feet + Vector2(0, -8), feet + Vector2(front, -8), 1)
+	var ground := PhysicsRayQueryParameters2D.create(feet + Vector2(front, -8), feet + Vector2(front, 16), 1)
 	return get_world_2d().direct_space_state.intersect_ray(wall).is_empty() and not get_world_2d().direct_space_state.intersect_ray(ground).is_empty()
+
+# Chase probes use the whole collision body: elite shoulders must clear terrain too.
+const CHASE_GRAVITY = 760.0
+const CHASE_MAX_RISE = 72.0
+const CHASE_MAX_DROP = CHASE_MAX_RISE
+# A vertically aligned target is not a left/right steering decision.
+const CHASE_ALIGN_TOLERANCE = 2.0
+
+func _body_clear(feet: Vector2) -> bool:
+	var query := PhysicsShapeQueryParameters2D.new()
+	query.shape = $CollisionShape2D.shape
+	query.transform = Transform2D(0.0, feet + $CollisionShape2D.position + Vector2(0, -0.1))
+	query.collision_mask = 1
+	query.exclude = [get_rid()]
+	query.collide_with_areas = false
+	return get_world_2d().direct_space_state.intersect_shape(query, 1).is_empty()
+
+func _landing(feet: Vector2, rise: float, drop: float) -> Dictionary:
+	# move_and_slide keeps the feet just above terrain by safe_margin. Include
+	# that contact clearance so a maximum-height block still has a valid descent.
+	var query := PhysicsRayQueryParameters2D.create(feet + Vector2(0, -rise), feet + Vector2(0, drop + safe_margin + 0.1), 1)
+	query.exclude = [get_rid()]
+	return get_world_2d().direct_space_state.intersect_ray(query)
+
+func _chase_direction(dir: int, prefer_jump: bool = false) -> bool:
+	# Airborne motion continues until actual collision/landing; no midair attack brake.
+	if not is_on_floor(): return true
+	var half_width: float = $CollisionShape2D.shape.size.x * 0.5
+	var jump_advance := chase_speed * sqrt(2.0 * (CHASE_MAX_RISE + 10.0) / CHASE_GRAVITY) + 4.0
+	var front := float(dir) * (half_width + (jump_advance if prefer_jump else 16.0))
+	var next_feet := global_position + Vector2(front, 0)
+	var landing := _landing(next_feet, CHASE_MAX_RISE, CHASE_MAX_DROP)
+	var forward_clear := _body_clear(global_position + Vector2(dir * 4.0, 0))
+	# A suspended platform must not hide a walkable floor beneath it. Probe
+	# local support from foot height before considering its top as a jump target.
+	var near_floor := _landing(global_position + Vector2(dir * (half_width + 4.0), 0), 1.0, 16.0)
+	if not prefer_jump and (chase_detour_dir != 0 or target.global_position.y >= global_position.y - 1.0) and forward_clear and not near_floor.is_empty() and near_floor.position.y >= global_position.y - 1.0:
+		return true
+	if not landing.is_empty() and not _body_clear(landing.position):
+		# A ray just before/after a ledge may see floor while the body's width
+		# still overlaps its wall. Find a nearby top or a full-width landing.
+		for advance in [4.0, 8.0, 16.0, 24.0, 32.0]:
+			var candidate := _landing(next_feet + Vector2(dir * advance, 0), CHASE_MAX_RISE, CHASE_MAX_DROP)
+			if not candidate.is_empty() and _body_clear(candidate.position):
+				landing = candidate
+				break
+	if forward_clear and not landing.is_empty() and landing.position.y >= global_position.y - 1.0 and _body_clear(landing.position):
+		# Descend only to a nearby visible supporting floor, never blindly into a pit.
+		return _body_clear(landing.position)
+	if landing.is_empty():
+		# A short gap can be crossed only if a supporting floor is within the
+		# horizontal travel of a bounded jump at this profile's unchanged speed.
+		var reach := chase_speed * 0.8
+		var distance := absf(front) + 8.0
+		while distance <= reach:
+			var candidate := _landing(global_position + Vector2(dir * distance, 0), 1.0, CHASE_MAX_DROP)
+			if not candidate.is_empty() and _body_clear(candidate.position):
+				landing = candidate
+				break
+			distance += 8.0
+	if landing.is_empty(): return false
+	var rise: float = global_position.y - landing.position.y
+	if rise > CHASE_MAX_RISE or not _body_clear(landing.position): return false
+	# Check the entire upward corridor and the body above the ledge. Pick only
+	# the height needed (plus clearance), so low ceilings reject impossible jumps.
+	var jump_height := maxf(24.0, rise + 10.0)
+	if rise <= 1.0: jump_height = 64.0
+	if not _jump_clear(global_position, landing.position, dir, jump_height, prefer_jump): return false
+	velocity.y = -sqrt(2.0 * CHASE_GRAVITY * jump_height)
+	_refresh_chase_occlusion()
+	return true
+
+func _jump_clear(feet: Vector2, landing: Vector2, dir: int, jump_height: float, check_ascent: bool = false) -> bool:
+	var height := 4.0
+	while height <= jump_height:
+		if not _body_clear(feet + Vector2(0, -height)): return false
+		height += 4.0
+	var distance := 0.0
+	var crossing := absf(landing.x - feet.x)
+	while distance <= crossing:
+		if not _body_clear(feet + Vector2(dir * distance, -jump_height)): return false
+		distance += 4.0
+	if check_ascent:
+		# Retreat jumps start outside the roof. Check the actual rising arc too:
+		# an open vertical column alone could still let the head hit its underside.
+		var launch_speed := sqrt(2.0 * CHASE_GRAVITY * jump_height)
+		var step := 1.0 / float(Engine.physics_ticks_per_second)
+		var time := step
+		while time <= launch_speed / CHASE_GRAVITY:
+			var offset := Vector2(dir * chase_speed * time, -launch_speed * time + 0.5 * CHASE_GRAVITY * time * time)
+			if not _body_clear(feet + offset): return false
+			time += step
+	return _body_clear(Vector2(landing.x, feet.y - jump_height))
+
+func _overhang_exit(dir: int) -> float:
+	# If a step blocks a low underpass, retreat to a verified nearby open edge
+	# and jump onto its roof. Never retreat across a gap or into another wall.
+	var body_height: float = $CollisionShape2D.shape.size.y
+	var ceiling := PhysicsRayQueryParameters2D.create(global_position + Vector2(0, -body_height - 0.1), global_position + Vector2(0, -body_height - CHASE_MAX_RISE), 1)
+	ceiling.exclude = [get_rid()]
+	if get_world_2d().direct_space_state.intersect_ray(ceiling).is_empty(): return NAN
+	var half_width: float = $CollisionShape2D.shape.size.x * 0.5
+	var jump_advance := chase_speed * sqrt(2.0 * (CHASE_MAX_RISE + 10.0) / CHASE_GRAVITY) + 4.0
+	for distance in range(4, int(CHASE_MAX_RISE * 2.0) + 1, 4):
+		var feet := global_position + Vector2(-dir * distance, 0)
+		var support := _landing(feet, 1.0, 16.0)
+		if support.is_empty() or absf(support.position.y - global_position.y) > 1.0 or not _body_clear(feet): return NAN
+		var landing := _landing(feet + Vector2(dir * (half_width + jump_advance), 0), CHASE_MAX_RISE, CHASE_MAX_DROP)
+		if landing.is_empty(): continue
+		var rise: float = global_position.y - landing.position.y
+		if rise > 1.0 and rise <= CHASE_MAX_RISE and _body_clear(landing.position) and _jump_clear(feet, landing.position, dir, rise + 10.0, true):
+			return feet.x
+	return NAN
+
+func _refresh_chase_occlusion() -> void:
+	# Verified terrain progress renews occlusion grace while navigating a roof.
+	# A target outside retention range must still be forgotten on schedule.
+	var center := global_position + Vector2(0, -12)
+	var retention_size := aggro_size + aggro_exit_margin * 2.0
+	if Rect2(center - retention_size / 2.0, retention_size).has_point(target.global_position + Vector2(0, -12)):
+		aggro_lost_time = 0.0
 
 func _physics_process(delta: float) -> void:
 	if dead: return
 	target = _player()
-	var seen := _sees_player()
+	var seen := _sees_player(aggro)
+	if not is_instance_valid(target) or target.dead:
+		aggro_lost_time = 0.0
+	elif seen:
+		aggro_lost_time = 0.0
+	elif aggro:
+		aggro_lost_time += delta
+		seen = aggro_lost_time < aggro_loss_delay
 	if seen != aggro:
 		aggro = seen
 		aggro_changed.emit(aggro)
 		if not aggro:
 			windup_time = 0.0
 			pending_attack = &""
+			chase_detour_dir = 0
 	cooldown = maxf(0.0, cooldown - delta)
 	knockback_time = maxf(0.0, knockback_time - delta)
 	velocity.y = minf(velocity.y + 760.0 * delta, 400.0)
 	if windup_time > 0.0:
 		windup_time = maxf(0.0, windup_time - delta)
 		if windup_time == 0.0: _release_attack()
+	# A collapsed patrol interval denotes a sentry, not an every-frame U-turn.
+	var patrolling := patrol_right > patrol_left
 	if aggro:
-		direction = 1 if target.global_position.x > global_position.x else -1
-		if cooldown == 0.0 and pending_attack == &"": _try_attack()
-	elif global_position.x < origin_x + patrol_left:
+		var horizontal_offset := target.global_position.x - global_position.x
+		if is_on_floor():
+			if absf(horizontal_offset) > CHASE_ALIGN_TOLERANCE:
+				direction = 1 if horizontal_offset > 0.0 else -1
+			elif chase_detour_dir != 0:
+				direction = chase_detour_dir
+		if is_on_floor() and cooldown == 0.0 and pending_attack == &"": _try_attack()
+	elif patrolling and global_position.x < origin_x + patrol_left:
 		direction = 1
-	elif global_position.x > origin_x + patrol_right:
+	elif patrolling and global_position.x > origin_x + patrol_right:
 		direction = -1
 	if knockback_time == 0.0:
-		var moving := pending_attack == &"" and not (aggro and kind == Kind.ARCHER)
-		if is_on_floor() and not _safe_direction(direction):
-			moving = false
-			if not aggro: direction *= -1
+		var ready_to_shoot := aggro and kind == Kind.ARCHER and is_on_floor() and (target.global_position - global_position).length() <= ranged_range and _clear_line(target.global_position + Vector2(0, -12))
+		# Keep the launch direction while airborne. On support, stop chasing an
+		# aligned target instead of oscillating and renewing occlusion forever.
+		var aligned_on_floor := aggro and is_on_floor() and chase_detour_dir == 0 and absf(target.global_position.x - global_position.x) <= CHASE_ALIGN_TOLERANCE
+		if aligned_on_floor and target.global_position.y < global_position.y - 1.0 and pending_attack == &"":
+			# Alignment can still have a reachable roof. Only a verified retreat
+			# starts motion; an unavailable vertical route stays stopped.
+			var exit_x := _overhang_exit(direction)
+			if not is_nan(exit_x):
+				chase_detour_dir = direction
+				chase_detour_x = exit_x
+				aligned_on_floor = false
+		var moving := (aggro or patrolling) and pending_attack == &"" and not ready_to_shoot and not aligned_on_floor
+		if moving and is_on_floor():
+			if aggro:
+				var prefer_jump := false
+				if chase_detour_dir != 0:
+					if direction != chase_detour_dir:
+						chase_detour_dir = 0
+					elif (global_position.x - chase_detour_x) * chase_detour_dir <= 0.0:
+						chase_detour_dir = 0
+						prefer_jump = true
+					else:
+						direction = -chase_detour_dir
+				moving = _chase_direction(direction, prefer_jump)
+				if not moving:
+					if chase_detour_dir != 0:
+						chase_detour_dir = 0
+					else:
+						var exit_x := _overhang_exit(direction)
+						if not is_nan(exit_x):
+							chase_detour_dir = direction
+							chase_detour_x = exit_x
+							direction = -direction
+							moving = _chase_direction(direction)
+			elif not _safe_direction(direction):
+				moving = false
+				direction *= -1
 		velocity.x = direction * (chase_speed if aggro else patrol_speed) if moving else 0.0
+	var previous_x := global_position.x
 	move_and_slide()
-	if kind == Kind.BLOATED and aggro and global_position.distance_to(target.global_position) < 18.0:
+	# Supported progress toward the retained target is still pursuit, even
+	# when the roof temporarily hides it. A blocked body cannot renew aggro.
+	if aggro and is_on_floor() and knockback_time == 0.0:
+		var approaching := absf(target.global_position.x - global_position.x) < absf(target.global_position.x - previous_x) - 0.01
+		var retreating := chase_detour_dir != 0 and (global_position.x - previous_x) * -chase_detour_dir > 0.01
+		if approaching or retreating: _refresh_chase_occlusion()
+	# Core half-width 22 + player half-width 5 + 3px visual allowance.
+	if kind == Kind.BLOATED and aggro and absf(global_position.x - target.global_position.x) < 30.0 and absf(global_position.y - target.global_position.y) < 18.0:
 		_damage_player(1.5)
 	queue_redraw()
 
 func _try_attack() -> void:
 	if kind == Kind.BLOATED: return
+	# Retained aggro through brief occlusion must not start attacks through terrain.
+	if not _clear_line(target.global_position + Vector2(0, -12)): return
 	var offset := target.global_position - global_position
 	if absf(offset.y) < 24.0 and absf(offset.x) <= melee_range and kind != Kind.ARCHER:
 		pending_attack = &"melee"
@@ -152,7 +343,10 @@ func _release_attack() -> void:
 		var holder := get_parent().get_parent() if get_parent().name == &"Enemies" else get_parent()
 		holder.add_child(attack)
 		attack.global_position = attack_target if released == &"blast" else global_position + Vector2(0, -12)
-		active_attacks = active_attacks.filter(func(item: Node2D) -> bool: return is_instance_valid(item))
+		# A projectile may already be freed when the next shot starts. Avoid
+		# passing that stale object through a typed callable argument.
+		for index in range(active_attacks.size() - 1, -1, -1):
+			if not is_instance_valid(active_attacks[index]): active_attacks.remove_at(index)
 		active_attacks.append(attack)
 		attack_released.emit(attack)
 
@@ -184,11 +378,11 @@ func _exit_tree() -> void: _clear_attacks()
 # --- Presentation (RUN-019 Claude art/SFX). Reads gameplay state only; sheets face left,
 # feet on the last cell row (tools/art/run019/enemies_*.py, work SPEC tables).
 const SHEETS = [
-	[preload("res://assets/run019/enemies/bloated_slime.png"), Vector2i(40, 32), {&"crawl": [0, 8, 8, true], &"swell": [8, 4, 14, false], &"hit": [12, 2, 16, true], &"death": [14, 6, 12, false]}],
+	[preload("res://assets/run020_feedback/enemies/bloated_slime.png"), Vector2i(72, 56), {&"crawl": [0, 8, 8, true], &"swell": [8, 4, 14, false], &"hit": [12, 2, 16, true], &"death": [14, 6, 12, false]}],
 	[preload("res://assets/run019/enemies/skeleton_warrior.png"), Vector2i(48, 32), {&"idle": [0, 4, 6, true], &"walk": [4, 6, 10, true], &"windup": [10, 3, 10, false], &"attack": [13, 4, 16, false], &"hit": [17, 2, 16, true], &"death": [19, 8, 12, false]}],
 	[preload("res://assets/run019/enemies/skeleton_archer.png"), Vector2i(40, 32), {&"idle": [0, 4, 6, true], &"walk": [4, 6, 10, true], &"windup": [10, 3, 10, false], &"shoot": [13, 3, 12, false], &"hit": [16, 2, 16, true], &"death": [18, 8, 12, false]}],
 	[preload("res://assets/run019/enemies/blight_sorcerer.png"), Vector2i(40, 36), {&"idle": [0, 4, 6, true], &"walk": [4, 6, 10, true], &"cast": [10, 4, 13, false], &"cast_release": [14, 3, 12, false], &"swing_windup": [17, 3, 10, false], &"swing": [20, 4, 16, false], &"hit": [24, 2, 16, true], &"death": [26, 8, 12, false]}],
-	[preload("res://assets/run019/enemies/chud_blob.png"), Vector2i(48, 36), {&"idle": [0, 4, 5, true], &"walk": [4, 6, 8, true], &"windup": [10, 3, 10, false], &"slam": [13, 4, 16, false], &"hit": [17, 2, 16, true], &"death": [19, 7, 10, false]}],
+	[preload("res://assets/run020_feedback/enemies/chud_blob.png"), Vector2i(96, 64), {&"idle": [0, 4, 5, true], &"walk": [4, 6, 8, true], &"windup": [10, 3, 10, false], &"slam": [13, 4, 16, false], &"hit": [17, 2, 16, true], &"death": [19, 7, 10, false]}],
 ]
 const STRIKES = [&"attack", &"shoot", &"cast_release", &"swing", &"slam", &"swell"]
 const HIT_SFX = preload("res://assets/sounds/sfx_melee_hit.tres")
@@ -210,7 +404,7 @@ const SHOT_SFX = preload("res://assets/sounds/run019/sfx_skeleton_archer_shot.tr
 const CAST_SFX = preload("res://assets/sounds/run019/sfx_sorcerer_spell_cast.wav")
 const RELEASE_FX = preload("res://assets/run019/enemies/vfx_bone_arrow_release.png")
 const CAST_FX = preload("res://assets/run019/enemies/vfx_blight_cast.png")
-const BURST_FX = preload("res://assets/run019/enemies/vfx_bloated_burst.png")
+const BURST_FX = preload("res://assets/run020_feedback/enemies/vfx_bloated_burst.png")
 const HIT_TINT = Color("fff1a6")
 var _art: AnimatedSprite2D
 var _voice: AudioStreamPlayer2D
@@ -277,6 +471,6 @@ func _on_health_changed_art(value: float, _maximum: float) -> void:
 func _on_defeated_art(_bonus: int, at: Vector2) -> void:
 	var cell: Vector2i = SHEETS[kind][1]
 	Run019Art.spawn_anim(self, _art.sprite_frames, &"death", at, Vector2(cell.x * 0.5, cell.y), direction > 0)
-	if kind == Kind.BLOATED: Run019Art.fx(self, BURST_FX, Vector2i(64, 32), 14.0, at, Vector2(0.5, 1.0))
+	if kind == Kind.BLOATED: Run019Art.fx(self, BURST_FX, Vector2i(112, 48), 14.0, at, Vector2(0.5, 1.0))
 	Run019Art.sound(self, HIT_SFX, at, -8.0)
 	Run019Art.sound(self, DEATH_SFX[kind], at, -5.0)

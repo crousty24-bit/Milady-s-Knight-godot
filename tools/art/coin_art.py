@@ -72,9 +72,10 @@ def edge_coin():
 		for y in range(3, 13):
 			ridge = (y % 2 == 0)
 			c.put(x, y, col if not ridge else (GOLD[1] if col is GOLD[3] else GOLD[0]) if i != 1 else (GOLD[1]))
-	for x in (6, 9):
-		c.put(x, 2, GOLD[2] if x == 6 else GOLD[1])
-		c.put(x, 13, GOLD[1] if x == 6 else GOLD[0])
+	# rounded caps: centred, so the outline does not leave notched corners
+	for x in (7, 8):
+		c.put(x, 2, GOLD[2] if x == 7 else GOLD[1])
+		c.put(x, 13, GOLD[1] if x == 7 else GOLD[0])
 	return c
 
 
@@ -85,14 +86,17 @@ def frame(i):
 		base = edge_coin()
 	else:
 		base = render_face(width, side)
-		# thickness: a dark gold rim sliver on the trailing side when turning
+		# thickness: a dark gold rim sliver on the trailing side when turning; it follows the
+		# face's right edge row by row so it never pokes out of the round silhouette
 		if width < 12:
-			xs = [x for x in range(16) if base.get(x, 8) is not None]
-			if xs:
-				t = 1 if width >= 8 else 2
+			t = 1 if width >= 8 else 2
+			for y in range(16):
+				xs = [x for x in range(16) if base.get(x, y) is not None]
+				if not xs:
+					continue
+				right = xs[-1]
 				for k in range(t):
-					for y in range(3, 13):
-						base.put(xs[-1] + 1 + k, y, GOLD[1] if k == 0 else GOLD[0])
+					base.put(right + 1 + k, y, GOLD[1] if k == 0 else GOLD[0])
 	out = outline(base, OUTLINE)
 	# glint: a small four-point star on the upper-left of the broadest faces
 	if i in (0, 6, 1, 7):

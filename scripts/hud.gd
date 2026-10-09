@@ -1,4 +1,37 @@
 extends CanvasLayer
+@onready var controls = get_node("/root/Controls")
+var ammo_feedback_time: float = 0.0
+
+func set_ammo(family: String, current: int, maximum: int) -> void:
+	var counter := get_node_or_null("Equipment/AmmoCount") as Label
+	var icon := get_node_or_null("Equipment/AmmoIcon") as TextureRect
+	if counter != null:
+		counter.visible = not family.is_empty()
+		counter.text = "%02d/%d" % [current, maximum]
+		counter.modulate = TITLE_RED if current == 0 else (TITLE_GOLD if current == maximum else Color.WHITE)
+	if icon != null:
+		icon.visible = not family.is_empty()
+		var atlas := AtlasTexture.new()
+		atlas.atlas = load("res://assets/run021/ammo/ui_ammo_icons.png")
+		var index := (1 if family == "ThrowingKnives" else 0) + (2 if current == 0 else 0)
+		atlas.region = Rect2(index * 12, 0, 12, 12)
+		icon.texture = atlas
+
+func show_ammo_empty(family: String) -> void:
+	# Held attack at zero must not restart the feedback every physics tick.
+	if ammo_feedback_time > 0.0: return
+	_show_ammo_feedback("NO KNIVES" if family == "ThrowingKnives" else "NO ARROWS")
+
+func show_ammo_pickup(family: String, amount: int) -> void:
+	_show_ammo_feedback("+%d %s" % [amount, "KNIVES" if family == "ThrowingKnives" else "ARROWS"])
+
+func _show_ammo_feedback(message: String) -> void:
+	var feedback := get_node_or_null("Equipment/AmmoFeedback") as Label
+	if feedback == null: return
+	feedback.text = message
+	feedback.show()
+	ammo_feedback_time = 0.8
+
 var save_error_time: float = 0.0
 var save_error_label: Label
 func show_save_error() -> void:
@@ -12,14 +45,29 @@ func show_save_error() -> void:
 	save_error_label.text = "Save failed. Try again."
 	save_error_label.show()
 	save_error_time = 2.0
-func set_gold(value: int, paid: bool) -> void:
-	$Gold.text = "COINS %02d  |  OPEN" % value if paid else "COINS %02d/12" % value
-	$Gold.modulate = Color("f4d384") if value >= 12 or paid else Color("dac38f")
+# RUN-021 HUD pass (human request, 7 Oct 2026): no panel behind the stats and no word labels;
+# the icons name the values. Coins and shards share one row, the shards right after the coins.
+const ROW_GAP: float = 10.0
+var shard_total: int = 0
+func set_gold(value: int, paid: bool, cost: int = 12) -> void:
+	$Gold.text = "%02d  OPEN" % value if paid else "%02d/%d" % [value, cost]
+	$Gold.modulate = Color("f4d384") if value >= cost or paid else Color("dac38f")
+	_layout_currencies()
 func set_bonus(banked: int, pending: int) -> void:
-	$Bonus.text = "SHARDS " + _compact(banked + pending)
-	$BonusPending.text = "+%s current" % _compact(pending) if pending > 0 else "bank " + _compact(banked)
+	shard_total = banked + pending
+	$Bonus.text = _compact(banked + pending)
+	# Current-attempt shards (not yet saved) follow the total in a dimmer tone.
+	$BonusPending.text = "+" + _compact(pending) if pending > 0 else ""
 	$Bonus.tooltip_text = "%d shards: %d banked, %d current" % [banked + pending, banked, pending]
 	$Bonus.mouse_filter = Control.MOUSE_FILTER_STOP
+	_layout_currencies()
+func _layout_currencies() -> void:
+	var x: float = $Gold.position.x + ceilf(_text_width($Gold, $Gold.text)) + ROW_GAP
+	$ShardIcon.position.x = x
+	$Bonus.position.x = x + 15.0
+	$Bonus.size.x = ceilf(_text_width($Bonus, $Bonus.text)) + 2.0
+	$BonusPending.position.x = $Bonus.position.x + $Bonus.size.x + 3.0
+	$BonusPending.size.x = ceilf(_text_width($BonusPending, $BonusPending.text)) + 2.0
 func _compact(value: int) -> String:
 	if value < 100000: return str(value)
 	if value < 1000000: return "%.1fk" % (value / 1000.0)
@@ -28,11 +76,19 @@ func _compact(value: int) -> String:
 func set_health(value: float, maximum: float = 3.0) -> void:
 	var current_units := HealthUnits.from_hp(value)
 	var maximum_units := HealthUnits.from_hp(maximum)
-	$Health.text = "HP " + HealthUnits.format_hp(current_units)
+	$Health.text = HealthUnits.format_hp(current_units)
 	$HealthHearts.set_values(current_units, maximum_units)
-	# The exact value sits right after the hearts, whatever their count (one row holds five).
-	var hearts_in_row: int = mini(ceili(float(maximum_units) / HealthUnits.PER_HP), $HealthHearts.HEARTS_PER_ROW)
-	$Health.position.x = $HealthHearts.position.x + hearts_in_row * $HealthHearts.HEART_SPACING + 6.0
+	# The exact value is kept on the hidden Health label (save-error template, tests); since the
+	# third HUD pass (human request, 8 Oct 2026) only the hearts are shown.
+	var heart_count: int = ceili(float(maximum_units) / HealthUnits.PER_HP)
+	var hearts_in_row: int = mini(heart_count, $HealthHearts.HEARTS_PER_ROW)
+	$Health.position.x = $HealthHearts.position.x + hearts_in_row * $HealthHearts.HEART_SPACING + 4.0
+	$Health.size.x = ceilf(_text_width($Health, $Health.text)) + 2.0
+	# A second heart row pushes the currencies and the equipment column down by one row.
+	var extra_rows: float = (ceili(float(heart_count) / $HealthHearts.HEARTS_PER_ROW) - 1) * $HealthHearts.ROW_SPACING
+	for node in [$GoldIcon, $ShardIcon]: node.position.y = 26.0 + extra_rows
+	for node in [$Gold, $Bonus, $BonusPending]: node.position.y = 28.0 + extra_rows
+	$Equipment.position.y = 46.0 + extra_rows
 func set_death_fade(alpha: float) -> void:
 	$DeathFade.visible = alpha > 0.0
 	var fade_color: Color = $DeathFade.color
@@ -48,11 +104,11 @@ const RULE_GOLD := Color("8c6b2e")
 const RULE_RED := Color("741620")
 const OVERLAY_LINE_HEIGHT: float = 11.0
 const OVERLAY_DIM: float = 0.88
-# Death keeps the knight's collapse visible: lighter veil, panel in the upper third.
+# Death keeps the knight's collapse visible through a lighter veil; the message sits mid-screen.
 const DEATH_DIM: float = 0.55
-const DEATH_PANEL_RISE: float = 84.0
 
 func set_overlay(title: String, subtitle: String, danger: bool = false) -> void:
+	hide_level_title()
 	$Overlay.show()
 	$Overlay.color.a = OVERLAY_DIM
 	$Overlay/Title.add_theme_color_override("font_color", TITLE_RED if danger else TITLE_GOLD)
@@ -81,9 +137,6 @@ func show_death_overlay() -> void:
 	# Death speaks in the danger red of the Art Bible.
 	set_overlay("Thou hast perished.", "", true)
 	$Overlay.color.a = DEATH_DIM
-	for node in [$Overlay/Panel, $Overlay/Title, $Overlay/Rule, $Overlay/Subtitle]:
-		node.offset_top -= DEATH_PANEL_RISE
-		node.offset_bottom -= DEATH_PANEL_RISE
 	hide_prompt()
 	$PauseCap.hide()
 	$PauseHint.hide()
@@ -102,7 +155,7 @@ var _prompt_key := ""
 func show_prompt(world_position: Vector2, cost: int, have: int) -> void:
 	if _prompt_leaving: return
 	var enough: bool = have >= cost
-	var key := "%s|%d|%d" % [enough, cost, have if not enough else 0]
+	var key := "%s|%d|%d|%s" % [enough, cost, have if not enough else 0, controls.label("interact")]
 	if key != _prompt_key:
 		_prompt_key = key
 		_layout_prompt(enough, cost, have)
@@ -155,10 +208,16 @@ func _kill_prompt_tween() -> void:
 	$Prompt/Bg.self_modulate = Color.WHITE
 
 func _process(_delta: float) -> void:
+	if ammo_feedback_time > 0.0:
+		ammo_feedback_time = maxf(0.0, ammo_feedback_time - _delta)
+		if ammo_feedback_time == 0.0:
+			var feedback := get_node_or_null("Equipment/AmmoFeedback") as Label
+			if feedback != null: feedback.hide()
 	if save_error_time > 0.0:
 		save_error_time = maxf(0.0, save_error_time - _delta)
 		if save_error_time == 0.0: save_error_label.hide()
 	if _prompt_active: _place_prompt()
+	_update_magic_shield()
 
 func _place_prompt() -> void:
 	var screen: Vector2 = get_viewport().get_canvas_transform() * _prompt_world
@@ -183,7 +242,12 @@ func _layout_prompt(enough: bool, cost: int, have: int) -> void:
 	$Prompt/Cap.visible = enough
 	$Prompt/CapLabel.visible = enough
 	var x: float = 5.0
-	if enough: x += 14.0 + 4.0
+	if enough:
+		$Prompt/CapLabel.text = controls.label("interact")
+		var cap_width := maxf(14.0, ceilf(_text_width($Prompt/CapLabel, $Prompt/CapLabel.text)) + 6.0)
+		$Prompt/Cap.size.x = cap_width
+		$Prompt/CapLabel.size.x = cap_width
+		x += cap_width + 4.0
 	$Prompt/Coin.position.x = x
 	x += 12.0 + 3.0
 	amount.position.x = x
@@ -209,8 +273,9 @@ func set_equipment(active: int, ranged_owned: bool) -> void:
 	set_loadout(active, {"melee": "Sword0", "ranged": "Longbow0" if ranged_owned else ""})
 
 func set_loadout(active: int, slots: Dictionary) -> void:
-	$Equipment/Melee.text = ("> " if active == 0 else "  ") + WeaponCatalog.label(slots.melee)
-	$Equipment/Ranged.text = ("> " if active == 1 else "  ") + ("Empty" if slots.ranged.is_empty() else WeaponCatalog.label(slots.ranged))
+	# The level is carried by the badge after the name (RUN-021), not by a digit in the text.
+	$Equipment/Melee.text = ("> " if active == 0 else "  ") + _weapon_name(slots.melee)
+	$Equipment/Ranged.text = ("> " if active == 1 else "  ") + ("Empty" if slots.ranged.is_empty() else _weapon_name(slots.ranged))
 	$Equipment.set_items(str(slots.melee), str(slots.ranged))
 
 func show_item_prompt(world_position: Vector2, text: String) -> void:
@@ -229,3 +294,80 @@ func show_item_prompt(world_position: Vector2, text: String) -> void:
 	$Prompt.size = Vector2(width, 24)
 	$Prompt/Bg.size = Vector2(width, 24)
 	_place_prompt()
+
+
+# --- Active effects (docs/05): Magic Shield icon and remaining seconds, top-right under the pause key. ---
+# The level hands over a reader of the gameplay timer; the HUD only presents it.
+var magic_shield_source: Callable
+
+func _update_magic_shield() -> void:
+	var remaining: float = magic_shield_source.call() if magic_shield_source.is_valid() else 0.0
+	$ShieldEffect.visible = remaining > 0.0
+	if remaining <= 0.0: return
+	$ShieldEffect/Time.text = str(ceili(remaining))
+	# Same warning as the aura: the last two seconds blink.
+	$ShieldEffect/Icon.modulate.a = 1.0 if remaining > 2.0 or int(remaining * 8.0) % 2 == 0 else 0.35
+
+# --- Level title card: the area name fades in at the centre, holds, then fades out (5 s in all). ---
+const TITLE_FADE_IN: float = 1.0
+const TITLE_HOLD: float = 3.0
+const TITLE_FADE_OUT: float = 1.0
+var _title_tween: Tween
+
+func _ready() -> void:
+	controls.bindings_changed.connect(_update_control_hints)
+	_update_control_hints()
+	var band := GradientTexture2D.new()
+	band.width = 640
+	band.height = 72
+	band.fill = GradientTexture2D.FILL_RADIAL
+	band.fill_from = Vector2(0.5, 0.5)
+	band.fill_to = Vector2(0.5, 0.0)
+	band.gradient = Gradient.new()
+	band.gradient.set_color(0, Color(0.035, 0.03, 0.045, 0.62))
+	band.gradient.set_color(1, Color(0.035, 0.03, 0.045, 0.0))
+	$LevelTitle/Band.texture = band
+	var rule := GradientTexture2D.new()
+	rule.width = 240
+	rule.height = 1
+	rule.gradient = Gradient.new()
+	rule.gradient.offsets = PackedFloat32Array([0.0, 0.5, 1.0])
+	rule.gradient.colors = PackedColorArray([Color(TITLE_GOLD, 0.0), TITLE_GOLD, Color(TITLE_GOLD, 0.0)])
+	$LevelTitle/Rule.texture = rule
+
+func show_level_title(title: String) -> void:
+	hide_level_title()
+	$LevelTitle/Name.text = title
+	# The gold rule runs a little past both ends of the name.
+	var half: float = ceilf($LevelTitle/Name.get_theme_font("font").get_string_size(title, HORIZONTAL_ALIGNMENT_LEFT, -1, 24).x / 2.0) + 24.0
+	$LevelTitle/Rule.offset_left = -half
+	$LevelTitle/Rule.offset_right = half
+	$LevelTitle.modulate.a = 0.0
+	$LevelTitle.show()
+	$LevelTitle/Sound.play()
+	# Keeps running under pauses (N1 resurrection, menus), so the card always lasts 5 s.
+	_title_tween = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	_title_tween.tween_property($LevelTitle, "modulate:a", 1.0, TITLE_FADE_IN).set_ease(Tween.EASE_OUT)
+	_title_tween.tween_interval(TITLE_HOLD)
+	_title_tween.tween_property($LevelTitle, "modulate:a", 0.0, TITLE_FADE_OUT).set_ease(Tween.EASE_IN)
+	_title_tween.tween_callback($LevelTitle.hide)
+
+func hide_level_title() -> void:
+	if _title_tween and _title_tween.is_valid(): _title_tween.kill()
+	$LevelTitle.hide()
+
+func level_title_visible() -> bool:
+	return $LevelTitle.visible
+
+func _weapon_name(id: String) -> String:
+	var stats := WeaponCatalog.stats(id)
+	return str(stats.name) if not stats.is_empty() else WeaponCatalog.label(id)
+
+func _update_control_hints() -> void:
+	var key: String = controls.label("pause")
+	$PauseHint.text = "ESC" if key == "Escape" else key
+	var width := maxf(48.0, ceilf(_text_width($PauseHint, $PauseHint.text)) + 8.0)
+	$PauseCap.position.x = 632.0 - width
+	$PauseCap.size.x = width
+	$PauseHint.position.x = 636.0 - width
+	$PauseHint.size.x = width - 8.0
