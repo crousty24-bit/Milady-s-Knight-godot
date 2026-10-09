@@ -1,0 +1,333 @@
+[
+ {
+  "file": "house_timber_a.png",
+  "w": 76,
+  "h": 104,
+  "kind": "ground",
+  "anchor": [
+   38,
+   104
+  ],
+  "lights": [
+   {
+    "pos": [
+     54,
+     54
+    ],
+    "type": "window"
+   }
+  ],
+  "weight": 3,
+  "big": true
+ },
+ {
+  "file": "house_timber_b.png",
+  "w": 56,
+  "h": 112,
+  "kind": "ground",
+  "anchor": [
+   28,
+   112
+  ],
+  "lights": [],
+  "weight": 3,
+  "big": true
+ },
+ {
+  "file": "cathedral_ruin.png",
+  "w": 72,
+  "h": 108,
+  "kind": "ground",
+  "anchor": [
+   36,
+   108
+  ],
+  "lights": [],
+  "weight": 1,
+  "big": true
+ },
+ {
+  "file": "plague_cart.png",
+  "w": 62,
+  "h": 30,
+  "kind": "ground",
+  "anchor": [
+   31,
+   30
+  ],
+  "lights": [],
+  "weight": 2,
+  "big": false
+ },
+ {
+  "file": "gibbet.png",
+  "w": 38,
+  "h": 72,
+  "kind": "ground",
+  "anchor": [
+   19,
+   72
+  ],
+  "lights": [],
+  "weight": 2,
+  "big": false
+ },
+ {
+  "file": "pyre.png",
+  "w": 32,
+  "h": 19,
+  "kind": "ground",
+  "anchor": [
+   16,
+   19
+  ],
+  "lights": [
+   {
+    "pos": [
+     16,
+     3
+    ],
+    "type": "flame"
+   }
+  ],
+  "weight": 2,
+  "big": false
+ },
+ {
+  "file": "stocks.png",
+  "w": 32,
+  "h": 24,
+  "kind": "ground",
+  "anchor": [
+   16,
+   24
+  ],
+  "lights": [],
+  "weight": 2,
+  "big": false
+ },
+ {
+  "file": "rot_growth_a.png",
+  "w": 22,
+  "h": 14,
+  "kind": "ground",
+  "anchor": [
+   11,
+   14
+  ],
+  "lights": [],
+  "weight": 4,
+  "big": false
+ },
+ {
+  "file": "rot_growth_b.png",
+  "w": 22,
+  "h": 14,
+  "kind": "ground",
+  "anchor": [
+   11,
+   14
+  ],
+  "lights": [],
+  "weight": 4,
+  "big": false
+ },
+ {
+  "file": "plague_bell.png",
+  "w": 18,
+  "h": 38,
+  "kind": "ground",
+  "anchor": [
+   9,
+   38
+  ],
+  "lights": [],
+  "weight": 2,
+  "big": false
+ },
+ {
+  "file": "clothesline.png",
+  "w": 66,
+  "h": 34,
+  "kind": "ground",
+  "anchor": [
+   33,
+   34
+  ],
+  "lights": [],
+  "weight": 2,
+  "big": false
+ },
+ {
+  "file": "crow_b.png",
+  "w": 9,
+  "h": 8,
+  "kind": "ground",
+  "anchor": [
+   4,
+   8
+  ],
+  "lights": [],
+  "weight": 4,
+  "big": false
+ },
+ {
+  "file": "bone_pile.png",
+  "w": 24,
+  "h": 10,
+  "kind": "ground",
+  "anchor": [
+   12,
+   10
+  ],
+  "lights": [],
+  "weight": 4,
+  "big": false
+ },
+ {
+  "file": "wall_pipe.png",
+  "w": 14,
+  "h": 26,
+  "kind": "wall",
+  "anchor": [
+   0,
+   4
+  ],
+  "lights": [],
+  "weight": 3,
+  "big": false
+ },
+ {
+  "file": "wall_sign.png",
+  "w": 24,
+  "h": 22,
+  "kind": "wall",
+  "anchor": [
+   0,
+   2
+  ],
+  "lights": [],
+  "weight": 2,
+  "big": false
+ },
+ {
+  "file": "wall_rot.png",
+  "w": 18,
+  "h": 30,
+  "kind": "wall",
+  "anchor": [
+   0,
+   15
+  ],
+  "lights": [],
+  "weight": 4,
+  "big": false
+ },
+ {
+  "file": "wall_chains.png",
+  "w": 12,
+  "h": 26,
+  "kind": "wall",
+  "anchor": [
+   0,
+   2
+  ],
+  "lights": [],
+  "weight": 3,
+  "big": false
+ },
+ {
+  "file": "hang_cage.png",
+  "w": 16,
+  "h": 42,
+  "kind": "ceiling",
+  "anchor": [
+   8,
+   0
+  ],
+  "lights": [],
+  "weight": 2,
+  "big": false
+ },
+ {
+  "file": "hang_rags.png",
+  "w": 14,
+  "h": 30,
+  "kind": "ceiling",
+  "anchor": [
+   7,
+   0
+  ],
+  "lights": [],
+  "weight": 3,
+  "big": false
+ },
+ {
+  "file": "hang_lamp_bile.png",
+  "w": 10,
+  "h": 36,
+  "kind": "ceiling",
+  "anchor": [
+   5,
+   0
+  ],
+  "lights": [
+   {
+    "pos": [
+     5,
+     29
+    ],
+    "type": "bile"
+   }
+  ],
+  "weight": 2,
+  "big": false
+ },
+ {
+  "file": "cobweb.png",
+  "w": 16,
+  "h": 16,
+  "kind": "ceiling",
+  "anchor": [
+   0,
+   0
+  ],
+  "lights": [],
+  "weight": 5,
+  "big": false
+ },
+ {
+  "file": "cellar_arch.png",
+  "w": 50,
+  "h": 50,
+  "kind": "underground",
+  "anchor": [
+   25,
+   50
+  ],
+  "lights": [],
+  "weight": 2,
+  "big": true
+ },
+ {
+  "file": "cellar_niche.png",
+  "w": 24,
+  "h": 26,
+  "kind": "underground",
+  "anchor": [
+   12,
+   26
+  ],
+  "lights": [
+   {
+    "pos": [
+     17,
+     15
+    ],
+    "type": "candle"
+   }
+  ],
+  "weight": 2,
+  "big": false
+ }
+]

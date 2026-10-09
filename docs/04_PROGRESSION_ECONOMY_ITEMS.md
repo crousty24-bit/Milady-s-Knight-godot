@@ -45,7 +45,7 @@
 	- certains coffres peuvent être cachés
 	- les coffres sont présents du niveau 2 à 9 + coffre unique exemple tuto niveau 1
 	- il existe 3 types de coffres : common chest, rare chest & golden chest
-		- **common chest :** chance d'obtenir un item de niveau 0 ou 1 ou 2 ou 3 ET potentiellement une amélioration d'item
+		- **common chest :** donne directement un item de niveau 0, 1 ou 2, et peut aussi proposer une amélioration d'item. Une amélioration séparée peut porter l'équipement jusqu'au niveau 3.
 		- **rare chest :** chance d'obtenir un item de niveau 2 ou 3 ou Légendaire ET potentiellement une amélioration d'item
 		- **golden chest :** chance d'obtenir un item Légendaire ou rien
 		- par item, on entend ici : une arme de mêlée ou de tir. Rien d'autre.
@@ -98,7 +98,7 @@
 			- cas exemple : le joueur ouvre le coffre est reçoit une axe de niveau 2 et une amélioration d'arme +1 niveau ; il a actuellement une sword de niveau 1 ; la axe de niveau 2 ne l'intéresse pas, il accepte la récompense d'amélioration d'arme, la sword équipé passe au niveau 2 remplace la sword actuelle
 		- **TAUX DE DROP :**
 			- dans les common chest : 
-				- item : le taux de drop est proportionnel au niveau d'item, du niveau le plus bas ou plus haut, il y a plus de chance de drop un item de niveau 0  : niveau 0 > 1 > 2 > 3
+				- item : les niveaux directs disponibles sont 0, 1 et 2 ; le niveau 0 est le plus fréquent, puis 1, puis 2
 				- amélioration d'item : le taux de drop d'amélioration est très faible et bien sûr, significativement plus faible que dans un rare chest
 			- dans les rare chest : 
 				- item : le taux de drop est proportionnel au niveau d'item, du niveau le plus bas ou plus haut, il y a plus de chance de drop un item de niveau 2  : niveau 2 > 3 > Légendaire
@@ -131,7 +131,7 @@
 			- les DMG augmentent par tranche de 0,5 dégâts
 			- l'ATK SPEED diminue au 0,1 près suivant l'arme
 			- la RANGE augmente au 0,1 près suivant l'arme
-			- la FALLOFF augmente de 1
+			- la FALLOFF des armes de tir standard augmente de 0,5 bloc (révision RUN-020)
 		- il existe aussi des armes de niveau Légendaire ; il est impossible d'améliorer une arme Légendaire
 		- les niveaux d'un item ont une représentation par couleur/rareté dans le UI (icone d'item) : niveau 0 = gris (commun) ; niveau 1 = vert (peu commun) ; niveau 2 = bleu (rare) ; niveau 3 = rouge (epic) ; Légendaire = orangé/doré
 		- les armes disposent de 4 stats :
@@ -147,11 +147,11 @@
 			- *Dark Scythe* (mêlée)  : 2 DMG | 2,5 ATK SPEED | 1,5 RANGE
 			- *Warhammer* (mêlée)  : 1,5 DMG | 1,5 ATK SPEED | 0,8 RANGE
 			- *Halberds* (mêlée)  : 1 DMG | 1,5 ATK SPEED | 2 RANGE
-			- *Longbow* (tir) : 1 DMG | 1,5 ATK SPEED | 20 FALLOFF
+			- *Longbow* (tir) : 1 DMG | 2 ATK SPEED | 12 FALLOFF
 			- *Fire Gauntlet* (tir spécial)  : 0,2 DMG | 0,8 ATK SPEED | 5 RANGE
 				- à l'inverse des autres armes de tir, le Fire Gauntlet est semblable à un lance-flamme, par conséquent il ne tire pas de projectiles individuels mais un souffle de flamme continu vers l'avant suivant la direction du joueur (gauche, droite) => même comportement/stats qu'une arme de mêlée avec comme garde-fou :
 					- maintenir touche attaquer avec cette arme (F) = déclenche le souffle de flamme continu vers l'avant pendant 3 sec max PUIS cooldown de 10 sec avant de pouvoir tirer à nouveau ; si joueur relâche la touche AVANT les 3 sec max, le cooldown est quand même appliqué !
-			- *Throwing Knives* (tir) : 0,5 DMG | 1 ATK SPEED | 10 FALLOFF
+			- *Throwing Knives* (tir) : 0,5 DMG | 1,3 ATK SPEED | 7 FALLOFF
 		- les items Légendaires sont très rares et possèdent des stats OP dépassant n'importe quel item de niveau 3 ; il n'y a que 4 items Légendaire dans tout le jeu :
 			- *Dragon Slayer* (mêlée) : épée massive à 2 mains enfermant l'esprit d'un ancien dragon ; 5 DMG | 2 ATK SPEED | 2 RANGE
 				- capacité spéciale (active) : maintenir le bouton attaque spécial (R) permet de retenir une attaque (charger), une fois relâchée l'attaque donné inflige x2 DMG ; il y'a un cooldown de 10sec
@@ -178,7 +178,7 @@
 	- **ITEM DIVERS (consommables) :**
 		- *Magic Shield* : item rare pouvant être ramassés par le joueur en passant dessus (comme les coins) ; leur emplacement sont fixes sur le terrain du niveau ; peut être cachés ; selon la difficulté du niveau, il y a entre 0 et 3 Magic Shield maximum à trouver sur le terrain ; réapparaissent à chaque nouvelle tentative du niveau
 		- item présent du niveau 3 à 9
-			- effet : donne instantanément une invincibilité au joueur durant 10 secondes contre toutes attaques d'ennemi (collision, mêlée, tir) ; ne protège pas contre les pièges du terrain ni d'une chute dans le vide
+			- effet : donne instantanément une invincibilité au joueur durant 10 secondes contre tous les dégâts, attaques d’ennemi et pièges du terrain/tirs de tourelles compris ; une chute dans le vide reste mortelle (confirmation humaine RUN-020)
 		- *Rage Drink* : item rare leur emplacement sont fixes sur le terrain du niveau ; peut être cachés ; selon la difficulté du niveau, il y a entre 0 et 2 Rage Drink maximum à trouver sur le terrain ; réapparaissent à chaque nouvelle tentative du niveau
 		- item présent du niveau 5 à 9
 			- effet : boisson fortement alcoolisé qui donne instantanément une bonus x2 de dégâts et vitesse d'attaque pendant 6 secondes, peu importe l'arme utilisée par le joueur durant cette période
@@ -201,6 +201,49 @@ Les bases de rétention des offrandes restent à trancher avant RUN-023 ; ce con
 
 ## RUN-016 — Intégration technique N1 (3 octobre 2026)
 
-Sword0 et Longbow0 sont stockés dans les deux slots durables ; A alterne les slots acquis, le spawn sélectionne Sword. Longbow0 : 1 DMG, 1,5 s, 320 px depuis sa bouche de tir ; vitesse technique 320 px/s. Projectile horizontal balayé contre terrain/ennemis, impact unique et suppression à portée ; pause suspend son trajet et son cooldown. Les deux cooldowns restent séparés lors du changement de slot. Le tir reste disponible en glissade murale ; la restriction de docs/01 est celle de la mêlée.
+Sword0 et Longbow0 sont stockés dans les deux slots durables ; A alterne les slots acquis, le spawn sélectionne Sword. Longbow0 révisé en RUN-020 : 1 DMG, 2 s, 192 px depuis sa bouche de tir ; vitesse technique 320 px/s. Projectile horizontal balayé contre terrain/ennemis, impact unique et suppression à portée ; pause suspend son trajet et son cooldown. Les deux cooldowns restent séparés lors du changement de slot. Le tir reste disponible en glissade murale ; la restriction de docs/01 est celle de la mêlée.
 
 Le coffre fixe gratuit et la potion mineure respectent le contrat de persistance ; leurs positions de test `(120,144)` et `(176,134)` restent temporaires avant l’adaptation N1 de RUN-017. La présentation et les feedbacks sont réservés à Claude ; voir [handoff RUN-016](RUN-016_CLAUDE_HANDOFF.md).
+
+
+## RUN-018 — Contrat validé et extension standard (5 octobre 2026)
+
+Le [contrat RUN-018](RUN-018_CONTRACT_REVIEW.md) est validé intégralement par l’humain et fait référence pour les tables numériques D02/D04, hors portée/cadence de tir révisées ci-dessous en RUN-020 : huit armes standard 0–5, prix par monde/common/rare, poids et taux d’upgrade, soins de kill. Les tableaux sont centralisés dans ce contrat ; ne pas traiter les anciens exemples qualitatifs comme une seconde formule de prix. Fire Gauntlet et Legendary restent exclus des pools, upgrades ordinaires limités à 3 ; 4/5 uniquement préparés pour Enchant Juice futur.
+
+Exception validée au contrat RUN-015 : un common/rare débite à l’ouverture, puis sauvegarde l’item choisi séparément. Refus/Escape ne rembourse rien. Une fermeture avant choix conserve le débit de banque mais ne donne pas l’offre ; une acceptation écrite conserve l’équipement après fermeture. Le retry ne débite ni ne tire une seconde fois. Les coffres et compteurs common/rare sont locaux à la tentative. Le coffre tuto gratuit garde son comportement.
+
+La base technique utilise `WeaponCatalog`, `ChestEconomy`, les deux slots durables existants, des projectiles paramétrés et la potion majeure héritée de la mineure. Les profils de soin de kill sont explicités par la metadata ennemi `healing_profile` (`ordinary`, `elite`, `skull`) ; `skull` exclut le soin. L’intégration aux archétypes futurs relève de RUN-019. Aucun niveau N2–4 ni asset final nouveau n’est déclaré livré par ces contrats.
+
+
+## RUN-019 — Permanents et économie de swarm validés
+
+Bonus HP et secrets sauvegardés via IDs uniques dans les flags v2, écriture avant attribution ; doublon sans gain et erreur sans consommation. Bonus +1 MAX et CURRENT, Shield10s rafraîchi sans addition. Les Skulls de zone N4 donnent un shard au premier kill de chacun des quatre emplacements de la tentative ; depuis la correction RUN-020 du 6 octobre, les emplacements vaincus ne respawnent plus pendant la tentative, budget4. Seuls les survivants reviennent à la réentrée. Despawn sans gain, aucun drop soin. Cette précision économique a été validée avec le contrat RUN-019. Les futures invocations Necromancer/Boss restent à définir dans leurs lots.
+
+La porte secondaire payante dépense uniquement les coins de tentative, une fois ; celle à mécanisme est exclue du paiement E. Budgets et placements N2–4 réels à RUN-020. Aucun nouveau taux de soin, coût de coffre ou comportement de Legendary dans RUN-019.
+
+## RUN-020 — Rééquilibrage technique après playtest, 6 octobre 2026
+
+Première passe de réglage à rejuger en jeu : Longbow niveau `n` (0–5), dégâts `1 + 0,5n`, intervalle `2 − 0,1n` s, portée `12 + 0,5n` blocs ; Throwing Knives, dégâts `0,5 + 0,5n`, intervalle `1,3 − 0,1n` s, portée `7 + 0,5n` blocs. Un bloc = 16 px. La portée et la cadence diminuent à tous les niveaux standard ; la progression et les dégâts restent conservés. Mêlée, Legendary et vitesse de projectile inchangés. Ces valeurs remplacent les tables de tir historiques RUN-018.
+
+État historique au 6 octobre : idée de munitions retenue pour un contrat ultérieur ; la proposition de réserve commune12/24 n’a pas été implémentée. Remplacée par le contrat validé du7octobre ci-dessous.
+
+
+### Ajustement du tir RUN-021 (6 octobre 2026)
+
+Après demande humaine de réduire encore légèrement cadence et distance : Longbow0 part toutes les2,2s, portée176px (11blocs), contre2s/192px ; ThrowingKnives0 toutes les1,4s, portée104px (6,5blocs), contre1,3s/112px. Les niveaux0–5 conservent −0,1s d’intervalle et+8px de portée par niveau, ainsi que dégâts, vitesse des projectiles et cooldown conservé au changement d’arme. Longbow5 :1,7s/216px ; Knives5 :0,9s/144px. Catalogue, portée technique par défaut du projectile et texte du coffre tuto sont alignés. Les frontières physiques et intervalles réellement exécutés sont vérifiés par les tests d’armes ; leur ressenti appartient au playtest.
+
+
+### Mise à jour des common chests — RUN-021
+
+Depuis la correction demandée après playtest, le tirage direct d’un common chest est limité aux niveaux0,1,2 avec des poids40%,30%,30%. Il ne peut donc pas donner directement un item niveau3. L’offre d’amélioration est un tirage séparé : sa probabilité reste5% et elle peut améliorer l’équipement de niveau2 à3, dans la limite ordinaire du niveau3. Les probabilités des rare chests et leur table de récompenses ne changent pas.
+
+
+### Munitions — RUN-021, contrat validé du 7 octobre
+
+Deux réserves distinctes, partagées entre niveaux d’amélioration d’une famille : Longbow10 au départ, plafond15 ; Throwing Knives12, plafond20. Une munition par projectile créé ; tir à zéro refusé sans nouveau cooldown. Échange, acquisition et amélioration ne rechargent pas. Lance-flamme hors système.
+
+Le stock **courant** de chaque famille devient le stock d’entrée du niveau suivant lors d’une sortie réussie. Mort/restart/menu/reprise à froid restaurent ce stock d’entrée, jamais le loot de l’essai interrompu. Exemple : N2 finit à2 → N3 entre à2 → ramasse5 → mort → N3 repart à2. Snapshot `ammo_entry` optionnel en sauvegardev2, enregistré atomiquement avec destination/banque ; anciennev2 sans champ =10/12. Les actions durables en cours de niveau conservent le snapshot sans enregistrer les réserves courantes. Replay du même niveau ne remplace pas ce snapshot par le loot final.
+
+Caisses et tonneaux non bloquants, destruction par une frappe dommageable ou un projectile standard. Famille de drop fixe et visible par instance. Quantités0/1/3/5 à20/40/30/10 %, moyenne1,8. Collecte au contact, plafond respecté, reliquat conservé au sol, props remis au reset ; aucun drop ajouté aux mobs/coffres. HUD courant/plafond, feedback de quantité réelle ou réserve vide. Budgets : N1 deux propsflèches, N2 six(4/2), N3 huit(4/4), N4 dix(5/5). Réglages de prototype à équilibrer par playtest, pas un équilibrage final.
+
+[Contrat détaillé](RUN-021_AMMO_SPIKES_PROPOSAL.md), [visuels](RUN-021_AMMO_ASSET_MANIFEST.md), [placements](RUN-021_AMMO_INTEGRATION_MANIFEST.md). Implémentation locale réalisée ; recette finale et validation humaine du résultat consignées au journal/workflow.

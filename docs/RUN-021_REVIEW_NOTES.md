@@ -1,0 +1,31 @@
+# RUN-021 — Remarques humaines et passes finales
+
+**6 octobre 2026.** L’humain dit : « Je valide la run 020 en l’état. Clôturer et lancement run 021. » Cette validation clôt le résultat actuel de RUN-020 ; elle ne signifie pas que l’ampleur des niveaux, l’équilibrage et l’audio atteignent le scope final. Les remarques suivantes sont affectées à RUN-021, d’abord visuel Claude puis corrections finales.
+
+| Demande humaine | Responsable et phase | Preuve attendue / état au lancement |
+| --- | --- | --- |
+| Terrain TileMap façonné manuellement par l’humain ; jamais écraser ses modifications hors run ; reviews/audits fréquents | Tous, règle permanente au workflow | Baseline/diff conservés ; review en lecture seule ; aucun générateur rejoué. Six fichiers humains gelés au lancement. |
+| Niveaux actuels très loin du scope cible : beaucoup plus grands, plus de mobs, chemins et items | Claude pour cohérence et audit ; level design humain selon workflow | Consigner l’écart ; ne pas annoncer les gabarits/populations actuels comme finaux. Aucune dimension ou population finale chiffrée inventée, aucune reconstruction de terrain autorisée ici. |
+| Archer et Sorcerer : aggro et portée de tir plus grandes, car mobs de tir | Codex, après première passe visuelle | Relever séparément acquisition/conservation/ligne de vue, distance de déclenchement et trajet maximal des tirs ; mesures avant/après, cibles aux limites, occlusion, retour/perte d’aggro et playtest. Valeurs futures non décidées. |
+| Tir des armes joueur : cadence et distance encore légèrement réduites | Codex, même passe d’équilibrage | Augmenter l’intervalle entre départs et réduire la portée réelle ; relever tous niveaux/armes, tester limites, collisions, pause et remplacement, mettre catalogue/tutoriels en accord. Ne pas confondre vitesse du projectile et cadence. |
+| Animation mouvement Skeleton Archer parfois buguée, vidéo jointe | Claude pour reproduction et présentation ; Codex si cause logique | Inspection vidéo disponible, défaut intermittent non isolé ; cause inconnue. Capture native et états en jeu requis avant correction. |
+| Bloated et Chud mieux, mais vitesse de déplacement en aggro à augmenter pour les rendre beaucoup plus dangereux | Codex, après visuel | Mesurer poursuite distincte de patrouille ; tester collisions/bords, windup/contact et contrôle du joueur. Ne pas augmenter dégâts ni portée implicitement. |
+| Beaucoup de SFX à remplacer/supprimer | Claude, complément audio | Audit par événement et écoute ; choix argumentés, feedbacks requis préservés, références et provenance vérifiées. Non réalisé au lancement. |
+| N4 : musique `delosound-dark-synthwave-retro-80s-453292` | Claude, complément audio | Source locale et page officielle trouvées ; dérivé, raccord, boucle et mix encore à livrer/tester. |
+| Ajouter des passes pour fixes/correctifs finaux après le visuel | Claude remet, Codex intègre, humain valide | Recette complète sur résultat intégré, rendu/interactions, parcours clavier N1–4 et routes, reset/reprise/persistance, écoute et playtest, Jev/inspection. RUN-021 ne peut être DONE avant ces étapes. |
+
+Contrats : [passe visuelle](RUN-021_CLAUDE_HANDOFF.md), [complément Archer/audio](RUN-021_CLAUDE_HANDOFF_02.md). Les directions d’équilibrage sont demandées ; les chiffres doivent être justifiés dans la passe technique et soumis avant code dépendant si une décision produit non définie demeure. Pas de nouvelle run, pas de munitions ni de capacités ajoutées à partir de ces remarques.
+
+
+## État après relais Codex
+
+Visuel et ajout musique N4 validés humainement. Cause logique Archer confirmée et corrigée, vidéo compatible avec l’alternance observée ; les six sentinelles sont stables. Réglages de portée/cadence/poursuite implémentés et tests exécutés ; recette2331PASS/48RESULT, parcours basses19/19 et hautes21/21, rendu68/68, six Archers6/6. Aucun terrain remplacé. Ces résultats ne constituent pas encore une validation humaine du nouvel équilibrage. Les candidats SFX restent des propositions non branchées ; la validation reçue n’inclut pas leur choix. Voir [playtest](RUN-021_PLAYTEST.md) et journal pour clôture après validation, sans lancement anticipé de RUN-022.
+
+
+## Correctifs après validation de la passe précédente
+
+Après son playtest, l’humain a demandé de faire poursuivre et sauter localement les obstacles franchissables par tous les mobs sauf Green/Purple/Red Slimes. La précision reçue confirme que Bloated Slime est inclus ; Warrior, Archer, Sorcerer et Chud le sont aussi. Les Skulls doivent contourner les solides en vol. Les portées d’aggro et la perte d’aggro doivent rester inchangées. Les coffres et objets ne sont pas des obstacles physiques.
+
+Un second correctif limite les récompenses directes des common chests aux niveaux0/1/2 ; une amélioration distincte à5% peut encore faire passer un item de2 à3, avec le cap3. Les rare chests restent inchangés.
+
+Ces correctifs ont été demandés sur la branche RUN-021 après la validation de la passe antérieure. La validation humaine déjà reçue ne couvre pas ces changements. Recette automatisée consignée :2375PASS/50RESULT, parcours19/19+21/21 et rendu de sauts16/16. Les ajouts humains de terrain, mobs et pièges N2 sont préservés. Un playtest humain de ces nouveaux correctifs reste attendu avant clôture ; voir [la fiche de playtest](RUN-021_PLAYTEST.md).

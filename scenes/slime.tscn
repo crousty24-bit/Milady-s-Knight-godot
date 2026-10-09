@@ -119,10 +119,10 @@ shape = SubResource("contact")
 [node name="HitSound" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("3")
 volume_db = -8.0
-max_distance = 480.0
+max_distance = 360.0
 bus = &"SFX"
 [node name="DeathSound" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("5")
 volume_db = -9.0
-max_distance = 480.0
+max_distance = 360.0
 bus = &"SFX"

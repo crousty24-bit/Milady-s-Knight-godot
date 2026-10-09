@@ -89,3 +89,51 @@ Le dépôt est public : un pack dont la licence interdit la redistribution des f
 | Free - Raven Fantasy Icons | Clockwork Raven | Redistribution interdite (non vérifié). |
 | 16x16 Assorted RPG Icons | Shade | **CC0, vérifié** sur OpenGameArt ; utilisable. |
 | Fichiers `pixellab-*.png` | Humain, via PixelLab | Propriété de l'utilisateur selon les conditions PixelLab (vérifiées) ; noter prompt et date si intégrés. |
+
+
+## Générés pour le projet — RUN-018 (5 octobre 2026)
+
+`assets/run018/**` est généré par `tools/art/run018/` : visuels originaux du projet, sans pixel tiers annoncé. Les générateurs sont les sources conservées. Palette commune et rig RUN-029 réutilisés ; `tools/art/knight.py` et l’atlas initial sont conservés. Contribution Claude livrée localement dans `ff5caa0` ; validation artistique humaine RUN-018 encore requise.
+
+| Générateur | Dérivés | Usage |
+| --- | --- | --- |
+| `knight_armed.py`, `weapon_raster.py` | `assets/run018/knight/` | Chevalier body/mid/over64×64 et rig, strips d’armes ; dessin runtime à portée exacte par `scripts/weapon_art.gd`, posture/lancer Knives |
+| `ui_icons.py` | `assets/run018/ui/` | Huit armes/vide, badges0–5, cartes de récompense/focus, glyphes common/rare |
+| `world_items.py` | `assets/run018/world/` | Coffres common/rare, potion majeure, soin de kill, couteau départ/impacts |
+
+Tailles, frames, ancrages et limites détaillés dans [RUN-018_ASSET_MANIFEST.md](../docs/RUN-018_ASSET_MANIFEST.md). La recomposition Sword0 ressemble à l’atlas antérieur mais n’est pas identique pixel à pixel ; son jugement visuel reste humain.
+
+
+## Générés pour le projet — RUN-019 (5 octobre 2026)
+
+Les 37 PNG de `assets/run019/**` sont des visuels originaux du projet générés par `tools/art/run019/enemies_undead.py`, `enemies_blobs.py` et `world_run019.py`. Ces générateurs sont les sources conservées ; palette et outils pixel communs sont réutilisés. Le mur secret reprend l’atlas de pierre existant du projet en lecture seule. Aucun nouvel asset visuel tiers annoncé, aucune génération d’image par IA.
+
+Ennemis, Skulls, projectiles, pièges, mécanismes, pickups et effets : tables, frames et ancrages dans [RUN-019_ASSET_MANIFEST.md](../docs/RUN-019_ASSET_MANIFEST.md). Contribution Claude `d42804d`, passe validée en l’état par l’humain. Assets externes éventuels à adapter lors des prochaines passes autorisées.
+
+## Générés pour le projet — RUN-020 (5 octobre 2026)
+
+Les 24 PNG de `assets/run020/` sont originaux, générés par `tools/art/run020/biomes_run020.py`, `terrain_run020.py`, `backdrop_run020.py`, `props_run020.py` et `palette_run020.py`. Générateurs conservés, palette et accessoires du projet réutilisés en lecture seule ; aucun pixel tiers nouveau ni génération d’image par IA. Contribution Claude Code Opus5.5 ; intégration Codex. [Manifeste RUN-020](../docs/RUN-020_ASSET_MANIFEST.md). Validation artistique humaine attendue.
+
+## Générés pour le projet — reprise RUN-020 (6 octobre 2026)
+
+`assets/run020_feedback/enemies/bloated_slime.png`, `chud_blob.png` et `vfx_bloated_burst.png` sont originaux, redessinés à densité native par `tools/art/run020_feedback/elites.py` (palettes et utilitaires RUN-019/projet importés en lecture seule). Les feuilles RUN-019 restent en place, non référencées. Aucun pixel tiers ni génération d’image par IA. Contribution Claude Code Opus5.5 avec sous-agent Sonnet5.5 ; [manifeste de reprise](../docs/RUN-020_ASSET_MANIFEST_02.md). Validation artistique humaine attendue.
+
+## Générés pour le projet — RUN-021 (6 octobre 2026)
+
+`assets/run021/terrain_black_forest.png` (terre N3 éclaircie d’un cran, générée par `tools/art/run021/terrain_run021.py` à partir des fonctions RUN-020 importées en lecture seule) et `assets/run021/bg_{blight_town,black_forrest,forbidden_graveyard}_near.png` (bandes de parallaxe proches N2–4, `tools/art/run021/backdrop_run021.py`) sont originaux. Palette et utilitaires du projet réutilisés en lecture seule ; aucun pixel tiers ni génération d’image par IA. Contribution Claude Code Opus5.5 avec sous-agent Sonnet5.5 ; [manifeste RUN-021](../docs/RUN-021_ASSET_MANIFEST.md). Validation artistique humaine attendue.
+
+## Générés pour le projet — RUN-021 munitions (7 octobre 2026)
+
+Les 12 PNG de `assets/run021/ammo/` (caisse/tonneau flèches et couteaux intacts et casse, pickups flèches/couteaux, éclat de ramassage, icônes HUD) sont originaux, générés par `tools/art/run021/ammo/ammo_art.py` (source conservée, déterministe) avec `pixel.py`/`palette.py` du projet en lecture seule. `proj_arrow.png` et `proj_knife.png` servent de références de motif et de couleur, sans pixel copié. Aucun pixel tiers ni génération d’image par IA ; la bibliothèque locale a été examinée en lecture seule sans rien retenir. Contribution Claude Code Opus5.5 ; [manifeste munitions](../docs/RUN-021_AMMO_ASSET_MANIFEST.md). Intégration Codex et validation artistique humaine attendues.
+
+## Générés pour le projet — RUN-021 passe visuelle N2 (8 octobre 2026)
+
+Les PNG de `assets/run021/n2/` et `assets/run021/n2/props/` (fonds et lumières Blight Town, atlas de terrain, terre, mur de fond souterrain, décalques, miasme, halo, 23 accessoires) sont originaux, générés par `tools/art/run021/n2/*.py` (sources conservées, déterministes) avec `pixel.py`, les palettes et utilitaires du projet en lecture seule. Le tileset vectoriel « Plague Town » du dossier d'inspiration local n'a servi que de référence de motifs (fenêtres vert maladif, gibets, corbeaux), sans pixel copié ni fichier intégré. Aucune génération d'image par IA. Contribution Claude Code Opus 5.5 avec deux sous-agents Sonnet 5.5 ; [manifeste N2](../docs/RUN-021_N2_VISUAL_MANIFEST.md). Validation artistique humaine attendue.
+
+## Générés pour le projet — RUN-021 passe visuelle N3 (8 octobre 2026)
+
+Les PNG de `assets/run021/n3/` et `assets/run021/n3/props/` (fonds, lumières et faisceaux Black Forest, atlas de terrain, terre profonde, mur de fond souterrain, décalques, brouillard, 28 accessoires) sont originaux. Ils sont générés par `tools/art/run021/n3/*.py` (sources conservées, déterministes) avec `pixel.py`, les palettes et utilitaires du projet en lecture seule. Aucun asset tiers ni génération d'image par IA. Contribution Claude Code Opus 5.5 avec deux sous-agents Sonnet 5.5 ; [manifeste N3](../docs/RUN-021_N3_VISUAL_MANIFEST.md). Validation artistique humaine attendue.
+
+## Générés pour le projet — RUN-021 passe visuelle N4 (9 octobre 2026)
+
+Les PNG de `assets/run021/n4/` et `assets/run021/n4/props/` (fonds, lumières et voiles spectraux Forbidden Graveyard, atlas de terrain, terre de tombes, mur de fond des cryptes, décalques, brume, 32 accessoires) sont originaux. Ils sont générés par `tools/art/run021/n4/*.py` (sources conservées, déterministes) avec `pixel.py`, les palettes et utilitaires du projet en lecture seule. Aucun asset tiers ni génération d'image par IA. Contribution Claude Code Opus 5.5 avec deux sous-agents Sonnet 5.5 ; [manifeste N4](../docs/RUN-021_N4_VISUAL_MANIFEST.md). Validation artistique humaine attendue.

@@ -1,0 +1,114 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://cc2e4mvpqbc0u"]
+
+[ext_resource type="Texture2D" uid="uid://dll3paslblvvj" path="res://assets/run021/ammo/pickup_arrows.png" id="1"]
+[ext_resource type="Texture2D" uid="uid://hibajgvysimp" path="res://assets/run021/ammo/pickup_knives.png" id="2"]
+[ext_resource type="Texture2D" uid="uid://bsndhytp7ykxc" path="res://assets/run021/ammo/vfx_ammo_pickup.png" id="3"]
+
+[sub_resource type="AtlasTexture" id="arrows_0"]
+atlas = ExtResource("1")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="arrows_1"]
+atlas = ExtResource("1")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="arrows_2"]
+atlas = ExtResource("1")
+region = Rect2(32, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="arrows_3"]
+atlas = ExtResource("1")
+region = Rect2(48, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="collect_0"]
+atlas = ExtResource("3")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="collect_1"]
+atlas = ExtResource("3")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="collect_2"]
+atlas = ExtResource("3")
+region = Rect2(32, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="collect_3"]
+atlas = ExtResource("3")
+region = Rect2(48, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="collect_4"]
+atlas = ExtResource("3")
+region = Rect2(64, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="knives_0"]
+atlas = ExtResource("2")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="knives_1"]
+atlas = ExtResource("2")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="knives_2"]
+atlas = ExtResource("2")
+region = Rect2(32, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="knives_3"]
+atlas = ExtResource("2")
+region = Rect2(48, 0, 16, 16)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("arrows_0")
+}, {
+"duration": 1.0,
+"texture": SubResource("arrows_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("arrows_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("arrows_3")
+}],
+"loop": 1,
+"name": &"arrows",
+"speed": 6.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("collect_0")
+}, {
+"duration": 1.0,
+"texture": SubResource("collect_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("collect_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("collect_3")
+}, {
+"duration": 1.0,
+"texture": SubResource("collect_4")
+}],
+"loop": 0,
+"name": &"collect",
+"speed": 15.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("knives_0")
+}, {
+"duration": 1.0,
+"texture": SubResource("knives_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("knives_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("knives_3")
+}],
+"loop": 1,
+"name": &"knives",
+"speed": 6.0
+}]

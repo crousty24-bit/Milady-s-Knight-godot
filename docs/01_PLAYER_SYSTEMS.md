@@ -1,5 +1,7 @@
 # Milady's Knight — Player Systems
 
+Les attributions clavier/souris et les capacités réservées sont définies dans [10_CONTROLS_KEYBINDS.md](10_CONTROLS_KEYBINDS.md). Les mentions Space/ESC historiques ci-dessous désignent les commandes Saut/Pause, personnalisables.
+
 ## système mouvement et plateforme (joueur)
 - système mouvement et plateforme (joueur) : interface 2D qui permet un déplacement vertical/horizontal
 	- jump entre d'un élément à l'autre ou libre dans l'environnement du niveau
@@ -12,12 +14,30 @@
 	- **A DEFINIR :**
 		- Pour les déplacements : l’accélération horizontale, la décélération, le contrôle aérien, la vitesse de chute maximale, un éventuel coyote time, un jump buffer ou les restrictions après wall jump. Ce ne sont pas forcément des features supplémentaires : ce sont surtout des paramètres de contrôle à décider durant le prototypage.
 	
+### Mobilité implémentée — reprise RUN-021 (6 octobre 2026)
+
+Space déclenche un rebond vers le côté opposé depuis un mur agrippable, même sans direction maintenue et même après consommation du double saut. Le contact mural garde une tolérance de 0,10 s après le départ : presser la direction opposée légèrement avant Space conserve le rebond. Le buffer de saut existant de 0,12 s fonctionne aussi à l’arrivée sur le mur. En l’air, ce rebond est prioritaire sur le coyote du sol. Après séparation physique, un nouveau contact permet immédiatement un autre rebond ; rester sur la touche ne déclenche pas de saut automatique. Le wall jump conserve l’interdiction de double saut jusqu’au retour au sol, ainsi que les règles de dégâts, pause et surfaces non agrippables.
+
+### Caméra et extensions verticales — RUN-021 (7 octobre 2026)
+
+**Zoom par défaut validé le 8 octobre 2026 : 1,2× sur les deux axes**, réglé manuellement dans `scenes/player.tscn` puis retenu après playtests humains. Il reste la référence jusqu'à nouvel ordre ; la légère hausse de difficulté liée au champ visible réduit est volontaire. Les futurs réglages et vérifications doivent conserver cette référence, sans compensation automatique de difficulté. Voir [la règle de cadrage](06_ART_BIBLE.md#relation-avec-léchelle-pixel-art).
+
+Au chargement du niveau, `scripts/level.gd` conserve les limites horizontales de `Camera Bounds` et agrandit ses limites verticales à partir des cellules du `Terrain` et des deux extrémités de déplacement des Ferries sous `Platforms`. Le suivi physique lissé et le décalage de caméra `(32, -38)` sont conservés. Le cadrage inférieur existant reste inchangé tant que le contenu ne dépasse pas sa limite basse.
+
+Dans l'inspecteur du nœud racine du niveau :
+
+- `Auto Camera Vertical Bounds` (activé par défaut) adapte la caméra aux ajouts verticaux sauvegardés dans la scène, au prochain lancement.
+- `Camera Vertical Padding` (256 px par défaut) réserve une marge au-dessus du contenu ; le calcul impose également la place nécessaire à la moitié du viewport et au décalage vertical, selon le zoom au chargement.
+- `Camera Bounds` reste le rectangle minimal et la source des limites horizontales. Désactiver le mode automatique permet de définir entièrement ce rectangle à la main.
+
+Ce calcul règle uniquement la caméra : agrandir une zone jouable peut aussi nécessiter d'adapter séparément les collisions de `WorldBounds` et le seuil de chute `Void Y`. Le terrain humain n'est pas réécrit par ce système.
+
 ## système de combat (joueur) :
 - système de combat (joueur) :
-	- attaque mêlée simple : directionnelle continue quand la touche Attaque est maintenue (F) ; touche (hit) le mob quand à portée (RANGE) et inflige dégât au contact
-	- attaque à distance (tir) : directionnelle continue quand la touche Attaque est maintenue (F) ; touche le mob et inflige dégât au contact ; les projectiles tirés ont une trajectoire en ligne droite depuis l'emplacement initial du joueur (au moment où il a tiré) ; un projectile à une portée maximale à laquelle celui-ci disparaît s'il n'est entré en contact avec aucun mobs/éléments de terrain
+	- attaque mêlée simple : directionnelle continue quand la touche Attaque est maintenue (commande Attaque) ; touche (hit) le mob quand à portée (RANGE) et inflige dégât au contact
+	- attaque à distance (tir) : directionnelle continue quand la touche Attaque est maintenue (commande Attaque) ; touche le mob et inflige dégât au contact ; les projectiles tirés ont une trajectoire en ligne droite depuis l'emplacement initial du joueur (au moment où il a tiré) ; un projectile à une portée maximale à laquelle celui-ci disparaît s'il n'est entré en contact avec aucun mobs/éléments de terrain
 	- attaque sautée (mêlée) : le joueur peut effectuer des attaques de mêlée simple pendant un jump ou un double jump ; il ne peut pas attaquer durant un wall slide
-	- attaque d'atterissage (mêlée) : lorsque le joueur est dans les airs UNIQUEMENT APRES un double jump OU une chute de X hauteur (à définir), il peut faire une attaque d'impact à l'atterissage sur le terrain quand la touche (G) est appuyé ; ce type d'attaque permet d'infliger des dégâts de zone autour du joueur lors de l'impact (égal au dégâts de l'arme de mêlée équipée) ; l'attaque a donc une animation dédiée qui fait plonger le joueur directement vers le bas (en ligne droite) depuis son point initial dans les airs (au moment où il appuie sur la touche)
+	- attaque d'atterissage (mêlée) : lorsque le joueur est dans les airs UNIQUEMENT APRES un double jump OU une chute de X hauteur (à définir), il peut faire une attaque d'impact à l'atterissage sur le terrain quand la commande Impact est pressée ; ce type d'attaque permet d'infliger des dégâts de zone autour du joueur lors de l'impact (égal au dégâts de l'arme de mêlée équipée) ; l'attaque a donc une animation dédiée qui fait plonger le joueur directement vers le bas (en ligne droite) depuis son point initial dans les airs (au moment où il appuie sur la touche)
 	- les attaques et les dégâts infligés varient selon l'item équipé : type d'item, niveau d'item
 
 ## système de transition, pause du jeu
@@ -82,9 +102,23 @@
 			- le joueur subit un dégâts suite à une collision avec un mob swarm (Possessed Skulls) : invincibilité temporaire uniquement
 	- **ATTAQUES = HIT/ COUPS**
 		- une attaque est l'action de donner des coups/hit
-		- une attaque de mêlée donne des hit répétés en continus lorsque la touche d'attaque est maintenue (hold) ; idem pour le tir ; hold (F)→ attaques (hits) répétées selon ATK SPEED de l'arme équipée
+		- une attaque de mêlée donne des hit répétés en continus lorsque la touche d'attaque est maintenue (hold) ; idem pour le tir ; maintien Attaque → attaques (hits) répétées selon ATK SPEED de l'arme équipée
 		- les attaques infligent des dégâts basés sur les DMG de l'arme équipée et de son ATK SPEED (= DPS)
 		- le système doit garantir qu’une attaque ne provoque qu’un nombre de hits prévu et ne puisse pas infliger des dégâts à chaque frame physique : l’ATK SPEED correspond à un intervalle en secondes => cette règle doit rester la référence du système de dégâts
-		- présentation de la mêlée (décision RUN-029) : les hits successifs d’une attaque maintenue enchaînent visuellement trois mouvements d’épée (taille, revers fendant, frappe à deux mains), puis reprennent au premier ; l’animation continue entre deux hits tant que F est maintenue. Chaque mouvement reste un seul hit : dégâts, ATK SPEED, fenêtre et zone de contact sont identiques
+		- présentation de la mêlée (décision RUN-029) : les hits successifs d’une attaque maintenue enchaînent visuellement trois mouvements d’épée (taille, revers fendant, frappe à deux mains), puis reprennent au premier ; l’animation continue entre deux hits tant que la commande Attaque est maintenue. Chaque mouvement reste un seul hit : dégâts, ATK SPEED, fenêtre et zone de contact sont identiques
 	- **MORT = RESET**
 		- quand les HP du joueur sont réduit à zéro : mort du joueur et reset de la progression au début du niveau.
+
+
+## RUN-019 — Bonus HP et Magic Shield, contrat validé le 5 octobre 2026
+
+Bonus unique : +1 MAX HP et +1 CURRENT HP (1/3→2/4), sauvegarde du flag avant attribution. Reset/reprise soigne au nouveau maximum. Aucun soin par acquisition d'équipement. Sept bonus possibles dans la campagne spécifiée ; les paliers N5/N8 restent RUN-023.
+
+Shield : dix secondes de gameplay, rafraîchissement à dix sans cumul, suspendu par pause/modales ; échange d'arme sans effet. Révision RUN-020 du 6 octobre : protection contre tous les dégâts (contact/mêlée, projectile/sort au sol, swarm, pièges solides, flammes et tirs de tourelles), sans réaction sur un impact bloqué. Le vide reste mortel, confirmé explicitement par l’humain. Mort/vide/reset/reprise/changement de niveau suppriment le buff. Les scènes de pickup, timers et interactions sont testés en fixture ; art/SFX et validation humaine attendus.
+
+
+## Ferries : axes et réglages dans Godot
+
+Les variantes `scenes/moving_platform.tscn` (horizontale par défaut) et `scenes/moving_platform_vertical.tscn` (verticale par défaut) utilisent le même script `scripts/moving_platform.gd`. L'axe est une valeur de scène/instance explicite, pas un changement de script. Sélectionner le node Ferry/AnimatableBody2D dans l'inspecteur, puis régler **Travel** : `(144,0)` vers la droite, `(-144,0)` vers la gauche, `(0,144)` vers le bas, `(0,-144)` vers le haut. La valeur non nulle est la distance en pixels entre les extrémités ; deux composantes non nulles donnent une diagonale.
+
+**Position** définit le point de départ ; l'autre extrémité vaut Position+Travel. **Period** est la durée positive en secondes de l'aller-retour complet :4 donne2s d'aller et2s de retour. Augmenter Period ralentit le trajet, augmenter Travel allonge sa distance. Le mouvement s'exécute en jeu, pas dans l'éditeur. DansN2, Ferry2 conserve sa position humaine et utilise maintenant la variante verticale avec Travel `(0,144)` ; Ferry1 reste horizontal. Le script vertical humain est conservé, mais il n'est plus nécessaire de remplacer le script d'une instance pour choisir son axe.

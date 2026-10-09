@@ -6,9 +6,16 @@ signal health_changed(value: float, maximum: float)
 signal died
 signal equipment_changed(slot: int)
 signal projectile_fired(arrow: Node2D)
+signal ammo_changed(family: String, current: int, maximum: int)
+signal ammo_empty(family: String)
+signal ammo_collected(family: String, amount: int)
+const AMMO_DEFAULTS = {"Longbow": 10, "ThrowingKnives": 12}
+const AMMO_CAPS = {"Longbow": 15, "ThrowingKnives": 20}
+var ammo: Dictionary = AMMO_DEFAULTS.duplicate()
+var _ammo_initialized: bool = false
 const ARROW_SCRIPT = preload("res://scripts/arrow.gd")
 const BOW_INTERVAL = 1.5
-enum DamageSource { CONTACT_MELEE, PROJECTILE, SOLID_TRAP, FLAME, SWARM, VOID }
+enum DamageSource { CONTACT_MELEE, PROJECTILE, SOLID_TRAP, FLAME, SWARM, VOID, TRAP_PROJECTILE }
 const SPEED = 105.0
 const GRAVITY = 760.0
 const JUMP_SPEED = -255.0
@@ -48,6 +55,10 @@ const RUN_HIP_OFFSET = [0, 1, 0, -1, 0, 1, 0, -1]
 const LAND_DURATION = 0.1
 const LAND_SPEED = 160.0
 const LAND_DUST_DURATION = 0.24
+signal magic_shield_changed(remaining: float)
+# Health actually restored by heal() (potions, kill heals); presentation only.
+signal healed(amount: float)
+var magic_shield_time: float = 0.0
 var max_health_units: int = 30
 var health_units: int = 30
 var health: float:
@@ -70,6 +81,8 @@ var hit_stun_time: float = 0.0
 var attack_time: float = 0.0
 var attack_cooldown: float = 0.0
 var bow_cooldown: float = 0.0
+var shot_age: float = 99.0
+var equipment: Dictionary = {"melee": "Sword0", "ranged": ""}
 var has_longbow: bool = false
 var active_slot: int = 0
 var hit_targets: Array[int] = []
@@ -80,6 +93,8 @@ var jump_effect_origin := Vector2.ZERO
 var motion_state: MotionState = MotionState.AIR
 var wall_normal: float = 0.0
 var blocked_wall_normal: float = 0.0
+var wall_coyote: float = 0.0
+var last_wall_normal: float = 0.0
 var wall_detach_time: float = 0.0
 var wall_control_time: float = 0.0
 var attack_cancelled: bool = false
@@ -106,8 +121,28 @@ var _fx_slot: int = 0
 var _fx_owned: bool = false
 var _equipment_sound: AudioStreamPlayer
 var _fx_armed: bool = false  # level setup (configure_equipment on spawn) stays silent
+# RUN-018 presentation (Claude): the knight frames come without the weapon (body / mid / over
+# layers, tools/art/run018/knight_armed.py); the active melee weapon and its smear are drawn
+# between them at the exact gameplay reach (WeaponArt), Throwing Knives have their own stance.
+const RIG = preload("res://assets/run018/knight/knight_rig.gd")
+const KNIFE_TEXTURE = preload("res://assets/run018/world/proj_knife.png")
+const KNIFE_RELEASE_FX = preload("res://assets/run018/world/vfx_knife_release.png")
+const KNIFE_THROW_SFX = preload("res://assets/sounds/run018/sfx_weapon_knives_throw.tres")
+const LIGHT_SWING_SFX = preload("res://assets/sounds/sfx_melee_swing_light.tres")
+const HEAVY_SWING_SFX = preload("res://assets/sounds/run018/sfx_melee_swing_heavy.tres")
+const HEAVY_SWINGS := ["Longsword", "DarkScythe", "Warhammer", "Halberds"]
+const KILL_HEAL_MINOR = preload("res://assets/run018/world/vfx_heal_kill_minor.png")
+const KILL_HEAL_MAJOR = preload("res://assets/run018/world/vfx_heal_kill_major.png")
+const KILL_HEAL_SFX = preload("res://assets/sounds/run018/sfx_heal_kill.wav")
+@onready var _smear: Sprite2D = $Sprite/Smear
+@onready var _mid: AnimatedSprite2D = $Sprite/Mid
+@onready var _weapon: Sprite2D = $Sprite/Weapon
+@onready var _over: AnimatedSprite2D = $Sprite/Over
 
 func _ready() -> void:
+	# Each player owns its blade resource: upgrades must not alter other instances.
+	$AttackArea/Shape.shape = $AttackArea/Shape.shape.duplicate()
+	_update_melee_shape()
 	_equipment_sound = AudioStreamPlayer.new()
 	_equipment_sound.bus = &"SFX"
 	_equipment_sound.volume_db = -6.0
@@ -115,11 +150,130 @@ func _ready() -> void:
 	projectile_fired.connect(_on_projectile_fired_fx)
 	equipment_changed.connect(_on_equipment_changed_fx)
 	set_deferred("_fx_armed", true)
+	for carrier in [sprite, upper]:
+		carrier.frame_changed.connect(_sync_weapon_layers)
+		carrier.animation_changed.connect(_sync_weapon_layers)
+	_connect_kill_heal.call_deferred()
+	_sync_weapon_layers()
+	_build_shield_art()
+
+func _process(_delta: float) -> void:
+	_sync_weapon_layers()
+	# Follows the gameplay timer even when it is written directly (fixtures, closure resets).
+	_shield_aura.visible = magic_shield_time > 0.0 and not dead
+	if _shield_aura.visible:
+		# The last two seconds blink so the end can be anticipated.
+		_shield_aura.modulate.a = 1.0 if magic_shield_time > 2.0 or int(magic_shield_time * 8.0) % 2 == 0 else 0.35
+
+# RUN-019 Magic Shield presentation: aura while active, break effect and cue when it runs out
+# (not on death). Timers and protection rules stay in take_damage/activate_magic_shield.
+const SHIELD_AURA = preload("res://assets/run019/world/vfx_shield_aura.png")
+const SHIELD_END = preload("res://assets/run019/world/vfx_shield_end.png")
+const SHIELD_END_SFX = preload("res://assets/sounds/run019/sfx_magic_shield_end.wav")
+var _shield_aura: AnimatedSprite2D
+
+func _build_shield_art() -> void:
+	_shield_aura = Run019Art.sprite(self, OneShotFx.strip_frames(SHIELD_AURA, Vector2i(36, 40), 10.0, true), Vector2(18, 34), &"default", 1)
+	_shield_aura.name = &"ShieldAura"
+	_shield_aura.visible = magic_shield_time > 0.0
+	magic_shield_changed.connect(_on_magic_shield_art)
+
+func _on_magic_shield_art(remaining: float) -> void:
+	if remaining > 0.0:
+		_shield_aura.visible = true
+		_shield_aura.modulate.a = 1.0
+		return
+	if _shield_aura.visible and not dead:
+		OneShotFx.spawn(self, SHIELD_END, Vector2i(36, 40), 14.0, global_position, false, Vector2(0.5, 34.0 / 40.0), SHIELD_END_SFX, -6.0)
+	_shield_aura.visible = false
+
+func _knives() -> bool:
+	return str(equipment.ranged).begins_with("ThrowingKnives")
+
+# Ranged animation names: Longbow keeps bow_* / shoot, Throwing Knives use knife_* / throw.
+func _ranged_anim(name: String) -> StringName:
+	if not _knives(): return StringName(name)
+	match name:
+		"shoot": return &"throw"
+		"up_shoot": return &"up_throw"
+	return StringName(name.replace("bow_", "knife_"))
+
+# Mirror the carrier frame (Upper when layered) on mid/over and draw the weapon and smear between.
+func _sync_weapon_layers() -> void:
+	if _mid == null: return
+	var carrier: AnimatedSprite2D = upper if upper.visible else sprite
+	var anim: StringName = carrier.animation
+	var frame: int = carrier.frame
+	var offset: Vector2 = upper.position if carrier == upper else Vector2.ZERO
+	for layer: AnimatedSprite2D in [_mid, _over]:
+		layer.flip_h = carrier.flip_h
+		layer.position = offset
+		if layer.sprite_frames.has_animation(anim):
+			if layer.animation != anim: layer.animation = anim
+			layer.frame = frame
+			layer.show()
+		else:
+			layer.hide()
+	var frames: Array = RIG.FRAMES.get(String(anim), [])
+	var spec: Array = frames[frame] if frame < frames.size() else [0]
+	var kind: int = spec[0]
+	var held := {}
+	var swept := {}
+	var stats := WeaponCatalog.stats(equipment.melee)
+	if kind != 0 and not stats.is_empty():
+		var base := str(equipment.melee).left(-1)
+		var hand := Vector2(spec[1], spec[2])
+		if kind == 3:
+			var stow: Array = WeaponArt.STOWED[base]
+			held = WeaponArt.held(stow[0], hand, spec[3] if stow[2] == null else stow[2], stow[1])
+		else:
+			held = WeaponArt.held(base, hand, spec[4] if base in WeaponArt.POLES else spec[3], stats.reach)
+			var smear: Array = spec[5]
+			if kind == 1 and not smear.is_empty():
+				swept = WeaponArt.smear(hand, smear[0], smear[1], smear[2], stats.reach)
+	# Like the authored frames, nothing is drawn under the feet line while standing on the ground.
+	var clip := is_on_floor() or dead or resurrection_active
+	_place(_weapon, held, offset, carrier.flip_h, clip)
+	_place(_smear, swept, offset, carrier.flip_h, clip)
+
+func _place(node: Sprite2D, art: Dictionary, offset: Vector2, flip: bool, clip: bool) -> void:
+	if art.is_empty():
+		node.hide()
+		return
+	var texture: Texture2D = art.texture
+	var origin: Vector2i = art.origin
+	var size := texture.get_size()
+	# Rig coordinates are the player's; the sprite sits 29 px above the feet.
+	var rows := size.y
+	if clip: rows = clampf(-(origin.y + offset.y), 0.0, size.y)
+	if rows <= 0.0:
+		node.hide()
+		return
+	node.texture = texture
+	node.region_rect = Rect2(0, 0, size.x, rows)
+	node.flip_h = flip
+	node.position = Vector2(-(origin.x + size.x) if flip else origin.x, origin.y + 29.0) + offset
+	node.show()
+
+func _connect_kill_heal() -> void:
+	var node := get_parent()
+	while node != null and not node.has_signal("kill_healed"): node = node.get_parent()
+	if node != null and not node.is_connected("kill_healed", _on_kill_healed):
+		node.connect("kill_healed", _on_kill_healed)
+
+# Instant heal from a kill: a short feedback on the knight, never a pickup.
+func _on_kill_healed(amount: float) -> void:
+	if dead or not is_inside_tree(): return
+	var strip: Texture2D = KILL_HEAL_MAJOR if amount >= 1.0 else KILL_HEAL_MINOR
+	OneShotFx.spawn(self, strip, Vector2i(24, 32), 12.0, global_position + Vector2(0, 1), false, Vector2(0.5, 1.0), KILL_HEAL_SFX, -4.0)
 
 func _on_projectile_fired_fx(arrow: Node2D) -> void:
 	var world := get_parent()
 	var at := arrow.global_position - Vector2(4.0 * facing, 0.0)
-	OneShotFx.spawn(world, RELEASE_FX, Vector2i(16, 12), 24.0, at, facing < 0, Vector2(0.0, 0.5), BOW_SHOT_SFX, -8.0)
+	# The look is captured from the weapon that fired: a later swap never restyles a flying shot.
+	var knife := _knives()
+	if knife and arrow.has_method("set_look"): arrow.set_look("knife")
+	OneShotFx.spawn(world, KNIFE_RELEASE_FX if knife else RELEASE_FX, Vector2i(16, 12), 24.0, at, facing < 0, Vector2(0.0, 0.5), KNIFE_THROW_SFX if knife else BOW_SHOT_SFX, -8.0)
 
 # Acquisition plays the equip cue; a slot change by the player plays the switch cue.
 func _on_equipment_changed_fx(slot: int) -> void:
@@ -132,11 +286,17 @@ func _on_equipment_changed_fx(slot: int) -> void:
 		cue = WEAPON_SWITCH_SFX
 	_fx_slot = slot
 	_fx_owned = has_longbow
+	$SwingSound.stream = HEAVY_SWING_SFX if str(equipment.melee).left(-1) in HEAVY_SWINGS else LIGHT_SWING_SFX
+	_sync_weapon_layers()
 	if cue != null and _equipment_sound != null and is_inside_tree():
 		_equipment_sound.stream = cue
 		_equipment_sound.play()
 
 func _physics_process(delta: float) -> void:
+	if magic_shield_time > 0.0:
+		magic_shield_time = maxf(0.0, magic_shield_time - delta)
+		if magic_shield_time < 0.000001: magic_shield_time = 0.0
+		if magic_shield_time == 0.0: magic_shield_changed.emit(0.0)
 	if resurrection_active:
 		_update_resurrection_visuals()
 		return
@@ -152,7 +312,9 @@ func _physics_process(delta: float) -> void:
 	jump_flash = maxf(0.0, jump_flash - delta)
 	wall_detach_time = maxf(0.0, wall_detach_time - delta)
 	wall_control_time = maxf(0.0, wall_control_time - delta)
+	wall_coyote = maxf(0.0, wall_coyote - delta)
 	since_swing += delta
+	shot_age += delta
 	land_time = maxf(0.0, land_time - delta)
 	velocity.y = minf(velocity.y + GRAVITY * delta, 420.0)
 	if dead:
@@ -167,6 +329,7 @@ func _physics_process(delta: float) -> void:
 		coyote = 0.10
 		can_double_jump = false
 		wall_jump_lockout = false
+		wall_coyote = 0.0
 	else:
 		coyote = maxf(0.0, coyote - delta)
 	jump_buffer = maxf(0.0, jump_buffer - delta)
@@ -174,24 +337,28 @@ func _physics_process(delta: float) -> void:
 	_update_wall_state(direction)
 	if controls_enabled and knockback_time <= 0.0 and Input.is_action_just_pressed("jump"):
 		jump_buffer = 0.12
-	if knockback_time <= 0.0 and jump_buffer > 0.0 and coyote > 0.0:
-		velocity.y = JUMP_SPEED
-		jump_buffer = 0.0
-		coyote = 0.0
-		can_double_jump = true
-		$JumpSound.play()
-	elif knockback_time <= 0.0 and jump_buffer > 0.0 and wall_normal != 0.0 and not is_on_floor():
-		velocity = Vector2(wall_normal * WALL_JUMP_SPEED, JUMP_SPEED)
-		facing = int(wall_normal)
-		blocked_wall_normal = wall_normal
+	# Prefer the contacted/recently departed wall over stale ground coyote.
+	# Away + Space can arrive on adjacent physics ticks without losing the rebound.
+	var jump_wall := wall_normal if wall_normal != 0.0 else last_wall_normal if wall_coyote > 0.0 else 0.0
+	if knockback_time <= 0.0 and jump_buffer > 0.0 and jump_wall != 0.0 and not is_on_floor():
+		velocity = Vector2(jump_wall * WALL_JUMP_SPEED, JUMP_SPEED)
+		facing = int(jump_wall)
+		blocked_wall_normal = jump_wall
 		wall_control_time = 0.07
 		wall_detach_time = 0.20
+		wall_coyote = 0.0
 		wall_jump_lockout = true
 		can_double_jump = false
 		coyote = 0.0
 		jump_buffer = 0.0
 		motion_state = MotionState.AIR
 		$WallJumpSound.play()
+	elif knockback_time <= 0.0 and jump_buffer > 0.0 and coyote > 0.0:
+		velocity.y = JUMP_SPEED
+		jump_buffer = 0.0
+		coyote = 0.0
+		can_double_jump = true
+		$JumpSound.play()
 	elif knockback_time <= 0.0 and jump_buffer > 0.0 and can_double_jump and not wall_jump_lockout:
 		velocity.y = DOUBLE_JUMP_SPEED
 		jump_buffer = 0.0
@@ -218,11 +385,11 @@ func _physics_process(delta: float) -> void:
 		_fire_arrow()
 	if active_slot == 0 and controls_enabled and hit_stun_time <= 0.0 and Input.is_action_pressed("attack") and attack_time <= 0.0 and attack_cooldown <= 0.000001 and motion_state != MotionState.WALL_SLIDE:
 		attack_time = ATTACK_DURATION
-		attack_cooldown = ATTACK_INTERVAL
+		attack_cooldown = WeaponCatalog.stats(equipment.melee).interval
 		attack_facing = facing
 		attack_cancelled = false
 		hit_targets.clear()
-		chain_move = (chain_move + 1) % CHAIN_MOVES if since_swing <= ATTACK_INTERVAL + CHAIN_GRACE else 0
+		chain_move = (chain_move + 1) % CHAIN_MOVES if since_swing <= WeaponCatalog.stats(equipment.melee).interval + CHAIN_GRACE else 0
 		since_swing = 0.0
 		$SwingSound.play()
 	attack_time = maxf(0.0, attack_time - delta)
@@ -236,6 +403,7 @@ func _physics_process(delta: float) -> void:
 	_update_wall_state(direction)
 	_update_landing(fall_speed)
 	_update_sword()
+	_sync_weapon_layers()
 	queue_redraw()
 
 func set_resurrection_progress(value: float) -> void:
@@ -294,24 +462,73 @@ func finish_dialogue_pose() -> void:
 	sprite.process_mode = Node.PROCESS_MODE_INHERIT
 
 func configure_equipment(ranged_owned: bool) -> void:
-	has_longbow = ranged_owned
-	if not has_longbow and active_slot != 0:
+	configure_loadout({"melee": "Sword0", "ranged": "Longbow0" if ranged_owned else ""})
+
+func active_item() -> String:
+	return str(equipment.ranged if active_slot == 1 else equipment.melee)
+
+func configure_loadout(slots: Dictionary) -> void:
+	var melee := str(slots.get("melee", "Sword0"))
+	var ranged := str(slots.get("ranged", ""))
+	if not WeaponCatalog.valid(melee, "melee") or (not ranged.is_empty() and not WeaponCatalog.valid(ranged, "ranged")):
+		return
+	var replaced: bool = equipment.melee != melee or equipment.ranged != ranged
+	equipment = {"melee": melee, "ranged": ranged}
+	has_longbow = not ranged.is_empty()
+	if not has_longbow:
 		active_slot = 0
+	if replaced:
+		shot_age = 99.0
+		# Slot timers survive acquisition/replacement; cancel any previous weapon's swing.
 		attack_time = 0.0
 		attack_cancelled = true
+	if is_node_ready():
+		_update_melee_shape()
 	equipment_changed.emit(active_slot)
+
+func _update_melee_shape() -> void:
+	var shape: RectangleShape2D = $AttackArea/Shape.shape
+	shape.size = Vector2(WeaponCatalog.stats(equipment.melee).reach, 4.0)
+
+# Setup belongs to level entry, never equipment acquisition or upgrades.
+func initialize_ammo(stocks: Dictionary) -> void:
+	if _ammo_initialized: return
+	_ammo_initialized = true
+	for family in AMMO_DEFAULTS:
+		ammo[family] = clampi(int(stocks.get(family, AMMO_DEFAULTS[family])), 0, AMMO_CAPS[family])
+		ammo_changed.emit(family, ammo[family], AMMO_CAPS[family])
+
+func add_ammo(family: String, amount: int) -> int:
+	if dead or amount <= 0 or not AMMO_CAPS.has(family): return 0
+	var taken: int = mini(amount, AMMO_CAPS[family] - ammo[family])
+	if taken <= 0: return 0
+	ammo[family] += taken
+	ammo_changed.emit(family, ammo[family], AMMO_CAPS[family])
+	ammo_collected.emit(family, taken)
+	return taken
 
 func _fire_arrow() -> void:
 	if resurrection_active:
 		return
-	bow_cooldown = BOW_INTERVAL
+	var item: String = equipment.ranged if has_longbow else "Longbow0"
+	var family := item.left(-1)
+	var stats := WeaponCatalog.stats(item)
+	if stats.is_empty(): return
+	if AMMO_CAPS.has(family) and ammo[family] <= 0:
+		ammo_empty.emit(family)
+		return
+	bow_cooldown = stats.interval
+	shot_age = 0.0
 	var arrow: Node2D = ARROW_SCRIPT.new()
 	# Keep ownership under the player for scene restart, but flight in world space.
 	arrow.process_mode = Node.PROCESS_MODE_PAUSABLE
 	add_child(arrow)
 	arrow.top_level = true
 	arrow.global_position = global_position + Vector2(4.0 * facing, -10.0)
-	arrow.setup(facing)
+	arrow.setup(facing, stats.damage, stats.reach)
+	if AMMO_CAPS.has(family):
+		ammo[family] -= 1
+		ammo_changed.emit(family, ammo[family], AMMO_CAPS[family])
 	projectile_fired.emit(arrow)
 
 func _update_wall_state(direction: float) -> void:
@@ -321,8 +538,6 @@ func _update_wall_state(direction: float) -> void:
 		return
 	# Two probes cover the straight sides of the capsule, not its rounded feet.
 	for side in [-1.0, 1.0]:
-		if wall_detach_time > 0.0 and -side == blocked_wall_normal:
-			continue
 		for height in [-6.0, -12.0]:
 			var from := global_position + Vector2(0, height)
 			var query := PhysicsRayQueryParameters2D.create(from, from + Vector2(side * 5.5, 0), GRIPPABLE_MASK)
@@ -332,6 +547,16 @@ func _update_wall_state(direction: float) -> void:
 				break
 		if wall_normal != 0.0:
 			break
+	# Suppress the wall we just pushed off only until physical separation.
+	# Contact after returning is immediately usable, regardless of the timer.
+	if wall_detach_time > 0.0:
+		if wall_normal == blocked_wall_normal:
+			wall_normal = 0.0
+		else:
+			wall_detach_time = 0.0
+	if wall_normal != 0.0:
+		last_wall_normal = wall_normal
+		wall_coyote = 0.10
 	if wall_normal != 0.0 and velocity.y >= 0.0 and direction != wall_normal and knockback_time <= 0.0:
 		motion_state = MotionState.WALL_SLIDE
 		velocity.y = minf(velocity.y, WALL_SLIDE_SPEED)
@@ -346,6 +571,9 @@ func take_damage(amount: float, impulse: Vector2 = Vector2.ZERO, source: int = D
 	if source == DamageSource.VOID:
 		die()
 		return
+	# Shield prevents every damage/reaction; leaving the level remains fatal above.
+	if magic_shield_time > 0.0:
+		return
 	if invulnerability > 0.0 or amount <= 0.0:
 		return
 	health_units = maxi(0, health_units - HealthUnits.from_hp(amount))
@@ -357,7 +585,7 @@ func take_damage(amount: float, impulse: Vector2 = Vector2.ZERO, source: int = D
 	invulnerability = INVULNERABILITY_DURATION
 	hurt_flash_time = HURT_FLASH_DURATION
 	var has_knockback: bool = source == DamageSource.CONTACT_MELEE or source == DamageSource.SOLID_TRAP or source == DamageSource.FLAME
-	var interrupts_attack: bool = source == DamageSource.CONTACT_MELEE or source == DamageSource.PROJECTILE
+	var interrupts_attack: bool = source in [DamageSource.CONTACT_MELEE, DamageSource.PROJECTILE, DamageSource.TRAP_PROJECTILE]
 	if source == DamageSource.CONTACT_MELEE:
 		hit_stun_time = HIT_STUN_DURATION
 	if interrupts_attack:
@@ -377,6 +605,21 @@ func _update_damage_visuals() -> void:
 		var blink_elapsed := maxf(0.0, INVULNERABILITY_DURATION - invulnerability - HURT_FLASH_DURATION)
 		sprite.modulate.a = 0.25 if int(blink_elapsed * 10.0) % 2 == 0 else 1.0
 
+func configure_bonus_health(count: int, grant_new: bool = false) -> void:
+	var next_max := 30 + clampi(count, 0, 7) * HealthUnits.PER_HP
+	var increase := maxi(0, next_max - max_health_units)
+	max_health_units = next_max
+	if not dead:
+		health_units = mini(max_health_units, health_units + increase) if grant_new else max_health_units
+	health_changed.emit(health, max_health)
+
+func activate_magic_shield() -> bool:
+	if dead or resurrection_active: return false
+	magic_shield_time = 10.0
+	magic_shield_changed.emit(magic_shield_time)
+	queue_redraw()
+	return true
+
 func heal(amount: float) -> float:
 	if dead or amount <= 0.0:
 		return 0.0
@@ -384,12 +627,15 @@ func heal(amount: float) -> float:
 	health_units = mini(max_health_units, health_units + HealthUnits.from_hp(amount))
 	if health_units != before:
 		health_changed.emit(health, max_health)
+		healed.emit(HealthUnits.to_hp(health_units - before))
 	return HealthUnits.to_hp(health_units - before)
 
 func die() -> void:
 	if dead or resurrection_active:
 		return
 	dead = true
+	magic_shield_time = 0.0
+	magic_shield_changed.emit(0.0)
 	for child in get_children():
 		if child.get_script() == ARROW_SCRIPT:
 			child.queue_free()
@@ -417,23 +663,28 @@ func _update_sword() -> void:
 	var angle: float = lerpf(-1.5, 1.2, 1.0 - attack_time / ATTACK_DURATION)
 	var blade_direction := Vector2(cos(angle) * attack_facing, sin(angle))
 	var hand := Vector2(4.0 * attack_facing, -10.0)
-	sword.position = hand + blade_direction * (SWORD_RANGE * 0.5)
+	sword.position = hand + blade_direction * (WeaponCatalog.stats(equipment.melee).reach * 0.5)
 	sword.rotation = blade_direction.angle()
 	if attack_cancelled or dead or attack_time >= ATTACK_HIT_START_TIME or attack_time <= ATTACK_HIT_END_TIME:
 		return
 	var query := PhysicsShapeQueryParameters2D.new()
 	query.shape = $AttackArea/Shape.shape
 	query.transform = sword.global_transform
-	query.collision_mask = 4
+	query.collision_mask = 4 | 16
 	for hit in get_world_2d().direct_space_state.intersect_shape(query):
 		var body = hit.collider
-		if not body.has_method("take_damage") or hit_targets.has(body.get_instance_id()):
+		var interactive: bool = body.has_method("receive_player_attack")
+		if (not interactive and not body.has_method("take_damage")) or hit_targets.has(body.get_instance_id()):
 			continue
 		var ray := PhysicsRayQueryParameters2D.create(to_global(hand), body.global_position + Vector2(0, -6), 1)
-		if not get_world_2d().direct_space_state.intersect_ray(ray).is_empty():
+		var blocker := get_world_2d().direct_space_state.intersect_ray(ray)
+		if not blocker.is_empty() and (not interactive or blocker.collider != body):
 			continue
 		hit_targets.append(body.get_instance_id())
-		body.take_damage(SWORD_DAMAGE, Vector2(attack_facing * 60.0, -55.0))
+		if interactive:
+			body.receive_player_attack(WeaponCatalog.stats(equipment.melee).damage, DamageSource.CONTACT_MELEE)
+			continue
+		body.take_damage(WeaponCatalog.stats(equipment.melee).damage, Vector2(attack_facing * 60.0, -55.0))
 		hit_sparks.append([body.global_position + Vector2(-attack_facing * 4.0, -7.0), 0.0])
 
 func _update_animation() -> void:
@@ -444,7 +695,7 @@ func _update_animation() -> void:
 	upper.position = Vector2.ZERO
 	sprite.flip_h = facing < 0
 	if knockback_time > 0.0 or hit_stun_time > 0.0:
-		sprite.play("bow_hurt" if active_slot == 1 and has_longbow else "hurt")
+		sprite.play(_ranged_anim("bow_hurt") if active_slot == 1 and has_longbow else &"hurt")
 		return
 	if active_slot == 1 and has_longbow:
 		_update_bow_animation()
@@ -469,12 +720,12 @@ func _update_bow_animation() -> void:
 	if shot >= 0:
 		sprite.flip_h = facing < 0
 		if is_on_floor() and absf(velocity.x) <= 5.0 and motion_state != MotionState.WALL_SLIDE:
-			sprite.animation = "shoot"
+			sprite.animation = _ranged_anim("shoot")
 			sprite.frame = shot
 			return
 		upper.show()
 		upper.flip_h = sprite.flip_h
-		upper.animation = "up_shoot"
+		upper.animation = _ranged_anim("up_shoot")
 		upper.frame = shot
 		if is_on_floor():
 			_play_synced("base_run")
@@ -483,21 +734,21 @@ func _update_bow_animation() -> void:
 			sprite.play("base_rise" if velocity.y < 0.0 else "base_fall")
 	elif motion_state == MotionState.WALL_SLIDE:
 		sprite.flip_h = wall_normal > 0.0
-		sprite.play("bow_wall")
+		sprite.play(_ranged_anim("bow_wall"))
 	elif not is_on_floor():
-		sprite.play("bow_rise" if velocity.y < 0.0 else "bow_fall")
+		sprite.play(_ranged_anim("bow_rise" if velocity.y < 0.0 else "bow_fall"))
 	elif land_time > 0.0:
-		sprite.play("bow_land")
+		sprite.play(_ranged_anim("bow_land"))
 	else:
-		_play_synced("bow_run" if absf(velocity.x) > 5.0 else "bow_idle")
+		_play_synced(_ranged_anim("bow_run" if absf(velocity.x) > 5.0 else "bow_idle"))
 
 # 0-3: release just after a shot; 4-6: nock and draw while F is held before the next one.
 func _shot_frame() -> int:
 	if dead:
 		return -1
-	var since := BOW_INTERVAL - bow_cooldown
-	if bow_cooldown > 0.0 and since < SHOT_RELEASE_TIME:
-		return mini(3, int(since * 12.0))
+	# Presentation tracks the actual shot; a changed interval cannot replay an old release.
+	if bow_cooldown > 0.0 and shot_age < SHOT_RELEASE_TIME:
+		return mini(3, int(shot_age * 12.0))
 	var holding: bool = controls_enabled and hit_stun_time <= 0.0 and Input.is_action_pressed("attack")
 	if holding and bow_cooldown > 0.0 and bow_cooldown < SHOT_DRAW_WINDOW:
 		return 4 + mini(2, int((SHOT_DRAW_WINDOW - bow_cooldown) / (SHOT_DRAW_WINDOW / 3.0)))
@@ -510,7 +761,7 @@ func _chain_time() -> float:
 	if attack_time > 0.0:
 		return ATTACK_DURATION - attack_time
 	var holding: bool = controls_enabled and Input.is_action_pressed("attack") and hit_stun_time <= 0.0
-	if holding and since_swing < ATTACK_INTERVAL + CHAIN_GRACE and motion_state != MotionState.WALL_SLIDE:
+	if holding and since_swing < WeaponCatalog.stats(equipment.melee).interval + CHAIN_GRACE and motion_state != MotionState.WALL_SLIDE:
 		return since_swing
 	return -1.0
 
@@ -551,7 +802,7 @@ func _play_synced(animation_name: StringName) -> void:
 	if sprite.animation == animation_name:
 		sprite.play(animation_name)
 		return
-	var strides := [&"run", &"base_run", &"bow_run"]
+	var strides := [&"run", &"base_run", &"bow_run", &"knife_run"]
 	var keep: bool = sprite.animation in strides and animation_name in strides
 	var frame := sprite.frame
 	var progress := sprite.frame_progress

@@ -76,5 +76,5 @@ shape = SubResource("shape")
 [node name="Sound" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("3")
 volume_db = -13.0
-max_distance = 480.0
+max_distance = 360.0
 bus = &"SFX"

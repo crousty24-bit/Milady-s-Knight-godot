@@ -1,14 +1,16 @@
-[gd_scene load_steps=13 format=3]
-[ext_resource type="Script" path="res://scripts/player.gd" id="1"]
-[ext_resource type="SpriteFrames" path="res://assets/sprites/ashen_knight_frames.tres" id="2"]
-[ext_resource type="AudioStream" path="res://assets/sounds/sfx_player_jump.wav" id="3"]
+[gd_scene format=3 uid="uid://cmvw3iw7eq2lc"]
+
+[ext_resource type="Script" uid="uid://c1h052sc5f087" path="res://scripts/player.gd" id="1"]
+[ext_resource type="SpriteFrames" uid="uid://wni5udyptlvu" path="res://assets/run018/knight/knight_body_frames.tres" id="2"]
+[ext_resource type="AudioStream" path="res://assets/sounds/run021/sfx_player_jump_human.wav" id="3"]
 [ext_resource type="AudioStream" path="res://assets/sounds/sfx_player_hit.tres" id="4"]
 [ext_resource type="AudioStream" path="res://assets/sounds/sfx_melee_swing_light.tres" id="5"]
-[ext_resource type="AudioStream" path="res://assets/sounds/sfx_player_double_jump.wav" id="7"]
-[ext_resource type="AudioStream" path="res://assets/sounds/sfx_player_wall_jump.wav" id="8"]
-[ext_resource type="AudioStream" path="res://assets/sounds/sfx_player_death.wav" id="9"]
-
-[ext_resource type="Shader" path="res://assets/shaders/hurt_flash.gdshader" id="6"]
+[ext_resource type="Shader" uid="uid://cficlrxya0vea" path="res://assets/shaders/hurt_flash.gdshader" id="6"]
+[ext_resource type="AudioStream" path="res://assets/sounds/run021/sfx_player_double_jump_human.wav" id="7"]
+[ext_resource type="AudioStream" uid="uid://c36ejgcl5l6rt" path="res://assets/sounds/sfx_player_wall_jump.wav" id="8"]
+[ext_resource type="AudioStream" uid="uid://br676ylqgh5l6" path="res://assets/sounds/sfx_player_death.wav" id="9"]
+[ext_resource type="SpriteFrames" uid="uid://dtrlrlv4giovc" path="res://assets/run018/knight/knight_mid_frames.tres" id="10"]
+[ext_resource type="SpriteFrames" uid="uid://bnance0u50ir7" path="res://assets/run018/knight/knight_over_frames.tres" id="11"]
 
 [sub_resource type="ShaderMaterial" id="hurt_material"]
 resource_local_to_scene = true
@@ -18,56 +20,93 @@ shader_parameter/white_flash = 0.0
 [sub_resource type="CapsuleShape2D" id="body"]
 radius = 5.0
 height = 18.0
+
 [sub_resource type="RectangleShape2D" id="blade"]
 size = Vector2(24, 4)
-[node name="Player" type="CharacterBody2D" groups=["player"]]
+
+[node name="Player" type="CharacterBody2D" unique_id=756434936 groups=["player"]]
 collision_layer = 2
-collision_mask = 1
 floor_snap_length = 4.0
 script = ExtResource("1")
-[node name="Sprite" type="AnimatedSprite2D" parent="."]
+
+[node name="Sprite" type="AnimatedSprite2D" parent="." unique_id=1002576122]
+z_index = 1
 material = SubResource("hurt_material")
 position = Vector2(0, -29)
 sprite_frames = ExtResource("2")
 animation = &"idle"
 autoplay = "idle"
-[node name="Upper" type="AnimatedSprite2D" parent="Sprite"]
+
+[node name="Upper" type="AnimatedSprite2D" parent="Sprite" unique_id=354974871]
 visible = false
 use_parent_material = true
 sprite_frames = ExtResource("2")
 animation = &"up1"
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+
+[node name="Smear" type="Sprite2D" parent="Sprite" unique_id=960831449]
+visible = false
+use_parent_material = true
+centered = false
+region_enabled = true
+
+[node name="Mid" type="AnimatedSprite2D" parent="Sprite" unique_id=1195751476]
+use_parent_material = true
+sprite_frames = ExtResource("10")
+animation = &"idle"
+
+[node name="Weapon" type="Sprite2D" parent="Sprite" unique_id=106035256]
+visible = false
+use_parent_material = true
+centered = false
+region_enabled = true
+
+[node name="Over" type="AnimatedSprite2D" parent="Sprite" unique_id=383813627]
+use_parent_material = true
+sprite_frames = ExtResource("11")
+animation = &"idle"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=716473468]
 position = Vector2(0, -9)
 shape = SubResource("body")
-[node name="AttackArea" type="Area2D" parent="."]
+
+[node name="AttackArea" type="Area2D" parent="." unique_id=759330086]
 position = Vector2(17, -12)
 collision_layer = 0
 collision_mask = 4
 monitoring = false
-[node name="Shape" type="CollisionShape2D" parent="AttackArea"]
+
+[node name="Shape" type="CollisionShape2D" parent="AttackArea" unique_id=1232858856]
 shape = SubResource("blade")
-[node name="Camera2D" type="Camera2D" parent="."]
-[node name="JumpSound" type="AudioStreamPlayer" parent="."]
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=896869368]
+zoom = Vector2(1.2, 1.2)
+
+[node name="JumpSound" type="AudioStreamPlayer" parent="." unique_id=1659844027]
 stream = ExtResource("3")
 volume_db = -14.0
 bus = &"SFX"
-[node name="DoubleJumpSound" type="AudioStreamPlayer" parent="."]
+
+[node name="DoubleJumpSound" type="AudioStreamPlayer" parent="." unique_id=1906671753]
 stream = ExtResource("7")
 volume_db = -14.0
 bus = &"SFX"
-[node name="WallJumpSound" type="AudioStreamPlayer" parent="."]
+
+[node name="WallJumpSound" type="AudioStreamPlayer" parent="." unique_id=670764638]
 stream = ExtResource("8")
-volume_db = -12.0
+volume_db = -23.0
 bus = &"SFX"
-[node name="HurtSound" type="AudioStreamPlayer" parent="."]
+
+[node name="HurtSound" type="AudioStreamPlayer" parent="." unique_id=105592361]
 stream = ExtResource("4")
 volume_db = -6.0
 bus = &"SFX"
-[node name="SwingSound" type="AudioStreamPlayer" parent="."]
+
+[node name="SwingSound" type="AudioStreamPlayer" parent="." unique_id=979725030]
 stream = ExtResource("5")
 volume_db = -9.0
 bus = &"SFX"
-[node name="DeathSound" type="AudioStreamPlayer" parent="."]
+
+[node name="DeathSound" type="AudioStreamPlayer" parent="." unique_id=1672007481]
 process_mode = 3
 stream = ExtResource("9")
 volume_db = -4.0

@@ -7,8 +7,7 @@ func _ready() -> void:
 	pivot_offset = size * 0.5
 
 func _process(_delta: float) -> void:
-	var text: String = get_node("../Bonus").text
-	var value := text.get_slice(" ", 1).to_int() if text.contains(" ") else 0
+	var value: int = get_parent().shard_total
 	if _last >= 0 and value != _last:
 		var gained := value > _last
 		var tween := create_tween()

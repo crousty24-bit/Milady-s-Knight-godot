@@ -12,8 +12,8 @@ Médias audio intégrés par RUN-010 (30 septembre 2026), révisés par RUN-014 
 
 | Fichier de jeu | Fichier source |
 | --- | --- |
-| `sounds/sfx_player_jump.wav` | `SWSH_MOVEMENT-Bamboo Whip_HY_PC-005.wav` (RUN-014 ; auparavant Retro Jump) |
-| `sounds/sfx_player_double_jump.wav` | `DSGNMisc_MOVEMENT-Whoosh Sweep_HY_PC-005.wav` (RUN-014 ; auparavant Jump Sparkle) |
+| `sounds/sfx_player_jump.wav` | `SWSH_MOVEMENT-Bamboo Whip_HY_PC-005.wav` (RUN-014 ; auparavant Retro Jump ; plus joué depuis RUN-021, remplacé par `run021/sfx_player_jump_human.wav`) |
+| `sounds/sfx_player_double_jump.wav` | `DSGNMisc_MOVEMENT-Whoosh Sweep_HY_PC-005.wav` (RUN-014 ; auparavant Jump Sparkle ; plus joué depuis RUN-021, remplacé par `run021/sfx_player_double_jump_human.wav`) |
 | `sounds/sfx_player_wall_jump.wav` | `WHSH_MOVEMENT-Simple Whoosh_HY_PC-001.wav` |
 | `sounds/sfx_melee_swing_light_01–03.wav` | `DSGNMisc_MELEE-Sword Slash_HY_PC-001–003.wav` |
 | `sounds/sfx_melee_hit_01–03.wav` | `FGHTImpt_MELEE-Gut Punch_HY_PC-003, -006, -005.wav` (RUN-014 ; auparavant Gore Pierce) |
@@ -87,4 +87,147 @@ Première itération validée. À reprendre (traité par RUN-014, en attente d'�
 
 *Shooter Synthwave Music Pack* (AlkaKrab) : la licence interdit la redistribution des pistes telles quelles et demande une autorisation de l'auteur pour un jeu open source ; non intégré (RUN-014).
 
-*Minifantasy Dungeon SFX* (Leohpaz / Krishna Palacio) convenait au style mais interdit la redistribution des fichiers ; le dépôt GitHub étant public, il n'a pas été intégré.
+*Minifantasy Dungeon SFX* (Leohpaz / Krishna Palacio) convenait au style mais interdit la redistribution des fichiers ; le dépôt GitHub étant public, il n'a pas été intégré. **Exception RUN-021 (8 octobre 2026) :** deux dérivés de saut intégrés sur décision humaine explicite, risque accepté (voir section dédiée ci-dessous).
+
+
+## SFX équipement standard et coffres — RUN-018 (5 octobre 2026)
+
+Même auteur/source/licence et attribution Helton Yan *Pixel Combat*, CC BY 4.0, que ci-dessus. Dérivés `assets/sounds/run018/`, générateur `tools/art/run018/prepare_audio_run018.py` ; sources lues uniquement dans la bibliothèque locale. Silence retiré, fondu de2ms, conversion mono44,1kHz PCM16bits, crête normalisée selon tableau, durées plafonnées avec fondu final. Le rare mélange deux sources (seconde retardée de120ms et abaissée de4dB).
+
+| Fichier | Source Helton Yan *Pixel Combat* | Crête | Durée | Usage |
+| --- | --- | --- | --- | --- |
+| `sfx_chest_open_rare.wav` | `UIMisc_INTERFACE-Lock_HY_PC-004` + `DSGNTonl_USABLE-Magic Item_HY_PC-006` (+120 ms, −4 dB) | −8 | 0,90 s | ouverture rare (common : `sfx_chest_open_common` réutilisé) |
+| `sfx_chest_reward_refuse.wav` | `DSGNTonl_USABLE-Failed Item_HY_PC-003` | −12 | 0,37 s | Escape dans la fenêtre payante |
+| `sfx_weapon_upgrade.wav` | `DSGNTonl_USABLE-Mecha Upgrade Equip_HY_PC-004` | −8 | 0,69 s | upgrade +1 accepté (item : `sfx_chest_reward_accept` réutilisé) |
+| `sfx_heal_kill.wav` | `MAGAngl_BUFF-Simple Heal_HY_PC-005` | −10 | 0,32 s | soin instantané au kill |
+| `sfx_major_potion_pickup.wav` | `DSGNTonl_MOVEMENT-Bubble Babbler_HY_PC-005` | −8 | 0,80 s | potion majeure (P1) |
+| `sfx_melee_swing_heavy_01–03.wav` + `.tres` | `WHSH_MOVEMENT-Wind Sweep Swish_HY_PC-001, -003, -005` | −8 | 0,60 s | Longsword, Dark Scythe, Warhammer, Halberds (P1, famille partagée) ; Sword/Brutal Axe gardent le swing léger (docs/08) |
+| `sfx_weapon_knives_throw_01–03.wav` + `.tres` | `SWSH_MOVEMENT-Reso Swish_HY_PC-001, -002, -004` | −10 | 0,28 s | lancer de couteau (P1) |
+| `sfx_knife_impact.wav` | `DSGNMisc_HIT-Zap Metal_HY_PC-002` | −10 | 0,22 s | impact couteau (P1) |
+
+
+Les cues common/reveal/accept et navigation UI existants sont réutilisés. Sélection Claude par analyse objective uniquement ; écoute humaine pas encore validée pour RUN-018. Familles lourdes/couteaux partagées et substituts approximatifs sont tracés pour RUN-027, sans promettre leur acceptation sonore. Mesure Codex des12 WAV : mono44,1kHz16bits, durées concordantes, crêtes à±0,05dB des cibles ; cela ne remplace ni l’écoute ni la recette du mix en jeu.
+
+
+## Menaces et exploration — RUN-019 (5 octobre 2026)
+
+37 WAV dans `assets/sounds/run019/`, produits par `tools/art/run019/prepare_audio_run019.py`. Même auteur, source et licence que la section Helton Yan ci-dessus : [Pixel Combat SFX](https://heltonyan.itch.io/pixelcombat), CC BY 4.0. Attribution : « Sound effects: Pixel Combat SFX by Helton Yan — CC BY 4.0 ». Les originaux de la bibliothèque locale sont conservés.
+
+Transformation : pipeline `tools/prepare_audio.py` (trim −55 dB, fondu d’entrée 2 ms, mono 44,1 kHz PCM 16 bits, normalisation aux crêtes ci-dessous, coupe avec fondu de sortie si nécessaire). Les combinaisons superposent une seconde source à +0,12 s et −4 dB. La validation humaine de la passe Claude est reçue ; aucun détail d’écoute ou de playtest n’est présumé.
+
+
+Mesures relues par Claude sur les 37 WAV. Les `.tres` sont des `AudioStreamRandomizer` calqués sur `sfx_slime_death.tres`. « + » désigne une couche (seconde source +0,12 s, −4 dB).
+
+| Fichier | Source Helton Yan *Pixel Combat* | Crête dBFS | Durée | Branchement |
+| --- | --- | --- | --- | --- |
+| `sfx_skeleton_warrior_attack_01/02` + `.tres` | DSGNMisc_HIT-Hit Rattle 002/004 | −10 | 0,40 | relâche mêlée Warrior (P0) |
+| `sfx_skeleton_warrior_death` | Hit Rattle 001 + EXPLOSION-Crunching 005 | −8 | 0,90 | mort Warrior (P0) |
+| `sfx_skeleton_archer_shot_01/02` + `.tres` | SWSH_MOVEMENT-Bamboo Whip 001/003 | −10 | 0,21/0,23 | tir Archer (P0) |
+| `sfx_skeleton_archer_death` | Hit Rattle 006 + EXPLOSION-Cruncher 005 | −8 | 0,90 | mort Archer (P0) |
+| `sfx_sorcerer_spell_cast` | DSGNTonl_SKILL RELEASE-Mind Eraser 005 | −8 | 0,60 | début d'incantation (P0) |
+| `sfx_sorcerer_ground_warning` | MAGSpel_CAST-Energy Riser 005 | −8 | 0,91 | avertissement 1 s, attaché à la zone (P0) |
+| `sfx_sorcerer_ground_explosion` | EXPLOSION-Bass Hit 003 + Magisplosion 005 | −8 | 1,10 | explosion (P0) |
+| `sfx_sorcerer_melee_attack` | DSGNTonl_MOVEMENT-Arcane Slap 001 | −8 | 0,50 | coup de bâton (P0 docs/08) |
+| `sfx_sorcerer_death` | DSGNMisc_SKILL IMPACT-Dramatic Finish 005 | −8 | 1,10 | mort Sorcerer (P0) |
+| `sfx_skull_spawn` | MAGSpel_CAST-Sharp Summon 005 | −10 | 0,80 | `swarm_started`, une fois par swarm (P0) |
+| `sfx_skull_death_01/02/03` + `.tres` | DSGNMisc_SKILL IMPACT-Glassy Sprites 001/002/003 | −10 | 0,40 | mort Skull (P0) |
+| `sfx_skull_attack` | Hit Rattle 003 | −10 | 0,12 | contact Skull qui blesse (P1) |
+| `sfx_skull_despawn` | DSGNMisc_SKILL IMPACT-Energy Dissipate 005 | −10 | 0,60 | sortie de zone, hors chemin de récompense (P1) |
+| `sfx_bloated_slime_attack` | DSGNMisc_CAST-Slime Ball 003 | −8 | 0,60 | contact Bloated qui blesse (P0) |
+| `sfx_bloated_slime_death` | EXPLOSION-Thud 004 + Wet Splash 005 | −8 | 1,10 | mort Bloated (P0) |
+| `sfx_chud_attack_01/02` + `.tres` | FGHTImpt_MELEE-Gut Kick 003/001 | −10 | 0,37 | relâche du slam Chud (P0) |
+| `sfx_chud_death` | DSGNMisc_HIT-Mecha Gore Cruncher 005 | −8 | 0,99 | mort Chud (P0) |
+| `sfx_magic_shield_activate` | DSGNSynth_BUFF-Bonus Max Shield 005 | −8 | 0,80 | pickup Shield (P0) |
+| `sfx_magic_shield_end` | DSGNSynth_BUFF-Mecha Barrier Fail 004 | −10 | 0,70 | fin naturelle, pas à la mort (P1) |
+| `sfx_player_hp_bonus` | DSGNSynth_BUFF-Mecha Level Up 004 | −8 | 0,77 | bonus HP collecté, après écriture réussie (P1) |
+| `sfx_trapdoor_trigger` | DSGNSynth_BUFF-Mecha Lock In 004 | −8 | 0,50 | `warning_started` de la trappe (P0) |
+| `sfx_turret_fire` | DSGNMisc_SKILL RELEASE-Flame Ball 004 | −10 | 0,50 | `fired` (P0) |
+| `sfx_turret_projectile_impact` | EXPLOSION-Small Flare 001 | −10 | 0,40 | impact : −4 dB sur le joueur, −10 dB sur le décor (P0) |
+| `sfx_poison_plant_hit` | DSGNMisc_SKILL IMPACT-Bubbly Zaps 005 | −8 | 0,60 | contact plante qui blesse (P0) |
+| `sfx_spikes_hit` | DSGNMisc_HIT-Mecha Armor Piercer 006 | −8 | 0,50 | contact piques mobiles qui blesse (P0) |
+| `sfx_spikes_extend` | DSGNMisc_SKILL RELEASE-Flying Blades 005 | −8 | 0,40 | sortie des piques, −12 dB (P1) |
+| `sfx_door_coin_payment` | DSGNTonl_USABLE-Coin Spend 004 | −8 | 0,60 | ouverture d'une porte `coin_locked` (P0) |
+| `sfx_door_unlock` | UIMisc_INTERFACE-Lock 006 + DSGNSynth_BUFF-Mecha Lock In 004 | −8 | 0,76 | toutes portes (P0) |
+| `sfx_door_open` | DSGNMisc_MOVEMENT-Mecha Large Takeoff 005 | −8 | 1,10 | toutes portes (P0) |
+| `sfx_pressure_plate_activate` | FEETMisc_STEP-Boots on Metal 003 + UIClick Metallic Click 001 | −8 | 0,24 | plaque (P0) |
+| `sfx_button_activate` | UIClick_INTERFACE-Strong Click 1 003 | −8 | 0,26 | bouton (P0) |
+| `sfx_secret_reveal` | EXPLOSION-Sand Impact 005 + MAGSpel_CAST-Skill Ready 005 | −8 | 1,02 | `revealed`, jamais au rechargement (P0) |
+
+**Réutilisations.**
+- Le Red Slime partage la famille Slime existante (`sfx_melee_hit`, `sfx_slime_death`), comme docs/08 le permet.
+- Les coups non mortels sur les nouveaux ennemis réutilisent `sfx_melee_hit.tres` : les sons « hit » P1 dédiés ne sont pas livrés.
+- L'impact de flèche d'os réutilise `sfx_arrow_impact.wav`.
+- Familles reprises avec une prise différente, aucune prise déjà utilisée : Bamboo Whip (le saut utilise la 005), Wet Splash (mort Slime 001–003), Lock (coffre 002/004), Metallic Click (navigation UI 003).
+
+**Substituts approximatifs, à écouter en priorité.**
+- Le pack n'a pas de vrai équivalent pour : le tir d'archer (fouet, pas de corde), la trappe, la porte (grondement mécanique), la plante, les piques, la plaque, le bouton (clic d'interface).
+- Mort des Skulls (aigu, risque de sifflement si plusieurs meurent ensemble), incantation (très grave), activation du Shield (caractère « cyan » non vérifié).
+- **Sélection Claude sans écoute** : sélection par analyse objective (durée, enveloppe, centroïde, noms de fichier). Notes : `work/run019/claude/audio/selection.md`.
+
+## Ambiances originales — RUN-020 (5 octobre 2026)
+
+`assets/sounds/run020/amb_{blight_town,black_forrest,forbidden_graveyard}.ogg` : synthèse originale déterministe par `tools/art/run020/ambience_run020.py`, contribution Claude/Sonnet5.5. PCM source mono22,05kHz/16bits/28s conservé dans `assets/source/run020/`; dérivés Vorbis qualité4 produits avec ffmpeg par Codex, boucle au début. Aucun son tiers dans ces trois ambiances. N2–4 réutilisent provisoirement la piste Pixabay *Dreamer* déjà créditée plus haut. [Manifeste RUN-020](../docs/RUN-020_ASSET_MANIFEST.md). Écoute humaine attendue.
+
+## Musique N4 Forbidden Graveyard — RUN-021 (6 octobre 2026)
+
+- **Fichier de jeu :** `run021/audio/music_n4_forbidden_graveyard.ogg`, référencé par le node `Music` de `scenes/forbidden_graveyard.tscn` (choix humain).
+- **Morceau :** « Dark Synthwave Retro 80s », auteur Pixabay **DELOSound**, identifiant 453292, 3:24 ; [page officielle](https://pixabay.com/music/dance-dark-synthwave-retro-80s-453292/). La page affiche « Content ID Registered » (signalé aussi par l'humain) : une revendication Content ID reste possible si le jeu est diffusé en vidéo monétisée ; à garder en tête pour la recette des licences.
+- **Licence :** [Pixabay Content License](https://pixabay.com/service/license-summary/) (consultée le 6 octobre 2026) — usage gratuit, modification permise, attribution non requise ; vente ou distribution du contenu seul, sous une forme essentiellement inchangée, interdite. Aucun certificat de téléchargement n'est détenu ni inventé.
+- **Source conservée :** `assets/source/run021/audio/delosound-dark-synthwave-retro-80s-453292.mp3` (copie inchangée de `Music/…` ; SHA-256 `0eb8ae69cc50a3ab5ac8108d92e2aaf3b3859f9efa7b2e654e1e7b5bb6414c3c`, 6 529 358 octets, MP3 256 kb/s 44,1 kHz stéréo, 204,04 s) ; provenance détaillée dans `provenance.json` du même dossier.
+- **Transformation :** coupe à 185,274 s (avant la sortie finale), loudnorm −13 LUFS / TP −1,5 dBFS (résultat mesuré −12,6 LUFS, true peak −0,8 dBFS), fondu croisé de 6 ms entre la fin et les 6 ms précédant le point de boucle, Ogg Vorbis q5 44,1 kHz stéréo ; boucle d'import activée avec `loop_offset` 5,564 s (l'intro de 5,6 s ne se joue qu'une fois). Commandes : `work/run021/audio/prepare_n4.sh`. Détails : [docs/RUN-021_AUDIO_REVIEW.md](../docs/RUN-021_AUDIO_REVIEW.md). Écoute humaine attendue.
+- **Statut :** N4 n'utilise plus *Dreamer* ; N2 et N3 le conservent.
+
+## Titrage de niveau — RUN-021 (7 octobre 2026, Helton Yan, *Pixel Combat*, CC BY 4.0)
+
+| Fichier de jeu | Fichiers source | Durée | Transformation |
+| --- | --- | --- | --- |
+| `sounds/run021/sfx_level_title.wav` | `DSGNImpt_EXPLOSION-Thud_HY_PC-003.wav` (impact à t=0, −2 dB) + `MAGSpel_CAST-Teleport Downer_HY_PC-005.wav` (ton grave descendant, retard 80 ms) | 2,44 s | mix deux couches, mono 44,1 kHz 16 bits, coupe 2,5 s + fondu 0,15 s, pic −12 dBFS (`UI_PEAK_DB`) ; `tools/art/run021/prepare_audio_title.py` |
+
+Choix objectif (contenu grave/aigu mesuré, aucune prise déjà utilisée) ; joué sur le bus UI à l'apparition du nom du niveau, lecteur à −3 dB (retour humain du 7 octobre 2026 : « réduire légèrement »). Écoute humaine attendue (caractère « Dark Souls » contre sci-fi, volume face à la musique).
+
+## Révélation du coffre payant — RUN-021 (7 octobre 2026, Helton Yan, *Pixel Combat*, CC BY 4.0)
+
+| Fichier de jeu | Fichiers source | Pic | Durée | Usage |
+| --- | --- | --- | --- | --- |
+| `sounds/run021/sfx_chest_reveal_rise.wav` | `MAGSpel_CAST-Aura Up_HY_PC-002.wav` (0–2,4 s, étiré ×1,22) + `MAGSpel_CAST-Growing Strength_HY_PC-004.wav` (inversé, −5 dB) | −10 dBFS | 2,90 s | crescendo du faisceau de lumière, de l'appui sur « Open » jusqu'au flash blanc (~2,9 s) |
+| `sounds/run021/sfx_chest_reveal_burst.wav` | `DSGNTonl_SKILL IMPACT-Glistening Shimmers_HY_PC-004.wav` + `DSGNTonl_SKILL IMPACT-Magic Sparkles_HY_PC-002.wav` (−3 dB) | −9 dBFS | 1,20 s | éclat final au flash blanc, ou immédiatement si le joueur passe l'animation |
+
+Transformation : mono 44,1 kHz 16 bits, coupe −55 dB, fondu d'entrée 2 ms, normalisation de crête ; `tools/art/run021/prepare_audio_chest_reveal.py`. Montée : seule la partie ascendante d'« Aura Up » est gardée et étirée sans changer la hauteur (`atempo`), mélangée à un balayage inversé de « Growing Strength », puis une rampe de volume linéaire en dB (−34 dB à t=0, 0 dB à 2,9 s) impose le crescendo ; fondu de sortie de 30 ms (la coupure est masquée par l'éclat). Éclat : deux couches à t=0, coupe 1,2 s + fondu 0,15 s.
+
+Choix objectif (durée, enveloppe RMS, taux de passages par zéro croissant, part de grave, aucune prise déjà utilisée) ; aucun autre pack (notamment pas Minifantasy) n'est utilisé. Attribution : « Sound effects: Pixel Combat SFX by Helton Yan — CC BY 4.0 ». Écoute humaine attendue (caractère « lumière sacrée » contre sci-fi, volume face au SFX d'ouverture du coffre).
+
+## Passe audio RUN-021 (8 octobre 2026) : musique N1, sauts, piques
+
+### Musique N1 Eidolon Vale
+
+- **Fichier de jeu :** `run021/audio/music_n1_eidolon_vale.ogg`, référencé par le node `Music` de `scenes/vertical_slice.tscn`, dont hérite `eidolon_vale.tscn` (choix humain). *Dreamer* n'est plus joué en N1 ; N2 et N3 le conservent.
+- **Morceau :** « Shadow of the Blood Thirsty Woodlands », auteur Pixabay `ehved2`, identifiant 250736, 1:07. La page exacte n'est pas encore reliée au fichier (aucune URL inventée).
+- **Licence :** Pixabay Content License supposée d'après le format du nom de fichier, comme les autres pistes de la bibliothèque ; page du morceau non consultée. Aucun certificat de téléchargement détenu.
+- **Source conservée :** `assets/source/run021/audio/ehved2-shadow-of-the-blood-thirsty-woodlands-250736.mp3`, copie inchangée (SHA-256 `7b5fa7d7…98307`, 2 151 653 octets, MP3 256 kb/s 44,1 kHz stéréo, 67,24 s) ; provenance dans `provenance_n1.json`.
+- **Transformation :** loudnorm −13 LUFS / TP −1,5 dBFS (source à −22,5 LUFS), coupe à 59,077 s (8 phrases de 7,385 s). Les 4,2 s de queue de réverbération qui suivent la coupe sont mixées sur le début du fichier, avec un fondu de sortie d'1 s : au bouclage, la queue continue sous la phrase suivante au lieu d'être coupée. Limiteur à −1,5 dBFS, puis Ogg Vorbis q5 44,1 kHz stéréo. Mesures : −13,9 LUFS, true peak −0,6 dBFS, LRA 3,0 LU. Import `loop=true`, `loop_offset=0`. Commandes : `work/run021/audio/prepare_n1.sh`. Le lecteur reste à −20 dB.
+- Écoute humaine attendue (raccord de boucle, extrait `work/run021/audio/excerpt_n1_loop.ogg` : 10 s avant la fin, puis 10 s après le retour au début ; niveau face aux SFX).
+
+### Saut et double saut (Minifantasy Dungeon SFX, Leohpaz)
+
+| Fichier de jeu | Fichier source | Retouche | Pic | Durée |
+| --- | --- | --- | --- | --- |
+| `sounds/run021/sfx_player_jump_human.wav` | `Minifantasy_Dungeon_SFX/12_human_jump_3.wav` (SHA-256 `fbd05030…de29`) | −1 demi-ton, passe-bas 5 kHz | −10 dBFS | 0,35 s |
+| `sounds/run021/sfx_player_double_jump_human.wav` | `Minifantasy_Dungeon_SFX/12_human_jump_2.wav` (SHA-256 `417864dd…cb88`) | +1,5 demi-ton, bande 200 Hz–6,5 kHz | −10 dBFS | 0,30 s |
+
+Pipeline `tools/prepare_audio.py` : coupe −55 dB, fondu d'entrée 2 ms, mono 44,1 kHz 16 bits, durée plafonnée avec fondu de sortie de 0,15 s, crête au niveau des sons fréquents (`REPEAT_PEAK_DB`, sous le défaut −8 dBFS). Générateur : `tools/art/run021/prepare_audio_jump.py`. Centroïde spectral moyen de 1,4 et 1,7 kHz, contre 1,7 et 3,9 kHz pour les anciens whooshes Helton Yan. Les volumes des nodes de `player.tscn` (−14 dB) et le saut mural sont inchangés.
+
+**Licence non vérifiée, risque accepté par l'humain.** Le dossier de la bibliothèque ne contient aucun fichier de licence, et les crédits notent depuis RUN-010 que la licence interdit la redistribution des fichiers. Le dépôt GitHub étant public, ces dérivés y sont redistribués. Le 8 octobre 2026, l'humain a choisi explicitement de les intégrer et de les commiter malgré cela (« Garder, je prends le risque »). Ces deux fichiers ne sont **pas** présentés comme libres de droits : ils sont à revoir lors de la recette des licences avant distribution. Les autres fichiers Minifantasy restent exclus.
+
+### Piques rétractables
+
+`run019/sfx_spikes_extend.wav` et `run019/sfx_spikes_hit.wav` ne sont plus joués (demande humaine). Les fichiers sont conservés, sans aucune référence. Le cycle se lit visuellement, et le son générique de dégât du joueur couvre le contact.
+
+### Seconde passe audio RUN-021 (8 octobre 2026) : saut mural et ambiance N3
+
+- **Saut mural :** le fichier `sounds/sfx_player_wall_jump.wav` est inchangé. Le node `WallJumpSound` de `player.tscn` passe de −12 à −23 dB (retour humain : trop fort face aux sauts). En RMS effectif, il sort à environ −46 dB, contre −43,5 dB pour le saut et −41,4 dB pour le double saut.
+- **Ambiance N3 Black Forrest :** `sounds/run021/amb_black_forrest_v2.ogg`, référencé par le node `Ambient` de `scenes/black_forrest.tscn` (node toujours à −8 dB). Synthèse originale déterministe, sans son tiers, par `tools/art/run021/ambience_n3_run021.py`, qui réutilise les primitives de `tools/art/run020/ambience_run020.py`. Source PCM mono 22,05 kHz 16 bits, 28 s, boucle `smpl` : `assets/source/run021/audio/amb_black_forrest_v2.wav` (SHA-256 `5c9f08ed…07bc0`). Dérivé Vorbis q4, boucle au début.
+  - Même esprit que N2 (retour humain) : vent bas plus sourd (coupure 300 Hz), plainte autour de 150 Hz, deux craquements de troncs plus graves, frémissement de feuilles sous 900 Hz et un hululement lointain. Le bruissement à 1,3 kHz et les grillons à 1,7–1,9 kHz de la version RUN-020 sont retirés.
+  - Mesures : −34,9 LUFS et crête −17,7 dBFS, contre −29,1 LUFS et −12,8 dBFS pour l'ancienne N3, et −30,7 LUFS pour N2. Centroïde spectral moyen de 1 023 Hz, contre 2 139 Hz pour l'ancienne et 1 129 Hz pour N2.
+  - L'ancienne version `run020/amb_black_forrest.ogg` et sa source restent conservées, sans référence.
+- Écoute humaine attendue. Extrait `work/run021/audio/excerpt_n3_old_then_new.ogg` : 12 s de l'ancienne, puis 12 s de la nouvelle, au même gain.
+

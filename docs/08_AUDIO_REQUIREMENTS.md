@@ -20,8 +20,8 @@ RUN-010 (30 septembre 2026) : les lignes cochées « Intégré » sont branchée
 
 | Nom                          | Événement déclencheur | Catégorie         | Priorité | Asset trouvé ? | Source | Format | Intégré ? |
 | ---------------------------- | --------------------- | ----------------- | -------- | -------------- | ------ | ------ | --------- |
-| `sfx_player_jump`            | Jump simple           | Player / Movement | P0       | ☑              | Helton Yan Pixel Combat (CC BY 4.0)      | WAV    | ☑         |
-| `sfx_player_double_jump`     | Double jump           | Player / Movement | P0       | ☑              | Helton Yan Pixel Combat (CC BY 4.0)      | WAV    | ☑         |
+| `sfx_player_jump`            | Jump simple           | Player / Movement | P0       | ☑              | Minifantasy Dungeon SFX, `12_human_jump_3` retouché (RUN-021 ; licence non vérifiée, risque accepté par l'humain) | WAV    | ☑         |
+| `sfx_player_double_jump`     | Double jump           | Player / Movement | P0       | ☑              | Minifantasy Dungeon SFX, `12_human_jump_2` retouché (RUN-021 ; licence non vérifiée, risque accepté par l'humain) | WAV    | ☑         |
 | `sfx_player_land`            | Atterrissage          | Player / Movement | P1       | ☐              | —      | WAV    | ☐         |
 | `sfx_player_wall_jump`       | Wall jump             | Player / Movement | P0       | ☑              | Helton Yan Pixel Combat (CC BY 4.0)      | WAV    | ☑         |
 | `sfx_player_wall_slide_loop` | Wall slide            | Player / Movement | P1       | ☐              | —      | WAV    | ☐         |
@@ -254,8 +254,8 @@ Une même famille de sons peut être pitchée/modifiée pour différencier Green
 | Nom                            | Événement déclencheur           | Catégorie          | Priorité | Asset trouvé ? | Source | Format | Intégré ? |
 | ------------------------------ | ------------------------------- | ------------------ | -------- | -------------- | ------ | ------ | --------- |
 | `sfx_spikes_hit`               | Joueur touche piques fixes      | Trap               | P0       | ☐              | —      | WAV    | ☐         |
-| `sfx_spikes_extend`            | Piques mobiles sortent          | Trap               | P1       | ☐              | —      | WAV    | ☐         |
-| `sfx_spikes_retract`           | Piques mobiles se rétractent    | Trap               | P2       | ☐              | —      | WAV    | ☐         |
+| `sfx_spikes_extend`            | Piques mobiles sortent          | Trap               | P1       | ☐              | —      | WAV    | ☐ Retiré : piques rétractables silencieuses (décision humaine RUN-021, 8 octobre 2026) |
+| `sfx_spikes_retract`           | Piques mobiles se rétractent    | Trap               | P2       | ☐              | —      | WAV    | ☐ Retiré (idem) |
 | `sfx_trapdoor_trigger`         | Joueur déclenche une trappe     | Trap               | P0       | ☐              | —      | WAV    | ☐         |
 | `sfx_trapdoor_open`            | Trappe s'ouvre                  | Trap               | P2       | ☐              | —      | WAV    | ☐         |
 | `sfx_turret_fire`              | Tourelle tire                   | Trap               | P0       | ☐              | —      | WAV    | ☐         |
@@ -279,7 +279,7 @@ Une même famille de sons peut être pitchée/modifiée pour différencier Green
 |`sfx_button_activate`|Bouton / mécanisme utilisé|Mechanism|P0|☐|—|WAV|☐|
 |`sfx_mechanism_move`|Mécanisme / porte actionnée|Mechanism|P1|☐|—|WAV|☐|
 |`sfx_secret_wall_hit`|Coup porté sur un passage secret|Secret|P1|☐|—|WAV|☐|
-|`sfx_secret_reveal`|Mur secret disparaît|Secret|P0|☐|—|WAV|☐|
+|`sfx_secret_reveal`|Mur et cache secrète révélés|Secret|P0|☑|`assets/sounds/run019/sfx_secret_reveal.wav`|WAV|☑|
 |`sfx_secret_discovered`|Salle secrète révélée|Secret|P1|☐|—|WAV|☐|
 
 ---
@@ -370,7 +370,7 @@ Les ambiances sont principalement des boucles longues indépendantes des musique
 |---|---|---|---|---|---|---|---|
 |`amb_eidolon_vale`|Niveau 1 chargé|Ambient|P1|☐|—|OGG|☐|
 |`amb_blight_town`|Niveau 2 chargé|Ambient|P1|☐|—|OGG|☐|
-|`amb_black_forest`|Niveau 3 chargé|Ambient|P1|☐|—|OGG|☐|
+|`amb_black_forrest`|Niveau 3 chargé|Ambient|P1|☑|Synthèse originale (`run021/amb_black_forrest_v2`, RUN-021 : plus grave et ~6 LU plus discrète que la version RUN-020)|OGG|☑|
 |`amb_forbidden_graveyard`|Niveau 4 chargé|Ambient|P1|☐|—|OGG|☐|
 |`amb_haunted_caves`|Niveau 5 chargé|Ambient|P1|☐|—|OGG|☐|
 |`amb_desolands`|Niveau 6 chargé|Ambient|P1|☐|—|OGG|☐|
@@ -408,7 +408,7 @@ Les ambiances sont principalement des boucles longues indépendantes des musique
     
 - Les SFX de télégraphie d'attaque doivent être clairement audibles et distincts des sons purement décoratifs.
     
-- Les sons liés aux ennemis, pièges et éléments du monde peuvent utiliser une spatialisation 2D.
+- Les sons liés aux ennemis, pièges et éléments du monde peuvent utiliser une spatialisation 2D. Rayon d'écoute commun de **360 px** (`Run019Art.SFX_MAX_DISTANCE`, RUN-021) : juste au-delà des bords de la vue de 533×300 px au zoom 1,2×, atténuation linéaire (environ −12 dB au bord latéral), silence au-delà.
     
 - Les sons UI, musique et feedbacks système globaux restent non positionnels.
     
@@ -417,3 +417,8 @@ Les ambiances sont principalement des boucles longues indépendantes des musique
 - La colonne `Source` doit idéalement contenir le nom du pack ou de la bibliothèque ainsi que son URL dans la documentation réelle du projet.
 
 ---
+
+
+### Secret Wall — RUN-021, contrat du 8 octobre 2026
+
+Un seul `sfx_secret_reveal` accompagne le début du fondu de 0,6 s et l'effritement du mur. Son RUN-019 existant conservé : pas de son avant découverte, de doublon au cours du fondu ou de replay après chargement d'un secret acquis. L'échec de sauvegarde ne joue pas le SFX. Analyse Claude : WAV mono44,1kHz/16bits,1,024s ; décroissance déjà vers−40dB à0,65s, sans écrêtage. Aucun nouveau son ni nouvelle source externe. Cette analyse et les tests de lecture ne remplacent pas l'écoute humaine en jeu.

@@ -76,7 +76,8 @@ func run() -> void:
 		if coin.position.distance_to(level.tutorial_chest.position + Vector2(0, -12)) < 32: separated = false
 	check(separated, "chest is separated from coin pickups")
 	await tap("interact")
-	check(level.modal == "context" and level.pause_menu.description.text.contains("A: select"), "chest dialog explains selecting and shooting the new weapon")
+	var controls = root.get_node("Controls")
+	check(level.modal == "context" and level.pause_menu.description.text.contains(controls.label("switch_equipment") + ": equipment") and level.pause_menu.description.text.contains(controls.label("attack") + " (hold): attack / shoot"), "chest dialog explains selecting and shooting with the active bindings")
 	await capture("chest-choice")
 	await tap("pause")
 	level.player.position = Vector2(1968, 144)

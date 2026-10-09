@@ -1,4 +1,5 @@
 extends CanvasLayer
+@onready var controls = get_node("/root/Controls")
 # Functional RUN-017 panel. The level owns modal exclusivity, pause and persistence.
 signal completed
 signal retry_requested
@@ -53,7 +54,7 @@ func show_dialogue(speaker: String, dialogue_lines: Array) -> void:
 	lines.assign(dialogue_lines)
 	heading.text = speaker
 	portrait.texture = PORTRAITS.get(speaker)
-	hint.text = "Space: Next"
+	hint.text = controls.label("jump") + ": Next"
 	line_index = 0
 	active = true
 	_finished = false
@@ -78,7 +79,7 @@ func show_save_error(detail: String) -> void:
 	_finished = true
 	body.text = "Unable to save dialogue progress. " + detail
 	body.visible_characters = -1
-	hint.text = "E: Retry saving"
+	hint.text = controls.label("interact") + ": Retry saving"
 	opened_frame = Engine.get_process_frames()
 
 func _complete() -> void:

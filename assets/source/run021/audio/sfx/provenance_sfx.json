@@ -1,0 +1,96 @@
+{
+  "library": "/mnt/c/Users/allen/OneDrive/Images/assets_ressources/Mildays-knight/SFX/Helton Yan's Pixel Combat - Single Files",
+  "licence": "CC BY 4.0, Helton Yan, Pixel Combat SFX (https://heltonyan.itch.io/pixelcombat)",
+  "files": [
+    {
+      "candidate": "assets/run021/audio/sfx_candidates/cand_player_jump_01.wav",
+      "source_copy": "assets/source/run021/audio/sfx/FEETMisc_STEP-Boots on Concrete Dungeon_HY_PC-001.wav",
+      "source_sha256": "baeff09393a2e6d9be6c33e3d23091a7d1f5055414d6894c258c506ee3c3b647",
+      "candidate_sha256": "aced21b5971bb68d8cd68e78ba9de869a40efd4f9a2d9fbf657c18ace6d8541a",
+      "max_length_s": 0.18,
+      "peak_dbfs": -10.0,
+      "would_replace": "sfx_player_jump.wav"
+    },
+    {
+      "candidate": "assets/run021/audio/sfx_candidates/cand_player_jump_02.wav",
+      "source_copy": "assets/source/run021/audio/sfx/FEETMisc_STEP-Boots on Concrete Dungeon_HY_PC-003.wav",
+      "source_sha256": "25bfff01c9220232e399b6dfc3485b8c87b78429d1959107f54632693e361787",
+      "candidate_sha256": "ccb8035d90facb19c9fdb7b60116e85aefd4540bc8f2c9fc19c1eaea74dea7ae",
+      "max_length_s": 0.18,
+      "peak_dbfs": -10.0,
+      "would_replace": "sfx_player_jump.wav"
+    },
+    {
+      "candidate": "assets/run021/audio/sfx_candidates/cand_player_jump_03.wav",
+      "source_copy": "assets/source/run021/audio/sfx/FEETMisc_STEP-Boots on Concrete Dungeon_HY_PC-005.wav",
+      "source_sha256": "f49fc3494359b15fefe091e1fead2d23207ae0eee51bda9f844b0bb372c345c9",
+      "candidate_sha256": "799f38cc108157c6a386de74eff48add49f7f07ca8f1ca8447d86a42ccab61a6",
+      "max_length_s": 0.18,
+      "peak_dbfs": -10.0,
+      "would_replace": "sfx_player_jump.wav"
+    },
+    {
+      "candidate": "assets/run021/audio/sfx_candidates/cand_player_double_jump_01.wav",
+      "source_copy": "assets/source/run021/audio/sfx/WHSH_MOVEMENT-Windy Passby_HY_PC-002.wav",
+      "source_sha256": "6f9814bd86805daccb618433b11bf54a4df53c0de4f19125755f98ce5e90eca1",
+      "candidate_sha256": "e8031aed4357c10c8d0af372cd2c09faa00fe05ea56f481feb90c7d283501490",
+      "max_length_s": 0.28,
+      "peak_dbfs": -10.0,
+      "would_replace": "sfx_player_double_jump.wav"
+    },
+    {
+      "candidate": "assets/run021/audio/sfx_candidates/cand_player_double_jump_02.wav",
+      "source_copy": "assets/source/run021/audio/sfx/WHSH_MOVEMENT-Windy Passby_HY_PC-004.wav",
+      "source_sha256": "f8ddaa9e02fc4557f3a92b1cff8ca50ef4b041bd37adc86f6466069245d09b1f",
+      "candidate_sha256": "46a76abbc2280df4d7558780d73cf96806fbaa57704c70542a7f80e699e48b6f",
+      "max_length_s": 0.28,
+      "peak_dbfs": -10.0,
+      "would_replace": "sfx_player_double_jump.wav"
+    },
+    {
+      "candidate": "assets/run021/audio/sfx_candidates/cand_player_wall_jump.wav",
+      "source_copy": "assets/source/run021/audio/sfx/FEETMisc_STEP-Hard Step_HY_PC-004.wav",
+      "source_sha256": "cb326d9c76a1d61382781e971dfdad3a848bd93ddb9e27d98ac911d4b57c6007",
+      "candidate_sha256": "46c98d0f49b098822f5b5d24dc953473eafb2592a19b3f1fc30f5932afee76aa",
+      "max_length_s": 0.2,
+      "peak_dbfs": -10.0,
+      "would_replace": "sfx_player_wall_jump.wav"
+    },
+    {
+      "candidate": "assets/run021/audio/sfx_candidates/cand_gold_coin_pickup_01.wav",
+      "source_copy": "assets/source/run021/audio/sfx/DSGNTonl_USABLE-Whimsy Coin_HY_PC-001.wav",
+      "source_sha256": "e50280ec357e6328c9a45a4d8c9ce5c7d30743833fa29b6d9b9cd6253498de84",
+      "candidate_sha256": "9e01b620c21cebb2062a09aa91a72be9a3e9cd69f2db94a8d07b463bb9122d30",
+      "max_length_s": 0.4,
+      "peak_dbfs": -10.0,
+      "would_replace": "sfx_gold_coin_pickup_01.wav"
+    },
+    {
+      "candidate": "assets/run021/audio/sfx_candidates/cand_gold_coin_pickup_02.wav",
+      "source_copy": "assets/source/run021/audio/sfx/DSGNTonl_USABLE-Whimsy Coin_HY_PC-002.wav",
+      "source_sha256": "b4d75f2a501d4d78ffc6b2925c12fdb9562aee4883f30522b94307b8750c5db5",
+      "candidate_sha256": "15c83951bd23ddc00f55bf5979fab7be14a9201bbbd169a5d9c1a40c19e8ea14",
+      "max_length_s": 0.4,
+      "peak_dbfs": -10.0,
+      "would_replace": "sfx_gold_coin_pickup_02.wav"
+    },
+    {
+      "candidate": "assets/run021/audio/sfx_candidates/cand_gold_coin_pickup_03.wav",
+      "source_copy": "assets/source/run021/audio/sfx/DSGNTonl_USABLE-Whimsy Coin_HY_PC-005.wav",
+      "source_sha256": "1bf52c0a0ec8cf237512a8dd4bf49211bd9e75f4c1ef8ac48acc07c147803912",
+      "candidate_sha256": "43a2eb20cfc49e31c53f12413b86de194a4e4936c67b15c173b123c5b92bd539",
+      "max_length_s": 0.4,
+      "peak_dbfs": -10.0,
+      "would_replace": "sfx_gold_coin_pickup_03.wav"
+    },
+    {
+      "candidate": "assets/run021/audio/sfx_candidates/cand_minor_potion_pickup.wav",
+      "source_copy": "assets/source/run021/audio/sfx/DSGNTonl_USABLE-Fleeting Consume_HY_PC-005.wav",
+      "source_sha256": "2eaaa2008183f6a5381a3d1508270ae526b0ad2c21d45bee3d8b45abcae75057",
+      "candidate_sha256": "9c4b9469499cd463a051135b2abb0aa3c8250cdc049f1dccdc7f12b4db6c338c",
+      "max_length_s": 0.5,
+      "peak_dbfs": -8.0,
+      "would_replace": "sfx_minor_potion_pickup.wav"
+    }
+  ]
+}

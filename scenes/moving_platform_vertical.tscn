@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://bel8lf48e3pul"]
+
+[ext_resource type="Script" uid="uid://bayxp5iyx03un" path="res://scripts/moving_platform.gd" id="1_t3bpi"]
+
+[sub_resource type="RectangleShape2D" id="shape"]
+size = Vector2(34, 6)
+
+[node name="MovingPlatform" type="AnimatableBody2D" unique_id=1136020867]
+collision_mask = 0
+script = ExtResource("1_t3bpi")
+travel = Vector2(0, 400)
+period = 6.0
+
+[node name="Shape" type="CollisionShape2D" parent="." unique_id=1842554201]
+shape = SubResource("shape")
+one_way_collision = true

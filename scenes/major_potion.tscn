@@ -1,0 +1,7 @@
+[gd_scene load_steps=3 format=3]
+[ext_resource type="PackedScene" path="res://scenes/minor_potion.tscn" id="1"]
+[ext_resource type="Script" path="res://scripts/major_potion_art.gd" id="2"]
+[node name="MajorPotion" instance=ExtResource("1")]
+healing_amount = 1.0
+[node name="Art" parent="." index="1"]
+script = ExtResource("2")

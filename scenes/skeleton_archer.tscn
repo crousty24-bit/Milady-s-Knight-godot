@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/run019_enemy.gd" id="1"]
+[sub_resource type="RectangleShape2D" id="body"]
+size = Vector2(14, 22)
+[node name="SkeletonArcher" type="CharacterBody2D" groups=["enemies"]]
+collision_layer = 4
+collision_mask = 1
+script = ExtResource("1")
+kind = 2
+aggro_size = Vector2(720, 144)
+ranged_range = 240.0
+patrol_speed = 22.0
+chase_speed = 22.0
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -11)
+shape = SubResource("body")

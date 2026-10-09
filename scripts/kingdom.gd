@@ -71,8 +71,10 @@ func _draw() -> void:
 	_scenery_back()
 	for i in range(24):
 		var x: int = i * 99 + 22
-		if i > 12: prop(DEAD_TREES[i % 2], Vector2(x + 2, 144), -1.0, i % 4 >= 2)
-		else: prop(TREES[i % 2], Vector2(x + 2, 146), -1.0, i % 3 == 1)
+		# Root each trunk on the floor below it: the lower road sits 80px under the village.
+		var floor_y := _floor_y(x + 2)
+		if i > 12: prop(DEAD_TREES[i % 2], Vector2(x + 2, floor_y), -1.0, i % 4 >= 2)
+		else: prop(TREES[i % 2], Vector2(x + 2, floor_y + 2), -1.0, i % 3 == 1)
 	prop(HOUSE, Vector2(70, 144))
 	prop(HOUSE_RUINED, Vector2(246, 144))
 	# Cart and its spilled cargo.
@@ -109,6 +111,13 @@ func _draw() -> void:
 	_scenery_front()
 	# Princess's ribbon caught on a spear; no dialogue system needed.
 	prop(RIBBON_SPEAR, Vector2(1893, 144), 6.0)
+
+# Floor height of the slice layout (tools/build_level.gd runs); the ferry gap reads as the road.
+func _floor_y(x: int) -> int:
+	if x < 480 or x >= 1408: return 144
+	if x < 544 or x >= 1344: return 160
+	if x < 608 or x >= 1280: return 192
+	return 224
 
 func _wall_row(x: int, y: int) -> int:
 	return 18 + posmod(y / 16, 3) * 6 + posmod(x / 16, 6)

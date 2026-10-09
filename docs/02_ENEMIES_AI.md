@@ -50,14 +50,14 @@
 				- vitesse d'aggro : c'est sa vitesse de déplacement lors de l'aggro du joueur
 				- la vitesse d'aggro est toujours un peu plus élevée que la vitesse de base
 				- exemple : un Skeleton Warrior en patrouille à une vitesse de base lente ; il aggro le joueur et se dirige vers lui avec une vitesse d'aggro modérée
-				- les *Slimes* n'ont qu'une vitesse de base
+				- les *Green, Purple et Red Slimes* n'ont qu'une vitesse de base
 		- **système aggro :** un mob aggro le joueur lorsque celui-ci entre un périmètre fixe (zone) défini par rapport à sa position initiale
 			- ce périmètre peut être plus ou moins large selon le type de mob
 			- ce périmètre est horizontal et vertical
 			- le point de départ du périmètre est le mob et est attaché à lui : il se déplace selon le déplacement du mob (exemple : le mob patrouille d'un point A vers B en aller-retour, son périmètre se déplace avec lui)
-			- le mob perd l'aggro quand le joueur quitte son périmètre d'aggro et retourne à son déplacement de patrouille initial
+			- le mob perd l'aggro après le délai de perte hors de son périmètre de conservation (réglages N2–4 ci-dessous) et retourne à son déplacement de patrouille initial
 			- un mob qui a l'aggro est toujours attiré vers le joueur, son déplacement est directement en direction du joueur et déclenche une attaque lorsqu'il est à portée de celui-ci
-			- les *Slimes* n'ont pas de système d'aggro
+			- les *Green, Purple et Red Slimes* n'ont pas de système d'aggro
 	
 	- **SLIMES (niveau 1 à 4) :**
 		- *Green Slime* : 1 HP | 0,5 DMG | attaque au contact avec joueur (collision)
@@ -115,3 +115,43 @@
 				- capacité spéciale : charge. Pas le même comportement que pour le Chaos Champion mais même effet. Première charge au début du combat puis système aléatoire calculé toutes les 20 secondes : 30% de chances que le Boss fasse une charge sur le joueur peu importe sa position.
 				- capacité spéciale : invocation de *Possessed Skulls* (idem que Necromancer sauf pour le timer = au bout des 10 premières secondes de combat puis toutes les 15 secondes)
 				- capacité spéciale : lorsque les HP du Boss atteignent <= 20HP, il devient enragé = double vitesse de déplacement et augmente la vitesse de toute ses d'attaques ; l'invocation de *Possessed Skulls* n'est pas impactée
+
+
+## RUN-019 — Comportements N2–4 implémentés
+
+Les profils N2–4 ci-dessus sont livrés comme scènes réutilisables et fixtures. Révision RUN-020 du 6 octobre (comportement alors livré, remplacé pour la locomotion par RUN-021 ci-dessous) : aggro terrestre acquise avec visibilité dans un rectangle 480×96 px attaché au mob (±240 px horizontalement). Conservation dans 640×160 px ; perte après 2 s continues hors enveloppe ou sans visibilité, timer suspendu en pause et remis à zéro à la revue du joueur. Mort du joueur : perte immédiate. Aucune nouvelle attaque déclenchée à travers le terrain. La poursuite s’arrêtait alors aux bords/obstacles ; Archer était stationnaire en aggro. La perte d'aggro annule une préparation non libérée ; projectiles/zones libérés terminent leur cycle, sauf mort de la source qui les supprime.
+
+Sorcerer : point au sol capturé au lancement, avertissement1s puis impact unique2DMG avec profil projectile ennemi. Skulls : zone N4 de 480×240 px, quatre emplacements par tentative. Sortie : disparition des survivants ; réentrée : seuls les emplacements non vaincus réapparaissent. Un crâne tué ne revient plus avant mort/restart du niveau ; zone nettoyée = vide pour la tentative. Un shard par emplacement vaincu, maximum quatre ; aucun soin. Cette swarm est indépendante du Blight Sorcerer, qui ne l’invoque pas et dont la mort ne la supprime pas. Les profils N5–9 et invocations Necromancer/Boss ne sont pas implémentés dans ce lot.
+
+Les paramètres techniques exacts et interfaces sont dans [le handoff](RUN-019_CLAUDE_HANDOFF.md), les décisions validées dans [le contrat](RUN-019_CONTRACT_REVIEW.md). Dessins provisoires et Red teinté ne constituent pas un habillage final ; contribution Claude P0 et playtest encore requis.
+
+### RUN-020 — Volumes des élites après reprise visuelle
+
+Les silhouettes redessinées utilisent un corps physique centré sur leur masse, pieds à l’origine : Bloated 44×40, Chud 36×40. Le volume sert aux collisions avec le terrain et à la réception des coups ; les excroissances et l’arme restent hors de ce rectangle. Les sondes de bord se placent 4 px devant la demi-largeur réelle du corps. Bloated inflige son contact sous 30 px horizontalement et 18 px verticalement entre les pieds, avec ligne libre et aggro ; Chud garde sa mêlée de 28 px et sa préparation de 0,3 s. Le sprite du chevalier se dessine au premier plan des acteurs pour rester visible au contact.
+
+
+## Réglage RUN-021 après remise visuelle (6 octobre 2026)
+
+La logique considère désormais un intervalle de patrouille nul ou inversé comme une sentinelle : hors aggro, vitesse horizontale nulle et orientation conservée, y compris après un recul. La gravité, les collisions et le recul restent actifs. Les six archers N3/N4 gardent leurs bornes nulles et leur placement ; aucune cellule de terrain ni donnée de niveau n’est remplacée. Une patrouille positive garde ses retournements et ses sondes de bord. Le défaut ancien de retournements continus est reproduit puis corrigé dans le moteur ; la correspondance exacte avec la vidéo humaine reste non confirmée.
+
+Pour Archer et Blight Sorcerer seulement, acquisition avec visibilité dans720×144px (±360 horizontal, ±72 vertical), conservation880×208px avec la marge existante, délai de perte2s inchangé. La distance de déclenchement du tir/de la zone passe de140 à240px. L’archer poursuit désormais à22px/s pendant l’aggro, y compris hors de sa portée de tir ou lorsque la ligne de tir est bloquée ; il ne tire qu’au sol, à portée et avec ligne de vue libre. Sa flèche conserve vitesse150px/s et durée maximale5s ; « portée240 » désigne ici la distance de déclenchement, pas une suppression à240px du projectile. Sorcerer conserve point au sol figé, avertissement1s et2DMG. La ligne de vue garde son rôle pour acquérir l’aggro et déclencher les attaques.
+
+Bloated poursuit à60px/s (36 avant) et Chud à48px/s (28 avant), avec patrouilles18/12px/s conservées. Corps44×40/36×40, contact Bloated30px, mêlée Chud28px, dégâts et préparation restent identiques. Le joueur marche à sa vitesse existante. Ces réglages sont validés par le playtest de la passe précédente ; le nouveau franchissement ci-dessous reste à essayer.
+
+
+### Poursuite RUN-021 — obstacles franchissables
+
+Sur demande humaine après playtest, les Green, Purple et Red Slimes gardent leur locomotion actuelle et ne poursuivent pas le joueur. Tous les autres mobs concernés — Skeleton Warrior, Skeleton Archer, Blight Sorcerer, Bloated Slime et Chud Blob — tentent de rejoindre le joueur pendant l’aggro en franchissant physiquement les obstacles praticables. Bloated est explicitement inclus malgré son nom de Slime. Les Possessed Skulls contournent les solides en vol. Les coffres et objets ramassables sont des zones d’interaction et ne constituent pas des obstacles physiques.
+
+La locomotion terrestre sonde localement les appuis, l’espace du corps et le dégagement du saut ; elle peut monter jusqu’à72px, avec un saut plafonné à environ82px de hauteur, franchir un vide seulement si la portée horizontale du saut le permet et descendre jusqu’à72px, soit la même hauteur que les blocs franchissables en montée. La sonde descendante inclut la marge de contact du corps pour ne pas manquer le sol au bord de cette limite. Les ennemis ne traversent ni murs ni plafonds. Ils conservent les collisions physiques et s’arrêtent si aucun trajet sûr local n’est praticable. Les Skulls contournent également sans traverser les solides. Ces limites décrivent le saut borné, pas un pathfinding global.
+
+L’acquisition, le rectangle de conservation et le délai nominal de perte de 2 s restent identiques. Un saut vers un appui vérifié, une avancée réelle sur un appui vers le joueur ou un recul réel le long d’un détour vérifié réarment la tolérance d’occlusion si la cible reste dans le rectangle de conservation. Une cible hors de ce rectangle est toujours perdue après 2 s ; un mob physiquement bloqué ne réarme pas ce délai par une simple intention de mouvement. Les portées de tir ne changent pas. L’Archer garde sa poursuite à22px/s et ne lance son tir que s’il est au sol, à portée et en ligne de vue libre.
+
+**Plateformes suspendues — reprise du 7 octobre 2026.** Le sol praticable sous une plateforme est sondé depuis la hauteur des pieds : le dessus du toit ne masque plus ce passage. Quand un obstacle ferme le passage inférieur ou que le joueur se trouve sur le toit, le mob peut reculer vers un bord dégagé, sauter dessus puis reprendre sa poursuite. Le détour est local, recherché sur144px au maximum, avec appui de même hauteur, dégagement du corps et corridor de saut vérifiés ; il ne franchit pas un vide ou un mur à reculons. La montée/descente reste limitée à72px. Le détour s’annule si la cible change de côté, meurt ou sort de la conservation d’aggro, ou si le passage prévu se bloque. Ce comportement ne constitue pas un pathfinding global ni une garantie de franchir toute géométrie.
+
+
+### RUN-021 — Esquive et alignement vertical (7 octobre 2026)
+
+La vitesse de poursuite de Bloated est **44 px/s** dans la scène actuelle validée le 9 octobre (patrouille18 inchangée). Le checkpoint de cette section avait été testé à48 px/s, contre60 lors de la passe précédente. Cette réduction de20 % permet les doubles sauts vérifiés dans les deux sens à48/56/64px de départ, et un essai isolé sur le terrain réelN2. Corps44×40, contact sous30px horizontal/18px vertical, HP et dégâts conservés ; réduire le rectangle physique seul n'aurait pas réduit cette zone de dégâts indépendante. Ce réglage ne garantit pas une esquive pour tout timing.
+
+Warrior, Archer, Sorcerer, Bloated et Chud conservent leur orientation dans une tolérance horizontale de2px. Une cible alignée sur un autre étage ne déclenche plus d'aller-retour à chaque frame. Pendant un saut, le mob conserve son cap jusqu'à son prochain appui. Acquisition, portée, attaques et délai de perte restent ceux des règles précédentes. Un détour physiquement vérifié reste nécessaire lorsqu'une cible sur un toit peut être rejointe.
