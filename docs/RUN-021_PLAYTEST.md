@@ -79,3 +79,15 @@ Le contrat Claude complémentaire existant est [RUN-021_CLAUDE_HANDOFF_03.md](RU
 - Après mort/reprise : cache immédiatement visible sans révélation rejouée. Une sauvegarde ayant déjà découvert le secret commence naturellement dans cet état.
 
 Recette technique :793contrôles ciblés réussis et captures natives. Trois échecs du test Swarm4 existent aussi sur la baseline et ne sont pas corrigés par ce complément. Ces résultats ne constituent pas une validation humaine de RUN-021.
+
+
+### Indices et tutoriels Secret Wall — complément du 9 octobre
+
+La révélation précédente a été validée explicitement après playtest. Les points suivants concernent la nouvelle passe.
+
+- Avec une partie sans le secret découvert ni les deux acquittements, approcher l'entrée N4 : fissure subtile visible sur le mur, salle/loot encore masqués ; premier message anglais proche, sans déclenchement depuis l'étage au-dessus.
+- Continue puis frapper : aucun tuto pendant le fondu ; `Hidden Secrets` apparaît après sa fin et la cache ouverte est visible derrière. Vérifier le confort de la pause et de la reprise, sans attaque involontaire.
+- Après Continue, quitter/reprendre : aucun de ces messages ne revient. New Game les réinitialise. Une ancienne partie avec secret déjà acquis mais explication jamais acquittée reçoit celle-ci près de l'entrée.
+- Pour comparer les variantes, sélectionner `Exploration/SecretWall`, changer `hint_style` vers `assets/run021/secrets/n4_glow.tres`, `n4_cracks.tres` ou `n4_tint.tres`, puis lancer depuis une partie où le secret est fermé. Conserver les fissures N4 par défaut après comparaison. Juger la subtilité au zoom1,2×, sans indice trop évident ni indice invisible.
+
+Les captures techniques utilisent la vraie scène, des poses injectées et des combats désactivés ; elles ne constituent pas un parcours humain.

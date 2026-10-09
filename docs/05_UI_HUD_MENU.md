@@ -369,3 +369,10 @@ Contrat actuel dans [10_CONTROLS_KEYBINDS.md](10_CONTROLS_KEYBINDS.md) : profils
 	- Fenêtre de récompense des coffres payants : toujours deux slots ; sans amélioration, le second est un slot vide « No upgrade » non sélectionnable. Plus aucun texte d'aide : un seul bouton « Accept » avec la touche d'interaction courante (E par défaut), cliquable, sous les cartes ; Escape refuse toujours, sans être affiché. La carte sélectionnée porte un halo or pulsé et la carte non sélectionnée est assombrie.
 	- Carte : icône d'arme 48×48 qui occupe la majeure partie de la carte, puis nom et badge de niveau 12×12 ; « +1 » vert en haut à droite pour l'amélioration.
 	- Animation d'ouverture : le coffre (×3) est centré horizontalement et verticalement entre la ligne du type de coffre et le bouton Open.
+
+
+## Introduction des Secret Walls — RUN-021, 9 octobre 2026
+
+Seul le premier mur N4 active cette introduction. Une première fenêtre contextuelle se déclenche à64px du centre de l'entrée avec ligne de vue physique dégagée : **A Strange Wall**, `There's something strange about this wall...`, bouton Continue. Elle n'apparaît pas depuis l'étage à travers un plafond. Après révélation ET fin du fondu0,6s : **Hidden Secrets**, `The world is full of secrets. Many lie hidden behind walls. Keep your eyes open.`, bouton Continue.
+
+Ces fenêtres réutilisent le modal existant, sa pause et sa garde de relâchement des commandes. Elles attendent un autre modal et ne s'affichent pas pendant une mort, une pause ou une fin de niveau. Continue enregistre `secret_wall_hint` ou `secret_wall_tutorial` dans `completed_dialogues` ; l'échec de sauvegarde propose le retry existant. Escape ferme pour la tentative sans acquittement durable. New Game efface ces acquittements. Une reprise du secret déjà ouvert ne rejoue aucun indice ni fondu ; l'explication jamais acquittée peut apparaître à l'approche de l'entrée ouverte. Une révélation à distance avant l'indice conduit directement à l'explication, après l'animation.

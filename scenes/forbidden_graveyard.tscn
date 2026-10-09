@@ -33,6 +33,7 @@
 [ext_resource type="PackedScene" uid="uid://bel8lf48e3pul" path="res://scenes/moving_platform_vertical.tscn" id="34_jj2gt"]
 [ext_resource type="PackedScene" path="res://scenes/ammo_barrel.tscn" id="ammo_barrel_scn"]
 [ext_resource type="PackedScene" path="res://scenes/ammo_crate.tscn" id="ammo_crate_scn"]
+[ext_resource type="Resource" path="res://assets/run021/secrets/n4_cracks.tres" id="secret_style"]
 
 [sub_resource type="RectangleShape2D" id="shape0"]
 size = Vector2(16, 731)
@@ -598,6 +599,8 @@ process_mode = 1
 position = Vector2(568, 64)
 secret_id = "n4_secret_01"
 cover_rect = Rect2(-8, -48, 176, 64)
+hint_style = ExtResource("secret_style")
+intro_enabled = true
 
 [node name="CoinDoor" parent="Exploration" unique_id=1428974206 instance=ExtResource("21")]
 position = Vector2(1544, 48)

@@ -835,3 +835,12 @@ La Gate finale et la sortie ont été placées sous y=304. Une exception locale 
 `period=4.0` signifie que Ferry6 réalise un cycle complet en quatre secondes : deux secondes pour aller à l'autre extrémité, deux pour revenir. La valeur est définie sur cette instance ; les réglages manuels de la scène source et des autres ferries sont conservés. Les quatre ennemis de la salle CoinDoor utilisent une récompense locale de deux shards, soit huit au total. Les autres ennemis continuent d'utiliser la table de leur type.
 
 Le pilote mesure le cycle du ferry, tue les quatre ennemis pour vérifier leurs gains, ouvre la Gate avec son coût réel et traverse les collisions jusqu'à l'ExitArea. Trois suites passent 161 contrôles. Les positions de départ sont injectées et les combats isolés ; le parcours complet et son ressenti restent à vérifier en jouant.
+
+
+## RUN-021 — Donner un indice au mur secret et expliquer sa découverte
+
+Claude a dessiné trois petits indices : fissures, glow et teinte. Ils se superposent seulement à l'entrée du mur ; la salle reste entièrement couverte. Un fichier `SecretWallStyle` garde les textures, couleurs et intensités. Dans l'Inspector du mur, `hint_style` permet de choisir un fichier existant ou sa copie avec des couleurs adaptées à un autre biome. Le premier mur N4 utilise `n4_cracks.tres`.
+
+L'introduction est activée seulement sur ce mur. Le niveau mesure la distance au joueur et lance un rayon physique vers l'entrée : être juste au-dessus derrière un plafond ne suffit pas à ouvrir le message. Après un coup, un signal distinct annonce que le fondu est terminé et le passage accessible ; c'est à ce moment que l'explication peut apparaître.
+
+Les fenêtres utilisent les menus existants. Continue sauvegarde leur acquittement dans `completed_dialogues`, donc une reprise de partie ne recommence pas l'explication. New Game remet ces informations à zéro ; Escape suit la règle habituelle des tutoriels et ferme seulement pour la tentative. Les tests exercent aussi la sauvegarde échouée, sa reprise et les commandes maintenues. La nouvelle discrétion des indices et le confort de ces fenêtres restent à apprécier en jouant.

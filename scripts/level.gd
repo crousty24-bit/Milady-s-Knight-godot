@@ -7,6 +7,10 @@ extends Node2D
 @export_range(0, 2048, 1) var camera_vertical_padding: float = 256.0
 var resolved_camera_bounds: Rect2
 @export var tutorial_rewards_enabled: bool = true
+@export var secret_wall_intro_enabled: bool = true
+const SECRET_HINT_ID = "secret_wall_hint"
+const SECRET_TUTORIAL_ID = "secret_wall_tutorial"
+var _secret_tutorial_pending: Node2D
 var chest_economy := ChestEconomy.new()
 var active_reward: Area2D
 var reward_choices: Array[String] = []
@@ -161,6 +165,9 @@ func _ready() -> void:
 		dialogue_panel.retry_requested.connect(_complete_intro)
 		intro_spawn_x = player.position.x
 		call_deferred("_prepare_n1_intro")
+	for wall in get_tree().get_nodes_in_group("secret_walls"):
+		if is_ancestor_of(wall) and wall.intro_enabled:
+			wall.passage_revealed.connect(_on_secret_passage_revealed.bind(wall))
 func _physics_process(_delta: float) -> void:
 	if not paused and not finished and player.position.y > void_y and not _inside_void_safe_region(player.position):
 		player.take_damage(0.0, Vector2.ZERO, SlicePlayer.DamageSource.VOID)
@@ -206,6 +213,7 @@ func _process(delta: float) -> void:
 	if finished or player.dead or paused:
 		hud.hide_prompt()
 		return
+	if modal.is_empty() and _show_secret_wall_tutorial(): return
 	for chest in get_tree().get_nodes_in_group("reward_chests"):
 		if not is_ancestor_of(chest) or chest.consumed or not chest.player_near(): continue
 		var price: int = chest_economy.price(chest.kind, world_level)
@@ -569,6 +577,43 @@ func _show_n1_tutorial() -> bool:
 		if player.position.x < item[1] or progression.completed_dialogues.has(id) or dismissed_tutorials.has(id): continue
 		if request_context(item[2], _control_text(item[3]), ["Continue"], _complete_tutorial.bind(id)):
 			tutorial_id = id
+			return true
+	return false
+
+func _on_secret_passage_revealed(wall: Node2D) -> void:
+	_secret_tutorial_pending = wall
+
+func _secret_wall_near(wall: Node2D) -> bool:
+	var start := player.global_position + Vector2(0, -9)
+	var target := wall.global_position + Vector2(0, -16)
+	if start.distance_to(target) > wall.intro_radius: return false
+	var query := PhysicsRayQueryParameters2D.create(start, target, 1)
+	query.hit_from_inside = true
+	var hit := get_world_2d().direct_space_state.intersect_ray(query)
+	return hit.is_empty() or hit.get("collider") == wall
+
+func _show_secret_wall_tutorial() -> bool:
+	if not secret_wall_intro_enabled or player.dead or finished or paused or resume_pending or not modal.is_empty(): return false
+	for wall in get_tree().get_nodes_in_group("secret_walls"):
+		if not is_ancestor_of(wall) or not wall.intro_enabled: continue
+		var id: String
+		var title: String
+		var detail: String
+		if wall.opened:
+			if not wall.passage_open: continue
+			if _secret_tutorial_pending != wall and not _secret_wall_near(wall): continue
+			id = SECRET_TUTORIAL_ID
+			title = "Hidden Secrets"
+			detail = "The world is full of secrets. Many lie hidden behind walls. Keep your eyes open."
+		else:
+			if not _secret_wall_near(wall): continue
+			id = SECRET_HINT_ID
+			title = "A Strange Wall"
+			detail = "There's something strange about this wall..."
+		if progression.completed_dialogues.has(id) or dismissed_tutorials.has(id): continue
+		if request_context(title, detail, ["Continue"], _complete_tutorial.bind(id)):
+			tutorial_id = id
+			if id == SECRET_TUTORIAL_ID: _secret_tutorial_pending = null
 			return true
 	return false
 

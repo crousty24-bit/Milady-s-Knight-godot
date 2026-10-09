@@ -37,6 +37,8 @@ func spawn(path: String, isolate: bool = true) -> void:
 		level.queue_free()
 		await frames(4)
 	level = load(path).instantiate()
+	# Transaction fixtures isolate onboarding; its sequence has a dedicated test.
+	level.secret_wall_intro_enabled = false
 	root.add_child(level)
 	current_scene = level
 	await frames(12)
